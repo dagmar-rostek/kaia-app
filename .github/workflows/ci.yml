@@ -1,0 +1,92 @@
+name: CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  # ── Python / FastAPI ──────────────────────────────────────────────────────
+  api:
+    name: API (Python)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/api
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install dependencies
+        run: pip install -e ".[dev]"
+
+      - name: Lint (ruff)
+        run: ruff check . && ruff format --check .
+
+      - name: Type check (mypy)
+        run: mypy app/ --ignore-missing-imports
+
+      - name: Tests
+        run: pytest --tb=short
+
+  # ── TypeScript / Next.js ──────────────────────────────────────────────────
+  web:
+    name: Web (Next.js)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/web
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: apps/web/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Type check
+        run: npx tsc --noEmit
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Build
+        run: npm run build
+        env:
+          NEXT_PUBLIC_API_URL: http://localhost:8000
+
+  # ── Study-Lock Guard ──────────────────────────────────────────────────────
+  study-lock:
+    name: Study-Lock Guard
+    runs-on: ubuntu-latest
+    if: github.base_ref == 'main'
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check study mode
+        run: |
+          STUDY_MODE=$(grep -oP '(?<=STUDY_MODE=).*' .env.example || echo "development")
+          if [ "$STUDY_MODE" = "locked" ]; then
+            # Prompt-Änderungen während Studie blockieren
+            if git diff --name-only origin/main...HEAD | grep -qE "prompt|migration|alembic"; then
+              echo "🔒 STUDIE LÄUFT: Prompt- oder Schema-Änderungen erfordern manuelles Override."
+              echo "Betroffene Dateien:"
+              git diff --name-only origin/main...HEAD | grep -E "prompt|migration|alembic"
+              exit 1
+            fi
+          fi
+          echo "✓ Study-Lock-Check bestanden (Modus: $STUDY_MODE)"
