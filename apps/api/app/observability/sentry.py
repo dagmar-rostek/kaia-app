@@ -6,10 +6,10 @@ from app.core.config import settings
 
 
 def init_sentry() -> None:
-    if not settings.sentry_dsn_api:
+    if not settings.sentry_kaia_api:
         return
     sentry_sdk.init(
-        dsn=settings.sentry_dsn_api,
+        dsn=settings.sentry_kaia_api,
         integrations=[FastApiIntegration(), SqlalchemyIntegration()],
         traces_sample_rate=0.2,
         environment="production" if not settings.debug else "development",

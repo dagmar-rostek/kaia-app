@@ -30,7 +30,7 @@ class Settings(BaseSettings):
     mistral_api_key: str = ""
 
     # Observability
-    sentry_dsn_api: str = ""
+    sentry_kaia_api: str = ""
     slack_webhook_url: str = ""
 
     # Admin
