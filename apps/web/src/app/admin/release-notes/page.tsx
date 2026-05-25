@@ -1,12 +1,7 @@
-import { readFileSync } from "fs"
-import { join } from "path"
+import { readDoc } from "@/lib/docs"
 
 function getReleaseNotes(): string {
-  try {
-    return readFileSync(join(process.cwd(), "../../docs/RELEASE_NOTES.md"), "utf-8")
-  } catch {
-    return "# Release Notes\n\nNoch keine Einträge vorhanden."
-  }
+  return readDoc("RELEASE_NOTES.md", "# Release Notes\n\nNoch keine Einträge vorhanden.")
 }
 
 function parseEntries(md: string) {

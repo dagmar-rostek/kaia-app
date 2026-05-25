@@ -45,6 +45,8 @@ services:
     environment:
       NEXT_PUBLIC_API_URL: https://kaia.rostek-dagmar.eu/api
       ADMIN_PASSWORD: ${ADMIN_PASSWORD}
+    volumes:
+      - ../docs:/docs:ro
 
   caddy:
     image: caddy:2-alpine

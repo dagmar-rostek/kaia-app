@@ -1,14 +1,9 @@
-import { readFileSync } from "fs";
-import { join } from "path";
 import Link from "next/link";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { readDoc } from "@/lib/docs";
 
 function getArchitektur(): string {
-  try {
-    return readFileSync(join(process.cwd(), "../../docs/ARCHITECTURE.md"), "utf-8");
-  } catch {
-    return "# Architektur\n\nDokumentation folgt.";
-  }
+  return readDoc("ARCHITECTURE.md", "# Architektur\n\nDokumentation folgt.");
 }
 
 export default function ArchitekturPage() {

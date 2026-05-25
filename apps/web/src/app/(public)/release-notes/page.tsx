@@ -1,22 +1,13 @@
-import { readFileSync } from "fs";
-import { join } from "path";
 import Link from "next/link";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { readDoc } from "@/lib/docs";
 
 function getReleaseNotes(): string {
-  try {
-    const p = join(process.cwd(), "../../docs/RELEASE_NOTES.md");
-    return readFileSync(p, "utf-8");
-  } catch {
-    return "# Release Notes\n\nNoch keine Einträge vorhanden.";
-  }
+  return readDoc("RELEASE_NOTES.md", "# Release Notes\n\nNoch keine Einträge vorhanden.");
 }
 
 function parseEntries(md: string) {
   const sections: { date: string; entries: { sha: string; kategorie: string; note: string; aufwand: string; subject: string }[] }[] = [];
-  const dateRegex = /^## (.+)$/m;
-  const entryRegex = /\*\*`([a-f0-9]+)`\*\* — (.+?)(?:\s·\s`([^`]+)`)?\s*\n\*(.+)\*/g;
-  const katRegex = /^### .+? (.+)$/m;
 
   const blocks = md.split(/^## /m).slice(1);
   for (const block of blocks) {

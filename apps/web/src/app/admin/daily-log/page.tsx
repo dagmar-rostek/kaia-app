@@ -1,12 +1,7 @@
-import { readFileSync } from "fs"
-import { join } from "path"
+import { readDoc } from "@/lib/docs"
 
 function getDailyLog(): string {
-  try {
-    return readFileSync(join(process.cwd(), "../../docs/DAILY_LOG.md"), "utf-8")
-  } catch {
-    return "# KAIA Entwicklungs-Tagebuch\n\nNoch keine Einträge."
-  }
+  return readDoc("DAILY_LOG.md", "# KAIA Entwicklungs-Tagebuch\n\nNoch keine Einträge.")
 }
 
 const DE_MONTHS = [
