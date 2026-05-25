@@ -1,5 +1,5 @@
 import Link from "next/link"
-import { CheckSquare, ScrollText, Network, Activity, Database, ShieldCheck } from "lucide-react"
+import { CheckSquare, ScrollText, Network, Activity, Database, ShieldCheck, Euro } from "lucide-react"
 
 async function fetchHealth() {
   try {
@@ -36,6 +36,12 @@ const QUICK_LINKS = [
     icon: Network,
     label: "Architektur",
     desc: "Systemdokumentation aus docs/ARCHITECTURE.md",
+  },
+  {
+    href: "/admin/kosten",
+    icon: Euro,
+    label: "Kosten",
+    desc: "Infrastruktur, Claude Code Entwicklung, LLM-Inferenz",
   },
 ]
 

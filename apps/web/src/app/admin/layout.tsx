@@ -1,13 +1,14 @@
 import Link from "next/link"
 import { ThemeToggle } from "@/components/ThemeToggle"
 import { logoutAction } from "./actions"
-import { LayoutDashboard, CheckSquare, ScrollText, Network, LogOut } from "lucide-react"
+import { LayoutDashboard, CheckSquare, ScrollText, Network, Euro, LogOut } from "lucide-react"
 
 const NAV = [
-  { href: "/admin", label: "Übersicht", icon: LayoutDashboard, exact: true },
-  { href: "/admin/production-readiness", label: "Production Readiness", icon: CheckSquare, exact: false },
-  { href: "/admin/release-notes", label: "Release Notes", icon: ScrollText, exact: false },
-  { href: "/admin/architektur", label: "Architektur", icon: Network, exact: false },
+  { href: "/admin", label: "Übersicht", icon: LayoutDashboard },
+  { href: "/admin/production-readiness", label: "Production Readiness", icon: CheckSquare },
+  { href: "/admin/release-notes", label: "Release Notes", icon: ScrollText },
+  { href: "/admin/architektur", label: "Architektur", icon: Network },
+  { href: "/admin/kosten", label: "Kosten", icon: Euro },
 ]
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
