@@ -1,3 +1,14 @@
+# Lokale Entwicklung: DB + API in Docker, Next.js nativ
+#
+# Starten:
+#   docker compose -f infra/docker-compose.dev.yml --env-file .env up
+#
+# Next.js separat (anderes Terminal):
+#   cd apps/web && npm run dev
+#
+# DB läuft auf Port 5433 – vermeidet Konflikte mit lokalem PostgreSQL auf 5432.
+# API-Docs unter http://localhost:8000/api/docs (nur im DEBUG-Modus)
+
 services:
   db:
     image: pgvector/pgvector:pg16
@@ -5,45 +16,41 @@ services:
     environment:
       POSTGRES_DB: kaia
       POSTGRES_USER: kaia
-      POSTGRES_PASSWORD: changeme
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     ports:
-      - "5432:5432"
+      - "5433:5432"
     volumes:
       - postgres_dev:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U kaia -d kaia"]
       interval: 5s
       timeout: 3s
-      retries: 5
+      retries: 10
 
   api:
     build:
       context: ../apps/api
+      dockerfile: Dockerfile.dev
     restart: unless-stopped
     ports:
       - "8000:8000"
     environment:
-      DATABASE_URL: postgresql+psycopg://kaia:changeme@db:5432/kaia
+      DATABASE_URL: postgresql+psycopg://kaia:${POSTGRES_PASSWORD}@db:5432/kaia
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      MISTRAL_API_KEY: ${MISTRAL_API_KEY:-}
+      SENTRY_KAIA_API: ${SENTRY_KAIA_API:-}
+      SLACK_WEBHOOK_URL: ${SLACK_WEBHOOK_URL:-}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD}
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_ALGORITHM: ${JWT_ALGORITHM:-HS256}
+      STUDY_MODE: ${STUDY_MODE:-development}
       DEBUG: "true"
-    env_file:
-      - ../.env
+    volumes:
+      - ../apps/api/app:/app/app
     depends_on:
       db:
         condition: service_healthy
-    volumes:
-      - ../apps/api/app:/app/app   # hot-reload in dev
-
-  web:
-    build:
-      context: ../apps/web
-      target: dev
-    restart: unless-stopped
-    ports:
-      - "3000:3000"
-    environment:
-      NEXT_PUBLIC_API_URL: http://localhost:8000
-    volumes:
-      - ../apps/web/src:/app/src   # hot-reload in dev
 
 volumes:
   postgres_dev:

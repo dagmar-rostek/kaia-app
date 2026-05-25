@@ -47,6 +47,7 @@ async def attach_request_id(request: Request, call_next):
     structlog.contextvars.bind_contextvars(request_id=request_id)
     response = await call_next(request)
     response.headers["X-Request-ID"] = request_id
+    response.headers["X-Accel-Buffering"] = "no"
     structlog.contextvars.clear_contextvars()
     return response
 
