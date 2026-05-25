@@ -33,7 +33,7 @@ jobs:
         run: mypy app/ --ignore-missing-imports
 
       - name: Tests
-        run: pytest --tb=short
+        run: pytest --tb=short --cov=app --cov-report=term-missing --cov-fail-under=70
 
   # ── TypeScript / Next.js ──────────────────────────────────────────────────
   web:

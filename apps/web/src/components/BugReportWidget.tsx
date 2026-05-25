@@ -2,24 +2,19 @@
 
 import { useState } from "react";
 import { Bug, X, Send } from "lucide-react";
-
-const API = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
+import { bugReportApi } from "@/lib/api";
 
 export function BugReportWidget() {
   const [open, setOpen] = useState(false);
   const [status, setStatus] = useState<"idle" | "sending" | "sent" | "error">("idle");
   const [form, setForm] = useState({ vorname: "", email: "", beschreibung: "" });
 
-  async function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.SyntheticEvent<HTMLFormElement>) {
     e.preventDefault();
     setStatus("sending");
     try {
-      const res = await fetch(`${API}/api/v1/bug-report`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
-      });
-      setStatus(res.ok ? "sent" : "error");
+      await bugReportApi.submit(form);
+      setStatus("sent");
     } catch {
       setStatus("error");
     }

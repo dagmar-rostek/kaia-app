@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { ThemeProvider } from "@/components/ThemeProvider";
+import { QueryProvider } from "@/providers/QueryProvider";
 import { BugReportWidget } from "@/components/BugReportWidget";
 import "./globals.css";
 
@@ -17,10 +18,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="de" suppressHydrationWarning>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen`}>
-        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
-          {children}
-          <BugReportWidget />
-        </ThemeProvider>
+        <QueryProvider>
+          <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
+            {children}
+            <BugReportWidget />
+          </ThemeProvider>
+        </QueryProvider>
       </body>
     </html>
   );
