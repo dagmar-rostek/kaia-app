@@ -1,5 +1,7 @@
 import { readDoc } from "@/lib/docs"
 
+export const dynamic = "force-dynamic"
+
 function getArchitektur(): string {
   return readDoc("ARCHITECTURE.md", "# Architektur\n\nDokumentation folgt.")
 }

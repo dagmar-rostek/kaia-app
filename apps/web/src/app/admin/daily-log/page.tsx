@@ -1,5 +1,7 @@
 import { readDoc } from "@/lib/docs"
 
+export const dynamic = "force-dynamic"
+
 function getDailyLog(): string {
   return readDoc("DAILY_LOG.md", "# KAIA Entwicklungs-Tagebuch\n\nNoch keine Einträge.")
 }

@@ -1,5 +1,7 @@
 import { readDoc } from "@/lib/docs"
 
+export const dynamic = "force-dynamic"
+
 function getReleaseNotes(): string {
   return readDoc("RELEASE_NOTES.md", "# Release Notes\n\nNoch keine Einträge vorhanden.")
 }
