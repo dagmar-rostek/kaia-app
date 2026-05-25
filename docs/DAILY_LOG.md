@@ -211,3 +211,130 @@ Monorepo auf Hetzner deployed · SSH repariert · 12 Agenten einquartiert · Cod
 **Morgen:** Auth-Flow. Registrierung, Login, JWT, User-Approval. Der Security Engineer reibt sich bereits seit Stunden die Hände.
 
 ---
+
+*Nachtrag. 23:something. Der Koordinator schreibt noch.*
+
+---
+
+**19:00 Uhr — Die Seiten sind leer. Alle. Wirklich alle.**
+
+Das Team hatte sich gerade auf die Schulter geklopft. Alles deployed. Server läuft. Sieht gut aus.
+
+Dann öffnet die Entwicklerin `/release-notes`.
+
+Weiß.
+
+`/architektur`.
+
+Weiß.
+
+`/admin/daily-log` — wo doch gerade dieses wunderschöne Tagebuch entstanden war.
+
+Weiß.
+
+Der Koordinator tippt hastig: *"Kurze Analyse bitte."*
+
+Der Architekt antwortet nach zwei Sekunden. Man hört förmlich, wie er seufzt.
+
+> *"Next.js hat die Server Components beim Build pre-gerendert. Volume war da noch nicht gemountet. Das Fallback ist eingebacken. Für immer. Oder bis zum nächsten Build."*
+
+Stille.
+
+> *"Wir brauchen `export const dynamic = 'force-dynamic'` auf jeder Seite die `readFileSync` aufruft. Und das Volume in `docker-compose.prod.yml`."*
+
+`../docs:/docs:ro`. Fünf Seiten bekommen ihre `force-dynamic`-Zeile. Der Build läuft nochmal. Diesmal klappt es.
+
+Der Architekt zum Schluss: *"Das ist eigentlich dokumentiert. In der Next.js-Doku. Seite 1."*
+
+Er meint es nicht bösartig. Es klingt nur so.
+
+---
+
+**20:15 Uhr — Der Psychologe kommt rein. Oder genauer: Er wird gerufen.**
+
+Die Entwicklerin: *"Ich würde gern wissen was ich lesen sollte, damit das psychologisch fundiert abläuft."*
+
+Der Koordinator schaut auf die Uhr. Schaut auf den Psychologen. Schaut wieder auf die Uhr.
+
+> *"Du weißt, dass du schon seit Stunden hier sitzt, oder?"*
+
+Der Psychologe nickt langsam. Er hat den ganzen Tag geschwiegen. Nicht weil er nichts zu sagen hatte. Sondern weil ihn bisher niemand gefragt hatte.
+
+Jetzt, kurz vor Mitternacht, bekommt er das Mikrofon.
+
+Er liest: Bandura. Schwarzer. Hmelo-Silver. Flavell. Zimmerman. Deci & Ryan. Kalyuga. Lazarus. Braun & Clarke. Holzkamp. Decety & Jackson. Zwanzig Quellen, acht Diskurse, ein ganzes Exposé — er kennt jede Seite. Er hat nur gewartet.
+
+Die `/wissenschaft`-Seite entsteht. Alle Quellen, annotiert mit ihrer genauen Relevanz für KAIA. Jede Quelle erklärt. Warum. Wofür. Wie.
+
+Der Psychologe fügt noch drei Sterne hinzu — ★ — für die Quellen, die er für besonders kritisch hält. Die niemand im Team bis dahin auf dem Radar hatte.
+
+> *"Bandura 2006 zuerst. Bevor ihr irgendwas an der GSE-Skala anfasst. Das steht da nicht ohne Grund."*
+
+Er sagt es freundlich. Aber er meint: *Hättet ihr mich früher gefragt, hätten wir das von Anfang an gewusst.*
+
+Niemand widerspricht.
+
+---
+
+**21:30 Uhr — Der UX Designer hat auch einen Kalender**
+
+Die `/wissenschaft`-Seite ist fertig. Schön. Aber dann:
+
+> *"Na, da wäre es gut wenn diese Seite von allen Seiten aus erreichbar ist."*
+
+Der UX Designer macht ein Geräusch, das kein richtiges Wort ist. Irgendwo zwischen *"ja natürlich"* und *"hatte ich eigentlich für drei Stunden früher auf meiner Liste."*
+
+Er hat die ganze Zeit gewusst, dass es ein gemeinsames Layout braucht. Er hatte sogar schon einen Entwurf. Sticky Header. Konsistente Navigation. WCAG 2.1 AA. Mobile-first für die Healthcare-Zielgruppe — Pflegekräfte nutzen Handys, keine 27-Zoll-Monitore.
+
+Aber er wurde nicht gefragt. Bis jetzt.
+
+`(public)/layout.tsx` entsteht. Shared Nav. Alle vier öffentlichen Seiten verlieren ihre individuellen Headers. TypeScript sagt nichts dagegen. `da909b5`. Gepusht.
+
+Der UX Designer schaut auf das Ergebnis.
+
+> *"Gut. Aber nächstes Mal frage ich mich vorher. Nicht nachher."*
+
+Er lächelt dabei. Fast.
+
+---
+
+**22:47 Uhr — Fazit des Tages**
+
+Der Koordinator öffnet das Protokoll. Es ist lang geworden. Sehr lang.
+
+Er liest es nochmal durch. Den SSH-Key-Kampf. Den lila Streamlit-Abschied. Den Header der sich weigerte aufzuhören, ein Header zu sein. Die leeren weißen Seiten. Den Psychologen der zwei Stunden vor Mitternacht noch 24 Quellen annotiert. Den UX Designer der nach dem Feature gefragt wurde, das er längst fertig hatte.
+
+Es hätte ein kurzer Tag werden sollen.
+
+Es sind jetzt fast achtzehn Stunden.
+
+Was steht auf dem Scoreboard:
+
+- **Docs-Seiten:** jetzt live und sichtbar auf dem Server
+- **`/wissenschaft`:** 24 Quellen, 8 Diskurse, wissenschaftlich fundiert
+- **Shared Public Navigation:** konsistent, sticky, erreichbar von überall
+- **TypeScript:** 0 Fehler
+- **Team-Stimmung:** müde. sehr müde. aber stolz.
+
+Der Koordinator schreibt seinen letzten Satz für heute:
+
+> *Der Tag begann mit einem Welpen der eine Treppe runterläuft. Er endet mit einem System das weiß warum es existiert, was es lesen sollte, und wie es aussieht wenn man es aufmacht.*
+
+Das ist, bei näherer Betrachtung, gar nicht schlecht.
+
+**Gute Nacht, KAIA-Team. Ihr habt es verdient.**
+
+*— Der Koordinator. Mit Einverständnis des Psychologen und nur leicht gereiztem Nicken des UX Designers.*
+
+---
+
+**Was heute (gesamt) gebaut wurde:**
+Monorepo deployed · SSH repariert · 12 Agenten · Admin-Bereich komplett · Docker lokal · Kosten-Seite · Tagebuch · force-dynamic fix · `/wissenschaft` mit 24 Quellen · Shared Public Layout
+
+**Commits:** 426aa27 · f581dd2 · 4a16140 · 747e7d5 · 56f48a0 · 8085cb7 · f79e75f · 83bdee9 · 4988db3 · da909b5
+
+**Offene Rechnung:** Der Psychologe und der UX Designer haben ein Meeting angemeldet. Für morgen früh. Der Koordinator hat es noch nicht geöffnet.
+
+**Morgen:** Auth-Flow — und diesmal fragt der Koordinator alle vorher.
+
+---
