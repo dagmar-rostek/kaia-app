@@ -4,7 +4,7 @@
 > Jede strukturelle Änderung muss hier dokumentiert werden — CI prüft das.
 > Die `/architektur`-Seite im Frontend rendert dieses Dokument direkt.
 
-**Stand:** Mai 2026 · Version 0.1.0
+**Stand:** Mai 2026 · Version 0.2.0
 
 ---
 
@@ -52,13 +52,27 @@ kaia-app/
 │   └── web/                    Next.js 14 App Router (TypeScript)
 │       └── src/
 │           ├── app/            Seiten (App Router)
-│           │   ├── (public)/   Landing, Pitch, Impressum, Datenschutz
-│           │   ├── (auth)/     Login, Registrierung, DSGVO-Consent
-│           │   ├── (app)/      Chat, Auswertung, Selbstversuch
-│           │   ├── admin/      User-Verwaltung, Prompts, Analytics
-│           │   ├── release-notes/
-│           │   └── architektur/
-│           └── components/     Geteilte UI-Komponenten
+│           │   ├── (public)/   Öffentlicher Bereich — shared layout mit Nav
+│           │   │   ├── page.tsx            Landing Page
+│           │   │   ├── architektur/        ARCHITECTURE.md Renderer
+│           │   │   ├── release-notes/      RELEASE_NOTES.md Renderer
+│           │   │   ├── wissenschaft/       24 wissenschaftliche Quellen
+│           │   │   ├── datenschutz/
+│           │   │   └── impressum/
+│           │   ├── (auth)/     Login, Registrierung, DSGVO-Consent (stub)
+│           │   ├── (app)/      Chat, Auswertung, Selbstversuch (stub)
+│           │   └── admin/      Passwortgeschützt via Edge-Middleware
+│           │       ├── page.tsx               Dashboard + API-Health
+│           │       ├── login/
+│           │       ├── production-readiness/  Deployment-Checkliste
+│           │       ├── release-notes/         Changelog-Viewer
+│           │       ├── architektur/           Architektur-Viewer
+│           │       ├── kosten/                Kostenübersicht
+│           │       └── daily-log/             Entwicklungs-Tagebuch
+│           ├── components/     Geteilte UI-Komponenten
+│           └── lib/
+│               ├── api.ts      Typisierter API-Client (React Query)
+│               └── docs.ts     readDoc() — /docs (Prod) oder ../../docs (lokal)
 │
 ├── docs/
 │   ├── ARCHITECTURE.md         ← diese Datei
@@ -161,7 +175,38 @@ Jeder Call loggt: `provider`, `model`, `input_tokens`, `output_tokens`,
 ssh root@[hetzner-ip]
 cd ~/kaia-app
 git pull
-docker compose -f infra/docker-compose.prod.yml up -d --build
+docker compose -f infra/docker-compose.prod.yml --env-file .env up -d --build
 ```
 
 Caddy übernimmt TLS-Terminierung und Routing zu Port 3000 (Web) und 8000 (API).
+
+---
+
+## Lokale Entwicklung
+
+```bash
+# DB + API in Docker (Port 5433 vermeidet Konflikt mit lokalem Postgres)
+docker compose -f infra/docker-compose.dev.yml --env-file apps/api/.env up
+
+# Frontend nativ (Hot-Reload)
+cd apps/web && npm run dev
+```
+
+`docs/` wird in Produktion als Read-only-Volume gemountet (`../docs:/docs:ro`).
+In der lokalen Entwicklung liest `readDoc()` aus `../../docs` relativ zum `apps/web`-Verzeichnis.
+
+---
+
+## Aktueller Stand (v0.2.0)
+
+**Live auf kaia.rostek-dagmar.eu:**
+- Landing Page, /wissenschaft, /release-notes, /architektur (öffentlich)
+- Admin-Bereich: Dashboard, Production Readiness, Changelog, Architektur, Kosten, Tagebuch
+- Bug-Report-Widget → Slack
+- Health-Endpoint GET /api/v1/health
+
+**Noch nicht implementiert (Priorität: Auth):**
+- Login, Registrierung, Sessions, JWT
+- DB-Schema (Alembic-Migrationen ausstehend)
+- Chat, Onboarding, GSE-Messung
+- User-Approval durch Admin
