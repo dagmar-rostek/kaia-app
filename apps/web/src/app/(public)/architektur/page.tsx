@@ -1,7 +1,5 @@
 export const dynamic = "force-dynamic";
 
-import Link from "next/link";
-import { ThemeToggle } from "@/components/ThemeToggle";
 import { readDoc } from "@/lib/docs";
 
 function getArchitektur(): string {
@@ -17,15 +15,7 @@ export default function ArchitekturPage() {
   });
 
   return (
-    <div className="min-h-screen flex flex-col">
-      <header className="flex items-center justify-between px-6 py-4 border-b border-border">
-        <Link href="/" className="font-semibold tracking-tight hover:opacity-80 transition-opacity">KAIA</Link>
-        <div className="flex items-center gap-4">
-          <span className="text-sm font-medium">Architektur</span>
-          <ThemeToggle />
-        </div>
-      </header>
-
+    <>
       <main className="flex-1 max-w-3xl mx-auto w-full px-6 py-12">
         <div className="mb-10 space-y-2">
           <h1 className="text-3xl font-bold tracking-tight">Systemarchitektur</h1>
@@ -47,6 +37,6 @@ export default function ArchitekturPage() {
           ))}
         </div>
       </main>
-    </div>
+    </>
   );
 }

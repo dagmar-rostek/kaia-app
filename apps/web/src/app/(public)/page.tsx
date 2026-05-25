@@ -1,22 +1,8 @@
 import Link from "next/link";
-import { ThemeToggle } from "@/components/ThemeToggle";
 
 export default function Home() {
   return (
-    <div className="min-h-screen flex flex-col">
-      <header className="flex items-center justify-between px-6 py-4 border-b border-border">
-        <span className="font-semibold tracking-tight">KAIA</span>
-        <div className="flex items-center gap-4">
-          <Link href="/release-notes" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-            Release Notes
-          </Link>
-          <Link href="/architektur" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-            Architektur
-          </Link>
-          <ThemeToggle />
-        </div>
-      </header>
-
+    <>
       <main className="flex-1 flex flex-col items-center justify-center px-6 text-center max-w-2xl mx-auto w-full">
         <div className="space-y-6">
           <div className="inline-block rounded-full border border-border px-4 py-1.5 text-xs text-muted-foreground">
@@ -52,6 +38,6 @@ export default function Home() {
         {" · "}
         <Link href="/impressum" className="hover:text-foreground transition-colors">Impressum</Link>
       </footer>
-    </div>
+    </>
   );
 }
