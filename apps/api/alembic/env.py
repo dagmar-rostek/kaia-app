@@ -6,11 +6,11 @@ from sqlalchemy import pool
 from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import async_engine_from_config
 
+import app.domains.users.models  # noqa: F401
 from alembic import context
 
 # Import Base and all models so autogenerate detects them
 from app.db.session import Base
-import app.domains.users.models  # noqa: F401
 
 config = context.config
 

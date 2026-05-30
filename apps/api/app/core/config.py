@@ -1,4 +1,5 @@
 from enum import StrEnum
+
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -19,7 +20,7 @@ class Settings(BaseSettings):
     database_url: str = "postgresql+psycopg://kaia:changeme@localhost:5432/kaia"
 
     # Auth
-    jwt_secret: str = "changeme-min-32-chars-long-random-string"
+    jwt_secret: str = "changeme-min-32-chars-long-random-string"  # noqa: S105
     jwt_algorithm: str = "HS256"
     access_token_expire_minutes: int = 15
     refresh_token_expire_days: int = 30
@@ -34,7 +35,7 @@ class Settings(BaseSettings):
     slack_webhook_url: str = ""
 
     # Admin
-    admin_password: str = "changeme"
+    admin_password: str = "changeme"  # noqa: S105
 
     # Studie
     study_mode: StudyMode = StudyMode.DEVELOPMENT

@@ -6,10 +6,10 @@ from app.core.config import settings
 from app.core.security import (
     create_access_token,
     create_refresh_token,
+    hash_password,
     hash_token,
     new_token_family,
     verify_password,
-    hash_password,
 )
 from app.domains.users.models import RefreshToken, User, UserStatus
 from app.domains.users.repository import RefreshTokenRepository, UserRepository
@@ -190,7 +190,7 @@ class UserService:
         # Personenbezogene Daten anonymisieren (Art. 17 — kein Hard-Delete wegen Audit-Trail)
         user.email = f"deleted_{user.id}@anonymized.invalid"
         user.username = f"deleted_{user.id}"
-        user.password_hash = "DELETED"
+        user.password_hash = "DELETED"  # noqa: S105
         user.consent_at = None
         user.last_login_at = None
         await self._users.save(user)

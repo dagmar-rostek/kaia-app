@@ -6,7 +6,9 @@ from pydantic import BaseModel, EmailStr, Field, StringConstraints
 from app.domains.users.models import UserStatus
 
 _Password = Annotated[str, StringConstraints(min_length=8, max_length=128)]
-_Username = Annotated[str, StringConstraints(min_length=3, max_length=100, pattern=r"^[a-zA-Z0-9_-]+$")]
+_Username = Annotated[
+    str, StringConstraints(min_length=3, max_length=100, pattern=r"^[a-zA-Z0-9_-]+$")
+]
 
 
 class RegisterRequest(BaseModel):
@@ -26,7 +28,7 @@ class LoginRequest(BaseModel):
 
 class TokenResponse(BaseModel):
     access_token: str
-    token_type: str = "bearer"
+    token_type: str = "bearer"  # noqa: S105
 
 
 class UserRead(BaseModel):
@@ -47,6 +49,7 @@ class UserApprove(BaseModel):
 
 class UserExport(BaseModel):
     """DSGVO Art. 20 — Datenportabilität."""
+
     id: int
     email: str
     username: str
@@ -66,9 +69,11 @@ class UserExport(BaseModel):
 
 class DeleteRequest(BaseModel):
     """DSGVO Art. 17 — Recht auf Löschung."""
+
     reason: str = Field(default="user_request", max_length=100)
 
 
 class ConsentUpdate(BaseModel):
     """DSGVO Art. 7 (3) — Widerruf ist jederzeit möglich."""
+
     consent_analytics: bool

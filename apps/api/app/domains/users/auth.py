@@ -5,7 +5,6 @@ from fastapi import APIRouter, Cookie, Depends, HTTPException, Request, Response
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.deps import CurrentUser
-from app.core.security import hash_token
 from app.db.session import get_db
 from app.domains.users.repository import RefreshTokenRepository, UserRepository
 from app.domains.users.schemas import LoginRequest, RegisterRequest, TokenResponse, UserRead
@@ -43,7 +42,7 @@ async def register(
     try:
         user = await svc.register(data, ip=request.client.host if request.client else None)
     except AuthError as e:
-        raise HTTPException(e.status_code, e.message)
+        raise HTTPException(e.status_code, e.message) from e
     return UserRead.model_validate(user)
 
 
@@ -59,7 +58,7 @@ async def login(
     try:
         access_token, raw_refresh = await svc.login(data.email, data.password, ua, ip)
     except AuthError as e:
-        raise HTTPException(e.status_code, e.message)
+        raise HTTPException(e.status_code, e.message) from e
     _set_refresh_cookie(response, raw_refresh)
     return TokenResponse(access_token=access_token)
 
@@ -78,7 +77,7 @@ async def refresh(
     try:
         access_token, raw_new = await svc.refresh(refresh_token, ua, ip)
     except AuthError as e:
-        raise HTTPException(e.status_code, e.message)
+        raise HTTPException(e.status_code, e.message) from e
     _set_refresh_cookie(response, raw_new)
     return TokenResponse(access_token=access_token)
 
