@@ -45,5 +45,13 @@ export interface BugReportRequest {
 }
 
 export const bugReportApi = {
-  submit: (data: BugReportRequest) => api.post<{ ok: boolean }>("/v1/bug-report", data),
+  submit: (data: BugReportRequest) =>
+    fetch("/proxy/bug-report", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data),
+    }).then((res) => {
+      if (!res.ok) throw new Error(String(res.status))
+      return res.json() as Promise<{ ok: boolean }>
+    }),
 }
