@@ -1,7 +1,8 @@
+from datetime import datetime
 from enum import StrEnum
 
-from sqlalchemy import Boolean, DateTime, String, func
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy import Boolean, DateTime, ForeignKey, Index, SmallInteger, String, func
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.session import Base
 
@@ -20,14 +21,67 @@ class User(Base):
     email: Mapped[str] = mapped_column(String(255), unique=True, index=True)
     username: Mapped[str] = mapped_column(String(100), unique=True)
     password_hash: Mapped[str] = mapped_column(String(255))
-    status: Mapped[UserStatus] = mapped_column(default=UserStatus.PENDING)
-    onboarding_complete: Mapped[bool] = mapped_column(Boolean, default=False)
-    consent_given: Mapped[bool] = mapped_column(Boolean, default=False)
+    status: Mapped[UserStatus] = mapped_column(String(20), default=UserStatus.PENDING)
+
+    # Consent (DSGVO — Zeitpunkt ist Pflicht, nicht nur Boolean)
+    consent_data: Mapped[bool] = mapped_column(Boolean, default=False)
     consent_analytics: Mapped[bool] = mapped_column(Boolean, default=False)
     consent_version: Mapped[str] = mapped_column(String(20), default="1.0")
-    approved_at: Mapped[DateTime | None] = mapped_column(DateTime(timezone=True), nullable=True)
-    approved_by: Mapped[int | None] = mapped_column(nullable=True)
-    created_at: Mapped[DateTime] = mapped_column(DateTime(timezone=True), server_default=func.now())
-    updated_at: Mapped[DateTime] = mapped_column(
+    consent_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+
+    # Onboarding
+    onboarding_complete: Mapped[bool] = mapped_column(Boolean, default=False)
+    ki_disclosure_seen_at: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
+
+    # Admin-Approval
+    approved_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    approved_by: Mapped[str | None] = mapped_column(String(50), nullable=True)
+
+    # Security
+    last_login_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    failed_login_count: Mapped[int] = mapped_column(SmallInteger, default=0)
+    locked_until: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+
+    # Soft-Delete (DSGVO Art. 17)
+    deleted_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    deletion_reason: Mapped[str | None] = mapped_column(String(100), nullable=True)
+
+    # Audit
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now()
+    )
+    updated_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), onupdate=func.now()
+    )
+
+    refresh_tokens: Mapped[list["RefreshToken"]] = relationship(
+        back_populates="user", cascade="all, delete-orphan"
+    )
+
+
+class RefreshToken(Base):
+    __tablename__ = "refresh_tokens"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"))
+    # SHA-256 des Tokens — nie den Raw-Token speichern
+    token_hash: Mapped[str] = mapped_column(String(64), unique=True)
+    # UUID-Familie für Reuse-Detection: gestohlener Token → ganze Familie revoked
+    family: Mapped[str] = mapped_column(String(36))
+    issued_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now()
+    )
+    expires_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    revoked_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    revoke_reason: Mapped[str | None] = mapped_column(String(50), nullable=True)
+    user_agent: Mapped[str | None] = mapped_column(String(255), nullable=True)
+    ip_address: Mapped[str | None] = mapped_column(String(45), nullable=True)
+
+    user: Mapped["User"] = relationship(back_populates="refresh_tokens")
+
+    __table_args__ = (
+        # Häufigste Query: aktive Tokens eines Users
+        Index("ix_refresh_tokens_user_active", "user_id", "revoked_at"),
     )
