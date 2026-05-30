@@ -8,6 +8,8 @@ COPY . .
 CMD ["npm", "run", "dev"]
 
 FROM base AS builder
+ARG NEXT_PUBLIC_API_URL=/api
+ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
 RUN npm ci
 COPY . .
 RUN npm run build
