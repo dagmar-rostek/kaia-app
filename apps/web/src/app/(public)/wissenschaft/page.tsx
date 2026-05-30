@@ -45,6 +45,41 @@ const DISKURSE: Diskurs[] = [
     ],
   },
   {
+    titel: "Entwicklungspsychologie & Didaktik",
+    funktion: "Begründet wie Lernen durch Begleitung, Irritation und Erfahrung entsteht",
+    farbe: "bg-teal-500/10 text-teal-600 dark:text-teal-400 border-teal-500/20",
+    quellen: [
+      {
+        authors: "Vygotsky, L. S.",
+        year: "1978",
+        title: "Mind in Society: The Development of Higher Psychological Processes",
+        journal: "Harvard University Press",
+        relevanz: "Zone der nächsten Entwicklung (ZPD): Lernen findet optimal im Raum zwischen dem statt, was jemand alleine kann, und dem was mit Unterstützung möglich ist. Kernbegründung für KAIAs adaptive Fragelogik — KAIA muss erkennen wo jemand steht und Fragen genau an dieser Grenze platzieren, nicht darunter, nicht darüber.",
+      },
+      {
+        authors: "Bruner, J.",
+        year: "1996",
+        title: "The Culture of Education",
+        journal: "Harvard University Press",
+        relevanz: "Scaffolding als didaktisches Prinzip: temporäre Unterstützungsstruktur, die schrittweise zurückgezogen wird sobald der Lernende eigenständiger wird. Begründet KAIAs dynamische Fragenadaption — intensive Begleitung am Anfang, zunehmende Zurückhaltung wenn Selbstregulation einsetzt.",
+      },
+      {
+        authors: "Mezirow, J.",
+        year: "1991",
+        title: "Transformative Dimensions of Adult Learning",
+        journal: "Jossey-Bass",
+        relevanz: "Erwachsene lernen durch 'disorienting dilemmas' — Momente produktiver Desorientierung, die zur Reflexion und Transformation von Deutungsrahmen führen. KAIAs sokratischer Ansatz zielt gezielt auf solche Irritationen: nicht beruhigen, sondern zum Nachdenken über eigene Annahmen einladen.",
+      },
+      {
+        authors: "Kolb, D. A.",
+        year: "1984",
+        title: "Experiential Learning: Experience as the Source of Learning and Development",
+        journal: "Prentice Hall",
+        relevanz: "Lernzyklus aus Erfahrung, Reflexion, Konzeptualisierung und Experiment. Rahmen für KAIAs Gesprächsstruktur: In welcher Phase des Lernzyklus befindet sich der Nutzer, und welche Art von Frage passt dazu? Konkrete Orientierung für das Prompt-Design.",
+      },
+    ],
+  },
+  {
     titel: "Stressregulation",
     funktion: "Erklärt warum Menschen unter Stress anders lernen",
     farbe: "bg-orange-500/10 text-orange-600 dark:text-orange-400 border-orange-500/20",
@@ -356,8 +391,8 @@ export default function WissenschaftPage() {
         <div className="mb-10 space-y-3">
           <h1 className="text-3xl font-bold tracking-tight">Wissenschaftliche Grundlagen</h1>
           <p className="text-muted-foreground text-sm max-w-xl leading-relaxed">
-            KAIA basiert auf acht theoretischen Diskursen aus Lernpsychologie, Empathieforschung,
-            Selbstwirksamkeitstheorie und Design Science Research. Hier sind alle{" "}
+            KAIA basiert auf neun theoretischen Diskursen aus Lernpsychologie, Entwicklungspsychologie,
+            Empathieforschung, Selbstwirksamkeitstheorie und Design Science Research. Hier sind alle{" "}
             <strong className="text-foreground">{totalQuellen} Quellen</strong> mit ihrer
             spezifischen Relevanz für das Produkt dokumentiert.
           </p>
