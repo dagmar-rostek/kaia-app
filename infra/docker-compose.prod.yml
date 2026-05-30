@@ -43,7 +43,6 @@ services:
       context: ../apps/web
     restart: unless-stopped
     environment:
-      NEXT_PUBLIC_API_URL: https://kaia.rostek-dagmar.eu/api
       ADMIN_PASSWORD: ${ADMIN_PASSWORD}
     volumes:
       - ../docs:/docs:ro
