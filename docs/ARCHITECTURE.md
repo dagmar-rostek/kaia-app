@@ -4,7 +4,7 @@
 > Jede strukturelle Änderung muss hier dokumentiert werden — CI prüft das.
 > Die `/architektur`-Seite im Frontend rendert dieses Dokument direkt.
 
-**Stand:** Mai 2026 · Version 0.2.0
+**Stand:** Mai 2026 · Version 0.3.0
 
 ---
 
@@ -35,18 +35,23 @@ Browser (Next.js)
 kaia-app/
 ├── apps/
 │   ├── api/                    FastAPI Backend (Python 3.12)
+│   │   ├── alembic/            Migrationen (async env.py)
+│   │   │   └── versions/       0001: users + refresh_tokens
 │   │   └── app/
 │   │       ├── api/v1/         HTTP-Endpoints (versioniert)
-│   │       ├── core/           Config, Auth, Settings
+│   │       ├── core/
+│   │       │   ├── config.py   Settings (Pydantic BaseSettings)
+│   │       │   ├── security.py bcrypt, JWT, token-hash utils
+│   │       │   └── deps.py     get_current_user, require_admin
 │   │       ├── db/             SQLAlchemy 2.0 async + Alembic
-│   │       ├── models/         Pydantic + ORM-Modelle
-│   │       ├── services/       Business-Logik (domain-getrennt)
-│   │       │   ├── kaia/       Sokratische Prompt-Logik
-│   │       │   ├── llm/        LLM-Provider-Abstraktion
-│   │       │   ├── users/      Auth, Approval, DSGVO
-│   │       │   ├── sessions/   Chat-Session-Management
-│   │       │   ├── surveys/    GSE Pre/Post
-│   │       │   └── analytics/  Learning Analytics + LLM-Kosten
+│   │       ├── domains/        Domain-Driven Design
+│   │       │   └── users/
+│   │       │       ├── models.py      User + RefreshToken ORM
+│   │       │       ├── schemas.py     Pydantic I/O (Register, Login, …)
+│   │       │       ├── repository.py  UserRepo + RefreshTokenRepo
+│   │       │       ├── service.py     AuthService (login, refresh, logout)
+│   │       │       ├── auth.py        POST /auth/* Endpoints
+│   │       │       └── routes.py      GET /users/me
 │   │       └── observability/  Sentry, Slack, Structured Logging
 │   │
 │   └── web/                    Next.js 14 App Router (TypeScript)
@@ -197,7 +202,7 @@ In der lokalen Entwicklung liest `readDoc()` aus `../../docs` relativ zum `apps/
 
 ---
 
-## Aktueller Stand (v0.2.0)
+## Aktueller Stand (v0.3.0)
 
 **Live auf kaia.rostek-dagmar.eu:**
 - Landing Page, /wissenschaft, /release-notes, /architektur (öffentlich)
@@ -205,8 +210,17 @@ In der lokalen Entwicklung liest `readDoc()` aus `../../docs` relativ zum `apps/
 - Bug-Report-Widget → Slack
 - Health-Endpoint GET /api/v1/health
 
-**Noch nicht implementiert (Priorität: Auth):**
-- Login, Registrierung, Sessions, JWT
-- DB-Schema (Alembic-Migrationen ausstehend)
+**Backend — Auth implementiert (noch nicht deployed):**
+- `POST /api/v1/auth/register` — Registrierung mit DSGVO-Pflichtconsent
+- `POST /api/v1/auth/login` — JWT Access + Refresh-Token (httpOnly Cookie)
+- `POST /api/v1/auth/refresh` — Token-Rotation mit Family-Reuse-Detection
+- `POST /api/v1/auth/logout` — Alle Tokens revoken
+- `POST /api/v1/auth/disclosure-ack` — KI-Disclosure bestätigt
+- `GET /api/v1/users/me` — Eigenes Profil
+- DB-Schema: `users` + `refresh_tokens` (Alembic Migration `c5fceead2dd4`)
+
+**Noch nicht implementiert:**
+- DSGVO-Endpunkte: Datenexport, Konto löschen, Consent-Update
+- Frontend: Login-/Registrierungsseiten, auth.ts, Middleware-Erweiterung
+- Admin User-Approval UI
 - Chat, Onboarding, GSE-Messung
-- User-Approval durch Admin

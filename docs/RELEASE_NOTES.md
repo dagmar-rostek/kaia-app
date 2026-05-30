@@ -9,8 +9,25 @@
 
 ---
 
-**Stand heute:** Monday, 25. May 2026  
-**14 Einträge insgesamt · 3 Release-Tage · 10 h 55 min Gesamt-Aufwand**
+**Stand heute:** Friday, 30. May 2026  
+**16 Einträge insgesamt · 4 Release-Tage · 15 h 25 min Gesamt-Aufwand**
+
+---
+
+## Friday, 30. May 2026
+*2 Einträge · Tag-Summe 4 h 30 min*
+
+### 🆕 Neu
+
+**`7bc1929`** — Auth-Flow implementiert: Registrierung mit DSGVO-Pflichtconsent (zwingend True, kein Opt-out), Login/Logout, JWT Access-Token (15 min, Bearer) + Refresh-Token (30 d, httpOnly-Cookie). Token-Rotation mit Family-basierter Reuse-Detection — gestohlener Token sperrt die gesamte Familie (RFC 6749). Brute-Force-Schutz (5 Versuche → 15 min Kontosperre). Konten starten als `pending`, Admin-Freigabe erforderlich. KI-Disclosure-Gate als eigener Endpunkt. Alembic async konfiguriert, erstes DB-Schema live.  · `3h 30min`  
+*feat: Auth-Flow Phase 1+2 — Alembic, JWT, Register/Login/Refresh/Logout*
+
+**Wissenschaftlicher/regulatorischer Impact:** DSGVO Art. 7 verlangt nachweisbaren, informierten Consent — deshalb `consent_at`-Timestamp (nicht nur Boolean) und `Literal[True]`-Validierung in Pydantic. DSGVO Art. 5 (1)(f) + Art. 32 verlangen technische Schutzmaßnahmen: bcrypt mit 12 Runden, Token-Hashes statt Klartext, httpOnly-Cookie verhindert XSS-Zugriff. Die Admin-Freigabe ist kein UI-Komfort, sondern Studienkontrolle: nur geprüfte Teilnehmende der Pilotstudie erhalten Zugang — Voraussetzung für das Ethikvotum der SRH.
+
+### ⚙️ Infra
+
+**`ad29b9e`** — Team-Charta auf Exposé-Stand gebracht: drei wissenschaftliche Spannungsfelder, vier Thesis-Deliverables, WCAG 2.2 AA (statt 2.1), 80% Coverage-Gate. Diskussions-Kultur-Sektion (ehrliche Kritik, kein Pseudo-Konsens) und Code-Verhalten-Regeln (Einfachheit, chirurgische Änderungen) hinzugefügt. Drei neue Slash-Commands: `/morning`, `/evening`, `/weekly` mit Thesis-Fortschritt-Tracking.  · `1h`  
+*chore: update team charter + add morning/evening/weekly commands*
 
 ---
 

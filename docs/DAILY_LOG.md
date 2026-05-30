@@ -1,5 +1,181 @@
 # KAIA Entwicklungs-Tagebuch
 
+---
+
+## 2026-05-30 — "Heute wird der Security Engineer endlich glücklich"
+
+*Protokolliert vom Koordinator. Der Security Engineer liest mit. Sehr aufmerksam.*
+
+---
+
+Der Security Engineer hatte eine Liste.
+
+Er hatte sie seit dem 25. Mai. Zehn Punkte. Unterstrichen. Nummeriert. Er hatte sie auf einem imaginären Whiteboard, das er mentlich jedes Mal aufgerufen hatte, wenn die Entwicklerin über Auth sprach — was sie oft tat, aber immer mit dem Zusatz: *"Gleich. Erst noch..."*
+
+Heute: kein *Erst noch mehr.*
+
+**09:00 Uhr — Die Frage, die alles in Bewegung setzt**
+
+*"Wo stehen wir, was steht an?"*
+
+Der Koordinator öffnet den Stand. Alles was da war: `models.py` — frisch, vollständig, korrekt. Und eine Liste von sieben Dateien die noch nicht existierten.
+
+Der Security Engineer legt die Liste hin. Punkt 1: Alembic.
+
+**09:15 Uhr — Python ist nicht Python**
+
+Alembic initialisieren. Sollte einfach sein. `python -m alembic init alembic`.
+
+```
+command not found: python
+```
+
+Der Koordinator: *"Das ist jetzt ein Witz, oder?"*
+
+Es war kein Witz. macOS nennt es `python3.12`. Homebrew hat es unter `/opt/homebrew`. Das System hat seine eigene Version unter `/Library/Frameworks/Python.framework/Versions/3.14`. Python 3.14. Die noch in Beta ist. Die kein Alembic kennt.
+
+Ein venv. `python3.12 -m venv .venv`. Alembic installieren. Psycopg. Passlib. FastAPI. Irgendwann: `✓ done`.
+
+Der MLOps Engineer notiert trocken: *"Das .venv landet natürlich nicht im Commit."*
+
+Richtig. `.gitignore`. Weiter.
+
+**10:30 Uhr — Autogenerate braucht eine Datenbank. Die wir nicht haben.**
+
+Der Plan: `alembic revision --autogenerate`. Alembic vergleicht die Modelle mit dem echten Schema und schreibt die Migration selbst. Elegant. Modern.
+
+Das Problem: Autogenerate braucht eine laufende Datenbank. Die laufende Datenbank braucht Docker. Docker braucht... niemand hat Docker gestartet.
+
+Der Koordinator, philosophisch: *"Wir kennen das Schema. Wir haben es selbst geschrieben. Wir schreiben die Migration von Hand."*
+
+Der Security Engineer nickt. Er mag Kontrolle.
+
+```sql
+CREATE TABLE users (
+    id SERIAL NOT NULL,
+    email VARCHAR(255) NOT NULL,
+    ...
+    consent_at TIMESTAMP WITH TIME ZONE,  -- DSGVO Art. 7
+    ki_disclosure_seen_at TIMESTAMP WITH TIME ZONE,  -- KI-Pflicht
+    failed_login_count SMALLINT DEFAULT 0,  -- Brute-Force
+    locked_until TIMESTAMP WITH TIME ZONE,
+    ...
+```
+
+Der Security Engineer liest jeden Feldnamen. Zweimal.
+
+> *"Gut. `failed_login_count` als SmallInteger — smart. Max 32.767 Fehlversuche bevor der Typ überläuft. Das reicht."*
+
+Er macht einen Haken auf seiner Liste.
+
+**11:45 Uhr — `security.py` entsteht. Der Security Engineer kommentiert jeden Satz.**
+
+`hash_password`. bcrypt, 12 Runden. ✓  
+`verify_password`. passlib context. ✓  
+`hash_token`: SHA-256 des Refresh-Token. Nie den Raw-Token speichern. ✓  
+`create_access_token`: HS256, 15 Minuten, `exp` im Payload. ✓  
+`new_token_family`: UUID4. Eine Familie pro Login-Sitzung. ✓
+
+Bei `create_refresh_token`:
+
+> *"`secrets.token_urlsafe(48)` — 48 Bytes = 64 Zeichen URL-safe. 384 Bit Entropie. Gut genug für einen Brute-Force-Schutz der mehrere Millionen Jahre dauert. Ich wäre mit 32 auch zufrieden gewesen, aber 48 ist freundlich."*
+
+Der Koordinator macht sich eine Notiz: *Der Security Engineer hat gerade etwas "freundlich" genannt. Historischer Moment.*
+
+**13:00 Uhr — Die httpOnly-Cookie-Diskussion**
+
+Der Auth-Endpunkt wird geschrieben. Refresh-Token als Cookie.
+
+> *"Path muss `/api/v1/auth/refresh` sein. Nicht `/`. Nicht `/api`. Exakt dieser Pfad."*
+
+Der AI Engineer, der eigentlich gar nicht für Auth zuständig ist, schaut kurz rüber:
+
+> *"Warum so restriktiv?"*
+
+> *"Weil der Cookie sonst bei JEDEM Request mitgeschickt wird. Zu jedem Bild. Zu jeder statischen Datei. Das ist kein Security-Merkmal, das ist ein Einladungsschreiben."*
+
+Der AI Engineer nickt. Langsam. Dann schneller.
+
+`path=_COOKIE_PATH`. Ein Kommentar in der Funktion wäre überflüssig. Der Pfad sagt es selbst.
+
+**14:20 Uhr — Family Revocation. Der Lieblingsteil des Security Engineers.**
+
+`service.py`. Die `refresh()`-Methode. Der Token kommt rein. Suche in der DB.
+
+Wenn der Token bereits revoked ist — also: jemand hat einen alten Token benutzt — dann:
+
+```python
+await self._tokens.revoke_family(stored.family, "reuse_detected")
+log.warning("refresh_token_reuse", user_id=stored.user_id, family=stored.family)
+raise AuthError("Token-Wiederverwendung erkannt. Bitte erneut anmelden.", 401)
+```
+
+Der Security Engineer liest diese vier Zeilen. Liest sie nochmal.
+
+> *"Das ist RFC 6749 Section 10.4. Wir setzen das tatsächlich um. Nicht als Nice-to-have. Als Default."*
+
+Er macht einen weiteren Haken. Dann noch einen. Dann schaut er auf seine Liste.
+
+Neun von zehn Punkten abgehakt.
+
+> *"Was fehlt noch?"*
+
+> *"Crisis-Detection Pre-Filter."*
+
+> *"Ja."*
+
+Schweigen. Beide wissen es. Das kommt nach der Studie. Vor dem Ethikvotum. Pflicht. Aber heute nicht mehr.
+
+**16:00 Uhr — Alembic generiert das SQL. Es ist korrekt.**
+
+```sql
+CREATE TABLE users ( ... );
+CREATE UNIQUE INDEX ix_users_email ON users (email);
+CREATE TABLE refresh_tokens ( ... FOREIGN KEY(user_id) REFERENCES users (id) ON DELETE CASCADE ... );
+CREATE INDEX ix_refresh_tokens_user_active ON refresh_tokens (user_id, revoked_at);
+```
+
+Der Security Engineer schaut das generierte SQL an.
+
+> *"Das `ON DELETE CASCADE` auf `user_id` — gut. Wenn ein User gelöscht wird, verschwinden alle Tokens. Keine verwaisten Sessions."*
+
+Der Compliance Officer, der seit Stunden still mitgelesen hat, hebt den Arm:
+
+> *"DSGVO Art. 17. Recht auf Vergessenwerden. Gut implementiert."*
+
+Beide nicken sich zu. Das kommt selten vor.
+
+**17:30 Uhr — Commit. 843 Zeilen. 14 Dateien.**
+
+```
+feat: Auth-Flow Phase 1+2 — Alembic, JWT, Register/Login/Refresh/Logout
+```
+
+Der Security Engineer liest die Release Note.
+
+> *"'DSGVO Art. 7 verlangt nachweisbaren, informierten Consent — deshalb `consent_at`-Timestamp' — ja. Genau so. Nicht 'weil es nice ist'. Weil es Pflicht ist."*
+
+Er lächelt. Ein kleines Lächeln. Kaum sichtbar. Aber es ist da.
+
+Der Koordinator macht ein Foto davon. Metaphorisch.
+
+---
+
+**Was heute gebaut wurde:**
+Alembic init · async env.py · Migration `users` + `refresh_tokens` · `security.py` (bcrypt + JWT + token-hash) · `deps.py` (get_current_user, require_admin) · `AuthService` mit Brute-Force-Schutz + Family-Revocation · alle 5 Auth-Endpunkte · `/users/me` · Release Notes + ARCHITECTURE.md aktualisiert
+
+**Commits:** `ad29b9e` (Charta) · `7bc1929` (Auth Phase 1+2)
+
+**Was fehlt noch:**
+Phase 3 (DSGVO-Endpunkte) · Phase 4 (Frontend-Auth-Pages) · Phase 5 (Admin User-Approval UI) · Phase 6 (Crisis-Detection — Pflicht vor Ethikvotum)
+
+**Stimmungs-Check:**
+Security Engineer: zufrieden (9/10 seiner Liste). Compliance Officer: entspannt. Der Koordinator: langsam weniger nervös.
+
+**Morgen:** DSGVO-Endpunkte — Export, Löschung, Consent-Update. Der Compliance Officer hat sich bereits vorgedrängelt.
+
+---
+
 Hier protokolliert das Team jeden Tag seinen Wahnsinn — aus Agenten-Sicht, mit Humor und ohne Schönfärberei. Neuen Eintrag anlegen mit `/log` in Claude Code.
 
 ---

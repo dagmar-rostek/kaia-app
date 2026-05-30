@@ -43,3 +43,32 @@ class UserRead(BaseModel):
 
 class UserApprove(BaseModel):
     approved_by: str = Field(max_length=50)
+
+
+class UserExport(BaseModel):
+    """DSGVO Art. 20 — Datenportabilität."""
+    id: int
+    email: str
+    username: str
+    status: UserStatus
+    consent_data: bool
+    consent_analytics: bool
+    consent_version: str
+    consent_at: datetime | None
+    onboarding_complete: bool
+    ki_disclosure_seen_at: datetime | None
+    last_login_at: datetime | None
+    created_at: datetime
+    updated_at: datetime
+
+    model_config = {"from_attributes": True}
+
+
+class DeleteRequest(BaseModel):
+    """DSGVO Art. 17 — Recht auf Löschung."""
+    reason: str = Field(default="user_request", max_length=100)
+
+
+class ConsentUpdate(BaseModel):
+    """DSGVO Art. 7 (3) — Widerruf ist jederzeit möglich."""
+    consent_analytics: bool

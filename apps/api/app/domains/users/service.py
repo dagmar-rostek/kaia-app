@@ -164,3 +164,41 @@ class AuthService:
     async def acknowledge_disclosure(self, user: User) -> User:
         user.ki_disclosure_seen_at = datetime.now(UTC)
         return await self._users.save(user)
+
+
+class UserService:
+    """DSGVO-Rechte: Export, Löschung, Consent-Verwaltung."""
+
+    def __init__(self, user_repo: UserRepository, token_repo: RefreshTokenRepository) -> None:
+        self._users = user_repo
+        self._tokens = token_repo
+
+    async def export(self, user: User) -> User:
+        """DSGVO Art. 20 — Datenportabilität: alle personenbezogenen Daten zurückgeben."""
+        log.info("gdpr_export_requested", user_id=user.id)
+        return user
+
+    async def delete(self, user: User, reason: str) -> None:
+        """DSGVO Art. 17 — Recht auf Vergessenwerden: Soft-Delete + Anonymisierung."""
+        now = datetime.now(UTC)
+        # Alle Tokens sperren bevor Daten anonymisiert werden
+        await self._tokens.revoke_all_for_user(user.id, "account_deleted")
+
+        user.status = UserStatus.DELETED
+        user.deleted_at = now
+        user.deletion_reason = reason
+        # Personenbezogene Daten anonymisieren (Art. 17 — kein Hard-Delete wegen Audit-Trail)
+        user.email = f"deleted_{user.id}@anonymized.invalid"
+        user.username = f"deleted_{user.id}"
+        user.password_hash = "DELETED"
+        user.consent_at = None
+        user.last_login_at = None
+        await self._users.save(user)
+        log.info("gdpr_delete_completed", user_id=user.id, reason=reason)
+
+    async def update_consent(self, user: User, consent_analytics: bool) -> User:
+        """DSGVO Art. 7 (3) — Widerruf ist jederzeit möglich, ohne Konsequenzen."""
+        user.consent_analytics = consent_analytics
+        user.consent_at = datetime.now(UTC)
+        log.info("consent_updated", user_id=user.id, analytics=consent_analytics)
+        return await self._users.save(user)
