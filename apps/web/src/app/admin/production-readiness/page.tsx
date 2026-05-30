@@ -1,9 +1,11 @@
+export const dynamic = "force-dynamic"
+
 import { CheckCircle2, XCircle, AlertCircle, Activity, Shield, Database, Globe, Bell, Lock } from "lucide-react"
 
 async function fetchHealth() {
   try {
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000/api"
-    const res = await fetch(`${apiUrl}/v1/health`, { next: { revalidate: 30 } })
+    const apiUrl = process.env.INTERNAL_API_URL ?? "http://localhost:8000"
+    const res = await fetch(`${apiUrl}/api/v1/health`, { cache: "no-store" })
     if (!res.ok) return null
     return res.json() as Promise<{ status: string; study_mode: string; version: string }>
   } catch {
