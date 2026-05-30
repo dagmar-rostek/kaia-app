@@ -33,7 +33,7 @@ export default function Home() {
       </main>
 
       <footer className="px-6 py-4 border-t border-border text-center text-xs text-muted-foreground">
-        Dagmar Rostek · 2025/2026 ·{" "}
+        Dagmar Rostek · 2026 ·{" "}
         <Link href="/datenschutz" className="hover:text-foreground transition-colors">Datenschutz</Link>
         {" · "}
         <Link href="/impressum" className="hover:text-foreground transition-colors">Impressum</Link>
