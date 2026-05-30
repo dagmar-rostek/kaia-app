@@ -13,7 +13,7 @@ class BugReportRequest(BaseModel):
 
 
 @router.post("/bug-report", tags=["system"])
-async def submit_bug_report(body: BugReportRequest) -> dict:
+async def submit_bug_report(body: BugReportRequest) -> dict[str, bool]:
     await notify(
         f"🐛 *Bug-Report*\n"
         f"*Von:* {body.vorname} ({body.email})\n"

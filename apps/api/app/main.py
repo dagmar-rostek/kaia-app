@@ -1,6 +1,7 @@
 import uuid
 from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
+from typing import Any
 
 import structlog
 from fastapi import FastAPI, Request
@@ -42,7 +43,7 @@ app.add_middleware(
 
 
 @app.middleware("http")
-async def attach_request_id(request: Request, call_next):
+async def attach_request_id(request: Request, call_next: Any) -> Any:
     request_id = str(uuid.uuid4())
     structlog.contextvars.bind_contextvars(request_id=request_id)
     response = await call_next(request)
