@@ -23,7 +23,7 @@ function parseEntries(md: string) {
     for (const line of block.split("\n")) {
       const katM = line.match(/^### .+? (.+)$/)
       if (katM) { currentKat = katM[1]; continue }
-      const entM = line.match(/\*\*`([a-f0-9]+)`\*\* — (.+?)(?:\s·\s`([^`]+)`)?  $/)
+      const entM = line.match(/\*\*(?:[^`]+·\s)?`([a-f0-9]+)`\*\* — (.+?)(?:\s·\s`([^`]+)`)?  $/)
       if (entM) {
         entries.push({ sha: entM[1], kategorie: currentKat, note: entM[2], aufwand: entM[3] ?? "" })
       }
