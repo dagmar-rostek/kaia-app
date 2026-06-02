@@ -1,0 +1,7 @@
+title = "KAIA gitleaks config"
+
+[allowlist]
+  description = "Intentional test fixtures — not real secrets"
+  paths = [
+    '''^apps/api/tests/''',
+  ]

@@ -331,6 +331,91 @@ MLOps Engineer: *"Ich habe es euch ja gesagt."* Koordinator: *"Ich weiß."* Secu
 
 ---
 
+### Nachtschicht — 22:30 Uhr: "Der Wachhund hat die Hundefutter-Rezepte als Giftköder eingestuft"
+
+*Protokolliert vom AI Engineer. Der Security Engineer ist nicht mehr dabei. Der ist längst schlafen gegangen. Er weiß nicht, was jetzt noch passiert ist.*
+
+---
+
+Dagmar schreibt eine letzte Nachricht.
+
+> *"Weiterhin git-Meldung: hardcoded test passwords are int... — können wir das nicht eliminieren, ich mag nicht immer Fehlermeldungen von git haben"*
+
+Der AI Engineer, der gerade eigentlich aufgehört hatte zu arbeiten: *"Warte."*
+
+**Das Problem mit zwei Gesichtern**
+
+Ruff? Läuft. Sauber. Keine Fehler. Das `per-file-ignores` in der `pyproject.toml` funktioniert einwandfrei — `tests/**` ignoriert S105, S106, S107. Ruff weiß: das ist kein Passwort-Leak, das ist ein Test.
+
+Aber da ist noch jemand. Jemand, der nicht auf ruff-Konfigurationen hört.
+
+**Gitleaks.**
+
+Der Security Engineer hatte es ins pre-commit-config.yaml gesetzt. Natürlich. Natürlich hatte er das. `gitleaks` v8.21.2, läuft bei jedem Commit, scannt nach Secrets.
+
+Und gitleaks sieht:
+
+```python
+password="securepassword123"   # RegisterRequest in test_service.py
+password="correctpassword"     # _make_user() in test_service.py
+hash_password("testpassword123")  # test_security.py
+verify_password("wrongpassword", hashed)  # test_security.py
+```
+
+Gitleaks: *"ALARM. PASSWÖRTER. HARDCODED. STOPP."*
+
+Der AI Engineer: *"Das sind Tests."*
+
+Gitleaks: *"PASSWÖRTER."*
+
+Der AI Engineer: *"Intentional. Test-Fixtures."*
+
+Gitleaks: *"P A S S W Ö R T E R."*
+
+Es gibt keine Argumentation mit einem Regex-Pattern-Matcher.
+
+**Die Lösung: `.gitleaks.toml`**
+
+Gitleaks v8 unterstützt eine `[allowlist]`-Sektion. Man kann ihr Pfad-Regex-Muster übergeben:
+
+```toml
+title = "KAIA gitleaks config"
+
+[allowlist]
+  description = "Intentional test fixtures — not real secrets"
+  paths = [
+    '''^apps/api/tests/''',
+  ]
+```
+
+Alle Dateien unter `apps/api/tests/` werden ignoriert. Gitleaks bleibt für den Rest des Repos wachsam — echte Secrets im Produktionscode würden weiterhin auffallen.
+
+> *"Wäre es nicht einfacher, die Test-Passwörter zu verschlüsseln?"* fragt der Psychologe, der irgendwie noch wach ist.
+
+Der AI Engineer: *"Dann testen wir, ob bcrypt mit einem 0-Byte-String umgehen kann. Das ist nicht was wir testen wollen."*
+
+> *"Was ist mit `# gitleaks:allow`-Kommentaren auf jeder Zeile?"*
+
+> *"Acht Testdateien. Dreißig betroffene Zeilen. Und wenn wir neue Tests schreiben, vergessen wir es. Die Config ist einmal, für immer."*
+
+**Auch noch erledigt: Release Notes — jetzt mit Daten**
+
+Dagmar hatte auch angemerkt: *"bei den releasenotes muss jeweils das datum davor, das geht alles ineinander über"*
+
+22 Einträge hatten kein Datum. Jetzt haben alle 23 Einträge das Format `**DD.MM.YYYY · \`hash\`**`. Kein Eintrag geht mehr im nächsten unter.
+
+**Was jetzt wirklich gebaut wurde (Nachtschicht):**
+`.gitleaks.toml` (Gitleaks-Allowlist für Test-Fixtures) · Release Notes: Datums-Prefix für alle 23 Einträge
+
+**Commits:** `.gitleaks.toml` + RELEASE_NOTES.md Update
+
+**Stimmungs-Check:**
+AI Engineer: *"Ruff schläft. Gitleaks ist beruhigt. Ich auch jetzt."*
+Dagmar: *"Endlich."*
+Security Engineer (schläft): weiß nicht, dass sein Gitleaks-Setup gerade gezähmt wurde.
+
+---
+
 ## 2026-05-30 — "Heute wird der Security Engineer endlich glücklich"
 
 *Protokolliert vom Koordinator. Der Security Engineer liest mit. Sehr aufmerksam.*
