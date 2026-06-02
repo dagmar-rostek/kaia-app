@@ -9,13 +9,48 @@
 
 ---
 
-**Stand heute:** Monday, 01. June 2026  
-**17 Einträge insgesamt · 5 Release-Tage · 16 h 25 min Gesamt-Aufwand**
+**Stand heute:** Tuesday, 02. June 2026  
+**23 Einträge insgesamt · 6 Release-Tage · 21 h 45 min Gesamt-Aufwand**
+
+---
+
+## Tuesday, 02. June 2026
+*5 Einträge · Tag-Summe 3 h 20 min*
+
+### 🆕 Neu
+
+**`1c0aaa1`** — Produktroadmap im Admin-Bereich (/admin/roadmap): Feature-Timeline Juni–August 2026 mit 34 Features in 4 Spalten (Fertig / Juni / Juli / August). Jede Karte zeigt Status-Badge, Beschreibung, Thesis-Kapitel-Mapping und farbkodierte Tags (DSGVO, Ethik, Psychometrie, LLM-Eval). Wissenschaftliche-Pflichten-Tracker listet alle 13 Pflichtpunkte — Blocker für das Ethikvotum rot hervorgehoben. Studienziel-Übersicht (20 Teilnehmende, 6-Monate-Datenlöschung, Token-Budget). Seite ist passwortgeschützt im Admin-Bereich.  · `1h 30min`  
+*feat: add admin roadmap page with thesis chapter mapping*
+
+**Wissenschaftlicher/regulatorischer Impact:** Die Roadmap macht den Forschungsprozess transparent und erzwingt die explizite Planung wissenschaftlicher Pflichtpunkte (Crisis-Detection, Ethikvotum, Pre-Registration OSF.io) vor dem Studienstart. Das Thesis-Kapitel-Mapping stellt sicher, dass jede technische Entscheidung mit dem wissenschaftlichen Rahmenwerk (Hevner et al., 2004) verbunden bleibt — Designentscheidungen ohne Thesis-Bezug werden sichtbar und hinterfragbar.
+
+### 🔧 Fix
+
+**`0f271d6`** — Admin-Login war wegen falscher Runtime-Annahme dauerhaft defekt: `process.env.ADMIN_PASSWORD` ist im Next.js Edge Runtime (Middleware) nicht erreichbar — das HMAC wurde mit leerem Key berechnet, der Cookie nie akzeptiert. Fix: Admin-Authentifizierung aus der Middleware in ein Server Component Layout (Node.js Runtime, `admin/(protected)/layout.tsx`) verschoben, wo `process.env` korrekt funktioniert. Gleichzeitig: 3 neue Backend-Test-Dateien (security.py, service.py, slack.py) bringen CI-Coverage von 60 % auf über 70 %.  · `1h`  
+*fix: move admin auth from Edge Runtime middleware to Server Component layout*
+
+**`30e6373`** — Kritischer Deployment-Bug: `apps/web/.env.local` enthielt `ADMIN_PASSWORD=testpasswort123` und wurde durch `COPY . .` im Dockerfile in das Docker-Image gebacken. Next.js lud diese Datei beim Server-Start und überschrieb den korrekten Runtime-Wert aus docker-compose — Admin-Login war auf dem Server dauerhaft mit dem falschen Passwort gesperrt. Fix: `.dockerignore` erstellt (schließt alle `.env.local`-Dateien aus dem Build aus), `ADMIN_PASSWORD` aus `.env.local` entfernt.  · `30min`  
+*fix: exclude .env.local from Docker image, remove hardcoded ADMIN_PASSWORD*
+
+### ⚙️ Infra
+
+**`645a0e8`** — Deploy-Skript `scripts/deploy.sh` erstellt: Docker Compose mit `-f infra/docker-compose.prod.yml` suchte die `.env` im Verzeichnis der Compose-Datei (`infra/`) statt im Repo-Root — alle Variablen (ADMIN_PASSWORD, JWT_SECRET, DB-Credentials, API-Keys) wurden als leer interpretiert. Das Script übergibt `--env-file` explizit. Verwendung: `./scripts/deploy.sh [web|api|all]`.  · `15min`  
+*fix: add deploy script that correctly passes --env-file to docker compose*
+
+**`9eabd2b`** — Unbenutzter `RefreshToken`-Import in `test_service.py` entfernt (ruff F401 nach Refaktor).  · `5min`  
+*fix: remove unused RefreshToken import (ruff F401)*
 
 ---
 
 ## Monday, 01. June 2026
-*1 Eintrag · Tag-Summe 1 h 00 min*
+*2 Einträge · Tag-Summe 3 h 00 min*
+
+### 🆕 Neu
+
+**`f82d263`** — Auth Phase 4 abgeschlossen: Login-Seite (`/login`), Registrierung (`/registrierung`) mit DSGVO-Zweifach-Consent (Pflichtfeld + freiwillige Analytics), `AuthContext` mit `loading/authenticated/unauthenticated`-States, `AuthGuard` in `(app)/layout.tsx`, `kaia_session`-Cookie als Middleware-lesbarer Session-Indikator (Access-Token bleibt In-Memory, nie in Storage). Slack-Benachrichtigung bei Neuregistrierung. Middleware schützt `/chat`, `/onboarding`, `/gse`.  · `2h`  
+*feat: Auth Phase 4 — Frontend Login, Registrierung, geschützte Routen*
+
+**Wissenschaftlicher/regulatorischer Impact:** DSGVO Art. 7 verlangt nachweisbaren, getrennten Consent für verschiedene Verarbeitungszwecke — deshalb zwei explizite Checkboxen (Datenverarbeitung als Literal[True], Analytics als opt-in). Der User-Approval-Flow (kein automatisches Onboarding) ist Voraussetzung für die Studienkontrolle: nur geprüfte Teilnehmende der Pilotstudie erhalten Zugang. Der `kaia_session`-Cookie enthält keine sensiblen Daten und ermöglicht Middleware-Schutz ohne Edge-Runtime-Probleme (Separation of Concerns zwischen Auth-Cookies).
 
 ### ⚙️ Infra
 

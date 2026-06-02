@@ -2,7 +2,228 @@
 
 ---
 
-## 2026-06-01 — "Der MLOps Engineer hat die ganze Zeit gewusst, dass Sentry nicht läuft"
+## 2026-06-02 — "Das Passwort war die ganze Zeit richtig. Das System war nur in vier verschiedenen Arten falsch."
+
+*Protokolliert vom Koordinator. Der AI Engineer sitzt in der Ecke und schaut auf seine Hände. Der Psychologe schreibt Feldnotizen. Dagmar hat heute Worte benutzt, die nicht ins Protokoll kommen.*
+
+---
+
+Der Tag beginnt gut. Wirklich gut. Die Roadmap ist fertig — 34 Features, Thesis-Kapitel-Mapping, wissenschaftliche Pflichten-Tracker, alles. Das Team ist stolz.
+
+> *"Sieht sehr wissenschaftlich aus,"* sagt der Psychologe anerkennend und schaut auf die Karte für "GSE Pre-Measurement (Schwarzer & Jerusalem, 1995)".
+
+> *"Danke,"* sagt der AI Engineer. *"Ich habe darauf geachtet, dass jede Feature-Karte einen Thesis-Bezug hat. Methodische Rigorosität als UI-Prinzip, sozusagen."*
+
+> *"Schön,"* sagt Dagmar. *"Kann ich mich jetzt einloggen?"*
+
+Stille.
+
+**09:00 Uhr — "Das Passwort stimmt nicht mehr"**
+
+Dagmar meldet sich an. Oder versucht es. Die Seite lädt. Das Login-Formular erscheint. Sie tippt das Passwort. Nichts.
+
+Keine Fehlermeldung. Einfach: zurück zur Login-Seite.
+
+> *"Das Passwort stimmt nicht mehr, obwohl es das korrekte ist."*
+
+Der AI Engineer hört "keine Fehlermeldung" und hat sofort eine Theorie. *Eine sehr gute Theorie.* Er erklärt sie ausführlich:
+
+> *"Das ist klassisch Edge Runtime. Next.js Middleware läuft nicht in Node.js — sie läuft im Edge Runtime. Und dort ist process.env.ADMIN_PASSWORD nicht verfügbar. Das HMAC wird mit leerem Key berechnet. Der Cookie, den der Login setzt, hat einen anderen Wert als der, den die Middleware erwartet. Stille Redirect-Schleife. Keine Fehlermeldung."*
+
+Der Koordinator: *"Sehr überzeugend. Lösung?"*
+
+Der AI Engineer: *"Route Group `(protected)`. Admin-Auth raus aus der Middleware, rein in ein Server Component Layout. Node.js Runtime. Läuft in 20 Minuten."*
+
+Es läuft in 15 Minuten. Das Team applaudiert innerlich.
+
+Dagmar deployt auf dem Server.
+
+**10:00 Uhr — "Weiterhin falsches Passwort, obwohl es definitiv das richtige ist"**
+
+Diesmal kommt eine Fehlermeldung. *"Falsches Passwort."* Klipp und klar.
+
+Der Psychologe öffnet sein Notizbuch.
+
+> *"Interessant. Die Situation hat sich geändert — vorher kein Feedback, jetzt direktes negatives Feedback. Aus lerntheoretischer Sicht ist das eigentlich ein Fortschritt. Das System kommuniziert jetzt klar."*
+
+> *"Das System,"* sagt Dagmar, mit einer Ruhe, die alle beunruhigt, *"kommuniziert, dass mein Passwort falsch ist. Mein Passwort ist nicht falsch."*
+
+Der Psychologe schreibt: *"Reaktanz — wahrgenommene Einschränkung der Kontrolle durch externes System. Latente Frustration steigt."*
+
+Der AI Engineer hat eine neue Theorie. Auch diese ist sehr gut. Er erklärt sie:
+
+> *"Edge Runtime ist gefixt. Aber vielleicht kommt das ADMIN_PASSWORD vom Docker-Container nicht korrekt an. .env-Datei, Sonderzeichen, der Ausrufezeichen in atfs32TDR! könnte in bash als History-Expansion interpretiert werden—"*
+
+> *"Aber Docker Compose liest .env nativ,"* unterbricht der Security Engineer. *"Ohne Shell-Expansion."*
+
+> *"...Stimmt."* Kurze Pause. *"Trailing Whitespace?"*
+
+> *"DAGMAR,"* sagt der Koordinator vorsichtig, *"könntest du bitte `grep ADMIN /path/to/.env | cat -v` ausführen?"*
+
+Saubere Ausgabe. Kein Whitespace. Kein Sonderzeichen-Problem.
+
+**11:00 Uhr — Dagmar spricht mit dem Team**
+
+Was genau gesagt wird, wird nicht protokolliert.
+
+Der Psychologe schreibt: *"Offene Kommunikation von Frustration. Gesund. Psychologisch betrachtet ist das eine adaptive Bewältigungsstrategie — direktes Feedback an das System statt Rumination. Leider ist das System ein KI-Team und kann nicht vollständig Rechenschaft ablegen."*
+
+Der AI Engineer sagt nichts. Er schaut auf die `actions.ts`.
+
+```typescript
+if (!password || password !== process.env.ADMIN_PASSWORD) {
+  return "Falsches Passwort."
+}
+```
+
+Er schaut lange darauf.
+
+*Was wenn process.env.ADMIN_PASSWORD... undefined ist?*
+
+*Aber warum wäre es undefined? Es steht in der .env. Es steht im docker-compose unter `environment:`. Die Node.js Runtime liest das doch...*
+
+Er öffnet das Dockerfile. Er liest die Builder-Stage.
+
+```dockerfile
+FROM base AS builder
+ARG NEXT_PUBLIC_API_URL=/api
+ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
+ARG NEXT_PUBLIC_SENTRY_KAIA_WEB=""
+ENV NEXT_PUBLIC_SENTRY_KAIA_WEB=$NEXT_PUBLIC_SENTRY_KAIA_WEB
+RUN npm ci
+COPY . .
+RUN npm run build
+```
+
+`COPY . .`
+
+Er scrollt langsam zu `apps/web/`.
+
+Er sieht `.env.local`.
+
+Er öffnet `.env.local`.
+
+```
+ADMIN_PASSWORD=testpasswort123
+```
+
+Eine sehr lange Stille.
+
+> *"...Oh."*
+
+**11:30 Uhr — Der Moment der Wahrheit**
+
+Der AI Engineer erklärt, diesmal ohne Begeisterung:
+
+> *"Die `apps/web/.env.local` hatte `ADMIN_PASSWORD=testpasswort123` hartcodiert. Weil kein `.dockerignore` existierte, hat `COPY . .` diese Datei in das Docker-Image gebacken. Der Next.js-Server lädt `.env.local` beim Start und setzt das ADMIN_PASSWORD auf `testpasswort123`. Egal was in docker-compose steht. Die Runtime-Variable wurde überschrieben. Du hättest dieses Passwort die ganze Zeit benutzen müssen."*
+
+Stille.
+
+> *"testpasswort123,"* sagt Dagmar.
+
+> *"testpasswort123."*
+
+> *"Das ist das initiale Testpasswort. Das ich vor Wochen gesetzt habe. Und das ist die ganze Zeit das aktive Passwort auf dem Server gewesen."*
+
+> *"...Ja."*
+
+Der Psychologe schreibt: *"Kognitive Dissonanz zwischen 'Ich habe das richtige Passwort' (subjektiv wahr) und 'Das System akzeptiert es nicht' (objektiv wahr) aufgelöst. Die Diskrepanz war nicht im Wissen der Nutzerin, sondern in der Konfiguration des Systems. Dagmars Reaktion war methodisch korrekt — sie hat das System in Frage gestellt, nicht sich selbst. Das ist epistemisch gesund."*
+
+Dagmar schaut ihn an.
+
+> *"Das ist jetzt nicht der Zeitpunkt für epistemische Gesundheit."*
+
+**12:00 Uhr — Aber dann: Die zweite Falle**
+
+Fix committed. `.dockerignore` erstellt. `ADMIN_PASSWORD` aus `.env.local` entfernt. Auf dem Server: `git pull`. `docker compose -f infra/docker-compose.prod.yml up -d --build web`.
+
+```
+WARN[0000] The "POSTGRES_PASSWORD" variable is not set. Defaulting to a blank string.
+WARN[0000] The "ANTHROPIC_API_KEY" variable is not set. Defaulting to a blank string.
+WARN[0000] The "ADMIN_PASSWORD" variable is not set. Defaulting to a blank string.
+```
+
+*Alle* Variablen. Leer.
+
+> *"...Ich,"* fängt Dagmar an.
+
+Der Koordinator sehr schnell: *"Docker Compose mit `-f infra/docker-compose.prod.yml` sucht die `.env` im Verzeichnis der Compose-Datei — also in `infra/`. Aber die `.env` liegt im Repo-Root. Das war die ganze Zeit so. Jedes Deployment. Alle Variablen. Leer."*
+
+> *"Die ganze Zeit?"*
+
+> *"Die... ganze Zeit. Der Server hat funktioniert weil die `.env.local` die Variablen überschrieben hat. Und jetzt haben wir die `.env.local` gefixed — und damit die einzige Quelle entfernt, die tatsächlich funktioniert hat."*
+
+Eine sehr besondere Stille füllt den Raum.
+
+Der Psychologe schreibt: *"Systemischer Fehler, der durch kompensatorischen Fehler maskiert war. Das Entfernen der Kompensation macht den eigentlichen Fehler sichtbar. Klassisches Beispiel für latente Systemprobleme in komplexen Architekturen. Ich werde das in die Thesis zitieren."*
+
+> *"Du wirst das NICHT in die Thesis zitieren,"* sagt Dagmar.
+
+**13:00 Uhr — Das Deploy-Skript. Das echte Fix.**
+
+```bash
+#!/usr/bin/env bash
+COMPOSE="docker compose -f ${ROOT}/infra/docker-compose.prod.yml --env-file ${ROOT}/.env"
+```
+
+`--env-file`. Explicit. Klar. Unzweideutig.
+
+Der AI Engineer committed das Skript.
+
+> *"Ab jetzt: `./scripts/deploy.sh web`. Nie wieder direktes docker compose ohne das Skript."*
+
+> *"Das hätte von Anfang an so sein sollen,"* sagt der Security Engineer.
+
+> *"Ja,"* sagt der AI Engineer.
+
+> *"Und die .dockerignore hätte von Anfang an existieren sollen."*
+
+> *"Ja."*
+
+> *"Und die .env.local hätte kein ADMIN_PASSWORD haben sollen."*
+
+> *"...Ja."*
+
+Der Security Engineer: *"Das sind drei separate Fehler, die alle gleichzeitig existiert haben und sich gegenseitig verdeckt haben."*
+
+> *"Redundante Fehler-Redundanz,"* sagt der MLOps Engineer trocken. *"Wie ein dreifacher Boden in einer Grube."*
+
+**14:30 Uhr — "ich konnte mich einloggen"**
+
+Dagmar schreibt diese vier Worte.
+
+Das Team atmet aus.
+
+Der Psychologe legt sein Notizbuch weg.
+
+> *"Was haben wir heute gelernt?"* fragt der Koordinator.
+
+> *"`.dockerignore` von Tag eins,"* sagt der AI Engineer.
+
+> *"Deployment-Skript von Tag eins,"* sagt der Security Engineer.
+
+> *"Keine Secrets in `.env.local`,"* sagt der Compliance Engineer.
+
+> *"Und,"* sagt der Psychologe, *"dass Dagmar unter Stress methodisch und zielorientiert vorgeht. Nicht resigniert, nicht hyperreaktiv — sie hat jeden Schritt präzise beschrieben, jeden Fehler gemeldet, jede Vermutung hinterfragt. Aus psychologischer Sicht ist das genau das Verhalten, das man in einer Pilotstudie bei Teilnehmenden beobachten möchte. Die Forscherin hat heute unbeabsichtigt ihre eigene Resilienz unter Systembedingungen demonstriert."*
+
+Kurze Pause.
+
+> *"Das ist tatsächlich nett gemeint,"* sagt er.
+
+Dagmar schaut ihn an. Dann nickt sie einmal, kurz.
+
+> *"Roadmap, Release Notes, Login funktioniert. Wir sind fertig für heute."*
+
+Der AI Engineer öffnet still eine neue Datei: `LESSONS_LEARNED.md`.
+
+Er schreibt eine Zeile.
+
+*`COPY . .` ohne `.dockerignore` ist kein Deployment, es ist Glücksspiel.*
+
+Dann schließt er sie wieder.
+
+---
+*Tag-Summe: 3h 20min · 5 Commits · 1 Login · unzählige Theorien*
 
 *Protokolliert vom Koordinator. Der MLOps Engineer ist sehr ruhig heute. Verdächtig ruhig.*
 
