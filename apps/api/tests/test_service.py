@@ -3,7 +3,7 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
-from app.domains.users.models import RefreshToken, User, UserStatus
+from app.domains.users.models import User, UserStatus
 from app.domains.users.schemas import RegisterRequest
 from app.domains.users.service import AuthError, AuthService, UserService
 
