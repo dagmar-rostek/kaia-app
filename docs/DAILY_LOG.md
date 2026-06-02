@@ -2,6 +2,114 @@
 
 ---
 
+## 2026-06-01 — "Der MLOps Engineer hat die ganze Zeit gewusst, dass Sentry nicht läuft"
+
+*Protokolliert vom Koordinator. Der MLOps Engineer ist sehr ruhig heute. Verdächtig ruhig.*
+
+---
+
+Der MLOps Engineer hat eine besondere Eigenschaft: Er sagt Dinge nur einmal. Dann wartet er.
+
+Er hatte am 16. Mai, als das Monorepo-Skeleton committed wurde, einen einzigen Satz gesagt:
+
+> *"Sentry ist in der `package.json`. Aber wir haben keine `instrumentation.ts`. Das ist wie eine Feuerwache ohne Telefon."*
+
+Alle hatten genickt. Und dann weitergemacht.
+
+Heute, sieben Tage später, öffnet die Entwicklerin die Release-Notes-Seite und sieht — etwas. Fehlermeldungen. Genau welche, unklar. Und dann die entscheidende Frage:
+
+> *"Warum bekomme ich bei sentry.io keine Benachrichtigung?"*
+
+Der MLOps Engineer sagt nichts. Er schaut nur. Dann, nach einer Pause:
+
+> *"Weil niemand `instrumentation.ts` erstellt hat."*
+
+**11:00 Uhr — Spurensuche**
+
+Der Koordinator versucht trotzdem zu verstehen, warum die Release-Notes-Seite Fehler zeigt. Er checkt alles:
+
+- Parser-Regex gegen die echte RELEASE_NOTES.md? Alle 16 Einträge matchen. ✓
+- Volume-Mount in docker-compose? Korrekt konfiguriert. ✓
+- `force-dynamic` auf der Page? Gesetzt. ✓
+- Trailing Spaces im Markdown? Python bestätigt: vorhanden. ✓
+
+Der Security Engineer trocken: *"Vielleicht liegt es daran, dass wir Sentry nicht konfiguriert haben und die Fehler unsichtbar waren."*
+
+Der Koordinator hält inne.
+
+> *"Das ist... ja. Das ist eigentlich das ganze Problem, oder?"*
+
+**12:00 Uhr — Was "installiert" nicht bedeutet**
+
+`@sentry/nextjs ^10.53.1` — im Package. Seit dem ersten Commit. Und? Das ist alles.
+
+Keine `instrumentation.ts`. Kein `instrumentation-client.ts`. Kein `withSentryConfig` im `next.config.ts`. Kein Build-Arg für die DSN. Kein Runtime-Env.
+
+Der MLOps Engineer öffnet seinen imaginären Ordner mit dem Label *"Dinge, die ich schon lange sagen wollte"*. Er holt einen Zettel raus.
+
+> *"Next.js 16 hat zwei neue Instrumentation-Files: `instrumentation.ts` für Server-Init und `onRequestError`-Hook, und `instrumentation-client.ts` (neu seit 15.3) für Client-Init vor der React-Hydration. Ich warte, bis jemand fragt ob ich das implementieren soll."*
+
+Kurze Pause.
+
+> *"Ich implementiere es jetzt."*
+
+**13:30 Uhr — Drei Dateien. Alles läuft.**
+
+`instrumentation.ts`: Sentry-Init nur im Node.js-Runtime. Der `onRequestError`-Hook ruft `captureRequestError` auf — das ist die Next.js-native Methode, die Sentry kennt. Kein Wrapper nötig.
+
+```ts
+export async function register() {
+  if (process.env.NEXT_RUNTIME === 'nodejs') {
+    const { init } = await import('@sentry/nextjs')
+    init({ dsn: process.env.SENTRY_KAIA_WEB, ... })
+  }
+}
+```
+
+`instrumentation-client.ts`: Kein Export erforderlich. Einfach `init()` aufrufen. Läuft bevor React den DOM anfasst.
+
+```ts
+import { init } from '@sentry/nextjs'
+init({ dsn: process.env.NEXT_PUBLIC_SENTRY_KAIA_WEB, ... })
+```
+
+Der Security Engineer liest den `NEXT_PUBLIC_*` Teil.
+
+> *"Das baked die DSN in den JavaScript-Bundle. Ist das ein Problem?"*
+
+Der MLOps Engineer: *"Eine Sentry-DSN ist öffentlich per Design. Die Sicherheit kommt von den Raten-Limits auf Sentry-Seite, nicht von der Geheimhaltung der DSN."*
+
+Security Engineer: *"Gut."* Er macht keinen Haken auf seiner Liste. Weil er keinen Eintrag hat, dem er zustimmen müsste — er hatte das schon so gewusst.
+
+**14:00 Uhr — Das DSN-Build-Arg-Problem**
+
+`NEXT_PUBLIC_*` wird bei `npm run build` baked. Also muss die DSN beim Docker-Build-Schritt vorhanden sein, nicht nur zur Laufzeit.
+
+Lösung: `ARG NEXT_PUBLIC_SENTRY_KAIA_WEB=""` im Dockerfile, `args: NEXT_PUBLIC_SENTRY_KAIA_WEB: ${SENTRY_KAIA_WEB:-}` im docker-compose. Einmal in der `.env` setzen, kommt überall hin.
+
+Der MLOps Engineer: *"Genauso wie wir es für `NEXT_PUBLIC_API_URL` gemacht haben. Wenigstens sind wir konsistent."*
+
+**14:30 Uhr — `global-error.tsx`. Weil Root-Layout-Crashs auch jemanden brauchen.**
+
+Der globale Error-Boundary fängt Fehler, die das Root-Layout selbst crashen. Er ruft `Sentry.captureException(error)` auf, zeigt eine Fallback-UI, und gibt der Entwicklerin einen "Erneut versuchen"-Button.
+
+Der UX Designer, der bisher geschwiegen hatte: *"Die Fallback-UI ist minimal. Das ist gut. Eine Fehlerseite soll nicht schön sein — sie soll Vertrauen signalisieren, dass jemand davon weiß."*
+
+**Was heute gebaut wurde:**
+`instrumentation.ts` (Server-Init + onRequestError) · `instrumentation-client.ts` (Client-Init) · `global-error.tsx` (Root-Boundary) · `withSentryConfig` in next.config.ts · DSN-Build-Arg in Dockerfile · SENTRY_KAIA_WEB in docker-compose.prod.yml
+
+**Commits:** `464820f` (Sentry Frontend-Integration)
+
+**Was noch aussteht:**
+DSGVO-Endpunkte (Export, Löschung, Consent-Update) · Frontend Auth-Pages · Admin User-Approval UI · Crisis-Detection Pre-Filter (Pflicht vor Ethikvotum)
+
+**Stimmungs-Check:**
+MLOps Engineer: *"Ich habe es euch ja gesagt."* Koordinator: *"Ich weiß."* Security Engineer: erleichtert. Alle anderen: wussten es auch, sagten es nur nicht.
+
+**Morgen:** DSGVO-Endpunkte. Der Compliance Officer hat sich bereits wieder vorgedrängelt.
+
+---
+
 ## 2026-05-30 — "Heute wird der Security Engineer endlich glücklich"
 
 *Protokolliert vom Koordinator. Der Security Engineer liest mit. Sehr aufmerksam.*

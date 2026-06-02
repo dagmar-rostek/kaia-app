@@ -9,8 +9,20 @@
 
 ---
 
-**Stand heute:** Friday, 30. May 2026  
-**16 Einträge insgesamt · 4 Release-Tage · 15 h 25 min Gesamt-Aufwand**
+**Stand heute:** Monday, 01. June 2026  
+**17 Einträge insgesamt · 5 Release-Tage · 16 h 25 min Gesamt-Aufwand**
+
+---
+
+## Monday, 01. June 2026
+*1 Eintrag · Tag-Summe 1 h 00 min*
+
+### ⚙️ Infra
+
+**`464820f`** — Sentry vollständig ins Next.js-Frontend integriert: `instrumentation.ts` mit `onRequestError`-Hook fängt alle Server-Component-Fehler, `instrumentation-client.ts` (Next.js 15.3-Feature) initialisiert Sentry clientseitig vor React-Hydration, globaler `global-error.tsx`-Boundary sendet Root-Layout-Crashs. DSN via Build-Arg in Bundle baked + Runtime-Env für Server. War nicht konfiguriert, obwohl das Package installiert war.  · `1h`  
+*feat: Sentry Frontend-Integration (instrumentation.ts + client)*
+
+**Wissenschaftlicher/regulatorischer Impact:** DSGVO Art. 5 (1)(f) verlangt Integrität und Vertraulichkeit — das schließt Ausfallsicherheit und Fehlermonitoring ein. Für das Ethikvotum müssen kritische Systemfehler während der Studie dokumentiert und nachvollziehbar sein. Ohne Sentry-Frontend-Integration wären Client-seitige Fehler unsichtbar gewesen — die Datenerhebungsphase hätte unter unbekannten Fehlerbedingungen laufen können, ohne dass die Forscherin davon wüsste.
 
 ---
 
