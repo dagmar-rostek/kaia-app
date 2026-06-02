@@ -25,7 +25,19 @@ export async function middleware(request: NextRequest) {
     if (token !== expected) return NextResponse.redirect(new URL("/admin/login", request.url))
   }
 
+  // App-Routen — kaia_session als Session-Indikator (gesetzt bei Login/Refresh)
+  if (
+    pathname.startsWith("/chat") ||
+    pathname.startsWith("/onboarding") ||
+    pathname.startsWith("/gse")
+  ) {
+    const session = request.cookies.get("kaia_session")?.value
+    if (!session) return NextResponse.redirect(new URL("/login", request.url))
+  }
+
   return NextResponse.next()
 }
 
-export const config = { matcher: ["/admin/:path*"] }
+export const config = {
+  matcher: ["/admin/:path*", "/chat/:path*", "/onboarding/:path*", "/gse/:path*"],
+}

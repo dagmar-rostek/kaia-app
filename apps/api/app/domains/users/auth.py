@@ -15,6 +15,7 @@ router = APIRouter(prefix="/auth", tags=["auth"])
 
 _COOKIE_NAME = "refresh_token"
 _COOKIE_PATH = "/api/v1/auth/refresh"
+_SESSION_COOKIE = "kaia_session"
 
 
 def _auth_service(db: Annotated[AsyncSession, Depends(get_db)]) -> AuthService:
@@ -29,6 +30,20 @@ def _set_refresh_cookie(response: Response, raw_token: str) -> None:
         secure=True,
         samesite="strict",
         path=_COOKIE_PATH,
+        max_age=30 * 24 * 60 * 60,
+    )
+
+
+def _set_session_cookie(response: Response) -> None:
+    # Non-path-scoped indicator so Next.js middleware can detect authenticated sessions.
+    # Contains no sensitive data — actual auth is the path-scoped refresh_token + JWT.
+    response.set_cookie(
+        key=_SESSION_COOKIE,
+        value="1",
+        httponly=True,
+        secure=True,
+        samesite="strict",
+        path="/",
         max_age=30 * 24 * 60 * 60,
     )
 
@@ -60,6 +75,7 @@ async def login(
     except AuthError as e:
         raise HTTPException(e.status_code, e.message) from e
     _set_refresh_cookie(response, raw_refresh)
+    _set_session_cookie(response)
     return TokenResponse(access_token=access_token)
 
 
@@ -79,6 +95,7 @@ async def refresh(
     except AuthError as e:
         raise HTTPException(e.status_code, e.message) from e
     _set_refresh_cookie(response, raw_new)
+    _set_session_cookie(response)
     return TokenResponse(access_token=access_token)
 
 
@@ -90,6 +107,7 @@ async def logout(
 ) -> None:
     await svc.logout(current_user.id)
     response.delete_cookie(key=_COOKIE_NAME, path=_COOKIE_PATH)
+    response.delete_cookie(key=_SESSION_COOKIE, path="/")
 
 
 @router.post("/disclosure-ack", status_code=204)

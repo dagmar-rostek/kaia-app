@@ -14,6 +14,7 @@ from app.core.security import (
 from app.domains.users.models import RefreshToken, User, UserStatus
 from app.domains.users.repository import RefreshTokenRepository, UserRepository
 from app.domains.users.schemas import RegisterRequest
+from app.observability.slack import notify
 
 log = structlog.get_logger()
 
@@ -56,6 +57,12 @@ class AuthService:
         )
         user = await self._users.create(user)
         log.info("user_registered", user_id=user.id, email=user.email)
+        await notify(
+            f"*Neue Registrierung — Freigabe erforderlich*\n"
+            f"*User:* {user.username} ({user.email})\n"
+            f"*ID:* {user.id}",
+            emoji="👤",
+        )
         return user
 
     async def login(
