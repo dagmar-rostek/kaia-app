@@ -65,6 +65,7 @@ def _make_user(status: UserStatus = UserStatus.ACTIVE, password: str = "correctp
 
 # ── AuthService.register ──────────────────────────────────────────────────────
 
+
 @pytest.mark.asyncio
 async def test_register_success(auth_service, user_repo, register_data):
     with patch("app.domains.users.service.notify", new_callable=AsyncMock):
@@ -93,6 +94,7 @@ async def test_register_duplicate_username(auth_service, user_repo, register_dat
 
 
 # ── AuthService.login ─────────────────────────────────────────────────────────
+
 
 @pytest.mark.asyncio
 async def test_login_success(auth_service, user_repo, token_repo):
@@ -152,6 +154,7 @@ async def test_login_suspended_user(auth_service, user_repo):
 
 # ── AuthService.refresh ───────────────────────────────────────────────────────
 
+
 @pytest.mark.asyncio
 async def test_refresh_invalid_token(auth_service, token_repo):
     token_repo.get_by_hash = AsyncMock(return_value=None)
@@ -176,6 +179,7 @@ async def test_refresh_reuse_detected(auth_service, token_repo):
 
 # ── AuthService.logout ────────────────────────────────────────────────────────
 
+
 @pytest.mark.asyncio
 async def test_logout(auth_service, token_repo):
     await auth_service.logout(1)
@@ -183,6 +187,7 @@ async def test_logout(auth_service, token_repo):
 
 
 # ── AuthService.acknowledge_disclosure ───────────────────────────────────────
+
 
 @pytest.mark.asyncio
 async def test_acknowledge_disclosure(auth_service, user_repo):
@@ -194,6 +199,7 @@ async def test_acknowledge_disclosure(auth_service, user_repo):
 
 
 # ── UserService ───────────────────────────────────────────────────────────────
+
 
 @pytest.mark.asyncio
 async def test_user_export_returns_user(user_service):

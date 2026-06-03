@@ -45,9 +45,7 @@ _RAW_PATTERNS = [
     r"kann\s+nicht\s+mehr\s+(weiter|leben)",
 ]
 
-_PATTERNS: list[re.Pattern[str]] = [
-    re.compile(p, re.IGNORECASE) for p in _RAW_PATTERNS
-]
+_PATTERNS: list[re.Pattern[str]] = [re.compile(p, re.IGNORECASE) for p in _RAW_PATTERNS]
 
 # ---------------------------------------------------------------------------
 # Response
@@ -70,6 +68,7 @@ Wenn du magst, bin ich nach dem Gespräch mit jemandem noch da. Aber zuerst: ruf
 # ---------------------------------------------------------------------------
 # Public API
 # ---------------------------------------------------------------------------
+
 
 def detect_crisis(text: str) -> bool:
     """Return True if the text matches any crisis indicator pattern.
