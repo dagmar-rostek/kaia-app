@@ -67,14 +67,14 @@ cat(sprintf("n (Wilcoxon, final): %d\n", n_wilcoxon))
 # Pilotstudien haben erfahrungsgemäß 15–30% Dropout.
 # Sicherheitspuffer: 25%
 
-dropout_rate  <- 0.25
+dropout_rate  <- 0.30   # konservativ: 30% bei unvergüteten Pilotstudien
 n_mit_puffer  <- ceiling(n_wilcoxon / (1 - dropout_rate))
 
-cat("\n=== Rekrutierungsziel (mit Dropout-Puffer) ===\n")
-cat(sprintf("Dropout-Rate:        %.0f%%\n", dropout_rate * 100))
+cat("\n=== Rekrutierungsziel (mit Dropout-Puffer 30%) ===\n")
+cat(sprintf("Dropout-Rate:        %.0f%% (konservativ für unvergütete Studien)\n", dropout_rate * 100))
 cat(sprintf("Benötigt für Analyse:%d\n", n_wilcoxon))
 cat(sprintf("Zu rekrutieren:      %d\n", n_mit_puffer))
-cat(sprintf("Geplante Stichprobe: 20 (liegt zwischen Minimum und Puffer)\n"))
+cat(sprintf("Geplante Stichprobe: 32 (Ziel; Minimum für 80%% Power)\n"))
 
 # =============================================================================
 # 5. Sensitivitätsanalyse — was kann ich mit N=20 entdecken?
@@ -155,10 +155,11 @@ cat(sprintf("Test:                Wilcoxon-Vorzeichenrangtest (einstichprobenart
 cat(sprintf("Signifikanzniveau:   α = %.2f (zweiseitig)\n", alpha))
 cat(sprintf("Teststärke:          1-β = %.2f\n", power))
 cat(sprintf("Erwartete Effektgr.: d = %.1f (mittel; Cohen, 1988)\n", d))
-cat(sprintf("Minimales N:         %d Teilnehmende\n", n_wilcoxon))
-cat(sprintf("Empfohlen mit Puffer:%d Teilnehmende (25%% Dropout)\n", n_mit_puffer))
-cat(sprintf("Geplantes N:         20 Teilnehmende\n"))
-cat(sprintf("Power bei N=20:      %.1f%%\n", power_seq[n_seq == 20] * 100))
-cat("Limitierung:         Kleine Stichprobe erlaubt keine konfirmatorischen\n")
-cat("                     Schlüsse; explorativer Charakter explizit deklariert.\n")
+cat(sprintf("Minimales N:         %d Teilnehmende (für 80%% Power)\n", n_wilcoxon))
+cat(sprintf("Zu rekrutieren:      %d Teilnehmende (30%% Dropout-Puffer)\n", n_mit_puffer))
+cat(sprintf("Ziel-N:              32 Teilnehmende\n"))
+cat(sprintf("Power bei N=32:      %.1f%%\n", power_seq[n_seq == 32] * 100))
+cat(sprintf("Fallback bei N=20:   %.1f%% Power (wenn Rekrutierung schwierig)\n", power_seq[n_seq == 20] * 100))
+cat("Limitierung:         Kleine Stichprobe; explorativer Charakter;\n")
+cat("                     keine konfirmatorischen Schlüsse beabsichtigt.\n")
 cat("=============================================================\n")

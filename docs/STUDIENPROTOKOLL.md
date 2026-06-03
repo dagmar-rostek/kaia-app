@@ -77,7 +77,7 @@ Die durch LLM-Analyse aus Gesprächstranskripten abgeleiteten Indikatoren für H
 
 ## 5. Stichprobe
 
-**Zielgröße:** N = 20 Teilnehmende
+**Zielgröße:** N = 32 auswertbare Datensätze · Rekrutierungsziel: ~46 Personen
 
 **Power-Analyse** (berechnet mit R, Paket `pwr` v1.3, Skript: `docs/power_analyse.R`):
 
@@ -87,10 +87,12 @@ Die durch LLM-Analyse aus Gesprächstranskripten abgeleiteten Indikatoren für H
 | Signifikanzniveau α | 0.05 (zweiseitig) |
 | Erwartete Effektgröße | d = 0.5 (mittel; Cohen, 1988) |
 | Minimales N für 80% Power | 32 (ARE-korrigiert) |
-| Geplantes N | 20 |
-| Erreichbare Power bei N=20 | **56.5%** |
+| Ziel-N | **32** |
+| Power bei N=32 | **80.0%** |
+| Dropout-Puffer | 30% → Rekrutierungsziel ~46 |
+| Fallback bei N=20 | 56.5% Power (dokumentierte Limitation) |
 
-**Begründung der Stichprobengröße:** Das geplante N=20 unterschreitet das für 80% Power notwendige Minimum (N=32). Dies ist eine bekannte Limitation der Studie. Sie ist begründet durch: (a) explorativen Charakter der Pilotstudie ohne konfirmatorische Intention, (b) Rekrutierungsrestriktion auf persönliches Netzwerk, (c) Ressourcen- und Zeitrahmen der Masterthesis. Die Limitation wird in der Thesis explizit deklariert; statistische Signifikanztests werden als ergänzend, nicht als primäres Erkenntnisziel betrachtet.
+**Begründung:** N=32 ist das Minimum für 80% Teststärke bei einem mittleren Effekt (d=0.5). Mit einem konservativen Dropout-Puffer von 30% (typisch für unvergütete Pilotstudien) ist ein Rekrutierungsziel von ~46 Personen erforderlich. Rekrutierung über das persönliche Netzwerk der Forscherin. Falls nur N=20 erreichbar sind, wird dies als Limitation deklariert und die Power (56.5%) explizit berichtet.
 
 **Einschlusskriterien:**
 - Volljährig (≥ 18 Jahre)
