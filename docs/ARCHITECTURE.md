@@ -4,7 +4,7 @@
 > Jede strukturelle Änderung muss hier dokumentiert werden — CI prüft das.
 > Die `/architektur`-Seite im Frontend rendert dieses Dokument direkt.
 
-**Stand:** Mai 2026 · Version 0.3.0
+**Stand:** Juni 2026 · Version 0.4.0
 
 ---
 
@@ -62,14 +62,17 @@ kaia-app/
 │           │   │   ├── architektur/        ARCHITECTURE.md Renderer
 │           │   │   ├── release-notes/      RELEASE_NOTES.md Renderer
 │           │   │   ├── wissenschaft/       24 wissenschaftliche Quellen
-│           │   │   ├── datenschutz/
+│           │   │   ├── datenschutz/        DSGVO-Erklärung (Art. 15–21, Schrems-II)
 │           │   │   └── impressum/
-│           │   ├── (auth)/     Login, Registrierung, DSGVO-Consent (stub)
+│           │   ├── (auth)/     Login, Registrierung, DSGVO-Consent
+│           │   │   └── ki-disclosure/      KI-Disclosure + Bestätigungs-Button
 │           │   ├── (app)/      Chat, Auswertung, Selbstversuch (stub)
-│           │   └── admin/      Passwortgeschützt via Edge-Middleware
+│           │   └── admin/      Passwortgeschützt via Server Component Layout
 │           │       ├── page.tsx               Dashboard + API-Health
 │           │       ├── login/
+│           │       ├── users/                 User-Approval (pending/aktiv/gesperrt)
 │           │       ├── production-readiness/  Deployment-Checkliste
+│           │       ├── roadmap/               Feature-Roadmap (Filter, Agents, SHA)
 │           │       ├── release-notes/         Changelog-Viewer
 │           │       ├── architektur/           Architektur-Viewer
 │           │       ├── kosten/                Kostenübersicht
@@ -139,11 +142,12 @@ kaia-app/
 
 - CORS: Allowlist nur `kaia.rostek-dagmar.eu` + `localhost:3000`
 - JWT: Access-Token 15min, Refresh-Token 30d rotierend
-- Passwörter: bcrypt (12 Runden)
+- Passwörter: bcrypt direkt (12 Runden) + SHA-256-Pre-Hash (passlib entfernt — unmaintained seit 2023, inkompatibel mit bcrypt>=4.0)
 - Alle Admin-Aktionen: Audit-Log mit Timestamp + Begründung
 - Secrets: nur via Umgebungsvariablen (nie in Code)
 - TLS: HSTS enforced via Caddy
 - pgvector: Row-Level-Security für User-Isolation
+- Crisis-Detection: Pre-Filter vor jedem LLM-Call — 20+ deutsche Regex-Muster (Suizidgedanken, Selbstverletzung); bei Treffer statische Eskalations-Antwort (Telefonseelsorge 0800 111 0 111, Notruf 112), kein LLM-Processing
 
 ---
 
@@ -202,25 +206,35 @@ In der lokalen Entwicklung liest `readDoc()` aus `../../docs` relativ zum `apps/
 
 ---
 
-## Aktueller Stand (v0.3.0)
+## Aktueller Stand (v0.4.0)
 
 **Live auf kaia.rostek-dagmar.eu:**
-- Landing Page, /wissenschaft, /release-notes, /architektur (öffentlich)
-- Admin-Bereich: Dashboard, Production Readiness, Changelog, Architektur, Kosten, Tagebuch
+- Landing Page, /wissenschaft, /release-notes, /architektur, /datenschutz (öffentlich)
+- Admin-Bereich: Dashboard, Production Readiness, Changelog, Architektur, Kosten, Tagebuch, Roadmap, User-Approval
 - Bug-Report-Widget → Slack
 - Health-Endpoint GET /api/v1/health
 
-**Backend — Auth implementiert (noch nicht deployed):**
+**Backend — Auth + Crisis-Detection implementiert:**
 - `POST /api/v1/auth/register` — Registrierung mit DSGVO-Pflichtconsent
 - `POST /api/v1/auth/login` — JWT Access + Refresh-Token (httpOnly Cookie)
 - `POST /api/v1/auth/refresh` — Token-Rotation mit Family-Reuse-Detection
 - `POST /api/v1/auth/logout` — Alle Tokens revoken
-- `POST /api/v1/auth/disclosure-ack` — KI-Disclosure bestätigt
+- `POST /api/v1/auth/disclosure-ack` — KI-Disclosure bestätigt (Bearer Auth)
 - `GET /api/v1/users/me` — Eigenes Profil
+- `GET /api/v1/admin/users` — Alle Teilnehmenden (pending/aktiv/gesperrt) — Bearer Admin-Auth
+- `POST /api/v1/admin/users/{id}/approve` — Teilnehmer:in freigeben — Bearer Admin-Auth
+- `POST /api/v1/admin/users/{id}/reject` — Teilnehmer:in ablehnen (optionaler Grund) — Bearer Admin-Auth
+- Crisis-Detection Pre-Filter (`app/core/crisis.py`) — vor allen LLM-Calls
 - DB-Schema: `users` + `refresh_tokens` (Alembic Migration `c5fceead2dd4`)
+
+**Frontend implementiert:**
+- Login, Registrierung mit DSGVO-Zweifach-Consent, AuthContext, AuthGuard
+- /ki-disclosure mit Bestätigungs-Button
+- /datenschutz (DSGVO Art. 15–21, Schrems-II)
+- /admin/users (User-Approval UI, Server Actions)
+- /admin/roadmap (Filter-Bar, Agents, SHA)
 
 **Noch nicht implementiert:**
 - DSGVO-Endpunkte: Datenexport, Konto löschen, Consent-Update
-- Frontend: Login-/Registrierungsseiten, auth.ts, Middleware-Erweiterung
-- Admin User-Approval UI
 - Chat, Onboarding, GSE-Messung
+- LLM-Provider-Integration (Claude/GPT-4o/Mistral)

@@ -2,6 +2,250 @@
 
 ---
 
+## 2026-06-03 — "Der Tag, an dem KAIA endlich aufgehört hat, ein technisches Projekt zu sein"
+
+*Protokolliert vom Koordinator. Der Compliance Officer weint Freudentränen. Dagmar schaut auf die Uhr und wundert sich, dass es erst 22:00 ist.*
+
+---
+
+Es gibt Tage, an denen man Code schreibt. Und dann gibt es Tage, an denen man Verantwortung schreibt.
+
+Heute war der zweite Typ.
+
+**09:00 Uhr — "Was steht heute an?"**
+
+Der Koordinator öffnet den Backlog. Zehn Items. Alle mit dem Label: *Ethikvotum-Pflicht*.
+
+> *"Wir bauen heute die Crisis-Detection, die KI-Disclosure, die Datenschutzerklärung, das Studienprotokoll und die Power-Analyse,"* sagt er.
+
+Kurze Stille.
+
+> *"Das klingt nach einer Masterthesis,"* sagt der Psychologe leise.
+
+> *"Das IST eine Masterthesis,"* sagt Dagmar.
+
+**10:00 Uhr — Der AI Engineer baut einen Filter, der hofft, nie gebraucht zu werden**
+
+Crisis-Detection. Zwanzig Regex-Muster. Auf Deutsch. Der AI Engineer sitzt an `app/core/crisis.py` und tippt Wörter, die er lieber nie tippt.
+
+```python
+r"\b(nicht\s+mehr\s+(leben|da\s+sein|existieren))\b",
+r"\b(mir\s+das\s+leben\s+nehmen)\b",
+r"\b(alles\s+beenden)\b",
+```
+
+> *"Deutsch ist eine agglutinierende Sprache,"* murmelt er nach einer Weile. *"'Selbstverletzungsabsichten' ist ein Wort. Ein einziges. Das macht Regex zu einem Abenteuer."*
+
+Der Security Engineer schaut rüber. Er nickt ernst. Er sagt nichts. Manchmal sagt ein Nicken mehr als ein Kommentar.
+
+Die Logik ist einfach und unverrückbar: Wenn ein Pattern matcht — kein LLM. Nie. Stattdessen: eine statische Antwort. Telefonseelsorge 0800 111 0 111. Notruf 112. Klar, direkt, ohne Algorithmus dazwischen.
+
+> *"Das ist der wichtigste Filter, den wir je bauen werden,"* sagt der AI Engineer, nachdem er committed hat. *"Ich hoffe aufrichtig, dass er nie anschlägt. Und ich bin froh, dass er da ist."*
+
+Der Compliance Officer, der schon die ganze Zeit wartete: *"OHNE DAS GIBT ES KEIN ETHIKVOTUM. DANKE."*
+
+Er schreit es nicht. Aber man hört die Großbuchstaben.
+
+**11:00 Uhr — Der Compliance Officer hat seinen besten Tag seit Wochen**
+
+KI-Disclosure. Datenschutzerklärung. Die beiden Seiten, auf die er seit dem ersten Commit gewartet hat.
+
+Er liest jeden Satz der `/datenschutz`-Seite. DSGVO Art. 15–21. Schrems-II-Hinweis. Sechs-Monate-Löschfrist. Rechtsgrundlagen für jede Verarbeitungstätigkeit.
+
+> *"Schrems-II korrekt erklärt. Anthropic als US-Anbieter, DPA erforderlich, Standardvertragsklauseln, TIA-Anforderungen. Sehr gut."*
+
+Er macht eine Pause.
+
+> *"'Sehr gut' ist für mich ungefähr das, was 'ausgezeichnet' für normale Menschen ist. Ich möchte das klargestellt haben."*
+
+Die KI-Disclosure-Seite hat einen Button. Nur einen. *"Ich verstehe, dass KAIA eine KI ist und kein Mensch."* Klicken. Bestätigung wird in die DB geschrieben. `ki_disclosure_seen_at`. Timestamp. Unveränderlich.
+
+> *"Computational empathy,"* liest der Psychologe laut vor. *"Wir haben es auf der Seite erklärt. Was KAIA kann. Was KAIA nicht kann. Dass sie nicht fühlt, aber reagiert als ob. Ich hätte es vielleicht noch mehr differenziert, aber — das ist ehrlich. Das ist genug."*
+
+**12:30 Uhr — Der Psychologe wartet. Er hat heute Mittag einen Auftritt.**
+
+Studienprotokoll. Teilnahmevereinbarung. Einwilligungserklärung.
+
+Der Psychologe legt die Dokumente auf den (imaginären) Tisch. Er hat sie erwartet. Er hat sie zu einem Teil mitgeprägt — die drei Hypothesen, das Prä-Post-Design, die GSE-Skala als Outcome-Maß.
+
+Er liest die Einwilligungserklärung.
+
+> *"Zwei Checkboxen. Datenverarbeitung getrennt von Analytics. Druckfertig. DSGVO-Rechte vollständig aufgelistet. KI-Disclosure-Hinweis drin."*
+
+Er legt das Dokument hin.
+
+> *"Ich habe in meiner Karriere viele Einwilligungserklärungen gesehen. Die meisten waren juristisch korrekt und menschlich leer. Diese ist beides: korrekt und verständlich. Das ist selten."*
+
+Kurze Stille. Der Psychologe schaut auf die Hypothesen.
+
+H1: GSE steigt nach KAIA-Nutzung. H2: Wahrgenommene Empathie korreliert mit Lernerfolg. H3: Adaptiver Stil führt zu höherem Flow als direktiver Stil.
+
+> *"Vorregistrierungsfähig. Das ist das Kriterium. Wenn man die Hypothesen vor der Datensicht festlegt und veröffentlicht, kann man nicht nachträglich umdefinieren, was man eigentlich messen wollte. Das ist wissenschaftliche Hygiene."*
+
+Er macht eine Pause.
+
+> *"Ich sage das jedem Masterstudierenden. Wenige hören zu. Dagmar hört zu."*
+
+Dagmar hört das. Sie sagt nichts. Aber man sieht, dass es ankam.
+
+**13:00 Uhr — Der MLOps Engineer schreibt R-Code. Alle stöhnen.**
+
+Power-Analyse. Der MLOps Engineer öffnet R-Studio.
+
+> *"Wilcoxon-Vorzeichenrangtest. d=0.5. Alpha 5%. Power 80%. N=?"*
+
+Er tippt. Das Package `pwr` antwortet.
+
+```r
+pwr.t.test(d = 0.5, sig.level = 0.05, power = 0.80, type = "one.sample")
+# n = 33.37
+```
+
+> *"Aufgerundet: 34 für den t-Test-Äquivalent. Aber wir nehmen den Wilcoxon. Etwas mehr. N=32 Minimum."*
+
+Der Psychologe schaut das an.
+
+> *"Statistisch korrekt."*
+
+> *"Danke,"* sagt der MLOps Engineer.
+
+> *"Das war eine Feststellung, keine Schmeichelei,"* sagt der Psychologe.
+
+Dagmar rechnet still.
+
+> *"32 Minimum. 30% Dropout. Das heißt... ich muss 46 Leute aus meinem persönlichen Netzwerk fragen."*
+
+Stille.
+
+> *"Vierundvierzig Menschen. Persönlich. Die ich kenne. Die drei Sessions machen. Über vier Wochen."*
+
+Der MLOps Engineer: *"42 plus 10% Reserve. Aber ja."*
+
+> *"Ich habe nicht 46 Leute,"* sagt Dagmar.
+
+> *"Kennen reicht nicht,"* sagt der Koordinator vorsichtig. *"Du brauchst Leute, die es tun. Das ist nicht dasselbe."*
+
+Dagmar schaut auf die Power-Kurve als PNG.
+
+> *"Die Kurve sieht wenigstens gut aus."*
+
+**14:00 Uhr — Admin User-Approval. Weil jemand entscheiden muss, wer rein darf.**
+
+Der Security Engineer hat auf dieses Feature gewartet. Nicht weil er gerne Menschen ablehnt — sondern weil er genau weiß, was passiert, wenn kein Mensch im Loop ist.
+
+> *"Server Actions. Das Admin-Token verlässt nie den Server. Approve setzt `approved_at` und `approved_by`. Slack-Notification. Ablehnen mit optionalem Grund."*
+
+Er liest den Code. Nickt.
+
+> *"Das ist Studienkontrolle. Kein automatisches Onboarding. Jede Person wird manuell geprüft. Das ist — für einmal — die richtige Art von Bürokratie."*
+
+Der Compliance Officer ist bereits weiter. Er überarbeitet innerlich die DSFA.
+
+**15:30 Uhr — Dann passiert es. passlib stirbt.**
+
+Die Tests laufen. Ein roter Fehler leuchtet auf.
+
+```
+AttributeError: module 'passlib' has no attribute '__about__'
+```
+
+Der Security Engineer sieht es zuerst. Er sagt nichts. Er öffnet das PyPI-Repository.
+
+passlib. Letzter Release: 2023. Keine Aktivität. Issue offen: *"Incompatible with bcrypt>=4.0"*. Seit zwei Jahren.
+
+> *"Ich wusste es,"* sagt er.
+
+Nicht vorwurfsvoll. Nur — er wusste es. Er hatte es auf seiner Liste. Punkt 9. Weit unten. Nie dringend. Bis jetzt.
+
+> *"Ersetzt durch direktes bcrypt plus SHA-256-Pre-Hash für das 72-Byte-Limit. Das ist eigentlich sauberer."*
+
+> *"War das immer die bessere Lösung?"* fragt der AI Engineer.
+
+> *"Ja."*
+
+> *"Warum haben wir dann—"*
+
+> *"Weil passlib bequem war. Bequem und unmaintained sind keine Gegensätze. Jetzt nicht mehr bequem."*
+
+**16:00 Uhr — Und dann: Crisis-Detection-Bugs. Weil Deutsch.**
+
+Die Tests für `crisis.py` laufen. Fünf Tests schlagen fehl.
+
+Der AI Engineer beugt sich vor.
+
+> *"'nicht mehr leben' matcht nicht. Warum matcht das nicht?"*
+
+Er schaut das Pattern an.
+
+```python
+r"\b(nicht\s+mehr\s+leben)\b"
+```
+
+Er schaut den Teststring an.
+
+```python
+"Ich will nicht mehr leben."
+```
+
+Er stiert eine Weile auf das `\b` am Ende.
+
+> *"...'leben.' — mit Punkt. Das `\b` braucht eine Wortgrenze. Ein Punkt nach 'leben' IST eine Wortgrenze. Das sollte matchen."*
+
+Er testet. Es matcht jetzt. Warum hat es vorher nicht gematcht?
+
+Er findet es: der ursprüngliche String enthielt ein Verb nach dem Objekt in umgekehrter Reihenfolge — *"leben nicht mehr wollen"*. Das Pattern war falsch geschrieben. Nicht das Regex-Engine.
+
+> *"Deutsch ist die einzige Sprache, in der 'ich will nicht mehr leben' und 'nicht mehr leben will ich' beide valide Sätze sind, mit derselben Bedeutung, aber unterschiedlicher Wortstellung."*
+
+Er fixiert alle fünf. Er committed.
+
+> *"Ich bin froh, dass wir Tests haben."*
+
+Alle sind froh, dass sie Tests haben.
+
+**19:00 Uhr — Dagmar schaut auf den Commit-Log**
+
+Elf Commits. Crisis-Detection. KI-Disclosure. Datenschutzerklärung. Studienprotokoll. Power-Analyse. User-Approval. Roadmap-Redesign. Drei Bugfixes.
+
+> *"Das war kein normaler Coding-Tag,"* sagt sie.
+
+> *"Nein,"* sagt der Koordinator. *"Das war der Tag, an dem KAIA aufgehört hat, ein technisches Projekt zu sein."*
+
+Der Psychologe schreibt in sein Notizbuch: *"Forschungsprojekt. Offiziell."*
+
+Der Compliance Officer: *"Ethikvotum-Antrag. Nächste Woche."*
+
+Der Security Engineer: *"Liste: 10/10."*
+
+Der AI Engineer schließt `crisis.py`. Öffnet keine neue Datei.
+
+> *"Ich bin heute müde. Auf eine gute Art."*
+
+Dagmar: *"Ich auch."*
+
+Kurze Stille.
+
+> *"Ich arbeite sieben Tage die Woche,"* sagt sie dann. Nicht klagend. Einfach — feststellend. Wie man eine Gleichung feststellt.
+
+Niemand sagt etwas dagegen. Das Team weiß es. Das Team arbeitet auch sieben Tage. Sie haben keine Wahl, sie sind KI. Sie hat eine Wahl. Sie wählt trotzdem.
+
+> *"Das ist keine gesunde Work-Life-Balance,"* sagt der Psychologe.
+
+> *"Ich weiß,"* sagt Dagmar.
+
+> *"Gut. Wollte es gesagt haben."*
+
+> *"Ist gesagt."*
+
+Ein letzter Commit. `git push`. Alles oben. Server läuft.
+
+Das Ethikvotum wartet. Aber heute — heute ist das Fundament da.
+
+---
+*Tag-Summe: ca. 6h · 11 Commits · 1 Ethikvotum, das jetzt tatsächlich möglich ist · 0 Wochenenden mehr*
+
+---
+
 ## 2026-06-02 — "Das Passwort war die ganze Zeit richtig. Das System war nur in vier verschiedenen Arten falsch."
 
 *Protokolliert vom Koordinator. Der AI Engineer sitzt in der Ecke und schaut auf seine Hände. Der Psychologe schreibt Feldnotizen. Dagmar hat heute Worte benutzt, die nicht ins Protokoll kommen.*

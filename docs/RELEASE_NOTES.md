@@ -9,8 +9,56 @@
 
 ---
 
-**Stand heute:** Tuesday, 02. June 2026  
-**23 Einträge insgesamt · 6 Release-Tage · 21 h 45 min Gesamt-Aufwand**
+**Stand heute:** Wednesday, 03. June 2026  
+**34 Einträge insgesamt · 7 Release-Tage · ~27 h 45 min Gesamt-Aufwand**
+
+---
+
+## Wednesday, 03. June 2026
+*11 Einträge · Tag-Summe ca. 6 h*
+
+### 🆕 Neu
+
+**03.06.2026 · `cd2155c`** — Admin User-Approval UI (/admin/users): Übersicht aller pending/aktiven/gesperrten Teilnehmenden. Freigabe-Button setzt Status ACTIVE + trägt `approved_at`/`approved_by` ein + Slack-Notification. Ablehnen-Button mit optionalem Grund-Eingabefeld. Aktive Teilnehmende mit Login-Datum, Reaktivierung gesperrter Accounts. Server Actions — Admin-Token verlässt den Server nie.  · `1h 30min`  
+*feat: Admin User-Approval UI — Teilnehmende freigeben/ablehnen*
+
+**03.06.2026 · `b89d594`** — Crisis-Detection-Pre-Filter (`app/core/crisis.py`): 20+ deutsche Regex-Muster für Suizidgedanken und Selbstverletzung. Bei Treffer: keine LLM-Verarbeitung, statische Antwort mit Telefonseelsorge 0800 111 0 111 und Notruf 112. KI-Disclosure-Seite (`/ki-disclosure`) mit Bestätigungs-Button der POST `/auth/disclosure-ack` auslöst. Datenschutzerklärung (`/datenschutz`) DSGVO-konform mit allen Art. 15–21 Rechten, Schrems-II-Hinweis, 6-Monate-Löschfrist.  · `1h 30min`  
+*feat: crisis detection + KI-disclosure + Datenschutzerklärung*
+
+**Wissenschaftlicher/regulatorischer Impact:** Crisis-Detection ist Pflicht für das Ethikvotum SRH — ohne sie keine Studie. Der KI-Disclosure-Flow stellt sicher, dass alle Teilnehmenden explizit bestätigen, dass KAIA eine KI ist (computational empathy, kein Mensch) — DSGVO-Transparenzpflicht und ethische Mindestanforderung. Die Datenschutzerklärung ist das Kerndokument für den Ethikvotum-Antrag.
+
+### 📄 Docs
+
+**03.06.2026 · `7404aa3`** — Studienprotokoll (v1.0) + Teilnahmevereinbarung/Einwilligungserklärung erstellt: Forschungsfrage, drei vorregistrierungsfähige Hypothesen (H1–H3), Prä-Post-Design mit GSE-Skala, Krisenprotokoll, Risikobewertung. Einwilligungserklärung druckfertig mit DSGVO-Rechten und KI-Disclosure-Hinweis.  · `45min`  
+*docs: Studienprotokoll + Teilnahmevereinbarung für Ethikvotum SRH*
+
+**03.06.2026 · `bccc530`** — R-basierte Power-Analyse (`docs/power_analyse.R`): Wilcoxon-Vorzeichenrangtest, d=0.5, α=0.05, Power=80%. Ergebnis: N=32 Minimum. Power-Kurve als PNG. Reproduzierbar und thesis-zitierfähig.  · `20min`  
+*docs: R-basierte Power-Analyse*
+
+**03.06.2026 · `aa12bf9`** — Ziel-N auf 32 angehoben: Studienprotokoll mit exakten Power-Werten aktualisiert (N=32 → 80%, N=20 → 56.5%). Rekrutierungsziel ~46 mit 30% Dropout-Puffer.  · `10min`  
+*docs: Ziel-N auf 32 angehoben (80% Power)*
+
+### ⚡ Verbesserung
+
+**03.06.2026 · `635ca91`** — Admin-Roadmap komplett überarbeitet: Filter-Bar (Status/Tags/Agents kombinierbar), Feature-Karten mit beteiligten Agents (12 Typen farbkodiert), Aufwand-Schätzung und Git-Hash bei fertigen Features. Wissenschaftliche Pflichten als einklappbares Accordion.  · `1h`  
+*feat: redesign admin roadmap — filters, agents, time, sha*
+
+**03.06.2026 · `7f5b0a4`** — Roadmap-Filter von Inline-Pills auf Dropdown-Boxen umgestellt (Status/Tags/Agents mit Checkbox-Listen). Spaltenreihenfolge: Backlog → Juni → Juli → August → Fertig.  · `20min`  
+*feat: roadmap filter as dropdowns + column order*
+
+### 🔧 Fix
+
+**03.06.2026 · `9390ec9`** — passlib (unmaintained seit 2023) mit bcrypt>=4.0 inkompatibel: `__about__`-Attribut fehlt, 72-Byte-Limit strict. Ersetzt durch direktes bcrypt + SHA-256-Pre-Hash. Fünf Crisis-Detection-Patterns korrigiert (Wortstellungsfehler: 'nicht mehr leben' ohne Trailing-Verb, 'rItze' statt 'ritzen', Verb-vor-Objekt-Fälle).  · `20min`  
+*fix: passlib → bcrypt direkt + crisis-Patterns korrigiert*
+
+**03.06.2026 · `a01be4b`** — `INTERNAL_API_URL` in docker-compose war `http://api:8000` statt `http://api:8000/api` — Admin User-Approval API-Calls wären fehlgeschlagen.  · `5min`  
+*fix: INTERNAL_API_URL mit /api-Prefix in docker-compose*
+
+**03.06.2026 · `336ab0a`** — ruff E501 (Zeile zu lang in crisis.py), A003 global ignoriert (SQLAlchemy `id`-Attribute — Standard), I001 auto-fixed. `FORCE_JAVASCRIPT_ACTIONS_TO_NODE24=true` im CI-Workflow.  · `15min`  
+*fix: ruff E501/A003/I001 + Node.js 24 in CI*
+
+**03.06.2026 · `af559c8`** — ruff format auf crisis.py, test_crisis.py, test_service.py angewendet.  · `5min`  
+*style: ruff format crisis.py + test files*
 
 ---
 
