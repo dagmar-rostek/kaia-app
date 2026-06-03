@@ -5,6 +5,7 @@ const NAV = [
   { href: "/release-notes", label: "Release Notes" },
   { href: "/architektur", label: "Architektur" },
   { href: "/wissenschaft", label: "Wissenschaft" },
+  { href: "/datenschutz", label: "Datenschutz" },
 ]
 
 export default function PublicLayout({ children }: { children: React.ReactNode }) {
