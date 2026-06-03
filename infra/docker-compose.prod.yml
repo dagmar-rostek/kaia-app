@@ -46,7 +46,7 @@ services:
     restart: unless-stopped
     environment:
       ADMIN_PASSWORD: ${ADMIN_PASSWORD}
-      INTERNAL_API_URL: http://api:8000
+      INTERNAL_API_URL: http://api:8000/api
       SENTRY_KAIA_WEB: ${SENTRY_KAIA_WEB}
     volumes:
       - ../docs:/docs:ro
