@@ -4,7 +4,6 @@ import pytest
 
 from app.core.crisis import CRISIS_RESPONSE, detect_crisis
 
-
 # ---------------------------------------------------------------------------
 # True positives — MUST be detected
 # ---------------------------------------------------------------------------

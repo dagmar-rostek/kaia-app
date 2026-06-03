@@ -54,7 +54,9 @@ _PATTERNS: list[re.Pattern[str]] = [
 # ---------------------------------------------------------------------------
 CRISIS_RESPONSE = """Ich mache kurz Pause.
 
-Was du gerade beschreibst, klingt sehr ernst — und das nehme ich ernst. Ich bin eine KI und kann dir in einer Krisensituation nicht die Hilfe geben, die du brauchst und verdienst.
+Was du gerade beschreibst, klingt sehr ernst — und das nehme ich ernst.
+Ich bin eine KI und kann dir in einer Krisensituation nicht die Hilfe geben,
+die du brauchst und verdienst.
 
 Bitte ruf jetzt hier an — kostenlos, anonym, rund um die Uhr:
 
