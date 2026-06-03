@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useMemo } from "react"
+import { useState, useMemo, useRef, useEffect } from "react"
 import {
   CheckCircle2,
   Clock,
@@ -393,12 +393,6 @@ const THESIS_CHAPTERS = [
   { num: "Kap. 6", title: "Pilotstudie & Evaluation",       color: "text-orange-500" },
 ]
 
-// ── helpers ───────────────────────────────────────────────────────────────────
-
-function toggle<T>(arr: T[], v: T): T[] {
-  return arr.includes(v) ? arr.filter((x) => x !== v) : [...arr, v]
-}
-
 // ── Feature Card ──────────────────────────────────────────────────────────────
 
 function FeatureCard({ f }: { f: Feature }) {
@@ -468,31 +462,89 @@ function FeatureCard({ f }: { f: Feature }) {
   )
 }
 
-// ── Filter Bar ────────────────────────────────────────────────────────────────
+// ── Filter Dropdown ───────────────────────────────────────────────────────────
 
-function FilterPill({
+function FilterDropdown<T extends string>({
   label,
+  options,
   active,
-  cls,
-  onClick,
+  onChange,
 }: {
   label: string
-  active: boolean
-  cls?: string
-  onClick: () => void
+  options: { value: T; label: string; cls?: string }[]
+  active: T[]
+  onChange: (v: T[]) => void
 }) {
+  const [open, setOpen] = useState(false)
+  const ref = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    function handleClick(e: MouseEvent) {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false)
+    }
+    document.addEventListener("mousedown", handleClick)
+    return () => document.removeEventListener("mousedown", handleClick)
+  }, [])
+
+  function toggle(v: T) {
+    onChange(active.includes(v) ? active.filter((x) => x !== v) : [...active, v])
+  }
+
   return (
-    <button
-      onClick={onClick}
-      className={`inline-flex items-center gap-1 rounded-full border px-2.5 py-0.5 text-xs font-medium transition-colors cursor-pointer ${
-        active
-          ? cls ?? "bg-foreground text-background border-foreground"
-          : "bg-background text-muted-foreground border-border hover:border-foreground/40 hover:text-foreground"
-      }`}
-    >
-      {label}
-      {active && <X className="h-3 w-3" />}
-    </button>
+    <div ref={ref} className="relative">
+      <button
+        onClick={() => setOpen(!open)}
+        className={`inline-flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-sm transition-colors cursor-pointer ${
+          active.length > 0
+            ? "border-foreground/40 bg-foreground/5 text-foreground"
+            : "border-border bg-background text-muted-foreground hover:border-foreground/30 hover:text-foreground"
+        }`}
+      >
+        {label}
+        {active.length > 0 && (
+          <span className="inline-flex items-center justify-center rounded-full bg-foreground text-background text-xs font-bold h-4 w-4">
+            {active.length}
+          </span>
+        )}
+        <ChevronDown className={`h-3.5 w-3.5 transition-transform ${open ? "rotate-180" : ""}`} />
+      </button>
+
+      {open && (
+        <div className="absolute top-full left-0 z-50 mt-1 min-w-44 rounded-lg border border-border bg-background shadow-lg py-1">
+          {options.map((opt) => (
+            <label
+              key={opt.value}
+              className="flex items-center gap-2.5 px-3 py-1.5 text-sm cursor-pointer hover:bg-muted/40 transition-colors"
+            >
+              <input
+                type="checkbox"
+                checked={active.includes(opt.value)}
+                onChange={() => toggle(opt.value)}
+                className="h-3.5 w-3.5 rounded border-border accent-foreground cursor-pointer"
+              />
+              {opt.cls ? (
+                <span className={`inline-flex items-center rounded border px-1.5 py-0.5 text-xs font-medium ${opt.cls}`}>
+                  {opt.label}
+                </span>
+              ) : (
+                <span className="text-sm">{opt.label}</span>
+              )}
+            </label>
+          ))}
+          {active.length > 0 && (
+            <>
+              <div className="my-1 border-t border-border" />
+              <button
+                onClick={() => { onChange([]); setOpen(false) }}
+                className="w-full flex items-center gap-2 px-3 py-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors"
+              >
+                <X className="h-3 w-3" /> Zurücksetzen
+              </button>
+            </>
+          )}
+        </div>
+      )}
+    </div>
   )
 }
 
@@ -681,69 +733,42 @@ export default function RoadmapPage() {
       <ScienceSection />
 
       {/* Filter Bar */}
-      <div className="space-y-3 rounded-lg border border-border p-4 bg-muted/10">
-        <div className="flex items-center justify-between">
-          <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Filter</span>
-          {hasFilter && (
-            <button
-              onClick={() => { setActiveStatuses([]); setActiveTags([]); setActiveAgents([]) }}
-              className="text-xs text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1"
-            >
-              <X className="h-3 w-3" /> Alle zurücksetzen
-            </button>
-          )}
-        </div>
+      <div className="flex flex-wrap items-center gap-2">
+        <span className="text-xs text-muted-foreground font-medium mr-1">Filter:</span>
 
-        {/* Status filter */}
-        <div className="space-y-1.5">
-          <p className="text-xs text-muted-foreground">Status</p>
-          <div className="flex flex-wrap gap-1.5">
-            {(Object.entries(STATUS_CONFIG) as [Status, typeof STATUS_CONFIG[Status]][]).map(([k, v]) => (
-              <FilterPill
-                key={k}
-                label={v.label}
-                active={activeStatuses.includes(k)}
-                cls={v.cls}
-                onClick={() => setActiveStatuses(toggle(activeStatuses, k))}
-              />
-            ))}
-          </div>
-        </div>
+        <FilterDropdown
+          label="Status"
+          options={(Object.entries(STATUS_CONFIG) as [Status, typeof STATUS_CONFIG[Status]][]).map(([k, v]) => ({
+            value: k,
+            label: v.label,
+            cls: v.cls,
+          }))}
+          active={activeStatuses}
+          onChange={setActiveStatuses}
+        />
 
-        {/* Tag filter */}
-        <div className="space-y-1.5">
-          <p className="text-xs text-muted-foreground">Tag</p>
-          <div className="flex flex-wrap gap-1.5">
-            {allTags.map((tag) => (
-              <FilterPill
-                key={tag}
-                label={tag}
-                active={activeTags.includes(tag)}
-                cls={TAG_COLORS[tag]}
-                onClick={() => setActiveTags(toggle(activeTags, tag))}
-              />
-            ))}
-          </div>
-        </div>
+        <FilterDropdown
+          label="Tags"
+          options={allTags.map((tag) => ({ value: tag, label: tag, cls: TAG_COLORS[tag] }))}
+          active={activeTags}
+          onChange={setActiveTags}
+        />
 
-        {/* Agent filter */}
-        <div className="space-y-1.5">
-          <p className="text-xs text-muted-foreground">Agents</p>
-          <div className="flex flex-wrap gap-1.5">
-            {allAgents.map((a) => {
-              const ac = AGENT_CONFIG[a]
-              return (
-                <FilterPill
-                  key={a}
-                  label={ac.label}
-                  active={activeAgents.includes(a)}
-                  cls={ac.cls}
-                  onClick={() => setActiveAgents(toggle(activeAgents, a))}
-                />
-              )
-            })}
-          </div>
-        </div>
+        <FilterDropdown
+          label="Agents"
+          options={allAgents.map((a) => ({ value: a, label: AGENT_CONFIG[a].label, cls: AGENT_CONFIG[a].cls }))}
+          active={activeAgents}
+          onChange={setActiveAgents}
+        />
+
+        {hasFilter && (
+          <button
+            onClick={() => { setActiveStatuses([]); setActiveTags([]); setActiveAgents([]) }}
+            className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors ml-1"
+          >
+            <X className="h-3 w-3" /> Alle zurücksetzen
+          </button>
+        )}
       </div>
 
       {/* Feature Timeline */}
@@ -753,16 +778,16 @@ export default function RoadmapPage() {
           Feature-Timeline
           {hasFilter && (
             <span className="text-xs font-normal normal-case text-muted-foreground">
-              — {filtered.filter((f) => f.month !== "ideas").length} Features sichtbar
+              — {filtered.length} Features sichtbar
             </span>
           )}
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
           <MonthColumn
-            title="Bereits fertig" subtitle="Monorepo · Auth · Admin · Monitoring"
-            month="done" accentClass="border-emerald-500" dotClass="bg-emerald-500"
-            features={filtered.filter((f) => f.month === "done")}
+            title="Backlog" subtitle="Team-Ideen · noch ohne Termin"
+            month="ideas" accentClass="border-violet-500" dotClass="bg-violet-400"
+            features={filtered.filter((f) => f.month === "ideas")}
           />
           <MonthColumn
             title="Juni 2026" subtitle="User-Approval · DB · Datenschutz · GSE Start"
@@ -771,7 +796,7 @@ export default function RoadmapPage() {
           />
           <MonthColumn
             title="Juli 2026" subtitle="Chat · LLM · Gedächtnis · Characters · Budget"
-            month="juli" accentClass="border-violet-500" dotClass="bg-violet-400"
+            month="juli" accentClass="border-sky-500" dotClass="bg-sky-400"
             features={filtered.filter((f) => f.month === "juli")}
           />
           <MonthColumn
@@ -779,19 +804,11 @@ export default function RoadmapPage() {
             month="august" accentClass="border-orange-500" dotClass="bg-orange-400"
             features={filtered.filter((f) => f.month === "august")}
           />
-        </div>
-      </div>
-
-      {/* Team Ideas */}
-      <div className="space-y-4">
-        <div className="flex items-center gap-2 text-sm font-semibold text-muted-foreground uppercase tracking-wider">
-          <Lightbulb className="h-4 w-4" />
-          Team-Ideen (noch offen)
-        </div>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-          {filtered.filter((f) => f.month === "ideas").map((f) => (
-            <FeatureCard key={f.title} f={f} />
-          ))}
+          <MonthColumn
+            title="Fertig" subtitle="Monorepo · Auth · Admin · Monitoring"
+            month="done" accentClass="border-emerald-500" dotClass="bg-emerald-500"
+            features={filtered.filter((f) => f.month === "done")}
+          />
         </div>
       </div>
 
