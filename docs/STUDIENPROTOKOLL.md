@@ -77,7 +77,20 @@ Die durch LLM-Analyse aus Gesprächstranskripten abgeleiteten Indikatoren für H
 
 ## 5. Stichprobe
 
-**Zielgröße:** N = 15–25 Teilnehmende (Powerkalkulation mit G*Power wird vor Studienstart dokumentiert und auf OSF.io registriert)
+**Zielgröße:** N = 20 Teilnehmende
+
+**Power-Analyse** (berechnet mit R, Paket `pwr` v1.3, Skript: `docs/power_analyse.R`):
+
+| Parameter | Wert |
+|---|---|
+| Test | Wilcoxon-Vorzeichenrangtest, einstichprobenartig |
+| Signifikanzniveau α | 0.05 (zweiseitig) |
+| Erwartete Effektgröße | d = 0.5 (mittel; Cohen, 1988) |
+| Minimales N für 80% Power | 32 (ARE-korrigiert) |
+| Geplantes N | 20 |
+| Erreichbare Power bei N=20 | **56.5%** |
+
+**Begründung der Stichprobengröße:** Das geplante N=20 unterschreitet das für 80% Power notwendige Minimum (N=32). Dies ist eine bekannte Limitation der Studie. Sie ist begründet durch: (a) explorativen Charakter der Pilotstudie ohne konfirmatorische Intention, (b) Rekrutierungsrestriktion auf persönliches Netzwerk, (c) Ressourcen- und Zeitrahmen der Masterthesis. Die Limitation wird in der Thesis explizit deklariert; statistische Signifikanztests werden als ergänzend, nicht als primäres Erkenntnisziel betrachtet.
 
 **Einschlusskriterien:**
 - Volljährig (≥ 18 Jahre)
