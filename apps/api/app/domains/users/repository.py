@@ -25,6 +25,13 @@ class UserRepository:
         result = await self._db.execute(select(User).where(User.status == UserStatus.PENDING))
         return list(result.scalars().all())
 
+    async def get_all(self, status: UserStatus | None = None) -> list[User]:
+        q = select(User).where(User.status != UserStatus.DELETED)
+        if status:
+            q = q.where(User.status == status)
+        result = await self._db.execute(q.order_by(User.created_at.desc()))
+        return list(result.scalars().all())
+
     async def create(self, user: User) -> User:
         self._db.add(user)
         await self._db.commit()

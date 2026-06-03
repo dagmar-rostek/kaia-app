@@ -203,6 +203,25 @@ class UserService:
         await self._users.save(user)
         log.info("gdpr_delete_completed", user_id=user.id, reason=reason)
 
+    async def approve_user(self, user: User, approved_by: str) -> User:
+        """Admin: Freigabe eines pending Users für die Studie."""
+        user.status = UserStatus.ACTIVE
+        user.approved_at = datetime.now(UTC)
+        user.approved_by = approved_by
+        log.info("user_approved", user_id=user.id, approved_by=approved_by)
+        await notify(
+            f"*User freigegeben*\n*User:* {user.username} ({user.email})\n*Von:* {approved_by}",
+            emoji="✅",
+        )
+        return await self._users.save(user)
+
+    async def reject_user(self, user: User, reason: str) -> User:
+        """Admin: Ablehnung / Sperrung eines Users."""
+        user.status = UserStatus.SUSPENDED
+        user.deletion_reason = reason
+        log.info("user_rejected", user_id=user.id, reason=reason)
+        return await self._users.save(user)
+
     async def update_consent(self, user: User, consent_analytics: bool) -> User:
         """DSGVO Art. 7 (3) — Widerruf ist jederzeit möglich, ohne Konsequenzen."""
         user.consent_analytics = consent_analytics

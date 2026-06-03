@@ -44,7 +44,26 @@ class UserRead(BaseModel):
 
 
 class UserApprove(BaseModel):
-    approved_by: str = Field(max_length=50)
+    approved_by: str = Field(default="admin", max_length=50)
+
+
+class UserReject(BaseModel):
+    reason: str = Field(default="rejected_by_admin", max_length=200)
+
+
+class UserAdminRead(BaseModel):
+    id: int
+    email: str
+    username: str
+    status: UserStatus
+    consent_analytics: bool
+    ki_disclosure_seen_at: datetime | None
+    approved_at: datetime | None
+    approved_by: str | None
+    last_login_at: datetime | None
+    created_at: datetime
+
+    model_config = {"from_attributes": True}
 
 
 class UserExport(BaseModel):
