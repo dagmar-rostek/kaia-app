@@ -1,20 +1,13 @@
 import Link from "next/link"
 import { ThemeToggle } from "@/components/ThemeToggle"
 import { logoutAction } from "./actions"
-import { LayoutDashboard, CheckSquare, ScrollText, Network, Euro, BookOpen, LogOut, Map, Users, GraduationCap, Timer } from "lucide-react"
+import { LayoutDashboard, CheckSquare, ScrollText, Network, Euro, BookOpen, LogOut, Map, Users, GraduationCap } from "lucide-react"
 
 const NAV = [
   { href: "/admin", label: "Übersicht", icon: LayoutDashboard },
   { href: "/admin/users", label: "Teilnehmende", icon: Users },
   { href: "/admin/roadmap", label: "Roadmap", icon: Map },
-  // ── Thesis ──
-  { href: "/admin/thesis", label: "⏱ Thesis-Hub", icon: Timer },
-  { href: "/admin/kap1",   label: "Kap. 1 Einleitung", icon: GraduationCap },
-  { href: "/admin/theorie", label: "Kap. 2 Theorie", icon: GraduationCap },
-  { href: "/admin/kap3",   label: "Kap. 3 Rahmenwerk", icon: GraduationCap },
-  { href: "/admin/kap4",   label: "Kap. 4 Implementierung", icon: GraduationCap },
-  { href: "/admin/kap5",   label: "Kap. 5 LLM-Eval", icon: GraduationCap },
-  { href: "/admin/kap6",   label: "Kap. 6 Pilotstudie", icon: GraduationCap },
+  { href: "/admin/thesis", label: "Masterthesis", icon: GraduationCap },
   { href: "/admin/production-readiness", label: "Production Readiness", icon: CheckSquare },
   { href: "/admin/release-notes", label: "Release Notes", icon: ScrollText },
   { href: "/admin/architektur", label: "Architektur", icon: Network },
