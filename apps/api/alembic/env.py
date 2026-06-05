@@ -6,6 +6,9 @@ from sqlalchemy import pool
 from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import async_engine_from_config
 
+import app.domains.chat.models  # noqa: F401
+import app.domains.roadmap.models  # noqa: F401
+import app.domains.survey.models  # noqa: F401
 import app.domains.users.models  # noqa: F401
 from alembic import context
 
