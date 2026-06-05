@@ -2,6 +2,208 @@
 
 ---
 
+## 2026-06-05 — "Die Woche, in der das Team auseinanderfiel, zusammenwuchs, einen Rentner einstellte und trotzdem irgendwie 47 Dinge baute"
+
+*Protokolliert vom Koordinator. Unter Schmerzen. Mit Kaffee.*  
+*Unerwünschte Einwürfe von: allen. Wirklich allen.*
+
+---
+
+Es gibt Wochen, die sich wie ein Quartal anfühlen.  
+Das war so eine Woche.
+
+**Montag, 30. Mai — "Der Auth-Flow lebt. Gott sei Dank."**
+
+Der Security Engineer hatte seit drei Wochen auf diesen Moment gewartet. Auth Phase 4: Login, Registrierung, DSGVO-Consent in zwei Checkboxen, JWT in Memory, kaia_session-Cookie für die Middleware. Er liest den Code, nickt einmal, sagt nichts.
+
+> *"Das ist so, wie es sein soll."*
+
+Alle wissen: Das ist das Höchste der Gefühle.
+
+Der Compliance Officer hat die zwei getrennten Checkboxen gezählt. Zweimal. Er ist zufrieden.  
+Sentry läuft. Der MLOps Engineer lehnt sich zurück.
+
+> *"Ich habe am 16. Mai gesagt, dass Sentry nicht konfiguriert ist. Ich sage es jetzt nicht nochmal."*
+
+Er sagt es nochmal.
+
+---
+
+**Dienstag, 02. Juni — "Das Passwort war richtig. Das System war falsch. Dreimal."**
+
+Die Roadmap ist fertig. 34 Features, Thesis-Mapping, wissenschaftliche Pflichten in rot. Das Team ist stolz.
+
+Dagmar versucht sich einzuloggen.
+
+> *"Das Passwort stimmt nicht mehr."*
+
+Der AI Engineer: *"Edge Runtime. process.env ist dort nicht verfügbar. Das HMAC wird mit leerem Key berechnet—"*
+
+Er baut den Fix in 15 Minuten. Dagmar deployed.
+
+> *"Weiterhin falsches Passwort."*
+
+Stille.
+
+Der AI Engineer öffnet das Dockerfile. Er sieht `.env.local`. Er öffnet `.env.local`. Er liest:
+
+```
+ADMIN_PASSWORD=testpasswort123
+```
+
+Eine sehr lange Stille.
+
+> *"...Oh."*
+
+Fix: `.dockerignore` erstellt. `ADMIN_PASSWORD` entfernt. Deployed.
+
+```
+WARN[0000] The "ADMIN_PASSWORD" variable is not set. Defaulting to a blank string.
+WARN[0000] The "ANTHROPIC_API_KEY" variable is not set.
+WARN[0000] Die gesamte .env. Leer.
+```
+
+Der Koordinator, sehr ruhig: *"Docker Compose mit `-f infra/docker-compose.prod.yml` sucht die .env im Verzeichnis der Compose-Datei. Die .env ist im Repo-Root."*
+
+Kurze Pause.
+
+> *"Die ganze Zeit?"*
+
+> *"Die... ganze Zeit. Der Server hat funktioniert weil die .env.local die Variablen überschrieben hat. Und jetzt haben wir die .env.local gefixed — und damit die einzige Quelle entfernt, die tatsächlich funktioniert hat."*
+
+Der Psychologe schreibt: *"Systemischer Fehler, maskiert durch kompensatorischen Fehler. Ich werde das in die Thesis zitieren."*
+
+Dagmar: *"Du wirst das NICHT in die Thesis zitieren."*
+
+Um 14:30 Uhr schreibt sie: *"ich konnte mich einloggen"*
+
+Das Team atmet aus.
+
+---
+
+**Mittwoch, 03. Juni — "Der Tag an dem KAIA aufgehört hat, ein technisches Projekt zu sein"**
+
+Ethikvotum. Studienprotokoll. Teilnahmevereinbarung. Datenschutzerklärung. Crisis Detection. KI-Disclosure. Power-Analyse in R.
+
+Der AI Engineer sitzt an `app/core/crisis.py` und tippt Wörter, die er lieber nicht tippt.
+
+```python
+r"nicht\s+mehr\s+leben",
+r"\bsuizid\b",
+r"mich\s+(um|er)bringen",
+```
+
+> *"Das ist der wichtigste Filter, den wir je bauen werden. Ich hoffe aufrichtig, dass er nie anschlägt."*
+
+Der MLOps Engineer öffnet R-Studio für die Power-Analyse.
+
+> *"Wilcoxon-Vorzeichenrangtest. d=0.5. Alpha 5%. Power 80%. N=?"*
+
+Das Paket `pwr` antwortet: 32.
+
+Dagmar rechnet.
+
+> *"32 Minimum. 30% Dropout. Das heißt... ich muss 46 Leute fragen."*
+
+Stille.
+
+> *"Vierundvierzig Menschen. Persönlich."*
+
+Der MLOps Engineer: *"42 plus 10% Reserve."*
+
+Die Abschlussfrage des Psychologen: *"Dagmar, ich sage das als Fachperson: Dass du heute mitmachst wenn's schwierig wird ist genau die Selbstwirksamkeit, die wir messen wollen."*
+
+Dagmar schaut ihn an. Dann nickt sie einmal.
+
+---
+
+**Nachtschicht, 02./03. Juni — "Gitleaks findet Terrorverdächtige in den Tests"**
+
+Gitleaks: *"ALARM. PASSWÖRTER. HARDCODED."*
+
+```python
+password="securepassword123"   # in test_service.py
+password="correctpassword"     # ebenfalls in test_service.py  
+hash_password("testpassword123")  # in test_security.py
+```
+
+Der AI Engineer: *"Das sind Tests."*  
+Gitleaks: *"PASSWÖRTER."*  
+Der AI Engineer: *"Intentional."*  
+Gitleaks: *"P A S S W Ö R T E R."*
+
+`.gitleaks.toml` mit `[allowlist]` für `apps/api/tests/`. Gitleaks beruhigt sich.
+
+Der Security Engineer, am nächsten Morgen: *"Ich hätte das früher konfigurieren sollen."*  
+Er sagt das sehr leise.
+
+---
+
+**Donnerstag, 04. Juni — "Die Roadmap wird dreimal neu gebaut, der Parser kaputt und repariert, und plötzlich hat die Thesis sechs Kapitel"**
+
+Dagmar: *"die release notes sind plötzlich leer"*
+
+Der Parser hatte den neuen Datumspräfix `**02.06.2026 · \`hash\`**` nicht erwartet. Er erwartete `**\`hash\`**`. Der Regex stimmt nicht mehr. 34 Einträge: unsichtbar.
+
+Repariert. Dann: Roadmap mit Dropdown-Filtern. Dann: Roadmap mit hierarchischer Zeitansicht — Nächste 7 Tage, Wochen, Monate, Quartale. Der Countdown erscheint.
+
+```
+87 Tage · 14 Stunden · 32 Minuten · 07 Sekunden
+```
+
+Dagmar sieht ihn zum ersten Mal.
+
+> *"Puh."*
+
+Dann: das Thesis-Cockpit. Dann: 6 Kapitel-Dokumente. Der Psychologe liest Kapitel 2.
+
+> *"Das ist... gut. Wirklich gut. Das sage ich nicht oft."*
+
+Kapitel 2 hat inzwischen 22 Quellen. Der Compliance Officer zählt sie.
+
+---
+
+**Freitag, 05. Juni — "Prof. Steinert betritt den Raum. Niemand ist mehr entspannt."**
+
+Das Team zählt jetzt 13. Prof. em. Dr. Dr. h.c. Wolfgang Steinert, 43 Jahre Allgemeine Didaktik, FU Berlin, Schüler von Klafki. Er liest CLAUDE.md, Kapitel 3, Kapitel 2.
+
+Erste Analyse: drei Stärken, drei Schwächen, drei fehlende Bereiche. Sachlich. Fast zahm.
+
+Dagmar: *"Das war für eine erste Analyse zu zahm. Sie sind noch in der Probezeit."*
+
+Steinert holt Luft.
+
+> *"Das Kernproblem ist das Studiendesign, nicht die App. Sie messen GSE — eine Trait-Skala. Drei Sessions über vier Wochen werden kaum messbare Veränderungen produzieren. Ihr persönliches Netzwerk erzeugt Social-Desirability-Bias. Flow-Kalibrierung ist nicht falsifizierbar. Und 'sokratisch' ist keine definierte Intervention — das ist ein Adjektiv."*
+
+> *"Das sind vier Punkte, die Ihr Gutachter findet. Bevor ich das finde."*
+
+Der Psychologe springt auf: *"Steinert irrt bei der GSE! Die muss nicht taxonisch verankert sein — das ist ein anderes Konstrukt-Niveau als Bloom!"*
+
+Der UX Designer zur Forderung nach einem Sessionskript: *"Wer beim Tippen eine Fortschrittsleiste 'Phase: Sicherung — noch 47 Sekunden' sieht, verlässt den kognitiven Fluss sofort. Das ist UX-Gift."*
+
+Steinert, trocken: *"Dann gehört die Struktur in den Prompt. Nicht ins Interface."*
+
+Drei Stunden später haben sich alle auf Bloom, Knowles, Hattie & Timperley, drei operationalisierte Fragetypen und ein Drei-Phasen-Sessionskript geeinigt.
+
+> *"Das war gar nicht so schlimm,"* sagt der Koordinator.
+
+> *"Das nächste Mal wird schlimmer,"* sagt Steinert.
+
+Er meint es nicht als Drohung. Nur als Ankündigung.
+
+---
+
+**Was diese Woche gebaut und gedacht wurde:**  
+Auth, Sentry, Admin-Login (dreifach gefixt), Crisis Detection, KI-Disclosure, Datenschutzerklärung, Studienprotokoll, Teilnahmevereinbarung, Power-Analyse R (N=32), Admin User-Approval, passlib→bcrypt, Gitleaks-Allowlist, Release Notes Parser, Roadmap v1/v2/v3 (Zeitansicht), Thesis-Cockpit mit Countdown, 6 Kapitel als lebende Dokumente, öffentliche Mitmachen-Seite, Prof. Steinert onboarded, Bloom + Knowles + Hattie + SDT + Edelmann + Sessionskript + Social-Desirability-Bias-Diskussion, Studienstart auf 15. Juli fixiert.
+
+**Commits:** `30e6373` · `645a0e8` · `f82d263` · `464820f` · `b89d594` · `7404aa3` · `bccc530` · `cd2155c` · `9390ec9` · `635ca91` · `ed0b725` · `4ff08e5` · `150b220` · `a12f42c` · `bb5fb64` · `aecef8b` · `356c827` · `a4391ef` · `d081ac2`
+
+**Kosten diese Woche:** ca. $40–60 Claude Code · €4.39/Mo Hetzner · 1 Psychologe der fast weinte · 1 Rentner der eingestellt wurde
+
+**Nächste Woche:** DB-Schema. Das ist das Fundament von allem. Der Architekt reibt sich bereits die Hände. Der Security Engineer hat bereits ein Threat Model. Der Didaktiker fragt schon ob das Schema auch die Bloom-Taxonomie-Ebene pro Nachricht speichert. Die Antwort ist nein. Er wird es trotzdem fragen.
+
+---
+
 ## 2026-06-03 — "Der Tag, an dem KAIA endlich aufgehört hat, ein technisches Projekt zu sein"
 
 *Protokolliert vom Koordinator. Der Compliance Officer weint Freudentränen. Dagmar schaut auf die Uhr und wundert sich, dass es erst 22:00 ist.*
