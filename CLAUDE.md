@@ -159,10 +159,11 @@ Conventional Commits werden durch commitlint erzwungen.
 - [ ] **G9: Fairness-Gate** *(wenn System Menschen bewertet/empfiehlt/scoret)* — Bias-Audit, Subgruppen-Performance, Counterfactual-Tests, Anti-Automation-Bias-UX, Bias-Monitoring, Model Card
 - [ ] **G10: Discovery-Gate** *(bei neuen Features)* — Validierte Hypothese, Need belegt, Tester-Feedback dokumentiert
 - [ ] **G11: Psychometrik-Gate** *(bei GSE/diagnostischen Komponenten)* — Konstrukt klar definiert, Gütekriterien belegt, Validitätsgrenzen explizit kommuniziert, Ergebnisdarstellung fachgerecht
+- [ ] **G12: Didaktik-Gate** *(bei jedem Lerndesign, Modus-Änderung oder Session-Architektur)* — Lernziele taxonmisch verortet (Bloom), didaktische Begründung der Methode, Transfer-Vorbereitung, Sequenzierung begründet
 
 ---
 
-## Die 12 Agenten — Rolle und Trigger
+## Die 13 Agenten — Rolle und Trigger
 
 | Agent | Rolle | Wann auf jeden Fall involvieren |
 |-------|-------|----------------------------------|
@@ -170,9 +171,10 @@ Conventional Commits werden durch commitlint erzwungen.
 | **product-owner** | Verantwortet Anforderungen, User Stories und Akzeptanzkriterien | Zu Beginn jeder Feature-Entwicklung |
 | **discovery-researcher** | Hypothesengetriebene Produktvalidierung, Customer Discovery, MVP-Experimente, Need-Ermittlung, Tester-Rekrutierung | VOR dem Product Owner, wenn neue Produktideen oder Features auf ihre Berechtigung geprüft werden sollen |
 | **psychologist** | Senior Diplom-/Wirtschaftspsychologe: psychologische Diagnostik, Psychometrie, GSE-Operationalisierung, Skalenvalidität, ITC-Guidelines | IMMER bei psychologischen Konstrukten — GSE, Selbstwirksamkeit, Stress, Flow — gemessen, abgeleitet oder kommuniziert |
+| **didaktiker** | Prof. em. Dr. Dr. h.c. Allgemeine Didaktik + Lehr-Lern-Forschung: Klafki, Bloom, Gagné, Merrill, Hattie, Knowles. Kennt alle Didaktik-Schulen. Sagt unbequeme Wahrheiten. | IMMER bei Lerndesign-Entscheidungen — Modus-Architektur, Session-Sequenzierung, Lernziele, Transfer, Scaffolding-Konzepte. Pflicht bei jeder Änderung der Interaktionslogik. |
 | **compliance** | DSGVO- und EU-AI-Act-Experte. DSFA, Transparenzpflichten, Logging-Anforderungen, DPAs | VOR der Architektur, um Risiken früh zu erkennen |
 | **architect** | Architekturentscheidungen, Modulgrenzen, Schnittstellen, ADRs | Nach Compliance-Bewertung, vor Implementierung |
-| **ai-engineer** | LLMs, Prompts, sokratische Adaptionslogik, Flow-Kalibrierung, RAG, Evals, SSE-Streaming | Wenn AI-Komponenten entworfen, implementiert oder optimiert werden |
+| **ai-engineer** | LLMs, Prompts, Adaptionslogik, Flow-Kalibrierung, RAG, Evals, SSE-Streaming | Wenn AI-Komponenten entworfen, implementiert oder optimiert werden |
 | **ai-ethics** | Bias-Audits, Fairness-Bewertungen, Datengovernance, ethische Folgenabschätzung, Anti-Automation-Bias | IMMER, wenn ein AI-System Menschen bewertet, einstuft, empfiehlt oder Entscheidungen über sie vorbereitet |
 | **ux-designer** | Interaktionsdesign, Accessibility, AI-Vertrauens-UX (Confidence, Erklärung, Korrektur), Anti-Automation-Bias-UX | Bei jeder UI-Änderung |
 | **security** | Threat Modeling, Auth-Architektur, OWASP LLM Top 10, Crisis-Detection, pgvector RLS | Vor UND nach Implementierung |
@@ -188,6 +190,7 @@ Conventional Commits werden durch commitlint erzwungen.
 1. product-owner         → User Story + Akzeptanzkriterien
 2. compliance            → DSGVO + EU AI Act Risikobewertung (vor Architektur)
 3. psychologist          → bei GSE/Selbstwirksamkeit/diagnostischen Komponenten (Pflicht)
+3b. didaktiker           → bei Lerndesign-Entscheidungen (parallel zu psychologist, Pflicht)
 4. architect             → Architekturentwurf + ADR
 5. ai-engineer           → Prompt/LLM-Design (falls AI-Komponente)
 6. ai-ethics             → Bias-Audit (kann parallel zu 5 und 7 laufen)
