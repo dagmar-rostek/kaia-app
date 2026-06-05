@@ -195,13 +195,15 @@ Bei wiederholten Krisen-Treffern für eine Benutzer-ID wird die Forscherin via S
 
 | Meilenstein | Geplant |
 |---|---|
-| Ethikvotum Antrag einreichen | Juni/Juli 2026 |
-| Pre-Registration OSF.io | Vor Datensicht |
-| Power-Analyse G*Power dokumentiert | Vor Studienstart |
-| DPAs Anthropic/OpenAI/Mistral abgeschlossen | Vor Studienstart |
-| Pilotstudie start | Nach Ethikvotum |
-| Datenerhebung abgeschlossen | Ca. 4 Wochen nach Start |
-| Auswertung und Thesis | Herbst 2026 |
+| Ethikvotum Antrag einreichen | **Diese Woche** — spätestens 06.06.2026 |
+| Pre-Registration OSF.io | Bis 12.07.2026 (vor Datensicht) |
+| DPAs Anthropic/OpenAI/Mistral abgeschlossen | Bis 12.07.2026 |
+| Study-Lock aktivieren | 12.07.2026 |
+| **Pilotstudie START** | **15. Juli 2026** |
+| Pilotstudie ENDE (4 Wochen) | 15. August 2026 |
+| Post-Messung + Interviews | 15.–31. August 2026 |
+| Auswertung (Kap. 5 + 6) | September 2026 |
+| Thesis-Abgabe | **01. Oktober 2026** |
 
 ---
 
