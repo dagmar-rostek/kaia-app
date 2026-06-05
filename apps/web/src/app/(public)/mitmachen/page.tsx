@@ -3,12 +3,13 @@ import {
   MessageSquare, Brain, ClipboardList, Video,
   Clock, Shield, CheckCircle2, ArrowRight,
   Star, Users, Calendar, BookOpen, AlertTriangle,
+  Target, Sparkles, Map,
 } from "lucide-react"
 
 export const metadata = {
   title: "Mitmachen — KAIA Pilotstudie",
   description:
-    "Werde Teil der KAIA-Pilotstudie: Teste einen KI-Lernbegleiter, der dir keine Antworten gibt — nur die richtigen Fragen. 4 Wochen, flexibel, aus der Forschung.",
+    "Werde Teil der KAIA-Pilotstudie: Ein KI-Lernbegleiter der sich an dich anpasst, dich begleitet statt belehrt — und dich das Lernen selbst lernen lässt. Start: Juli 2026.",
 }
 
 // ── Helpers ────────────────────────────────────────────────────────────────────
@@ -81,19 +82,20 @@ export default function MitmachenPage() {
       <section className="space-y-6 text-center">
         <div className="flex justify-center gap-2 flex-wrap">
           <Badge>Masterthesis · SRH Riedlingen</Badge>
-          <Badge>Sommer 2026</Badge>
+          <Badge>Start: Juli 2026</Badge>
           <Badge>~32 Teilnehmende gesucht</Badge>
         </div>
 
         <h1 className="text-4xl font-bold tracking-tight leading-tight">
-          Eine KI, die dir{" "}
-          <span className="italic">keine Antworten</span>{" "}
-          gibt.
+          Eine KI, die dich{" "}
+          <span className="italic">begleitet</span>{" "}
+          statt belehrt.
         </h1>
 
         <p className="text-lg text-muted-foreground leading-relaxed max-w-xl mx-auto">
-          KAIA stellt nur Fragen — und genau das macht sie besonders.
-          Erlebe einen neuen Ansatz des KI-gestützten Lernens und hilf dabei,
+          KAIA erklärt nicht — sie fragt, unterstützt, fordert heraus.
+          Immer passend zu dem, wo du gerade stehst.
+          Erlebe einen neuen Ansatz des Lernens und hilf dabei,
           ihn wissenschaftlich zu verstehen.
         </p>
 
@@ -114,26 +116,32 @@ export default function MitmachenPage() {
       </section>
 
       {/* ── WHAT IS KAIA ── */}
-      <section className="rounded-xl border border-border bg-muted/20 p-8 space-y-5">
+      <section className="rounded-xl border border-border bg-muted/20 p-8 space-y-6">
         <div className="flex items-center gap-3">
           <Brain className="h-5 w-5 text-muted-foreground shrink-0" />
           <h2 className="text-lg font-semibold">Was ist KAIA?</h2>
         </div>
+
         <p className="text-sm text-muted-foreground leading-relaxed">
-          KAIA ist ein KI-Lernbegleiter — aber kein gewöhnlicher. Die meisten KI-Tools
-          liefern sofort Antworten, Erklärungen, Lösungen. KAIA macht das Gegenteil:
-          Sie stellt Fragen, die dich selbst zum Denken bringen.
+          KAIA ist ein KI-Lernbegleiter — aber kein Nachhilfelehrer und kein Suchmaschinen-Ersatz.
+          Die meisten KI-Tools liefern Antworten. KAIA fragt zurück.
+          Nicht weil sie keine Antworten kennt, sondern weil Wissen,
+          das du selbst erarbeitest, tiefer sitzt und länger hält.
         </p>
+
         <p className="text-sm text-muted-foreground leading-relaxed">
-          Dieses Prinzip hat einen Namen: <strong className="text-foreground">Sokratische Methode</strong> —
-          benannt nach dem griechischen Philosophen, der Wissen nicht vermittelte,
-          sondern es durch gezieltes Nachfragen zum Vorschein brachte.
-          Forschung zeigt: Wissen, das man selbst erarbeitet, sitzt tiefer.
+          Das Besondere: KAIA passt sich dir an. Wenn du feststeckst,
+          hilft sie dich einen Schritt weiterzudenken. Wenn du im Fluss bist,
+          stellt sie die Frage, die dich weiter treibt. Wenn du einen Durchbruch hattest,
+          spiegelt sie dir zurück, was du gerade selbst herausgefunden hast.
+          Und von Session zu Session lernt KAIA, wie du denkst — und wird besser darin,
+          die richtigen Fragen zu stellen.
         </p>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1">
+
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           {[
-            { icon: MessageSquare, text: "Chatbasiert — kein App-Download nötig" },
-            { icon: BookOpen,      text: "Dein Lernthema, dein Tempo" },
+            { icon: MessageSquare, text: "Chatbasiert — kein App-Download" },
+            { icon: Sparkles,      text: "Passt sich deinem Tempo an" },
             { icon: Shield,        text: "DSGVO-konform, Server in der EU" },
           ].map(({ icon: Icon, text }) => (
             <div key={text} className="flex items-center gap-2.5 rounded-lg border border-border p-3">
@@ -142,6 +150,16 @@ export default function MitmachenPage() {
             </div>
           ))}
         </div>
+
+        <div className="rounded-lg bg-muted/40 border border-border p-4 text-xs space-y-2">
+          <p className="font-medium text-foreground">Was KAIA ist — und was nicht</p>
+          <p className="text-muted-foreground leading-relaxed">
+            KAIA ist eine Künstliche Intelligenz, kein Mensch. Ihre Einfühlsamkeit
+            basiert auf Sprachmustern, nicht auf echtem Mitgefühl.
+            Sie ist kein Therapeut und kein Notfalldienst.
+            Das kommunizieren wir offen — du bestätigst das einmalig bei der Registrierung.
+          </p>
+        </div>
       </section>
 
       {/* ── ABLAUF ── */}
@@ -149,7 +167,7 @@ export default function MitmachenPage() {
         <div className="space-y-2">
           <h2 className="text-2xl font-bold tracking-tight">Wie läuft die Teilnahme ab?</h2>
           <p className="text-muted-foreground text-sm">
-            Vier Schritte — insgesamt ca. <strong className="text-foreground">3–5 Stunden über 4 Wochen</strong>.
+            Fünf Schritte — insgesamt ca. <strong className="text-foreground">2–4 Stunden über 4 Wochen</strong>.
             Du entscheidest wann, wie oft und wie lange.
           </p>
         </div>
@@ -163,95 +181,121 @@ export default function MitmachenPage() {
             duration="ca. 10 Minuten · einmalig vor dem Start"
           >
             <p>
-              Du erstellst ein Konto und beantwortest einen kurzen Fragebogen mit{" "}
-              <strong className="text-foreground">10 Fragen</strong> — das dauert etwa 3 Minuten.
-              Die Fragen beschäftigen sich damit, wie du deine eigene
-              Lernfähigkeit einschätzt.
+              Du erstellst ein Konto und beantwortest{" "}
+              <strong className="text-foreground">10 kurze Fragen</strong> — das dauert etwa 3 Minuten.
+              Die Fragen beschäftigen sich damit, wie zuversichtlich du dich einschätzt,
+              neue oder schwierige Aufgaben aus eigener Kraft zu bewältigen.
             </p>
             <p>
-              Außerdem bestätigst du kurz, dass KAIA eine KI ist und kein Mensch —
+              Außerdem bestätigst du, dass KAIA eine KI ist und kein Mensch —
               das ist uns wichtig, transparent zu kommunizieren.
             </p>
             <div className="rounded-lg bg-muted/40 border border-border p-3 text-xs space-y-1">
               <p className="font-medium text-foreground">Was wird gemessen?</p>
-              <p>
-                Der Fragebogen misst, wie zuversichtlich du dich einschätzt,
-                neue oder schwierige Aufgaben aus eigener Kraft zu bewältigen —
-                <em> nicht</em>, wie gut du bist oder wie viel du weißt.
-                Es gibt keine richtigen oder falschen Antworten.
-                Wir vergleichen deine Antworten vor und nach den vier Wochen mit KAIA.
+              <p className="text-muted-foreground">
+                Nicht wie gut du bist oder wie viel du weißt —
+                sondern wie zuversichtlich du dich <em>selbst</em> einschätzt,
+                Schwieriges zu meistern. Es gibt keine richtigen oder falschen Antworten.
+                Wir vergleichen deine Antworten am Anfang und am Ende der vier Wochen.
               </p>
             </div>
           </StepCard>
 
           <StepCard
             number="2"
-            icon={BookOpen}
-            title="Lernthema wählen"
-            duration="5 Minuten · einmalig"
+            icon={Map}
+            title="Deine persönliche Lernroadmap erstellen"
+            duration="5–10 Minuten · einmalig"
             accent
           >
             <p>
-              Du wählst ein Thema, mit dem du dich in den nächsten vier Wochen
-              beschäftigen möchtest. <strong className="text-foreground">Alles ist möglich:</strong>{" "}
-              ein Studienfach, ein Berufsprojekt, ein Buch das du verstehen willst,
-              eine neue Sprache, ein technisches Konzept — du bestimmst.
+              Du wählst ein Thema, mit dem du dich in den nächsten Wochen beschäftigen möchtest —
+              und legst dir eine kleine persönliche Lernroadmap an.{" "}
+              <strong className="text-foreground">Alles ist möglich:</strong>{" "}
+              ein Studienfach, ein Berufsprojekt, eine Sprache, ein Konzept, ein Buch.
             </p>
             <p>
-              KAIA passt sich an dein Thema an. Du musst nichts vorbereiten
-              und kein Vorwissen haben.
+              In der Roadmap trägst du ein, was du erreichen möchtest — und verfolgst
+              deinen Fortschritt selbst. KAIA schlägt dir nichts vor und bewertet dich nicht.
+              Du bist der Maßstab für dich.
             </p>
+            <div className="rounded-lg bg-muted/40 border border-border p-3 text-xs space-y-1">
+              <p className="font-medium text-foreground">Warum eine Roadmap?</p>
+              <p className="text-muted-foreground">
+                Wer sich ein klares Ziel setzt, lernt nachweislich besser — nicht weil
+                das Ziel der Antrieb ist, sondern weil es dir hilft zu merken, wann du
+                vorankommst. Die Roadmap gehört dir, nicht KAIA.
+              </p>
+            </div>
           </StepCard>
 
           <StepCard
             number="3"
             icon={MessageSquare}
             title="Mindestens 3 Sessions mit KAIA"
-            duration="je 5–10 Minuten · über 4 Wochen verteilt"
+            duration="je 5–15 Minuten · über 4 Wochen verteilt"
           >
             <p>
               Du chatterst mit KAIA über dein Lernthema — kurz, fokussiert, wann du willst.
               Mindestens drei Sessions über vier Wochen sind für die Auswertung nötig,
-              aber du kannst jederzeit mehr machen.
+              aber du kannst jederzeit mehr machen. Es gibt kein Richtig oder Falsch.
             </p>
+
             <p>
-              Jede Session beginnt mit einer einfachen Frage: <em>"Was möchtest du heute erarbeiten?"</em>
-              Das gibt der Session Richtung — und KAIA einen Kontext.
+              Jede Session beginnt mit einer einfachen Frage von KAIA:{" "}
+              <em className="text-foreground">"Was möchtest du nach dieser Session verstanden oder weitergedacht haben?"</em>{" "}
+              Und sie endet mit:{" "}
+              <em className="text-foreground">"Was würdest du jemandem erklären, der nicht dabei war?"</em>{" "}
+              Dazwischen passiert das eigentliche Lernen.
             </p>
-            <p>
-              KAIA wird dir <strong className="text-foreground">keine fertigen Antworten</strong> geben.
-              Das kann am Anfang ungewohnt wirken — und ist gleichzeitig
-              das Herzstück des Experiments.
-            </p>
-            <div className="rounded-lg bg-muted/40 border border-border p-3 text-xs">
-              <p className="font-medium text-foreground">Was passiert in einer Session?</p>
-              <p className="mt-1 text-muted-foreground">
-                Du schreibst KAIA, womit du dich gerade beschäftigst.
-                KAIA stellt eine Frage. Du denkst nach. 5–10 Minuten später
-                hast du einen Gedanken weitergedacht, den du alleine vielleicht
-                liegengelassen hättest.
+
+            <div className="rounded-lg bg-muted/40 border border-border p-3 text-xs space-y-2">
+              <p className="font-medium text-foreground">Wie verhält sich KAIA in einer Session?</p>
+              <p className="text-muted-foreground leading-relaxed">
+                KAIA liest, wie es dir gerade geht — und passt sich an.
+                Wenn du klar im Fluss bist, stellt sie die Frage, die dich weiter antreibt.
+                Wenn du feststeckst, hilft sie dir, den nächsten kleinen Schritt zu sehen.
+                Wenn du gerade einen Durchbruch hattest, benennt sie, was du selbst
+                herausgefunden hast — nicht als Lob, sondern als Spiegel.
+              </p>
+              <p className="text-muted-foreground leading-relaxed">
+                Eines bleibt immer gleich: Fertige Antworten liefert KAIA nicht.
+                Das kann am Anfang ungewohnt wirken — und wird mit der Zeit
+                das Interessanteste an der ganzen Erfahrung sein.
               </p>
             </div>
           </StepCard>
 
           <StepCard
             number="4"
-            icon={Video}
-            title="Abschluss: Fragebogen + Interview"
-            duration="Fragebogen ~3 Min · Interview ~45 Min (optional, aber wertvoll)"
+            icon={Target}
+            title="Abschluss-Fragebogen"
+            duration="ca. 3 Minuten · einmalig nach Woche 4"
           >
             <p>
-              Nach vier Wochen beantwortest du dieselben 10 Fragen wie am Anfang —
-              das dauert wieder 3 Minuten. Dieser Vergleich ist das Herzstück
-              der wissenschaftlichen Auswertung.
+              Nach vier Wochen beantwortest du dieselben 10 Fragen wie am Anfang.
+              Dieser Vergleich ist das Herzstück der wissenschaftlichen Auswertung —
+              hat sich deine Einschätzung der eigenen Lernfähigkeit verändert?
             </p>
             <p>
-              Zusätzlich lade ich dich zu einem optionalen
-              <strong className="text-foreground"> Abschlussinterview von ca. 45 Minuten</strong> ein —
+              Außerdem hast du die Möglichkeit, deinen Lernroadmap-Fortschritt
+              einzutragen: Was hast du in diesen vier Wochen tatsächlich gelernt?
+            </p>
+          </StepCard>
+
+          <StepCard
+            number="5"
+            icon={Video}
+            title="Abschlussinterview"
+            duration="ca. 45 Minuten · optional, aber wertvoll"
+          >
+            <p>
+              Ich lade dich zu einem persönlichen Gespräch ein —
               per Video oder persönlich, ganz wie du möchtest.
+              Es wird mit deiner Einwilligung aufgezeichnet und anonymisiert ausgewertet.
             </p>
             <div className="rounded-lg bg-muted/40 border border-border p-3 text-xs space-y-1.5">
-              <p className="font-medium text-foreground">Was besprechen wir im Interview?</p>
+              <p className="font-medium text-foreground">Was besprechen wir?</p>
               <ul className="space-y-1 text-muted-foreground list-disc list-inside">
                 <li>Wie hat sich das Lernen mit KAIA angefühlt?</li>
                 <li>Was hat dich überrascht — positiv oder negativ?</li>
@@ -259,10 +303,9 @@ export default function MitmachenPage() {
                 <li>Was würdest du an KAIA verändern?</li>
               </ul>
               <p className="text-muted-foreground pt-1">
-                Das Interview wird mit deiner Einwilligung aufgezeichnet und
-                anonymisiert ausgewertet. Kein Test, keine richtigen Antworten —
-                das Interview ist der Raum, in dem <em>deine</em> Erfahrung zählt,
-                nicht das System.
+                Kein Test, keine richtigen Antworten. Das Interview ist der Raum,
+                in dem <em>deine</em> Erfahrung zählt — nicht das System.
+                Das ist freiwillig, aber es macht aus Zahlen eine Geschichte.
               </p>
             </div>
           </StepCard>
@@ -279,20 +322,24 @@ export default function MitmachenPage() {
         <div className="space-y-3">
           {[
             {
-              title: "Eine neue Art zu lernen — gratis ausprobieren",
-              desc: "KAIA ist noch nicht öffentlich. Als Teilnehmende:r bist du unter den Ersten, die einen sokratischen KI-Lernbegleiter im Einsatz erleben.",
+              title: "Lernen lernen — nicht nur Inhalte",
+              desc: "KAIA trainiert nicht dein Wissen, sondern deine Fähigkeit, selbst weiterzudenken. Das ist etwas, das du auf jedes zukünftige Lernprojekt übertragen kannst.",
+            },
+            {
+              title: "Eine Lernroadmap, die dir gehört",
+              desc: "Du baust dir über die vier Wochen eine persönliche Lernstruktur auf — mit Zielen, die du selbst gesetzt hast, und Fortschritt, den nur du bewertest.",
             },
             {
               title: "Selbstkenntnis mitnehmen",
-              desc: "Der Fragebogen am Anfang und Ende gibt dir ein kleines Fenster in deine eigene Selbstwirksamkeitsüberzeugung — die Überzeugung, Schwieriges aus eigener Kraft zu meistern. Interessant auch für dich persönlich.",
+              desc: "Der Fragebogen am Anfang und Ende zeigt dir, wie sich deine eigene Einschätzung verändert hat. Interessant auch jenseits der Studie.",
             },
             {
-              title: "Teil einer Masterthesis sein",
-              desc: "Deine anonymisierten Erfahrungen fließen in eine echte wissenschaftliche Arbeit ein — ein konkreter Beitrag zur KI-Bildungsforschung.",
+              title: "Erste Reihe in einem echten Forschungsprojekt",
+              desc: "KAIA ist noch nicht öffentlich. Deine Erfahrungen fließen direkt in eine Masterthesis und möglicherweise in zukünftige Veröffentlichungen ein.",
             },
             {
               title: "Teilnahmebestätigung auf Wunsch",
-              desc: "Auf Anfrage bekommst du eine Bestätigung über deine Studienteilnahme — nutzbar für Portfolios, Bewerbungen oder einfach als Andenken.",
+              desc: "Auf Anfrage bekommst du eine Bestätigung — nutzbar für Portfolio, Bewerbungen oder als Nachweis gesellschaftlichen Engagements in der Forschung.",
             },
           ].map(({ title, desc }) => (
             <div key={title} className="flex items-start gap-3">
@@ -313,8 +360,9 @@ export default function MitmachenPage() {
           <h2 className="text-lg font-semibold">Wer kann mitmachen?</h2>
         </div>
         <p className="text-sm text-muted-foreground">
-          Kein Vorwissen nötig, keine besonderen Anforderungen —
-          nur ein paar grundlegende Voraussetzungen:
+          Kein Vorwissen nötig. Du musst nicht gut im Lernen sein —
+          im Gegenteil: Wer das Gefühl hat, noch nicht so gut lernen zu können,
+          ist genau die richtige Person für diese Studie.
         </p>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           {[
@@ -322,7 +370,7 @@ export default function MitmachenPage() {
             { ok: true,  text: "Deutschsprachig" },
             { ok: true,  text: "Gerade am Lernen — Studium, Job, Hobby" },
             { ok: true,  text: "Zugang zu Computer oder Tablet" },
-            { ok: true,  text: "~3–5 Stunden Zeit über 4 Wochen" },
+            { ok: true,  text: "~2–4 Stunden Kapazität über 4 Wochen" },
             { ok: false, text: "Aktuell in psychiatrischer Behandlung wegen einer Krise" },
           ].map(({ ok, text }) => (
             <div key={text} className={`flex items-center gap-2.5 rounded-lg border p-3 ${ok ? "border-border" : "border-border/40 opacity-60"}`}>
@@ -335,7 +383,7 @@ export default function MitmachenPage() {
           ))}
         </div>
         <p className="text-xs text-muted-foreground">
-          Die letzte Bedingung dient zum Schutz — KAIA ist kein therapeutisches
+          Die letzte Bedingung dient deinem Schutz — KAIA ist kein therapeutisches
           Werkzeug und kein Ersatz für professionelle Unterstützung.
         </p>
       </section>
@@ -349,12 +397,13 @@ export default function MitmachenPage() {
         <div className="rounded-xl border border-border overflow-hidden">
           <div className="divide-y divide-border">
             {[
-              { phase: "Vor Start",    dur: "10 Min",    desc: "Registrierung, Einwilligung, Kurzfragebogen (10 Fragen)" },
-              { phase: "Woche 1–4",   dur: "3× 5–10 Min",  desc: "Mindestens 3 kurze Chat-Sessions mit KAIA — flexibel, wann du willst" },
-              { phase: "Nach Woche 4", dur: "3 Min",      desc: "Abschluss-Fragebogen (dieselben 10 Fragen wie am Start)" },
-              { phase: "Optional",    dur: "~45 Min",    desc: "Abschlussinterview mit der Forscherin (Video oder persönlich)" },
+              { phase: "Vor Start",     dur: "~10 Min",    desc: "Registrierung, Einwilligung, KI-Disclosure, Kurzfragebogen (10 Fragen)" },
+              { phase: "Tag 1",         dur: "~10 Min",    desc: "Persönliche Lernroadmap anlegen — Thema, Ziel, persönliche Motivation" },
+              { phase: "Woche 1–4",     dur: "3× 5–15 Min", desc: "Mindestens 3 Sessions mit KAIA — flexibel, wann du willst" },
+              { phase: "Nach Woche 4",  dur: "~5 Min",     desc: "Abschluss-Fragebogen (dieselben 10 Fragen + Roadmap-Update)" },
+              { phase: "Optional",      dur: "~45 Min",    desc: "Abschlussinterview mit der Forscherin (Video oder persönlich, aufgezeichnet)" },
             ].map(({ phase, dur, desc }) => (
-              <div key={phase} className="grid grid-cols-[100px_1fr] gap-4 px-5 py-4 hover:bg-muted/20 transition-colors">
+              <div key={phase} className="grid grid-cols-[110px_1fr] gap-4 px-5 py-4 hover:bg-muted/20 transition-colors">
                 <div>
                   <p className="text-xs font-medium">{phase}</p>
                   <div className="flex items-center gap-1 mt-0.5">
@@ -376,26 +425,26 @@ export default function MitmachenPage() {
           <TrustItem
             icon={Shield}
             title="DSGVO-konform"
-            desc="Alle Daten werden auf einem Hetzner-Server in Helsinki, Finnland (EU) gespeichert. Keine US-Clouds für deine persönlichen Daten."
+            desc="Alle Daten auf einem Hetzner-Server in Helsinki, Finnland (EU). Keine US-Clouds für deine persönlichen Daten."
           />
           <TrustItem
             icon={CheckCircle2}
             title="Anonymisierte Auswertung"
-            desc="In der Thesis und in Veröffentlichungen werden ausschließlich anonymisierte Ergebnisse verwendet. Kein Rückschluss auf dich als Person."
+            desc="In Thesis und Veröffentlichungen ausschließlich anonymisierte Ergebnisse. Kein Rückschluss auf dich als Person."
           />
           <TrustItem
             icon={Calendar}
             title="Automatische Löschung"
-            desc="Alle deine Daten werden 6 Monate nach Studienende automatisch und vollständig gelöscht."
+            desc="Alle Daten werden 6 Monate nach Studienende automatisch und vollständig gelöscht."
           />
           <TrustItem
             icon={BookOpen}
-            title="Jederzeit aussteigen — wirklich"
-            desc="Du kannst aufhören, wann du willst — ohne Begründung, ohne schlechtes Gewissen, ohne Folgen. Das ist ein echtes Angebot, kein Kleingedrucktes."
+            title="Jederzeit aufhören — wirklich"
+            desc="Du kannst aufhören, wann du willst. Ohne Begründung, ohne schlechtes Gewissen, ohne Folgen. Das ist ein echtes Angebot, kein Kleingedrucktes."
           />
         </div>
         <p className="text-xs text-muted-foreground">
-          Vollständige Informationen findest du in der{" "}
+          Vollständige Informationen in der{" "}
           <Link href="/datenschutz" className="underline hover:text-foreground transition-colors">
             Datenschutzerklärung
           </Link>
@@ -408,9 +457,8 @@ export default function MitmachenPage() {
         <div className="space-y-2">
           <h2 className="text-2xl font-bold tracking-tight">Bereit mitzumachen?</h2>
           <p className="text-muted-foreground text-sm max-w-md mx-auto">
-            Die Studie startet sobald das Ethikvotum der SRH vorliegt.
-            Registriere dich jetzt — du wirst per E-Mail benachrichtigt,
-            sobald es losgeht.
+            Die Studie startet Mitte Juli 2026 — nach Vorliegen des Ethikvotums der SRH.
+            Registriere dich jetzt und du wirst per E-Mail benachrichtigt sobald es losgeht.
           </p>
         </div>
         <Link
