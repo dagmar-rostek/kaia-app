@@ -1,144 +1,172 @@
 # Kapitel 3 — Konzeptionelles Rahmenwerk
 
-> **Stand:** 04. Juni 2026 · **Version:** 0.3-DRAFT  
-> **Reviewer:** Architect · AI Engineer · Psychologe (ausstehend)  
-> **Geplanter Umfang:** ca. 15–18 Seiten (~4.000–4.500 Wörter)  
-> **Status:** Grundstruktur vorhanden, Abschnitte 3.3–3.5 noch ausbaufähig
+> **Stand:** 05. Juni 2026 · **Version:** 1.0-DRAFT  
+> **Reviewer:** Psychologe (3.2, 3.3) ✓ · AI Engineer (3.3, 3.4, 3.5) ✓ · Architect  
+> **Geplanter Umfang:** ca. 18–22 Seiten (~4.500–5.500 Wörter)  
+> **Status:** Vollständig überarbeitete Version — alle vier Systemkomponenten dokumentiert
 
 ---
 
 ## Überblick
 
-Dieses Kapitel entwickelt das konzeptionelle Rahmenwerk von KAIA — die theoretisch begründete Designarchitektur, aus der die technische Implementierung (Kapitel 4) unmittelbar folgt. Die vier Kernkomponenten des Rahmenwerks (Zustandserkennung, Adaptionslogik, Sokratisches Prompt-System, Gedächtnisarchitektur) werden hergeleitet, begründet und in ihrem Zusammenhang dargestellt.
+Dieses Kapitel entwickelt das konzeptionelle Rahmenwerk von KAIA. Es übersetzt die theoretischen Grundlagen (Kapitel 2) in operative Designentscheidungen und beschreibt das Vier-Komponenten-Modell: (1) regelbasiertes Adaptionssystem, (2) Mehr-Modus-Interaktionsarchitektur, (3) Lernroadmap-Integration, (4) Zwei-Schicht-Gedächtnis und wachsendes Nutzerprofil.
+
+Der Thesis-Titel — *"Entwicklung eines empathischen AI-Agenten zur neuroadaptiven personalisierten Lernbegleitung"* — enthält vier Designanforderungen, die in diesem Kapitel operationalisiert werden: Empathie (computational empathy, explizit als KI kommuniziert), Neuroadaptivität (regelbasiertes Adaptionssystem informiert durch Lazarus), Personalisierung (wachsendes Nutzerprofil), Lernbegleitung (sokratisch und scaffolding, kein Instruktionssystem).
 
 ---
 
-## 3.1 Vom theoretischen Rahmen zur Designentscheidung
+## 3.1 Vom theoretischen Rahmen zu Designanforderungen
 
-Das in Kapitel 2 entwickelte theoretische Fundament — Konstruktivismus, Selbstwirksamkeit, Lazarus, Flow/Teigen, Expertise Reversal Effect, Computational Empathy — legt eine Reihe von Designanforderungen nahe, die in diesem Abschnitt explizit gemacht werden.
+Die in Kapitel 2 entwickelten Theorien ergeben sechs operative Designanforderungen:
 
-Eine KI-gestützte Lernbegleitung, die Selbstwirksamkeit stärken will, muss demnach:
+1. **Eigenleistung schützen** — Antworten ersetzen kognitiven Eigenanteil; KAIA sollte ihn fördern (Kalyuga et al., 2003)
+2. **Modus an Zustand anpassen** — dieselbe Frage erzeugt bei Überforderung Stress, bei Flow Erkenntnisfreude (Lazarus & Folkman, 1984; Csikszentmihalyi, 1990)
+3. **Scaffolding für Novizen** — rein sokratische Begleitung überfordert Anfänger; es braucht ein Spektrum (Vygotsky, 1978; Wood et al., 1976)
+4. **Ressourcenwahrnehmung stärken** — nicht Anforderungen reduzieren, sondern wahrgenommene Handlungsfähigkeit aufbauen (Bandura, 1997; Lazarus, 1993)
+5. **Selbstregulation unterstützen** — explizite Ziele und ein Fortschrittsrahmen fördern Selbstwirksamkeit und Metakognition (Zimmermann, 2000; Locke & Latham, 1990)
+6. **Transparent kommunizieren** — KAIA ist eine KI; computational empathy ist nicht echtes Mitgefühl (Decety & Jackson, 2004)
 
-1. **Eigenleistung schützen** — keine Antworten geben, die den kognitiv notwendigen Eigenanteil ersetzen (Kalyuga et al., 2003)
-2. **Subjektive Bewertung adressieren** — nicht den Schwierigkeitsgrad objektiv reduzieren, sondern die wahrgenommene Ressource stärken (Lazarus & Folkman, 1984)
-3. **Aktivierungsniveau balancieren** — zwischen Unterforderung (Langeweile) und Überforderung (Angst) navigieren (Csikszentmihalyi, 1990; Teigen, 1994)
-4. **Transparent kommunizieren** — explizit als KI auftreten, keine menschliche Empathie simulieren (Decety & Jackson, 2004)
-5. **Adaptiv reagieren** — auf individuelle Zustandssignale, nicht auf generische Nutzerprofile
-
-Diese fünf Anforderungen strukturieren das konzeptionelle Rahmenwerk in vier Komponenten.
-
----
-
-## 3.2 Komponente 1: Zustandserkennung
-
-### 3.2.1 Das Problem der textbasierten Zustandsinferenz
-
-Neuroadaptive Systeme im klinischen oder militärischen Einsatz nutzen physiologische Sensoren (EEG, Herzratenvariabilität) zur Zustandsmessung. Für eine DSGVO-konforme Webanwendung sind diese Zugänge nicht realisierbar. KAIA operiert ausschließlich auf der Basis von Texteingaben.
-
-Die textbasierte Zustandsinferenz ist epistemisch beschränkt: Sie liefert Indikatoren, keine Messungen. Folgende Signale werden als Proxys für kognitive und emotionale Zustände eingesetzt:
-
-- **Antwortlänge und -tempo**: Kurze, fragmentierte Antworten können auf Überforderung oder Desengagement hinweisen
-- **Wiederholungsmuster**: Mehrfaches Rückfragen nach demselben Konzept signalisiert Verständnisprobleme
-- **Emotionale Markierungen**: Explizite Frustrationsausdrücke ("Das verstehe ich nicht", "Ich komme nicht weiter")
-- **Elaborationstiefe**: Ausführliche, elaborierte Antworten signalisieren Flow oder hohes Engagement
-
-Diese Indikatoren werden nicht deterministisch ausgewertet, sondern dem Sprachmodell als Kontextinformation übergeben. Die Zustandsinferenz ist damit modellbasiert und erbt die Unsicherheiten des jeweiligen LLM.
-
-### 3.2.2 Drei Zustandskategorien
-
-KAIA unterscheidet drei operative Zustandskategorien:
-
-| Zustand | Indikatoren | Systemreaktion |
-|---|---|---|
-| **Explorativ** (Flow) | Lange, elaborierte Antworten; eigenständige Hypothesenbildung | Offene, erweiternde Fragen |
-| **Orientierungslos** (Überforderung) | Kurze Fragmente; wiederholte Rückfragen; explizite Verwirrung | Strukturierende, einschränkende Fragen |
-| **Reflektierend** | Metakognitive Aussagen; Selbstbewertungen | Rückspiegelnde, vertiefende Fragen |
-
-Diese Kategorisierung ist operational, nicht diagnostisch. KAIA diagnostiziert keine psychologischen Zustände — es passt seinen Gesprächsstil an wahrgenommene Gesprächsmuster an.
+Diese sechs Anforderungen strukturieren das Rahmenwerk in vier Komponenten.
 
 ---
 
-## 3.3 Komponente 2: Sokratisches Prompt-System
+## 3.2 Komponente 1: Regelbasiertes Adaptionssystem (informiert durch Lazarus)
 
-### 3.3.1 Operationalisierung der Sokratischen Methode für LLMs
+### 3.2.1 Begriffsklärung: Adaptation vs. Erkennung
 
-Die Sokratische Methode (vgl. Kapitel 2.1) lässt sich für Sprachmodelle in einem strukturierten Prompt-System operationalisieren. Das System enthält vier Ebenen:
+Das Adaptionssystem von KAIA wird in dieser Arbeit explizit als **regelbasiertes Adaptionssystem informiert durch das transaktionale Stressmodell (Lazarus & Folkman, 1984)** bezeichnet — nicht als "Zustandserkennung" oder "Stressdetektion". Diese Unterscheidung ist wissenschaftlich zwingend: Textbasierte Inferenz kognitiver Bewertungszustände ist epistemisch beschränkt. Das System erkennt keine Zustände; es reagiert auf Signalmuster nach definierten Regeln. Die Signale sind Proxys, keine Messungen.
 
-1. **Systemprompt (Charakter und Grundhaltung)**: Definiert KAIAs Persönlichkeit, Gesprächsregeln (niemals Antworten geben), ethische Leitlinien (Crisis-Detection, KI-Disclosure) und den aktiven Interaktionsmodus
-2. **Nutzerprofil (kontextuelles Gedächtnis)**: Aggregierte Informationen über bisherige Gesprächsthemen, Lernbereiche und erkannte Präferenzen
-3. **Gesprächs-Retrieval (episodisches Gedächtnis)**: Semantisch relevante Ausschnitte aus früheren Sitzungen via pgvector
-4. **Aktueller Gesprächskontext**: Die laufende Konversation der aktuellen Session
+### 3.2.2 Operationalisierung: Acht Textindikatoren
 
-### 3.3.2 Neuroadaptiver Modus als Prompt-Parameter
+Die primäre und sekundäre Bewertung nach Lazarus (1993) lassen sich in Chat-Nachrichten über folgende Indikatoren approximieren:
 
-Der neuroadaptive Modus wird als expliziter Parameter im Systemprompt kodiert:
+**Primärbewertung — Bedrohungs- und Herausforderungssignale:**
 
-```
-Aktueller Modus: [explorativ | orientierungslos | reflektierend]
-Anweisung: Passe deinen Fragestil entsprechend an. Im explorativen Modus: 
-öffnende, hypothesengenerierende Fragen. Im orientierungslosen Modus: 
-strukturierende Fragen mit eng umrissenen Schritten. Im reflektierenden 
-Modus: metakognitive Rückspiegel-Fragen.
-```
+1. *Katastrophisierende Sprache* — Absolutsetzungen und Negativgeneralisierungen: "Das schaffe ich nie", "Das ist zu viel", "Das ist total schwierig"
+2. *Zeitdruck-Signale* — Zeitnomen kombiniert mit Negation: "keine Zeit", "noch nicht fertig", "bis Freitag"
+3. *Kontrollverlust-Marker* — Passive Konstruktionen ohne Handlungssubjekt: "es wird erwartet", "man muss", "das zwingt mich"; Fehlen von Ich-Handlungsaussagen
+4. *Hilflosigkeits-Framing* — Rhetorische Fragen ohne antizipierte Lösung: "Was soll ich denn machen?" (mit Ausrufezeichen statt Fragezeichen)
 
-Diese Kodierung ist intentional vereinfacht — die Differenzierung zwischen den Modi liegt beim Sprachmodell, nicht bei einer regelbasierten Heuristik. Der LLM-Evaluationsbericht (Kapitel 5) untersucht systematisch, welche Modelle diese Differenzierung am zuverlässigsten umsetzen.
+**Sekundärbewertung — Coping-Ressourcen-Signale:**
 
-### 3.3.3 Prompt-Management in der Datenbank
+5. *Handlungsorientierung* — Aktivverben mit Ich-Subjekt: "Ich probiere...", "Ich kann versuchen...", "Ich werde..."
+6. *Ressourcen-Benennung* — Explizite Nennung von Strategien oder Vorerfahrungen: "Ich hab das ähnlich schon...", "Ich könnte jemanden fragen..."
+7. *Ambivalenz-Signale* — "Einerseits... andererseits..." — signalisiert laufenden Bewertungsprozess, nicht Kollaps
+8. *Metakognitive Distanz* — Selbstbeobachtungs-Formulierungen: "Ich merke, dass ich...", "Ich glaube, mein Problem ist..." — hohes Coping-Potential
 
-Alle Prompt-Templates werden in der PostgreSQL-Datenbank verwaltet und via Jinja2 gerendert. Dies ermöglicht:
-- Editieren ohne Re-Deployment
-- Versionierung und Auditierbarkeit
-- Study-Lock: Bei `STUDY_MODE=locked` werden Prompt-Änderungen von der CI blockiert (reproduzierbare Studienkonditionen)
+### 3.2.3 Hysterese-Logik: Stabilität vor Reaktivität
 
----
+Ein technisch wichtiger Designaspekt ist die Hysterese-Logik: Der Modus wechselt nicht nach einem einzigen Signal, sondern erst nach N konsistenten Nachrichten (empirisch zu kalibrieren, vorläufig N=3). Ein zu sensitives System würde durch einzelne Formulierungen übersteuert und erzeugte dadurch inkonsistente Gesprächserlebnisse. Die Hysterese-Logik liegt im Service-Layer der Anwendung, nicht im Sprachmodell.
 
-## 3.4 Komponente 3: Zwei-Schicht-Gedächtnisarchitektur
+### 3.2.4 Wissenschaftliche Einschränkungen
 
-### 3.4.1 Architekturprinzip
+Vier Limitierungen sind in der Thesis transparent zu kommunizieren:
 
-KAIAs Gedächtnisarchitektur kombiniert zwei komplementäre Datenspeicher:
-
-**Schicht 1: Strukturiertes Gedächtnis (PostgreSQL)**
-- User-Profil: Präferenzen, Lernbereiche, Einwilligungsstatus
-- Sitzungshistorie: Timestamps, Dauer, Modus-Verläufe
-- GSE-Messdaten: Prä- und Post-Werte
-
-**Schicht 2: Semantisches Gedächtnis (pgvector)**
-- Vektorisierte Gesprächsfragmente
-- Semantische Ähnlichkeitssuche für Cross-Session-Kontext
-- Row-Level-Security: user_id als Pflichtparameter — kein Cross-User-Leak
-
-### 3.4.2 Das Cross-Session-Gedächtnis als Differenzierungsmerkmal
-
-Das semantische Gedächtnis ermöglicht KAIA, frühere Gesprächsthemen natürlich zu referenzieren: "Du hast letzte Woche erwähnt, dass du mit Statistik kämpfst — bist du dort weitergekommen?" Diese Eigenschaft unterscheidet KAIA von stateless Chatbots und ist die technische Grundlage für das Erleben von Kontinuität und Beziehungsaufbau — ein Faktor, der nach Decety und Jackson (2004) für Computational Empathy zentral ist.
-
-### 3.4.3 DSGVO-Konformität der Gedächtnisarchitektur
-
-Alle gespeicherten Gesprächsdaten sind pseudonymisiert (user_id statt Klarname). Die 6-Monate-Löschfrist nach Studienende ist technisch implementiert. Das Recht auf Datenlöschung (Art. 17 DSGVO) ist als Self-Service im Benutzerprofil zugänglich. Die Gedächtnisarchitektur ist damit nicht nur ein funktionales, sondern auch ein datenschutzrechtliches Designmerkmal.
+1. *Konfundierungsproblem*: Sprachstil korreliert mit Bildungsgrad, Schreibgewohnheit und stabilen Persönlichkeitsmerkmalen (Neurotizismus), nicht ausschließlich mit aktuellem Bewertungszustand. Das System misst möglicherweise Traits statt situative States.
+2. *Keine validierte Wirksamkeit*: Es gibt keine publizierte Evidenz dafür, dass LLM-Moduswechsel basierend auf Lazarus-Signalen Lernoutcomes verbessert. Die neuroadaptive Komponente ist eine designtheoretische Hypothese — nicht eine empirisch belegte Intervention.
+3. *Diskretisierungsproblem*: Lazarus beschreibt Bewertung als kontinuierlichen Prozess. Die Abbildung auf vier diskrete Modi ist eine pragmatische Designentscheidung, die in der Thesis als solche ausgewiesen werden muss.
+4. *Methodische Konsequenz*: Wenn die Pilotstudie die Wirkung von KAIA evaluiert, muss die Neuroadaptivität entweder als kontrollierte Variable oder als deskriptiver Systemaspekt behandelt werden — nicht beides gleichzeitig.
 
 ---
 
-## 3.5 Komponente 4: Character-System als Engagement-Faktor
+## 3.3 Komponente 2: Mehr-Modus-Interaktionsarchitektur
 
-### 3.5.1 Begründung
+### 3.3.1 Vier Interaktionsmodi und ihr theoretisches Fundament
 
-KAIAs Character-System — 10 distinkte Persönlichkeitsvarianten plus "Normal" und "Crazy" mit täglichem Wechsel — ist auf den ersten Blick ein UX-Feature. Es hat jedoch eine theoretische Begründung: Variabilität in der Stimulus-Präsentation kann Habituation (und damit Desengagement) reduzieren. Csikszentmihalyi (1990) beschreibt, dass Flow unter anderem durch Neuheit und Überraschung begünstigt wird.
+KAIAs Interaktion ist nicht rein sokratisch, sondern folgt einem **didaktisch begründeten Spektrum von vier Modi**. Die Notwendigkeit dieses Spektrums ergibt sich direkt aus dem Expertise Reversal Effect (Kalyuga et al., 2003): rein sokratische Begleitung überfordert Novizen, während direkte Instruktion Experten schadet. Die vier Modi decken das relevante Spektrum ab:
 
-Die empirische Wirkung des Character-Systems wird in der Pilotstudie nicht systematisch untersucht — die Stichprobengröße und der explorative Charakter lassen keine isolierte Wirkungsanalyse zu. Das System wird im LLM-Evaluationsbericht (Kapitel 5) im Hinblick auf Konsistenz und Kohärenz der Charakterdarstellung bewertet.
+| Modus | Beschreibung | Theoretische Grundlage | Aktivierungsbedingung (Lazarus) |
+|---|---|---|---|
+| **Sokratisch-explorativ** | Ausschließlich Fragen, kein Scaffolding | Konstruktivismus (Vygotsky, 1978); sokratische Methode | Herausforderungs-Appraisal + vorhandene Coping-Ressourcen; Flow-Zustand; Ambivalenz mit metakognitiver Distanz |
+| **Scaffolding / unterstützend** | Minimale Strukturierungshilfe, dann Frage | ZPD (Vygotsky, 1978); Wood et al. (1976) | Bedrohungs-Appraisal + geringe Coping-Ressourcen; Überforderungssignale |
+| **Wertschätzend-bestärkend** | Konkrete Lernfortschritte spiegeln | Selbstwirksamkeit (Bandura, 1997); Verstärkungstheorie | Erfolgserleben, Durchbruch-Signale, explizites Kompetenzerleben |
+| **Kritisch-herausfordernd** | Annahme hinterfragen, kognitive Dissonanz erzeugen | Yerkes-Dodson (1908); Teigen (1994) | Geringe Bedrohung + stabile Coping-Ressourcen; Unter-Aktivierung |
+
+### 3.3.2 Direktheits-Parameter
+
+Die Modi werden technisch nicht als binäre Schalter, sondern als kontinuierlicher `directiveness`-Parameter (0.0 = rein sokratisch, 1.0 = maximal anleitend) implementiert. Dies erlaubt Zwischenstufen und ist aus dem Nutzerprofil ableitbar. Die Moduslabels (sokratisch, scaffolding, bestärkend, herausfordernd) sind Segmente dieses Kontinuums, die für Prompt-Logik und Logging verwendet werden.
+
+### 3.3.3 Architekturprinzip: Modus liegt im Service-Layer
+
+Ein zentrales Designprinzip: Die Modus-Auflösung erfolgt deterministisch im Service-Layer der Anwendung — nicht durch das Sprachmodell selbst. Eine Funktion `resolve_interaction_mode(user_profile, session_signals)` berechnet den Modus vor jedem LLM-Call und übergibt ihn als Prompt-Parameter. Das LLM interpretiert den Modus, wählt ihn aber nicht. Dies ist für die wissenschaftliche Reproduzierbarkeit und den Study-Lock-Mechanismus essenziell.
+
+### 3.3.4 Session-Format: Kurze Einheiten mit Tagesplan
+
+Basierend auf Erkenntnissen zu Spaced Learning (Cepeda et al., 2006) und der Praxis des projektbasierten Lernens werden Sessions auf **5–10 Minuten** begrenzt. Jede Session beginnt mit einem expliziten Tagesplan: "Was möchtest du heute mit KAIAs Hilfe erarbeiten?" Dieser Plan wird gespeichert und als Kontext für die Session-Auswertung verwendet.
+
+---
+
+## 3.4 Komponente 3: Persönliche Lernroadmap
+
+### 3.4.1 Funktion und theoretische Begründung
+
+Die Lernroadmap ist ein nutzerseitig befülltes, strukturiertes Dokument, das für die gesamte Studiendauer angelegt wird. Es erfüllt drei Funktionen:
+
+1. *Zielstruktur* — explizite Lernziele (Goal-Setting, Locke & Latham, 1990) verhindern aimless chatting und geben KAIA pro Session einen konkreten Kontext
+2. *Fortschrittserfahrung* — selbst eingeschätzter Fortschritt (0–100%) ist eine direkte Handlungsergebniserfahrung (Bandura, 1997) — Voraussetzung für Selbstwirksamkeitsstärkung
+3. *Metakognitive Aktivierung* — das Befüllen und Aktualisieren der Roadmap fördert Selbstregulation (Zimmermann, 2000)
+
+### 3.4.2 Struktur der Lernroadmap
+
+Die Roadmap enthält für jedes Lernziel:
+- **Titel** (z.B. "Konfidenzintervalle verstehen")
+- **Domäne** (taxonomiegestützt, z.B. "Statistik")
+- **Persönliche Motivation** (Freitext, max. 200 Zeichen — warum ist das relevant?)
+- **Deadline** (optional, nutzerdefiniert)
+- **Fortschritt** (0–100%, wird ausschließlich von der lernenden Person aktualisiert — nicht von KAIA)
+- **Status** (offen / aktiv / pausiert / abgeschlossen)
+
+Designprinzip: KAIA darf Fortschritt spiegeln und benennen, aber niemals bewerten oder selbst setzen. Sobald KAIA Fortschritt bewertet, verschiebt sich die Wirkungslogik von Selbstwirksamkeitsförderung zu Fremdbewertung — ein Designfehler, den die Literatur explizit warnt (Bandura, 1997).
+
+### 3.4.3 Integration in jede Session
+
+Dem Sprachmodell wird in jeder Session nur das aktive Ziel übergeben (Titel, Motivation, Fortschritt). Keine Gesamtliste aller Ziele — das kostet Tokens und ist kognitiv irrelevant für die laufende Konversation. Der Rest der Roadmap ist UX, kein Prompt-Kontext.
+
+---
+
+## 3.5 Komponente 4: Zwei-Schicht-Gedächtnis und wachsendes Nutzerprofil
+
+### 3.5.1 Gedächtnisarchitektur
+
+KAIAs Gedächtnis kombiniert zwei Datenspeicher:
+
+**Schicht 1: Strukturiertes Gedächtnis (PostgreSQL)** — User-Profil, Sitzungshistorie, Roadmap-Daten, GSE-Messwerte, Consent-Logs
+
+**Schicht 2: Semantisches Gedächtnis (pgvector)** — Vektorisierte Gesprächsfragmente mit Row-Level-Security (user_id als Pflichtparameter, kein Cross-User-Leak). Pro Session werden die top-3 semantisch relevantesten Fragmenten retrieved und dem Systemprompt übergeben.
+
+### 3.5.2 Wachsendes Nutzerprofil — drei Ebenen
+
+Das Nutzerprofil wächst über drei Ebenen:
+
+**Stabile Felder (selten ändern):** GSE-Basiswert (aus Eingangserhebung), Lerndomänen (nutzerbefüllt), präferierter Interaktionsstil (nutzerbefüllt), Studienkontext
+
+**Dynamische Felder (Session-by-Session):** Stärken-Zusammenfassung (max. 3 Sätze, LLM-extrahiert), Hürden-Zusammenfassung (z.B. "Formelnotation erzeugt Abwehr, besser verbale Erklärung"), Vokabular-Niveau (inferiert), Antwortmuster (kurz-fragmentiert / mittel / ausführlich — Proxy für Überforderung vs. Flow), letzte Session-Stimmung
+
+**Session-aggregierte Felder:** Besprochene Themen, offene Fragen aus früheren Sessions, Durchbruchsmomente (Basis für den bestärkenden Modus in Folgesessions)
+
+### 3.5.3 Post-Session-Extraktion
+
+Nach jeder Session wird ein separater LLM-Call mit `temperature=0` und dediziertem Extraktionsprompt ausgeführt. Dieser Call gibt strukturiertes JSON zurück, das mit dem bestehenden Profil akkumuliert wird — kein Überschreiben. Die Profilentwicklung über Zeit ist damit in der Datenbank auswertbar und für die Thesis wissenschaftlich verwertbar.
+
+**Wichtige Begriffsklärung:** Das wachsende Nutzerprofil ist kein Fine-Tuning des Basismodells. Claude, GPT-4o und Mistral werden nicht für einzelne Nutzer modifiziert. Das Profil ist ein wachsender Kontext-Layer, der das Verhalten des unveränderten Modells pro Nutzer progressiv spezifischer macht. Am Ende existieren faktisch unterschiedlich verhaltende KAIA-Instanzen — durch Kontextanreicherung, nicht Modellmodifikation. Diese Unterscheidung ist für die Thesis essenziell.
 
 ---
 
 ## 3.6 Synthese: Das KAIA-Rahmenwerk als Designartefakt
 
-*[Abschluss-Abschnitt — wird nach Abschluss von Kapitel 4 vervollständigt]*
+Das konzeptionelle Rahmenwerk von KAIA ist ein Designartefakt im Sinne von Hevner et al. (2004). Seine vier Komponenten bilden keine unabhängigen Teilsysteme, sondern ein kohärentes System, in dem jede Entscheidung theoretisch begründet ist:
 
-Das konzeptionelle Rahmenwerk von KAIA lässt sich als Designartefakt im Sinne von Hevner et al. (2004) beschreiben: Es übersetzt empirisch fundierte Theorien in operative Designentscheidungen. Die vier Komponenten (Zustandserkennung, Sokratisches Prompt-System, Gedächtnis, Character-System) bilden keine unabhängigen Teilsysteme, sondern ein kohärentes Ganzes, in dem jede Komponente theoretisch begründet und empirisch motiviert ist.
+Das regelbasierte Adaptionssystem (Lazarus) liefert die Zustandssignale → die Mehr-Modus-Architektur wählt den passenden Interaktionsstil → die Lernroadmap gibt den inhaltlichen Kontext → das wachsende Nutzerprofil akkumuliert die Erkenntnisse für Folgesessions. Jede Session baut auf der vorherigen auf; jede Interaktion fließt in die Personalisierung ein.
+
+Diese Architektur adressiert direkt das Spannungsfeld aus Kapitel 2: Sie schützt Eigenleistung (sokratischer Modus bei Flow), bietet Unterstützung ohne Antworten (Scaffolding bei Überforderung), stärkt Selbstwirksamkeit durch Fortschrittserfahrung (Roadmap) und wächst mit der lernenden Person (Nutzerprofil).
 
 ---
 
-## Literaturverzeichnis (Kapitel 3)
+## Literaturverzeichnis (Kapitel 3, ergänzt)
 
-*Alle Quellen aus Kapitel 2 bleiben gültig. Zusätzliche Quellen:*
+Bandura, A. (1997). *Self-efficacy: The exercise of control*. Freeman.
+
+Cepeda, N. J., Pashler, H., Vul, E., Wixted, J. T., & Rohrer, D. (2006). Distributed practice in verbal recall tasks: A review and quantitative synthesis. *Psychological Bulletin, 132*(3), 354–380.
 
 Csikszentmihalyi, M. (1990). *Flow: The Psychology of Optimal Experience*. Harper & Row.
 
@@ -148,6 +176,18 @@ Hevner, A. R., March, S. T., Park, J., & Ram, S. (2004). Design science in infor
 
 Kalyuga, S., Ayres, P., Chandler, P., & Sweller, J. (2003). The expertise reversal effect. *Educational Psychologist, 38*(1), 23–31.
 
+Lazarus, R. S. (1993). From psychological stress to the emotions: A history of changing outlooks. *Annual Review of Psychology, 44*(1), 1–21.
+
 Lazarus, R. S., & Folkman, S. (1984). *Stress, Appraisal, and Coping*. Springer.
 
+Locke, E. A., & Latham, G. P. (1990). *A Theory of Goal Setting & Task Performance*. Prentice-Hall.
+
 Teigen, K. H. (1994). Yerkes-Dodson: A law for all seasons. *Theory & Psychology, 4*(4), 525–547.
+
+Vygotsky, L. S. (1978). *Mind in Society: The Development of Higher Psychological Processes*. Harvard University Press.
+
+Wood, D., Bruner, J. S., & Ross, G. (1976). The role of tutoring in problem solving. *Journal of Child Psychology and Psychiatry, 17*(2), 89–100.
+
+Yerkes, R. M., & Dodson, J. D. (1908). The relation of strength of stimulus to rapidity of habit-formation. *Journal of Comparative Neurology and Psychology, 18*(5), 459–482.
+
+Zimmermann, B. J. (2000). Attaining self-regulation: A social cognitive perspective. In M. Boekaerts, P. R. Pintrich, & M. Zeidner (Hrsg.), *Handbook of Self-Regulation* (S. 13–39). Academic Press.

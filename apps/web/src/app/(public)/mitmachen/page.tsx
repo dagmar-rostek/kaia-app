@@ -207,12 +207,16 @@ export default function MitmachenPage() {
             number="3"
             icon={MessageSquare}
             title="Mindestens 3 Sessions mit KAIA"
-            duration="je ~20–30 Minuten · über 4 Wochen verteilt"
+            duration="je 5–10 Minuten · über 4 Wochen verteilt"
           >
             <p>
-              Du chatterst mit KAIA über dein Lernthema — wann du willst,
-              so oft du willst. Mindestens drei Sessions über vier Wochen
-              sind für die Auswertung nötig, aber du kannst jederzeit mehr machen.
+              Du chatterst mit KAIA über dein Lernthema — kurz, fokussiert, wann du willst.
+              Mindestens drei Sessions über vier Wochen sind für die Auswertung nötig,
+              aber du kannst jederzeit mehr machen.
+            </p>
+            <p>
+              Jede Session beginnt mit einer einfachen Frage: <em>"Was möchtest du heute erarbeiten?"</em>
+              Das gibt der Session Richtung — und KAIA einen Kontext.
             </p>
             <p>
               KAIA wird dir <strong className="text-foreground">keine fertigen Antworten</strong> geben.
@@ -223,9 +227,9 @@ export default function MitmachenPage() {
               <p className="font-medium text-foreground">Was passiert in einer Session?</p>
               <p className="mt-1 text-muted-foreground">
                 Du schreibst KAIA, womit du dich gerade beschäftigst.
-                KAIA fragt nach. Du denkst nach. Manchmal ist es wie ein
-                Gespräch mit einer sehr neugierigen Freundin, die alles hinterfragt —
-                und dich dadurch selbst weiterdenken lässt.
+                KAIA stellt eine Frage. Du denkst nach. 5–10 Minuten später
+                hast du einen Gedanken weitergedacht, den du alleine vielleicht
+                liegengelassen hättest.
               </p>
             </div>
           </StepCard>
@@ -346,7 +350,7 @@ export default function MitmachenPage() {
           <div className="divide-y divide-border">
             {[
               { phase: "Vor Start",    dur: "10 Min",    desc: "Registrierung, Einwilligung, Kurzfragebogen (10 Fragen)" },
-              { phase: "Woche 1–4",   dur: "3× 20–30 Min", desc: "Mindestens 3 Chat-Sessions mit KAIA — flexibel, wann du willst" },
+              { phase: "Woche 1–4",   dur: "3× 5–10 Min",  desc: "Mindestens 3 kurze Chat-Sessions mit KAIA — flexibel, wann du willst" },
               { phase: "Nach Woche 4", dur: "3 Min",      desc: "Abschluss-Fragebogen (dieselben 10 Fragen wie am Start)" },
               { phase: "Optional",    dur: "~45 Min",    desc: "Abschlussinterview mit der Forscherin (Video oder persönlich)" },
             ].map(({ phase, dur, desc }) => (
