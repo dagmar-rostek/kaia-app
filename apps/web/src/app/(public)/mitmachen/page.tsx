@@ -435,7 +435,7 @@ export default function MitmachenPage() {
           <TrustItem
             icon={Calendar}
             title="Automatische Löschung"
-            desc="Alle Daten werden 6 Monate nach Studienende automatisch und vollständig gelöscht."
+            desc="Alle Daten werden spätestens 1 Jahr nach Bekanntgabe der Abschlussnote vollständig gelöscht oder anonymisiert — in der Regel deutlich früher."
           />
           <TrustItem
             icon={BookOpen}

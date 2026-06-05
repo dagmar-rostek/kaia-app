@@ -94,9 +94,10 @@ export default function DatenschutzPage() {
 
       <Section title="4. Speicherdauer und Löschung">
         <p>
-          Alle personenbezogenen Daten werden <strong className="text-foreground">6 Monate nach
-          offiziellem Abschluss der Pilotstudie</strong> automatisch und vollständig gelöscht.
-          Das Enddatum der Studie wird auf dieser Seite bekannt gegeben.
+          Alle personenbezogenen Daten werden <strong className="text-foreground">spätestens
+          1 Jahr nach Bekanntgabe der Abschlussnote</strong> vollständig gelöscht oder
+          anonymisiert (gemäß SRH-Datenschutzvorgaben für Abschlussarbeiten).
+          In der Regel erfolgt die Anonymisierung früher — unmittelbar nach Abschluss der Auswertung.
         </p>
         <p>
           Für die wissenschaftliche Publikation und Thesis werden ausschließlich vollständig

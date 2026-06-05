@@ -116,7 +116,7 @@ Die durch LLM-Analyse aus Gesprächstranskripten abgeleiteten Indikatoren für H
 Woche 0   Registrierung, Einwilligung, KI-Disclosure, GSE Prä-Messung
 Wochen 1–4  Freie KAIA-Nutzung (Empfehlung: ≥ 3 Sessions)
 Woche 4/5  GSE Post-Messung, optionaler kurzer Erfahrungsbericht
-Nach Ende  Datenlöschung nach 6 Monaten (automatisch)
+Nach Ende  Datenlöschung: spätestens 1 Jahr nach Abschlussnote
 ```
 
 **Mindestvorgabe:** Mindestens 3 Chat-Sessions innerhalb der 4 Wochen für Einschluss in die Auswertung.
@@ -135,7 +135,7 @@ Nach Ende  Datenlöschung nach 6 Monaten (automatisch)
 
 **Authentifizierung:** JWT-Token (Access 15min, Refresh 30 Tage), bcrypt-12 für Passwörter.
 
-**Löschfrist:** 6 Monate nach Studienabschluss — automatisiert.
+**Löschfrist:** Spätestens 1 Jahr nach Bekanntgabe der Abschlussnote (SRH-Vorgabe); Anonymisierung in der Regel früher.
 
 **Datenportabilität:** Teilnehmende können ihre Daten jederzeit als JSON exportieren (Art. 20 DSGVO).
 
