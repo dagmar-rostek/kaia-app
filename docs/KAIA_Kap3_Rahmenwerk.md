@@ -90,6 +90,16 @@ Die Modi werden technisch nicht als binäre Schalter, sondern als kontinuierlich
 
 Ein zentrales Designprinzip: Die Modus-Auflösung erfolgt deterministisch im Service-Layer der Anwendung — nicht durch das Sprachmodell selbst. Eine Funktion `resolve_interaction_mode(user_profile, session_signals)` berechnet den Modus vor jedem LLM-Call und übergibt ihn als Prompt-Parameter. Das LLM interpretiert den Modus, wählt ihn aber nicht. Dies ist für die wissenschaftliche Reproduzierbarkeit und den Study-Lock-Mechanismus essenziell.
 
+### 3.3.3 Begründungsrahmen: Edelmanns Lernprozesstaxonomie
+
+Die Vier-Modi-Architektur lässt sich zusätzlich durch Edelmanns (2000) Taxonomie der Lernprozesse begründen, die vier hierarchisch geordnete Stufen unterscheidet: assoziatives Lernen (Reiz-Reaktions-Verbindungen), instrumentelles Lernen (Lernen durch Konsequenzen), Begriffsbildung und Wissenserwerb sowie planvolles Handeln und Problemlösen.
+
+KAIA operiert bewusst primär auf Stufen 3 und 4. Dies ist für die Zielgruppe — Erwachsene in Hochschule und beruflicher Weiterbildung — entwicklungspsychologisch angemessen: Tiefenverarbeitung, Konzepttransfer und metakognitive Steuerung sind für diese Gruppe die relevanten Lernmechanismen; assoziative Drill-Methoden (Stufe 1) sind für komplexe Weiterbildungsinhalte didaktisch irrelevant. Das Mapping der vier KAIA-Modi auf Edelmanns Stufen zeigt folgende Zuordnung:
+
+Sokratisch-explorativ (Stufe 4) fördert metakognitive Selbststeuerung durch Frageprovokation. Scaffolding/unterstützend (Stufe 3) unterstützt aktive Begriffsbildung; dies entspricht Vygotskys (1978) Zone der nächsten Entwicklung, die konzeptuell verwandt mit Edelmanns Stufe 3, aber theoretisch davon zu trennen ist. Kritisch-herausfordernd (Stufe 4) erzeugt kognitive Konflikte als Lernauslöser im Sinne Piagets. Wertschätzend-bestärkend (Stufe 2) nutzt Mechanismen instrumentellen Lernens — allerdings in der SDT-kompatiblen Form attributionalen Feedbacks (Weiner, 1985; Deci & Ryan, 1985), nicht als pauschale Bestätigung: KAIA attribuiert Erfolge auf die Eigenleistung ("Du hast X und Y selbst verknüpft"), nicht auf externe Umstände.
+
+Eine verbleibende Lücke: Kein Modus adressiert explizit den Aufbau mentaler Modelle und Schemata (Stufe 3 nach Johnson-Laird, 1983). Das Scaffolding-Modus kommt dem am nächsten, ist aber nicht spezifisch auf Schemaaufbau ausgelegt. Diese Limitierung ist in der Thesis transparent zu kommunizieren.
+
 ### 3.3.4 Session-Format: Kurze Einheiten mit Tagesplan
 
 Basierend auf Erkenntnissen zu Spaced Learning (Cepeda et al., 2006) und der Praxis des projektbasierten Lernens werden Sessions auf **5–10 Minuten** begrenzt. Jede Session beginnt mit einem expliziten Tagesplan: "Was möchtest du heute mit KAIAs Hilfe erarbeiten?" Dieser Plan wird gespeichert und als Kontext für die Session-Auswertung verwendet.
@@ -191,3 +201,13 @@ Wood, D., Bruner, J. S., & Ross, G. (1976). The role of tutoring in problem solv
 Yerkes, R. M., & Dodson, J. D. (1908). The relation of strength of stimulus to rapidity of habit-formation. *Journal of Comparative Neurology and Psychology, 18*(5), 459–482.
 
 Zimmermann, B. J. (2000). Attaining self-regulation: A social cognitive perspective. In M. Boekaerts, P. R. Pintrich, & M. Zeidner (Hrsg.), *Handbook of Self-Regulation* (S. 13–39). Academic Press.
+
+Deci, E. L., & Ryan, R. M. (1985). *Intrinsic Motivation and Self-Determination in Human Behavior*. Plenum.
+
+Deci, E. L., & Ryan, R. M. (2000). The "what" and "why" of goal pursuits: Human needs and the self-determination of behavior. *Psychological Inquiry, 11*(4), 227–268.
+
+Edelmann, W. (2000). *Lernpsychologie* (6. Aufl.). Beltz.
+
+Johnson-Laird, P. N. (1983). *Mental Models*. Cambridge University Press.
+
+Weiner, B. (1985). An attributional theory of achievement motivation and emotion. *Psychological Review, 92*(4), 548–573.
