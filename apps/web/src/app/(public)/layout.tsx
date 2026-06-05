@@ -2,9 +2,10 @@ import Link from "next/link"
 import { ThemeToggle } from "@/components/ThemeToggle"
 
 const NAV = [
+  { href: "/mitmachen", label: "Mitmachen" },
+  { href: "/wissenschaft", label: "Wissenschaft" },
   { href: "/release-notes", label: "Release Notes" },
   { href: "/architektur", label: "Architektur" },
-  { href: "/wissenschaft", label: "Wissenschaft" },
   { href: "/datenschutz", label: "Datenschutz" },
 ]
 
