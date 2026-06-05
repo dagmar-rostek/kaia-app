@@ -57,9 +57,11 @@ Die Studie ist im Design Science Research-Paradigma (Hevner et al., 2004) verank
 
 Power-Analyse durchgeführt mit R (Paket `pwr` v1.3, Skript: `docs/power_analyse.R`). Details: Kapitel 3 des Studienprotokolls.
 
-### 6.2.3 Positionality Statement
+### 6.2.3 Positionality Statement und Bias-Kontrolle
 
 Die Forscherin ist gleichzeitig Entwicklerin von KAIA und potenzielle Kommerzialisiererin. Dieser Interessenkonflikt wird offen deklariert. Maßnahmen zur Bias-Minimierung: (1) Vorregistrierung der Hypothesen auf OSF.io vor Datensicht, (2) standardisiertes Outcome-Maß (GSE-Skala) mit etablierten Gütekriterien, (3) zurückhaltende und selbstkritische Interpretation der Ergebnisse.
+
+**Social-Desirability-Bias:** Die Rekrutierung aus dem persönlichen Netzwerk der Forscherin birgt das Risiko systematischer Verzerrung durch soziale Erwünschtheit — Teilnehmende könnten Selbstberichte unbewusst an wahrgenommenen Erwartungen der Forscherin ausrichten. Dies ist eine bekannte Limitation von Convenience Samples in Forscher-Bekanntenkreis-Studien. Gegenmaßnahmen: (a) anonymisierte Dateneingabe im System (kein direkter Kontakt bei Fragebogen-Ausfüllung), (b) expliziter Hinweis in der Einwilligungserklärung auf Erwünschtheit ehrlicher Antworten auch bei negativen Erlebnissen, (c) transparente Diskussion dieser Limitation in Kapitel 6.8. Eine zusätzliche Soziale-Erwünschtheits-Skala (z.B. Stöber, 1999, Kurzform) wird erwogen.
 
 ---
 
@@ -67,11 +69,14 @@ Die Forscherin ist gleichzeitig Entwicklerin von KAIA und potenzielle Kommerzial
 
 ### 6.3.1 Allgemeine Selbstwirksamkeitserwartung (GSE)
 
-**Instrument:** Schwarzer & Jerusalem (1995), deutschsprachige Originalversion
-**Items:** 10 (Beispiel: "Wenn ich mit einem Problem konfrontiert werde, habe ich meist mehrere Ideen, wie ich damit fertig werde.")
-**Skalierung:** 4-stufige Likert-Skala (1 = stimmt nicht, 4 = stimmt genau)
-**Durchführung:** Digital, eingebettet im KAIA-Frontend; Prä-Messung vor erster Session, Post-Messung nach Abschluss der Studienphase
+**Instrument:** Schwarzer & Jerusalem (1995), deutschsprachige Originalversion  
+**Items:** 10 (Beispiel: "Wenn ich mit einem Problem konfrontiert werde, habe ich meist mehrere Ideen, wie ich damit fertig werde.")  
+**Skalierung:** 4-stufige Likert-Skala (1 = stimmt nicht, 4 = stimmt genau)  
+**Durchführung:** Digital, eingebettet im KAIA-Frontend; Prä-Messung vor erster Session, Post-Messung nach Abschluss der Studienphase  
 **Gütekriterien:** Cronbachs α .80–.90 (mehrere Studien); Test-Retest-Reliabilität hinreichend stabil (Schwarzer & Jerusalem, 1995)
+
+**Methodische Diskussion — Trait-Stabilität der GSE:**  
+Die GSE nach Schwarzer und Jerusalem (1995) ist konzeptionell als generalisierende Trait-Skala angelegt: Sie erfasst stabile Überzeugungen über die eigene Handlungsfähigkeit, nicht situative Zustandsschwankungen. Dies wirft die Frage auf, ob eine 4-wöchige Intervention wie KAIA hinreichend Veränderungspotenzial erzeugen kann. Empirisch ist festzustellen, dass Trait-Selbstwirksamkeit durchaus auf intensive Lernerfahrungen reagiert: Jerusalem und Schwarzer (1992) dokumentieren signifikante Veränderungen nach akademischen Interventionen; Scherer et al. (1982) zeigen Sensitivität bei Kompetenzerfahrungen. Die Wahl der allgemeinen GSE (statt einer domänenspezifischen Skala) ist methodisch dadurch begründet, dass KAIA als bereichsübergreifender Lernbegleiter konzipiert ist — eine domänenspezifische Skala würde nur den gewählten Lerninhalt erfassen, nicht die allgemeine Lernkompetenzüberzeugung. Ergänzend wird die Hinzunahme einer **domänenspezifischen akademischen Selbstwirksamkeitsskala** (Jerusalem & Schwarzer, 1999, Subscala "Akademische Selbstwirksamkeit") erwogen, um Sensitivitätsprobleme zu reduzieren. Diese Entscheidung wird vor Studienstart im Studienprotokoll (v2.0) und auf OSF.io dokumentiert.
 
 ### 6.3.2 Nutzungsstatistiken
 

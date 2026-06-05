@@ -97,7 +97,37 @@ Für KAIAs bestärkend-wertschätzenden Interaktionsmodus folgt daraus eine Gest
 
 ---
 
-## 2.7 Künstliche Intelligenz in der Bildung und Computational Empathy
+## 2.7 Lernzielklassifikation nach Bloom und die taxonische Verortung von KAIAs Lernprozessen ✓
+
+Jedes Lernsystem, das beansprucht, Lernprozesse zu fördern, muss beantworten können: Welche Art von Lernen wird angestrebt? Bloom und Kollegen (1956) haben mit ihrer Taxonomie der Lernziele im kognitiven Bereich ein Klassifikationssystem vorgelegt, das diese Frage operationalisierbar macht. Die revidierte Fassung (Anderson & Krathwohl, 2001) unterscheidet sechs hierarchisch geordnete Verarbeitungsniveaus: Erinnern, Verstehen, Anwenden, Analysieren, Bewerten, Erschaffen — wobei höhere Niveaus tiefere voraussetzen.
+
+KAIA operiert primär auf den Niveaus Verstehen, Anwenden und Analysieren. Durch sokratisches Fragen wird das bloße Erinnern (Niveau 1) aktiv verhindert; stattdessen wird Verstehen (Niveau 2) durch Reformulierung und Verknüpfung gefördert, Anwenden (Niveau 3) durch die Verarbeitung am eigenen Lernprojekt und Analysieren (Niveau 4) durch das Hinterfragen von Annahmen im kritisch-herausfordernden Modus. Bewerten (Niveau 5) und Erschaffen (Niveau 6) sind für KAIAs Lernbegleitung kontextabhängig erreichbar, aber nicht systematisch adressiert.
+
+Diese taxonische Verortung hat eine methodische Konsequenz: Sie begründet, warum die Allgemeine Selbstwirksamkeitserwartung (GSE) als Outcome-Maß sinnvoll ist. GSE erfasst keine taxonische Leistung — sie erfasst die handlungsbezogene Überzeugung der Lernenden, Anforderungen meistern zu können. Diese Überzeugung korreliert mit der Bereitschaft, höhere Bloom-Niveaus anzugehen. Die Verbindung zwischen taxonischer Lernzieltiefe und GSE-Veränderung ist damit theoretisch plausibel, wenn auch empirisch noch nicht direkt belegt.
+
+---
+
+## 2.8 Andragogik: Besonderheiten erwachsener Lernender ✓
+
+Die Zielgruppe der KAIA-Pilotstudie sind Erwachsene in Hochschule und beruflicher Weiterbildung. Malcolm Knowles (1980, 1984) hat mit seiner Andragogik — dem Pendant zur kindorientierten Pädagogik — sechs Merkmale erwachsener Lernender herausgearbeitet, die für das Design von KAIAs Lernbegleitung direkt relevant sind.
+
+Erstens neigen Erwachsene zu einem *selbstkonzeptbezogenen Lernbild*: Je mehr Erfahrung, desto stärker die Ablehnung von Fremdsteuerung und Bevormundung. KAIAs sokratischer Ansatz — keine Antworten, keine Instruktionen — ist für diese Zielgruppe didaktisch angemessener als direktive Wissensvermittlung. Zweitens ist Erfahrung für Erwachsene eine Lernressource: Vorerfahrungen bilden die Basis neuer Konzeptverknüpfungen. KAIAs Nutzerprofil und die Lernroadmap adressieren dies architektonisch — Vorerfahrungen werden nicht ignoriert, sondern als Kontext gespeichert und in Folgegesprächen aktiviert. Drittens orientieren sich Erwachsene an konkreten Lernbereitschaften: Sie lernen, was sie für relevante Lebensaufgaben brauchen. Die freie Themenwahl in KAIA entspricht diesem Prinzip direkt. Viertens bevorzugen Erwachsene problemzentriertes statt stoffzentriertes Lernen — ein Grundprinzip des sokratischen Dialogs. Fünftens prägt *intrinsische Motivation* das Lernverhalten stärker als externe Anreize (Knowles, 1984) — eine Begründung mehr für das SDT-konforme Design ohne externe Belohnungsstrukturen (Deci & Ryan, 1985, s. Abschnitt 2.6).
+
+Die Andragogik ist damit keine additive Theorie neben den anderen, sondern ein Konsistenzkriterium: Sie fordert, dass KAIAs Design die Lernenden als selbstbestimmte Erwachsene behandelt — was Fragen statt Antworten, freie Themenwahl und nutzerseitige Lernroadmap-Kontrolle direkt begründet.
+
+---
+
+## 2.9 Feedback-Theorie: Was wirksames Feedback ausmacht ✓
+
+Feedback ist einer der wirkungsstärksten Einflussgrößen auf Lernen. Hattie (2009) identifiziert Feedback in seiner Meta-Analyse von über 800 Studien mit einer durchschnittlichen Effektgröße von d = 0.73 als einen der stärksten Einflussfaktoren auf Lernerfolg. Hattie und Timperley (2007) differenzieren in einer vielrezipierten Theorie vier Feedback-Ebenen: die Aufgabenebene (Korrektheit, Vollständigkeit), die Prozessebene (Strategien, Verarbeitung), die Selbstregulationsebene (Selbstüberwachung, Zielsetzung) und die Selbstebene (persönliche Bewertungen wie "Gut gemacht"). Letztere ist nach Hattie und Timperley (2007) die schwächste und lernpsychologisch unzuverlässigste Form — pauschales persönliches Lob hat keinen messbaren Lerneffekt.
+
+Für KAIA ist diese Differenzierung designentscheidend. Sokratische Fragen sind eine Form von Feedback — sie signalisieren implizit, welche kognitiven Prozesse als unvollständig oder vertiefenswert angesehen werden. Der bestärkend-wertschätzende Modus greift primär auf Prozess- und Selbstregulationsebene, nicht auf die Selbstebene. Eine Aussage wie "Du hast gerade Konzept X mit Y verknüpft — eine Verbindung, die du vorhin noch nicht gesehen hast" ist Prozessfeedback, keine pauschale Bestätigung. Dieser Unterschied muss in KAIAs Prompt-Design operationalisiert werden: Feedback auf Selbstebene ist zu vermeiden; Feedback auf Prozess- und Selbstregulationsebene ist lernförderlich und SDT-kompatibel (Deci & Ryan, 1985).
+
+Zusätzlich ist Dwecks (1999, 2006) Theorie der impliziten Persönlichkeitstheorien (Growth vs. Fixed Mindset) für den bestärkenden Modus zentral. Studien zeigen, dass Feedback, das Erfolg auf Anstrengung und Strategie attribuiert ("Du hast mit dieser Frage einen guten Weg gewählt"), Explorationsbereitschaft und Resilienz stärkt. Feedback, das auf Talent attribuiert ("Du bist gut darin"), hemmt hingegen die Bereitschaft, schwierige Aufgaben anzugehen. KAIAs bestärkender Modus muss — im Sinne von Weiner (1985), Dweck (1999) und Hattie & Timperley (2007) — auf interne, kontrollierbare Faktoren attribuieren, nicht auf pauschale Kompetenz oder persönliche Eigenschaften.
+
+---
+
+## 2.10 Künstliche Intelligenz in der Bildung und Computational Empathy
 
 Die Geschichte KI-gestützter Lernsysteme reicht bis in die 1970er Jahre zurück. Frühe Intelligent Tutoring Systems (ITS) wie SCHOLAR (Carbonell, 1970) und BUGGY (Brown & Burton, 1978) versuchten, Lernende durch regelbasierte Diagnose von Wissensständen und angepasste Aufgabensequenzierung zu unterstützen. Die Grundidee — eine Maschine, die das Lernen individualisiert — hat sich bis heute gehalten, während die zugrundeliegenden Technologien fundamental gewandelt haben.
 
@@ -200,6 +230,30 @@ Vygotsky, L. S. (1978). *Mind in Society: The Development of Higher Psychologica
 Wood, D., Bruner, J. S., & Ross, G. (1976). The role of tutoring in problem solving. *Journal of Child Psychology and Psychiatry, 17*(2), 89–100.
 
 Yerkes, R. M., & Dodson, J. D. (1908). The relation of strength of stimulus to rapidity of habit-formation. *Journal of Comparative Neurology and Psychology, 18*(5), 459–482.
+
+Anderson, L. W., & Krathwohl, D. R. (Hrsg.). (2001). *A Taxonomy for Learning, Teaching, and Assessing: A Revision of Bloom's Taxonomy of Educational Objectives*. Longman.
+
+Ausubel, D. P. (1968). *Educational Psychology: A Cognitive View*. Holt, Rinehart & Winston.
+
+Bloom, B. S., Engelhart, M. D., Furst, E. J., Hill, W. H., & Krathwohl, D. R. (1956). *Taxonomy of Educational Objectives: The Classification of Educational Goals. Handbook I: Cognitive Domain*. David McKay.
+
+Dweck, C. S. (1999). *Self-Theories: Their Role in Motivation, Personality, and Development*. Psychology Press.
+
+Dweck, C. S. (2006). *Mindset: The New Psychology of Success*. Random House.
+
+Hattie, J. (2009). *Visible Learning: A Synthesis of Over 800 Meta-Analyses Relating to Achievement*. Routledge.
+
+Hattie, J., & Timperley, H. (2007). The power of feedback. *Review of Educational Research, 77*(1), 81–112.
+
+Jerusalem, M., & Schwarzer, R. (1992). Self-efficacy as a resource factor in stress appraisal processes. In R. Schwarzer (Hrsg.), *Self-Efficacy: Thought Control of Action* (S. 195–213). Hemisphere.
+
+Jerusalem, M., & Schwarzer, R. (1999). Allgemeine Selbstwirksamkeit [Skala]. In R. Schwarzer & M. Jerusalem (Hrsg.), *Skalen zur Erfassung von Lehrer- und Schülermerkmalen* (S. 54–56). Freie Universität Berlin.
+
+Knowles, M. S. (1980). *The Modern Practice of Adult Education: From Pedagogy to Andragogy* (2. Aufl.). Cambridge.
+
+Knowles, M. S. (1984). *The Adult Learner: A Neglected Species* (3. Aufl.). Gulf.
+
+Stöber, J. (1999). Die Soziale-Erwünschtheits-Skala-17 (SES-17): Entwicklung und erste Befunde zu Reliabilität und Validität. *Diagnostica, 45*(4), 173–177.
 
 Deci, E. L. (1971). Effects of externally mediated rewards on intrinsic motivation. *Journal of Personality and Social Psychology, 18*(1), 105–115.
 

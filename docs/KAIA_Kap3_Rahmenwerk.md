@@ -100,9 +100,30 @@ Sokratisch-explorativ (Stufe 4) fördert metakognitive Selbststeuerung durch Fra
 
 Eine verbleibende Lücke: Kein Modus adressiert explizit den Aufbau mentaler Modelle und Schemata (Stufe 3 nach Johnson-Laird, 1983). Das Scaffolding-Modus kommt dem am nächsten, ist aber nicht spezifisch auf Schemaaufbau ausgelegt. Diese Limitierung ist in der Thesis transparent zu kommunizieren.
 
-### 3.3.4 Session-Format: Kurze Einheiten mit Tagesplan
+### 3.3.4 Operationalisierung: Was macht KAIA sokratisch?
 
-Basierend auf Erkenntnissen zu Spaced Learning (Cepeda et al., 2006) und der Praxis des projektbasierten Lernens werden Sessions auf **5–10 Minuten** begrenzt. Jede Session beginnt mit einem expliziten Tagesplan: "Was möchtest du heute mit KAIAs Hilfe erarbeiten?" Dieser Plan wird gespeichert und als Kontext für die Session-Auswertung verwendet.
+"Sokratisch" ist kein selbsterklärender Begriff. Der Anspruch, sokratisch zu sein, ist wertlos, wenn nicht spezifiziert wird welche Fragetypen welche kognitive Operation auslösen sollen. KAIA operationalisiert sokratisches Vorgehen über drei distinkte Fragetypen, die dem LLM im Systemprompt beschrieben werden:
+
+1. *Klärungsfragen* — "Was genau meinst du mit X?" Ziel: Vagheit sichtbar machen, Präzisierung erzwingen (Bloom: Verstehen)
+2. *Hypothetische Fragen* — "Was würde sich ändern, wenn...?" Ziel: Transferdenken anregen, Grenzen des Konzepts explorieren (Bloom: Anwenden, Analysieren)
+3. *Widerspruchsfragen* — "Du hast vorhin Y gesagt — passt das zu X?" Ziel: Kognitive Dissonanz erzeugen, Restrukturierung auslösen (Bloom: Analysieren, Bewerten)
+
+Dieses dreistufige Fragetypen-Repertoire ist die Mindestspezifikation für Reproduzierbarkeit: Im LLM-Evaluationsbericht (Kapitel 5) wird getestet, welches Modell die drei Typen konsistent und korrekt anwendet. "KAIA stellt Fragen" ist keine evaluierbare Aussage. "KAIA stellt Klärungsfragen, hypothetische Fragen und Widerspruchsfragen nach definierten Auslösebedingungen" ist es.
+
+### 3.3.5 Session-Architektur: Drei-Phasen-Skript
+
+Basierend auf Hattie & Timperley (2007), Anderson & Krathwohl (2001) und Erkenntnissen zu Spaced Learning (Cepeda et al., 2006) folgt jede KAIA-Session einem internen Drei-Phasen-Skript. Dieses Skript ist ein Prompt-Engineering-Konzept — es ist nicht als Interface-Element sichtbar. Die Phasengrenzen sind fließend und zeitbasiert, nicht rigid.
+
+**Phase 1 — Aktivierung (erste 60–90 Sekunden):**  
+Einstiegsfrage: *"Was möchtest du nach dieser Session verstanden oder weitergedacht haben?"* Diese Frage aktiviert Vorwissen (Ausubel, 1968), erzwingt eine Lernintention (Locke & Latham, 1990) und orientiert das LLM auf den aktuellen Fokus. Ohne diese Aktivierung beginnt KAIA reaktiv — ein didaktisches Defizit.
+
+**Phase 2 — Arbeitsphase (Kernzeit der Session):**  
+KAIA wechselt nach Lazarus-Signal in den jeweils angemessenen Modus (sokratisch / scaffolding / herausfordernd). Maximal eine Frage pro Antwort. Antworten unter 80 Wörtern (Scaffolding-Modus: unter 120 Wörtern). Keine Listen. Keine Bullet Points.
+
+**Phase 3 — Sicherung und Transfer (letzte 60–90 Sekunden):**  
+Abschlussfrage: *"Was würdest du jemandem erklären, der nicht dabei war?"* Diese Frage erzwingt Elaboration (Bloom: Verstehen/Anwenden), ist als Transfer-Aufgabe konzipiert (Merrill, 2002) und liefert gleichzeitig Material für die Post-Session-Profil-Extraktion. Der UX-Designer bestätigt: Diese Abschlussfrage ist das einzige session-strukturelle Element das ins Interface gehört — als natürliche Gesprächsgeste, nicht als pädagogisches Formular.
+
+**Hinweis zur Interface-Umsetzung** (nach UX-Designer-Review): Die Drei-Phasen-Struktur bleibt für Nutzende unsichtbar. Was sichtbar ist: Die Einstiegs- und Abschlussfrage als natürliche Gesprächsbestandteile. Fortschrittsanzeigen oder Phasenlabels ("Phase: Sicherung") sind verboten — sie zerstören den kognitiven Flow (Oliveira & Hamari, 2024) und infantilisieren erwachsene Lernende (Knowles, 1980).
 
 ---
 
@@ -201,6 +222,10 @@ Wood, D., Bruner, J. S., & Ross, G. (1976). The role of tutoring in problem solv
 Yerkes, R. M., & Dodson, J. D. (1908). The relation of strength of stimulus to rapidity of habit-formation. *Journal of Comparative Neurology and Psychology, 18*(5), 459–482.
 
 Zimmermann, B. J. (2000). Attaining self-regulation: A social cognitive perspective. In M. Boekaerts, P. R. Pintrich, & M. Zeidner (Hrsg.), *Handbook of Self-Regulation* (S. 13–39). Academic Press.
+
+Anderson, L. W., & Krathwohl, D. R. (Hrsg.). (2001). *A Taxonomy for Learning, Teaching, and Assessing*. Longman.
+
+Ausubel, D. P. (1968). *Educational Psychology: A Cognitive View*. Holt.
 
 Deci, E. L., & Ryan, R. M. (1985). *Intrinsic Motivation and Self-Determination in Human Behavior*. Plenum.
 
