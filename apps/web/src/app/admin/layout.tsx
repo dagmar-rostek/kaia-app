@@ -7,6 +7,7 @@ const NAV = [
   { href: "/admin", label: "Übersicht", icon: LayoutDashboard },
   { href: "/admin/users", label: "Teilnehmende", icon: Users },
   { href: "/admin/roadmap", label: "Roadmap", icon: Map },
+  { href: "/admin/prompts", label: "Prompts & Sandbox", icon: Sparkles },
   { href: "/admin/thesis", label: "Masterthesis", icon: GraduationCap },
   { href: "/admin/production-readiness", label: "Production Readiness", icon: CheckSquare },
   { href: "/admin/release-notes", label: "Release Notes", icon: ScrollText },

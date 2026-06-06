@@ -48,6 +48,7 @@ services:
       ADMIN_PASSWORD: ${ADMIN_PASSWORD}
       INTERNAL_API_URL: http://api:8000/api
       SENTRY_KAIA_WEB: ${SENTRY_KAIA_WEB}
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
     volumes:
       - ../docs:/docs:ro
 
