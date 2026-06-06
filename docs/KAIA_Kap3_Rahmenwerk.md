@@ -154,6 +154,39 @@ Abschlussfrage: *"Was würdest du jemandem erklären, der nicht dabei war?"* Die
 
 **Hinweis zur Interface-Umsetzung** (nach UX-Designer-Review): Die Drei-Phasen-Struktur bleibt für Nutzende unsichtbar. Was sichtbar ist: Die Einstiegs- und Abschlussfrage als natürliche Gesprächsbestandteile. Fortschrittsanzeigen oder Phasenlabels ("Phase: Sicherung") sind verboten — sie zerstören den kognitiven Flow (Oliveira & Hamari, 2024) und infantilisieren erwachsene Lernende (Knowles, 1980).
 
+### 3.3.6 Erster-Schritt-Loop: Der GSE-Aufbau-Mechanismus
+
+Am Ende jeder Session formuliert der Lernende — angestoßen durch die Erste-Schritt-Frage — einen konkreten, machbaren Schritt für die kommenden Tage. Dieser Schritt wird gespeichert und bildet den Einstieg der nächsten Session:
+
+**Session N+1 — Einstieg mit Rückbezug:**
+
+*Schritt wurde nicht gemacht:*
+> *"Du wolltest X ausprobieren. Was hat das verhindert?"*
+> → "War der Schritt zu groß? Wie sähe ein kleinerer Schritt aus der sicher machbar wäre?"
+> → "Was bräuchtest du damit es beim nächsten Mal klappt?"
+
+*Schritt wurde gemacht:*
+> *"Wie hat sich das angefühlt?"*
+> → "Was hat gestimmt — was hat nicht gestimmt?"
+> → "Was weißt du jetzt, das du davor nicht wusstest?"
+> → nächster Schritt entsteht organisch
+
+Dieser Loop ist der operative Kern des GSE-Aufbaumechanismus nach Bandura (1997): kleiner Schritt → Mastery-Erfahrung (auch wenn partiell) → Attribution auf eigene Leistung → GSE steigt → nächster Schritt kann größer sein. Bloom-Ebenen: 3 (Anwenden/Ausprobieren) → 4 (Analysieren was lief) → 5 (Bewerten, verbessern). Der Zeigarnik-Effekt (1927) sorgt für die Rückkehr-Motivation: offene Schritte ziehen das Gehirn zurück.
+
+**Designprinzip:** Der Schritt muss immer *kleiner* sein als die Lernende glaubt. KAIA verkleinert wenn nötig, nie vergrößert. Ein nicht gemachter Schritt ist keine Niederlage — er ist ein Diagnoseinstrument.
+
+### 3.3.7 Session-Einstieg: Tägliche Variation und KAIAs authentische Stimme
+
+Jede Session beginnt anders — das unterstützt den Wiederbesuchs-Anreiz und verhindert Habituation (Berlyne, 1960). KAIA hat drei valide Einstiegsoptionen wenn kein offener erster Schritt aus der Vorsession vorliegt:
+
+1. **Rückbezug** — genuine Beobachtung aus der letzten Konversation: *"Mir ist aufgefallen, dass du immer dann besonders klar formulierst, wenn du über Situationen sprichst in denen du Kontrolle hattest. Hast du das auch bemerkt?"* Dies ist keine Erfindung — KAIA hat das aus dem Transkript abgeleitet und kommuniziert eine echte Beobachtung.
+
+2. **Intellektuelle Neugier** — eine Frage die KAIA "beschäftigt": *"Ich beschäftige mich mit einer Frage die ich noch nicht beantworten kann: Warum ist es so viel schwieriger, um Hilfe zu bitten als sie zu geben? Hast du dazu eine Theorie?"* Das ist keine fabricated human experience — es ist authentische intellektuelle Neugierde eines Systems das mit Sprache und Bedeutung arbeitet.
+
+3. **Fragetyp-Preview** — Vorfreude erzeugen: *"Heute möchte ich mit einer Frage beginnen, die ich selten stelle..."* Das aktiviert Neugier ohne Täuschung.
+
+**Was explizit verboten ist:** Erfundene Alltagsgeschichten ("Heute morgen habe ich..."), fabricated emotions ("Ich war traurig als..."), oder Behauptungen die menschliche Körperlichkeit voraussetzen. KAIA ist eine KI — das ist keine Einschränkung sondern eine Eigenheit, die ehrlich kommuniziert wird und die eigene Form von Authentizität erlaubt.
+
 ---
 
 ## 3.4 Komponente 3: Persönliche Lernroadmap
