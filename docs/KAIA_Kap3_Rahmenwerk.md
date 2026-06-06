@@ -208,7 +208,19 @@ Mögliche Interaktionen:
 - *"Die gestrige Einschätzung war falsch, ich war nicht frustriert"* → Korrektur der session-aggregierten Profildaten
 - *"Lösch mein Lernprofil"* → Art. 17 DSGVO, technisch als Reset implementiert
 
-### 3.6.4 Schutz vor Automatisierungsabhängigkeit
+### 3.6.4 Session-Abschluss als didaktisches Ritual
+
+Das System erkennt das natürliche Ende einer Session über drei simultane Indikatoren: Zeitfenster (10–15 Minuten), semantische Kohärenz (ist das angesprochene Thema abgeschlossen?) und Gesprächsenergie (nehmen Antwortlänge und neue Fragen ab?). Kein hartes Timeout — ein weiches Signal wenn alle drei Indikatoren auf Abschluss hindeuten.
+
+Das Session-Ende wird dem Lernenden durch eine stille, nicht-modale Karte kommuniziert. Diese zeigt zwei Elemente: (1) die stärksten eigenen Formulierungen des Lernenden aus dieser Session — wörtlich extrahiert durch einen nachgelagerten LLM-Call (`temperature=0`), nicht paraphrasiert — und (2) eine offene Frage, die bewusst ungelöst bleibt. Dieser kognitive Widerstand (Berlyne, 1960; Zeigarnik, 1927) erzeugt den Effekt, dass die nächste Session nicht als Pflicht, sondern als Auflösung einer interessierenden Lücke erlebt wird.
+
+### 3.6.5 Lernfaden: persönliche Erkenntnischronik
+
+Die destillierten eigenen Formulierungen akkumulieren sich über Wochen zu einem nutzereigenen Lernfaden — einer Chronik der selbst erarbeiteten Gedanken, nicht der KI-Ausgaben. Der Lernfaden ist jederzeit einsehbar, vollständig exportierbar (DSGVO Art. 20) und auf Wunsch löschbar (Art. 17). Die nächste Session beginnt mit der offenen Frage der vorherigen — als Kontinuitätssignal, nicht als Test.
+
+Didaktisch operationalisiert dies das Spaced-Retrieval-Prinzip (Cepeda et al., 2006) und Steinerts Forderung nach zyklischer Rückbindung. Psychologisch stärkt es Selbstwirksamkeit durch Attribution: Der Lernende sieht, was er *selbst* gedacht hat — nicht was das System ihm erklärt hat.
+
+### 3.6.6 Schutz vor Automatisierungsabhängigkeit
 
 Steinert (2026, mündlich) hat auf eine spezifische Gefahr hingewiesen: Profile die nie schrumpfen, erzeugen Lernende die immer mehr Unterstützung erwarten. Das Transparenz-Prinzip schließt daher explizit ein: Das System zeigt an, wenn Scaffold-Anteile über Zeit abnehmen — als sichtbares Signal wachsender Kompetenz, nicht als unsichtbare Systemoptimierung.
 
