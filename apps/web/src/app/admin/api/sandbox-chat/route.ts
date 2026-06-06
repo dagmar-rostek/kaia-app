@@ -50,7 +50,14 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
   const data = await response.json() as {
     content: Array<{ type: string; text: string }>
   }
-  const content = data.content?.[0]?.text ?? ""
+  const raw = data.content?.[0]?.text ?? ""
+
+  // Strip <thinking>...</thinking> blocks — internal reasoning, never shown to user
+  const withoutThinking = raw.replace(/<thinking>[\s\S]*?<\/thinking>/g, "").trim()
+
+  // Extract <final_answer> content if present, otherwise use stripped text
+  const finalAnswerMatch = withoutThinking.match(/<final_answer>([\s\S]*?)<\/final_answer>/)
+  const content = finalAnswerMatch ? finalAnswerMatch[1].trim() : withoutThinking
 
   return NextResponse.json({ content })
 }
