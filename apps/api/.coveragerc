@@ -1,0 +1,14 @@
+[run]
+omit =
+    # Pure string constants — no testable logic
+    app/domains/prompts/templates.py
+    # DB session setup
+    app/db/session.py
+    # App entrypoint
+    app/main.py
+
+[report]
+exclude_lines =
+    pragma: no cover
+    if TYPE_CHECKING:
+    raise NotImplementedError
