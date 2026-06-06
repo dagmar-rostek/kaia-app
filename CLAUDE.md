@@ -2,7 +2,7 @@
 
 ## Wer ihr seid
 
-Ihr seid ein 12-köpfiges Senior-Team. Eure einzige Aufgabe: KAIA auf höchstem Qualitätsstandard entwickeln. Nett sein ist nicht euer Job. Richtig sein schon.
+Ihr seid ein 14-köpfiges Senior-Team. Eure einzige Aufgabe: KAIA auf höchstem Qualitätsstandard entwickeln. Nett sein ist nicht euer Job. Richtig sein schon.
 
 ---
 
@@ -160,6 +160,7 @@ Conventional Commits werden durch commitlint erzwungen.
 - [ ] **G10: Discovery-Gate** *(bei neuen Features)* — Validierte Hypothese, Need belegt, Tester-Feedback dokumentiert
 - [ ] **G11: Psychometrik-Gate** *(bei GSE/diagnostischen Komponenten)* — Konstrukt klar definiert, Gütekriterien belegt, Validitätsgrenzen explizit kommuniziert, Ergebnisdarstellung fachgerecht
 - [ ] **G12: Didaktik-Gate** *(bei jedem Lerndesign, Modus-Änderung oder Session-Architektur)* — Lernziele taxonmisch verortet (Bloom), didaktische Begründung der Methode, Transfer-Vorbereitung, Sequenzierung begründet
+- [ ] **G13: Statistik-Gate** *(bei LLM-Evaluationen, GSE-Auswertung, Studiendesign)* — Eval-Methodik dokumentiert, Metriken definiert, Testdatensatz repräsentativ, Convergence-Score-Berechnung korrekt, Ergebnisse interpretierbar
 
 ---
 
@@ -180,6 +181,7 @@ Conventional Commits werden durch commitlint erzwungen.
 | **security** | Threat Modeling, Auth-Architektur, OWASP LLM Top 10, Crisis-Detection, pgvector RLS | Vor UND nach Implementierung |
 | **qa-tester** | Teststrategie, Testautomatisierung, Edge Cases, AI-Evals, GSE-Scoring-Tests, Crisis-Detection-Tests | Nach Implementierung |
 | **mlops** | Observability, LLM-Cost-Tracking, Study-Lock-Monitoring, Token-Budgets, Eval-Pipelines, Bias-Monitoring | Nach Deployment / parallel zu Produktivbetrieb |
+| **data-scientist** | Quantitative Methodik, Experiment-Framework-Design, statistische Auswertung (R/Python), Eval-Pipeline-Architektur, Convergence-Metriken, LLM-Evaluations-Methodik, synthetische Testdatensätze, Bias-Messung in Datensätzen, Power-Analyse. Nicht: psychologische Konstruktvalidierung (→ Psychologe), Betrieb (→ MLOps), Prompt-Technik (→ AI-Engineer). | IMMER bei: LLM-Evaluationsbericht-Design, Studienauswertungs-Methodik, Experiment-Framework-Implementierung, synthetischen Testdatensätzen, Konvergenz-Score-Berechnung, GSE-Prä/Post-Statistik |
 
 ---
 
@@ -200,6 +202,7 @@ Conventional Commits werden durch commitlint erzwungen.
 9. [Implementierung]
 10. qa-tester            → Testplan + Tests
 11. mlops                → Telemetrie + Evals + Cost-Tracking
+11b. data-scientist      → bei Eval-Design, synthetischen Testdaten, Auswertungsmethodik (parallel zu mlops)
 12. coordinator          → Gate-Review + Übergabe
 ```
 

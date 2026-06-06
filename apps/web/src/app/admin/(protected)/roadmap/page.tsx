@@ -72,6 +72,11 @@ const FEATURES: Feature[] = [
   { title: "Ethikvotum-Antrag einreichen", desc: "HEUTE oder morgen einreichen — spätestens 06.06.2026. Studienprotokoll + Einwilligungserklärung + Datenschutzerklärung. Wartezeit: 4–8 Wochen.", status: "blocker", month: "juni", chapter: "Kap. 6", tags: ["Wissenschaft","Ethik","Blocker"], agents: ["compliance","psychologist"], aufwand: "2h", week: 1, sprint: true, day: 5, icon: AlertTriangle },
   { title: "DB-Schema (Alembic)", desc: "Vollständiges DB-Schema: users, sessions, messages, gse_results, consent_logs — pgvector Extension. Blockiert Chat-Entwicklung.", status: "active", month: "juni", chapter: "Kap. 4", tags: ["Backend","DB"], agents: ["architect","security"], aufwand: "3h", week: 1, sprint: true, day: 6, icon: Database },
 
+  // ── WEITERBILDUNG — bis morgen Abend (06.–07. Juni) ──
+  { title: "① Anthropic Prompt Engineering Courses", desc: "Real World Prompting + Prompt Evaluations (github.com/anthropics/courses) — direktes Claude-Know-how, stärkt Kap. 4.7 Methodenbeschreibung. ZUERST, weil du Claude gerade aktiv nutzt.", status: "active", month: "juni", chapter: "Kap. 4", tags: ["Weiterbildung","AI"], agents: ["ai-engineer"], aufwand: "3h", week: 1, sprint: true, day: 6, icon: BookOpen },
+  { title: "② Safe and Reliable AI via Guardrails", desc: "deeplearning.ai — Guardrail-Architektur für therapeutische Grenzen und Krisenprävention. Gibt den theoretischen Rahmen für die bereits implementierten Prompt-Regeln.", status: "active", month: "juni", chapter: "Kap. 4", tags: ["Weiterbildung","AI"], agents: ["ai-engineer","security"], aufwand: "1h 30min", week: 1, sprint: true, day: 6, icon: Shield },
+  { title: "③ Red Teaming LLM Applications", desc: "deeplearning.ai — systematische Schwachstellentests für KAIA-Prompts. Dokumentierbar im Ethikvotum ('Wurden Risiken geprüft?') und in Kap. 4 als Sicherheitsnachweis.", status: "planned", month: "juni", chapter: "Kap. 4 · Kap. 6", tags: ["Weiterbildung","Ethik"], agents: ["security","ai-engineer"], aufwand: "1h 20min", week: 1, sprint: true, day: 7, icon: AlertTriangle },
+
   // ── JUNI — Woche 2 (8.–14. Juni) ──
   { title: "Chat Core mit SSE-Streaming", desc: "Echtzeit-Textstrom via SSE, React Query, Message-History in PostgreSQL. Kritischer Pfad für Studienstart 15.07.", status: "planned", month: "juni", chapter: "Kap. 4", tags: ["Backend","Frontend"], agents: ["ai-engineer","architect","ux-designer"], aufwand: "5h", week: 2, icon: MessageSquare },
   { title: "KI-Disclosure Flow vollständig", desc: "Middleware prüft ki_disclosure_seen_at — redirect nach /ki-disclosure wenn noch nicht gesehen.", status: "planned", month: "juni", chapter: "Kap. 6", tags: ["Ethik","DSGVO"], agents: ["compliance","ai-ethics","ux-designer"], aufwand: "1h", week: 2, icon: Eye },
@@ -94,6 +99,7 @@ const FEATURES: Feature[] = [
   { title: "'Deine Gedanken' — Lernfaden-View", desc: "Nach jeder Session extrahiert LLM die 2–3 stärksten eigenen Formulierungen des Lernenden (wörtlich, nicht zusammengefasst). Wächst als persönliche Timeline. Nächste Session beginnt mit offener Frage der letzten. Keine KI-Texte, keine Fortschrittsbalken.", status: "planned", month: "juni", chapter: "Kap. 3 · Kap. 4 · Kap. 6", tags: ["AI","UX","Studie","Psychometrie"], agents: ["ai-engineer","ux-designer","psychologist","didaktiker"], aufwand: "4h", week: 4, icon: BookOpen },
 
   // ── JULI ──
+  { title: "④ Evaluating AI Agents", desc: "deeplearning.ai — Eval-Methodik für LLM-Vergleich Claude/GPT-4o/Mistral. Erst relevant wenn Kap. 5 in Arbeit geht — liefert die formale Methodik für die systematische Bewertung.", status: "planned", month: "juli", chapter: "Kap. 5", tags: ["Weiterbildung","LLM-Eval"], agents: ["ai-engineer","mlops"], aufwand: "1h 30min", icon: BarChart3 },
   { title: "Chat Core mit SSE-Streaming", desc: "Echtzeit-Textstrom via Server-Sent Events, React Query für State, Message-History in PostgreSQL.", status: "planned", month: "juli", chapter: "Kap. 4", tags: ["Backend","Frontend"], agents: ["ai-engineer","architect","ux-designer"], aufwand: "5h", icon: MessageSquare },
   { title: "Prompt-Management in DB", desc: "Sokratische Prompt-Templates in PostgreSQL, Jinja2-Rendering, live editierbar — Study-Lock bei STUDY_MODE=locked.", status: "planned", month: "juli", chapter: "Kap. 3 · Kap. 4", tags: ["AI","Backend"], agents: ["ai-engineer","mlops","architect"], aufwand: "3h", icon: Brain },
   { title: "LLM Single API (Claude · GPT-4o · Mistral)", desc: "Gemeinsames Abstraktions-Interface für alle drei LLMs — versionierte Model-IDs, DPAs vor Integration.", status: "planned", month: "juli", chapter: "Kap. 4 · Kap. 5", tags: ["AI","LLM-Eval"], agents: ["ai-engineer","security","mlops"], aufwand: "4h", icon: Zap },
@@ -143,7 +149,8 @@ const TAG_COLORS: Record<string, string> = {
   Studie:      "bg-teal-500/10 text-teal-700 border-teal-500/20 dark:text-teal-400",
   AI:          "bg-sky-500/10 text-sky-700 border-sky-500/20 dark:text-sky-400",
   Analytics:   "bg-blue-500/10 text-blue-700 border-blue-500/20 dark:text-blue-400",
-  Rechtlich:   "bg-slate-500/10 text-slate-700 border-slate-500/20 dark:text-slate-400",
+  Rechtlich:     "bg-slate-500/10 text-slate-700 border-slate-500/20 dark:text-slate-400",
+  Weiterbildung: "bg-lime-500/10 text-lime-700 border-lime-500/20 dark:text-lime-400",
 }
 
 const SCIENCE_OBLIGATIONS = [
