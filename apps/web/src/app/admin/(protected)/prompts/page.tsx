@@ -50,7 +50,9 @@ interface Column {
 // ── Prompts ───────────────────────────────────────────────────────────────────
 
 function buildPrompt(base: string, userName: string): string {
-  return base.replace("{{user_name}}", userName || "du")
+  const withName = base.replace(/\{\{user_name\}\}/g, userName || "du")
+  // Add auto-start instruction to every prompt
+  return withName + `\n\n## Auto-Start\nWenn die erste Nachricht [SESSIONSTART] lautet: Starte sofort mit deiner Begrüßung gemäß dem Session-Einstieg oben. Keine Erklärung, direkt beginnen.`
 }
 
 const PROMPTS_ALLGEMEIN: Record<Character, string> = {
@@ -211,6 +213,9 @@ const TOPICS: { id: Topic; label: string; icon: React.ElementType; available: bo
 ]
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
+
+// Hidden trigger for auto-start — not shown as user bubble
+const AUTO_START_TRIGGER = "[SESSIONSTART]"
 
 async function callClaude(systemPrompt: string, messages: Message[], signal: AbortSignal): Promise<string> {
   const res = await fetch("/admin/api/sandbox-chat", {
@@ -397,20 +402,39 @@ export default function PromptsPage() {
 
   async function sendMessage(character: Character, text: string) {
     const col = columns.find((c) => c.character === character)!
+    const isAutoStart = text === AUTO_START_TRIGGER
+    // For auto-start: don't show the trigger as a user bubble
     const userMsg: Message = { role: "user", content: text, character }
     const newMessages = [...col.messages, userMsg]
-    updateColumn(character, { messages: newMessages, loading: true })
+    const displayMessages = isAutoStart ? col.messages : newMessages
+    updateColumn(character, { messages: displayMessages, loading: true })
     try {
       const reply = await callClaude(col.prompt, newMessages, new AbortController().signal)
-      updateColumn(character, { messages: [...newMessages, { role: "assistant", content: reply, character }], loading: false })
+      updateColumn(character, {
+        messages: [...displayMessages, { role: "assistant", content: reply, character }],
+        loading: false,
+      })
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err)
-      updateColumn(character, { messages: [...newMessages, { role: "assistant", content: `⚠️ ${msg}`, character }], loading: false })
+      updateColumn(character, {
+        messages: [...displayMessages, { role: "assistant", content: `⚠️ ${msg}`, character }],
+        loading: false,
+      })
     }
   }
 
   async function sendToAll(text: string) {
     for (const col of columns) sendMessage(col.character, text)
+  }
+
+  function autoStartAll() {
+    // Only start if name is set and no messages yet in any column
+    if (!userName.trim()) return
+    for (const col of columns) {
+      if (col.messages.length === 0) {
+        sendMessage(col.character, AUTO_START_TRIGGER)
+      }
+    }
   }
 
   function resetAll() {
@@ -491,9 +515,17 @@ export default function PromptsPage() {
           <input
             value={userName}
             onChange={(e) => applyUserName(e.target.value)}
-            placeholder="Dein Name (für die Begrüßung)"
-            className="w-40 text-sm bg-muted/30 border border-border rounded-lg px-3 py-2 focus:outline-none focus:border-foreground/40"
+            onKeyDown={(e) => { if (e.key === "Enter" && userName.trim()) autoStartAll() }}
+            placeholder="Name eingeben..."
+            className="w-36 text-sm bg-muted/30 border border-border rounded-lg px-3 py-2 focus:outline-none focus:border-foreground/40"
           />
+          <button
+            onClick={autoStartAll}
+            disabled={!userName.trim()}
+            className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-emerald-600 text-white text-xs font-medium hover:bg-emerald-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors shrink-0"
+          >
+            ▶ Gespräch starten
+          </button>
           <input
             value={syncInput}
             onChange={(e) => setSyncInput(e.target.value)}
