@@ -469,8 +469,8 @@ export default function MitmachenPage() {
         </Link>
         <p className="text-xs text-muted-foreground">
           Noch Fragen?{" "}
-          <a href="mailto:dagmar.rostek@wbstraining.de" className="underline hover:text-foreground transition-colors">
-            dagmar.rostek@wbstraining.de
+          <a href="mailto:Dagmar.Rostek@stud.mobile-university.de" className="underline hover:text-foreground transition-colors">
+            Dagmar.Rostek@stud.mobile-university.de
           </a>
         </p>
       </section>

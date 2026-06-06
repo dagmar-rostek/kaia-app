@@ -46,11 +46,11 @@ Was das bedeutet:
 
 | Datenkategorie | Zweck | Löschfrist |
 |---|---|---|
-| E-Mail-Adresse | Kontakt, Login | 6 Monate nach Studienende |
-| Benutzername | Pseudonymisierung | 6 Monate nach Studienende |
-| Chat-Gespräche mit KAIA | Forschungsauswertung (anonymisiert) | 6 Monate nach Studienende |
-| GSE-Antworten (Prä + Post) | Hauptmessung der Studie | 6 Monate nach Studienende |
-| Login-Zeiten, Session-Dauer | Nutzungsanalyse (nur mit Opt-in) | 6 Monate nach Studienende |
+| E-Mail-Adresse | Kontakt, Login | spätestens 1 Jahr nach Abschlussnote |
+| Benutzername | Pseudonymisierung | spätestens 1 Jahr nach Abschlussnote |
+| Chat-Gespräche mit KAIA | Forschungsauswertung (anonymisiert) | spätestens 1 Jahr nach Abschlussnote |
+| GSE-Antworten (Prä + Post) | Hauptmessung der Studie | spätestens 1 Jahr nach Abschlussnote |
+| Login-Zeiten, Session-Dauer | Nutzungsanalyse (nur mit Opt-in) | spätestens 1 Jahr nach Abschlussnote |
 
 Für die **Thesis und Veröffentlichungen** werden ausschließlich vollständig anonymisierte Daten verwendet. Kein Rückschluss auf einzelne Personen ist möglich.
 
@@ -72,7 +72,7 @@ Für die KI-Verarbeitung werden Sprachmodelle von **Anthropic (USA), OpenAI (USA
 - **Ich kann meine Daten einsehen** — auf Anfrage erhalte ich eine Kopie aller gespeicherten Daten (Art. 15 DSGVO).
 - **Ich kann meine Daten exportieren** — als maschinenlesbares JSON (Art. 20 DSGVO).
 
-Kontakt für Datenschutzanfragen: dagmar.rostek@wbstraining.de
+Kontakt für Datenschutzanfragen: Dagmar.Rostek@stud.mobile-university.de
 
 ---
 
@@ -122,4 +122,4 @@ bestätige hiermit:
 Eine Kopie erhält die teilnehmende Person auf Wunsch.*
 
 *Bei Fragen zur Studie oder zum Datenschutz:*  
-*Dagmar Rostek · dagmar.rostek@wbstraining.de*
+*Dagmar Rostek · Dagmar.Rostek@stud.mobile-university.de*

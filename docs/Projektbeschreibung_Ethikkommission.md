@@ -2,7 +2,7 @@
 
 **Eingereicht bei:** Gemeinsame Ethikkommission der PH Heidelberg und SRH University  
 **Datum:** 06. Juni 2026  
-**Forschende:** Dagmar Rostek, dagmar.rostek@wbstraining.de  
+**Forschende:** Dagmar Rostek, Dagmar.Rostek@stud.mobile-university.de  
 **Einrichtung:** SRH Fernhochschule Riedlingen, M.Sc. Data Science & Analytics  
 **Betreuer:in:** [Name eintragen]
 
@@ -62,4 +62,4 @@ Alle Daten werden pseudonymisiert auf einem Hetzner-Server in Helsinki (EU) gesp
 
 ---
 
-*Dagmar Rostek · dagmar.rostek@wbstraining.de · 06. Juni 2026*
+*Dagmar Rostek · Dagmar.Rostek@stud.mobile-university.de · 06. Juni 2026*

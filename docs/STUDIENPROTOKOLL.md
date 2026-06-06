@@ -13,7 +13,7 @@
 **Einrichtung:** SRH Fernhochschule Riedlingen, Masterstudiengang Data Science & Analytics
 
 **Verantwortliche Forscherin:** Dagmar Rostek  
-**E-Mail:** dagmar.rostek@wbstraining.de  
+**E-Mail:** Dagmar.Rostek@stud.mobile-university.de  
 **Betreuung:** [Name der Thesis-Betreuerin/des Thesis-Betreuers]
 
 **Interessenkonflikt:** Die Forscherin ist gleichzeitig Entwicklerin des untersuchten Systems und potenzielle Kommerzialisiererin. Dieser Interessenkonflikt wird in der Thesis explizit deklariert. Zur Reduktion von Bias werden standardisierte Messinstrumente (GSE-Skala) und vorregistrierte Hypothesen (OSF.io, vor Datensicht) eingesetzt.

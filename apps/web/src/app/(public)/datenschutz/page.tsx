@@ -33,8 +33,8 @@ export default function DatenschutzPage() {
           <p>SRH Fernhochschule Riedlingen</p>
           <p>
             Kontakt:{" "}
-            <a href="mailto:dagmar.rostek@wbstraining.de" className="underline hover:text-foreground transition-colors">
-              dagmar.rostek@wbstraining.de
+            <a href="mailto:Dagmar.Rostek@stud.mobile-university.de" className="underline hover:text-foreground transition-colors">
+              Dagmar.Rostek@stud.mobile-university.de
             </a>
           </p>
         </div>
@@ -199,8 +199,8 @@ export default function DatenschutzPage() {
 
       <div className="rounded-lg border border-border p-4 text-xs text-muted-foreground">
         Bei Fragen zum Datenschutz:{" "}
-        <a href="mailto:dagmar.rostek@wbstraining.de" className="underline hover:text-foreground transition-colors">
-          dagmar.rostek@wbstraining.de
+        <a href="mailto:Dagmar.Rostek@stud.mobile-university.de" className="underline hover:text-foreground transition-colors">
+          Dagmar.Rostek@stud.mobile-university.de
         </a>
       </div>
     </main>
