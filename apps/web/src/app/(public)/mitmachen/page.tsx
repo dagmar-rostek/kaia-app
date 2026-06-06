@@ -243,9 +243,9 @@ export default function MitmachenPage() {
 
             <p>
               Jede Session beginnt mit einer einfachen Frage von KAIA:{" "}
-              <em className="text-foreground">"Was möchtest du nach dieser Session verstanden oder weitergedacht haben?"</em>{" "}
+              <em className="text-foreground">&ldquo;Was möchtest du nach dieser Session verstanden oder weitergedacht haben?&rdquo;</em>{" "}
               Und sie endet mit:{" "}
-              <em className="text-foreground">"Was würdest du jemandem erklären, der nicht dabei war?"</em>{" "}
+              <em className="text-foreground">&ldquo;Was würdest du jemandem erklären, der nicht dabei war?&rdquo;</em>{" "}
               Dazwischen passiert das eigentliche Lernen.
             </p>
 
