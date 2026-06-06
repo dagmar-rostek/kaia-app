@@ -13,7 +13,8 @@ interface RequestBody {
 export async function POST(req: NextRequest): Promise<NextResponse> {
   const apiKey = process.env.ANTHROPIC_API_KEY
   if (!apiKey) {
-    return NextResponse.json({ error: "ANTHROPIC_API_KEY not set" }, { status: 500 })
+    console.error("[sandbox-chat] ANTHROPIC_API_KEY not set in web container")
+    return NextResponse.json({ error: "ANTHROPIC_API_KEY fehlt — bitte in der .env setzen und Web neu deployen" }, { status: 500 })
   }
 
   const body = await req.json() as RequestBody

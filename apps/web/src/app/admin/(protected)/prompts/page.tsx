@@ -84,7 +84,10 @@ async function callClaude(systemPrompt: string, messages: Message[], signal: Abo
       messages: messages.map((m) => ({ role: m.role, content: m.content })),
     }),
   })
-  if (!res.ok) throw new Error(`API error: ${res.status}`)
+  if (!res.ok) {
+    const body = await res.json().catch(() => ({ error: `HTTP ${res.status}` })) as { error?: string }
+    throw new Error(body.error ?? `HTTP ${res.status}`)
+  }
   const data = await res.json() as { content: string }
   return data.content
 }
@@ -262,9 +265,10 @@ export default function PromptsPage() {
         messages: [...newMessages, { role: "assistant", content: reply, character }],
         loading: false,
       })
-    } catch {
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err)
       updateColumn(character, {
-        messages: [...newMessages, { role: "assistant", content: "Fehler beim Abrufen der Antwort.", character }],
+        messages: [...newMessages, { role: "assistant", content: `⚠️ Fehler: ${msg}`, character }],
         loading: false,
       })
     }
