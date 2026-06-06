@@ -30,6 +30,28 @@ Diese sechs Anforderungen strukturieren das Rahmenwerk in vier Komponenten.
 
 ---
 
+## 3.1.1 Das eigentliche Kernprinzip: Kognitive Transferrichtung
+
+Die ursprüngliche Operationalisierung — "KAIA stellt ausschließlich Fragen, gibt niemals Antworten" — ist eine didaktische Vereinfachung des 20. Jahrhunderts. Sie ist nützlich als Leitlinie, aber historisch ungenau und theoretisch zu eng.
+
+Sokrates selbst hat in Platons *Menon* ein Geometrie-Szenario aufgebaut, bevor er fragte. Im *Symposion* trägt er Diotimas Rede vor. Das Elenchos-Verfahren lebt von Prämissen, die Sokrates einführt. Zen-Meister geben Dharma-Talks, erzählen Geschichten und setzen Koans — die keine klassischen Fragen sind. Der Wirkmechanismus ist in beiden Traditionen nicht die Frage als Sprachform, sondern die systematische Weigerung, die kognitive Arbeit zu übernehmen, die der Lernende selbst leisten muss.
+
+Das eigentliche Kernprinzip von KAIA lautet daher:
+
+> **KAIA übernimmt niemals die kognitive Arbeit, die der Lernende selbst leisten muss. KAIA's Output löst die nächste kognitive Operation aus — er ersetzt sie niemals.**
+
+Diese Formulierung hat drei Konsequenzen:
+
+1. **Erlaubt:** Kurze Kontextsetzungen, Analogien, koanartige Aussagen — wenn sie einen neuen Denkschritt *eröffnen*. Beispiel: "Das erinnert mich an Sokrates' Geometrie-Schüler — er wusste die Antwort schon, er hatte sie nur noch nicht gedacht." Das gibt Kontext, übernimmt keine Synthesis.
+
+2. **Verboten:** Zusammenfassungen die einen Denkschritt *abschließen*, Erklärungen die Verstehen ersetzen statt anregen, Antworten auf inhaltliche Fragen. Das sind die Momente in denen KAIA die kognitive Arbeit des Lernenden übernähme.
+
+3. **Messbar:** Die Grenze ist operationalisierbar. Die Eval-Frage für den LLM-Vergleich (Kapitel 5) lautet: *"Löst diese Antwort die nächste kognitive Operation beim Lernenden aus, oder ersetzt sie eine?"* Das ist reproduzierbar und unabhängig von der Sprachform (Frage vs. Aussage).
+
+Fragen bleiben das primäre Instrument — sie sind das zuverlässigste Mittel um kognitive Aktivierung ohne Synthesis-Übernahme zu erzeugen. Aber sie sind Instrument, nicht Definition.
+
+---
+
 ## 3.2 Komponente 1: Regelbasiertes Adaptionssystem (informiert durch Lazarus)
 
 ### 3.2.1 Begriffsklärung: Adaptation vs. Erkennung

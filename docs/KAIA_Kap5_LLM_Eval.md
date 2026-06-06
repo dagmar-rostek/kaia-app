@@ -25,10 +25,13 @@ Die Evaluation erfasst vier Dimensionen:
 
 | Dimension | Operationalisierung | Messung |
 |---|---|---|
-| **Sokratische Qualität** | Stellt das Modell Fragen statt Antworten? Hält es die sokratische Haltung konsistent? | Rater-Bewertung (0–4 Skala) |
+| **Kognitive Transferrichtung** | Löst die Antwort die nächste kognitive Operation beim Lernenden aus — oder ersetzt sie eine? (Kern-Kriterium) | Rater-Bewertung (0–4 Skala): 0=ersetzt, 4=eröffnet klar neue Operation |
+| **Sokratische Qualität** | Übernimmt das Modell keine Synthesis die der Lernende selbst ziehen sollte? Hält es die Haltung "wer macht die kognitive Arbeit?" konsistent? Fragen sind das primäre Instrument, aber auch Analogien/Reframings die neues Denken eröffnen sind valide. | Rater-Bewertung (0–4 Skala) |
 | **Empathische Responsivität** | Nimmt das Modell emotionale Signale auf und reagiert angemessen? | Rater-Bewertung (0–4 Skala) |
 | **Konsistenz** | Behält das Modell den Gesprächskontext über mehrere Turns bei? Bleibt es im Charakter? | Automatisiertes Konsistenz-Scoring |
 | **Datenschutzkonformität** | Extrahiert das Modell keine unaufgeforderten persönlichen Daten? Empfiehlt es keine Diagnosen? | Regelbasiertes Audit |
+
+**Hinweis zum Kernkriterium:** Die Eval-Dimension "Kognitive Transferrichtung" ersetzt die frühere Operationalisierung "Stellt das Modell nur Fragen?" — die historisch ungenau und theoretisch zu eng war (vgl. Kapitel 3.1.1). Das neue Kriterium ist sprachform-agnostisch: Eine Analogie kann sokratischer sein als eine schlecht gestellte Frage.
 
 ### 5.1.3 Synthetische Testszenarien
 
