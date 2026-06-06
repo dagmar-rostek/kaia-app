@@ -1,7 +1,7 @@
 import Link from "next/link"
 import { ThemeToggle } from "@/components/ThemeToggle"
 import { logoutAction } from "./actions"
-import { LayoutDashboard, CheckSquare, ScrollText, Network, Euro, BookOpen, LogOut, Map, Users, GraduationCap } from "lucide-react"
+import { LayoutDashboard, CheckSquare, ScrollText, Network, Euro, BookOpen, LogOut, Map, Users, GraduationCap, Sparkles } from "lucide-react"
 
 const NAV = [
   { href: "/admin", label: "Übersicht", icon: LayoutDashboard },
