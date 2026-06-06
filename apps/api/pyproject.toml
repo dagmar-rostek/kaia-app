@@ -47,6 +47,8 @@ ignore = ["S101", "A003"]
 
 [tool.ruff.lint.per-file-ignores]
 "tests/**" = ["S105", "S106", "S107"]
+"app/domains/prompts/templates.py" = ["E501"]  # prompt strings are intentionally long
+"alembic/versions/**" = ["E501"]  # migration column definitions are intentionally long
 
 [tool.mypy]
 python_version = "3.12"

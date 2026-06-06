@@ -27,7 +27,9 @@ def upgrade() -> None:
     op.create_table(
         "roadmap_goals",
         sa.Column("id", sa.Integer(), primary_key=True),
-        sa.Column("user_id", sa.Integer(), sa.ForeignKey("users.id", ondelete="CASCADE"), nullable=False),
+        sa.Column(
+            "user_id", sa.Integer(), sa.ForeignKey("users.id", ondelete="CASCADE"), nullable=False
+        ),
         sa.Column("title", sa.String(200), nullable=False),
         sa.Column("domain", sa.String(100), nullable=True),
         sa.Column("why", sa.Text(), nullable=True),
@@ -43,9 +45,16 @@ def upgrade() -> None:
     op.create_table(
         "chat_sessions",
         sa.Column("id", sa.Integer(), primary_key=True),
-        sa.Column("user_id", sa.Integer(), sa.ForeignKey("users.id", ondelete="CASCADE"), nullable=False),
+        sa.Column(
+            "user_id", sa.Integer(), sa.ForeignKey("users.id", ondelete="CASCADE"), nullable=False
+        ),
         sa.Column("daily_plan", sa.Text(), nullable=True),
-        sa.Column("active_goal_id", sa.Integer(), sa.ForeignKey("roadmap_goals.id", ondelete="SET NULL"), nullable=True),
+        sa.Column(
+            "active_goal_id",
+            sa.Integer(),
+            sa.ForeignKey("roadmap_goals.id", ondelete="SET NULL"),
+            nullable=True,
+        ),
         sa.Column("session_number", sa.Integer(), nullable=False, server_default="1"),
         sa.Column("initial_mode", sa.String(20), nullable=False, server_default="sokratisch"),
         sa.Column("final_mode", sa.String(20), nullable=True),
@@ -60,7 +69,12 @@ def upgrade() -> None:
     op.create_table(
         "messages",
         sa.Column("id", sa.Integer(), primary_key=True),
-        sa.Column("session_id", sa.Integer(), sa.ForeignKey("chat_sessions.id", ondelete="CASCADE"), nullable=False),
+        sa.Column(
+            "session_id",
+            sa.Integer(),
+            sa.ForeignKey("chat_sessions.id", ondelete="CASCADE"),
+            nullable=False,
+        ),
         sa.Column("role", sa.String(10), nullable=False),
         sa.Column("content", sa.Text(), nullable=False),
         sa.Column("created_at", sa.DateTime(timezone=True), server_default=sa.func.now()),
@@ -74,8 +88,15 @@ def upgrade() -> None:
     op.create_table(
         "memory_chunks",
         sa.Column("id", sa.Integer(), primary_key=True),
-        sa.Column("user_id", sa.Integer(), sa.ForeignKey("users.id", ondelete="CASCADE"), nullable=False),
-        sa.Column("session_id", sa.Integer(), sa.ForeignKey("chat_sessions.id", ondelete="SET NULL"), nullable=True),
+        sa.Column(
+            "user_id", sa.Integer(), sa.ForeignKey("users.id", ondelete="CASCADE"), nullable=False
+        ),
+        sa.Column(
+            "session_id",
+            sa.Integer(),
+            sa.ForeignKey("chat_sessions.id", ondelete="SET NULL"),
+            nullable=True,
+        ),
         sa.Column("content", sa.Text(), nullable=False),
         sa.Column("chunk_type", sa.String(20), nullable=False, server_default="insight"),
         sa.Column("created_at", sa.DateTime(timezone=True), server_default=sa.func.now()),
@@ -88,7 +109,9 @@ def upgrade() -> None:
     op.create_table(
         "gse_results",
         sa.Column("id", sa.Integer(), primary_key=True),
-        sa.Column("user_id", sa.Integer(), sa.ForeignKey("users.id", ondelete="CASCADE"), nullable=False),
+        sa.Column(
+            "user_id", sa.Integer(), sa.ForeignKey("users.id", ondelete="CASCADE"), nullable=False
+        ),
         sa.Column("measurement_type", sa.String(10), nullable=False),
         sa.Column("items", postgresql.JSONB(), nullable=False),
         sa.Column("total_score", sa.Float(), nullable=False),
@@ -100,7 +123,9 @@ def upgrade() -> None:
     op.create_table(
         "consent_logs",
         sa.Column("id", sa.Integer(), primary_key=True),
-        sa.Column("user_id", sa.Integer(), sa.ForeignKey("users.id", ondelete="CASCADE"), nullable=False),
+        sa.Column(
+            "user_id", sa.Integer(), sa.ForeignKey("users.id", ondelete="CASCADE"), nullable=False
+        ),
         sa.Column("event_type", sa.String(30), nullable=False),
         sa.Column("timestamp", sa.DateTime(timezone=True), server_default=sa.func.now()),
         sa.Column("ip_address", sa.String(45), nullable=True),
@@ -112,7 +137,9 @@ def upgrade() -> None:
     op.create_table(
         "user_profiles",
         sa.Column("id", sa.Integer(), primary_key=True),
-        sa.Column("user_id", sa.Integer(), sa.ForeignKey("users.id", ondelete="CASCADE"), nullable=False),
+        sa.Column(
+            "user_id", sa.Integer(), sa.ForeignKey("users.id", ondelete="CASCADE"), nullable=False
+        ),
         # STABLE
         sa.Column("gse_baseline", sa.Float(), nullable=True),
         sa.Column("preferred_interaction", sa.String(20), nullable=True),
