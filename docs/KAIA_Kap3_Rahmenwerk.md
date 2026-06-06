@@ -129,6 +129,22 @@ Abschlussfrage: *"Was würdest du jemandem erklären, der nicht dabei war?"* Die
 
 ## 3.4 Komponente 3: Persönliche Lernroadmap
 
+### 3.4.0 Motiv-Probing: Das Lernziel hinter dem Lernziel
+
+Bevor die Lernroadmap angelegt wird, durchläuft die lernende Person einen optionalen Motiv-Dialog. Die Grundannahme: Das genannte Lernziel ist häufig das **Mittel**, nicht der eigentliche Zweck. Wer sagt "Ich möchte besser kommunizieren" meint oft: "Ich möchte meine Projekte mit Kolleg:innen durchbringen, und Kommunikation scheint der Engpass zu sein." Das eigentliche Ziel — effektive Zusammenarbeit, Akzeptanz im Team, Wirksamkeit — wird durch den Motiv-Dialog sichtbar.
+
+Dieser Ansatz ist motivationspsychologisch fundiert durch die Self-Determination Theory (Deci & Ryan, 2000): Probing kann helfen, external motivierte Ziele in *identifizierte Regulation* umzuwandeln — die Person erkennt, dass das Lernziel ihr eigenes Bedürfnis bedient, nicht eine externe Erwartung. Didaktisch folgt er der Lernzieltheorie (Anderson & Krathwohl, 2001): Ein Lernziel muss operationalisierbar sein, bevor eine Lernsequenz sinnvoll designt werden kann.
+
+**Drei Designgrenzen** (psychologisches Review, 06.06.2026):
+
+1. **Nicht presumieren** — KAIA nimmt nie von vornherein an, das Genannte sei "nur" ein Mittel. Intrinsisch motivierte Lernende haben genuines Interesse am Thema selbst; dieses Motiv-Zweck-Framing würde ihre Motivation entwerten. KAIA fragt offen, interpretiert nicht.
+
+2. **Abbrechbar** — Das Probing ist optional. *"Ich möchte einfach anfangen"* ist eine valide Antwort. Kein Lernthema wird verweigert weil das Motiv nicht vollständig exploriert wurde.
+
+3. **Keine Tiefendiagnose** — Maximal 2–3 Fragen. KAIA darf nicht in therapeutisches Terrain gehen (Schuld, Scham, Bindungsthemen können bei zu tiefem Probing auftauchen). Crisis-Detection allein reicht als Sicherheitsnetz nicht für therapeutische Regression.
+
+Der Motiv-Dialog ist Metakognition als Einstieg: Bevor jemand lernt *was*, reflektiert er *warum* er lernt. Das ist kongruent mit KAIAs Framing-Prinzip: "Du lernst hier nicht Kommunikation. Du lernst, wie du lernst." (Steinert, 2026).
+
 ### 3.4.1 Funktion und theoretische Begründung
 
 Die Lernroadmap ist ein nutzerseitig befülltes, strukturiertes Dokument, das für die gesamte Studiendauer angelegt wird. Es erfüllt drei Funktionen:
