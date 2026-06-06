@@ -471,7 +471,11 @@ export default function PromptsPage() {
   }
 
   function resetAll() {
-    setColumns(makeColumns(selectedTopic, userName))
+    const fresh = makeColumns(selectedTopic, userName)
+    setColumns(fresh)
+    setSessionNumbers({ warm: 1, challenging: 1, wild: 1 })
+    setLastSteps({ warm: "", challenging: "", wild: "" })
+    try { localStorage.removeItem(STORAGE_KEY) } catch { /* ignore */ }
   }
 
   function newSessionForAll(step?: string) {
