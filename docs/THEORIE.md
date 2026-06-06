@@ -175,7 +175,15 @@ Das Spannungsfeld zwischen systemseitiger Adaptation (Personalisierung) und lern
 
 Eine der zentralen Fragen an KAIA ist: Führt sokratische Begleitung langfristig zur Fähigkeit, domain-übergreifend zu lernen — zum sogenannten "Lernen lernen"? Diese Frage ist für die vorliegende Thesis aus drei Gründen bedeutsam: Sie begründet die theoretische Relevanz des Ansatzes, sie schärft die Grenzen der empirischen Behauptungen, und sie öffnet eine Forschungsperspektive, die über die Pilotstudie hinausgeht.
 
-### 2.11.1 Die theoretische Kette
+### 2.11.1 Metakognition als Fundament — Selbstwirksamkeit als Motor
+
+Eine wichtige konzeptuelle Unterscheidung: Selbstwirksamkeit (Bandura, 1997) und metakognitive Regulation (Flavell, 1979) sind verwandte, aber verschiedene Konstrukte. Selbstwirksamkeit erklärt, *ob* jemand bereit ist, eine schwierige Aufgabe anzugehen — sie ist der **motivationale Motor**. Metakognitive Regulation erklärt, *wie gut* jemand das eigene Denken überwachen, steuern und auf neue Kontexte übertragen kann — sie ist der **kognitive Boden**.
+
+Flavell (1979) unterscheidet zwei metakognitive Komponenten: *Metakognitives Wissen* (Wissen über eigene Denk- und Lernprozesse) und *Metakognitive Überwachung* (das aktive Beobachten und Steuern dieser Prozesse während einer Aufgabe). Zimmermann (2000) zeigt, dass diese metakognitive Steuerungskapazität der stärkste empirische Prädiktor für domänenübergreifenden Lerntransfer ist — stärker als GSE allein.
+
+Für KAIAs Designlogik bedeutet das: Der sokratische Ansatz zielt nicht primär auf Selbstwirksamkeit (obwohl diese als Nebeneffekt gestärkt wird), sondern auf **metakognitive Aktivierung** — das Bewusstwerden eigener Denkprozesse, Annahmen und blinder Flecken. Selbstwirksamkeit ist der messbare Proxy-Indikator in der GSE-Skala; die eigentlich angestrebte Tiefenwirkung ist metakognitive Regulation.
+
+### 2.11.5 Die theoretische Kette
 
 Die Verbindung zwischen KAIAs sokratischem Ansatz und domain-übergreifender Kompetenz lässt sich als Kette beschreiben:
 
@@ -185,7 +193,19 @@ Die Verbindung zwischen KAIAs sokratischem Ansatz und domain-übergreifender Kom
 
 **Das schwache Glied — Transfer:** Dass aus GSE-Stärkung und reflektiver Kompetenz automatisch domain-übergreifende Problemlösekompetenz entsteht, ist nicht belegt. Perkins und Salomon (1989) zeigen in ihrer vielzitierten Analyse, dass Lerntransfer nicht automatisch geschieht — er benötigt explizites "Bridging": die bewusste Verbindung zwischen dem Gelernten und neuen Kontexten. Ein sokratischer Begleiter kann diese Brücke anregen, aber nicht garantieren.
 
-### 2.11.2 Was "Lernen lernen" durch KAIA realistische bedeutet
+### 2.11.3 Die drei Beispielthemen als Kompetenz-Schichten
+
+KAIAs drei Beispiel-Lernthemen (Wertschätzende Kommunikation, KI-Kompetenz, Leadership) repräsentieren keine beliebige Themenwahl, sondern drei aufeinander aufbauende Kompetenz-Schichten nach Erpenbeck und Rosenstiel (2007):
+
+- **Kommunikation** — primär Sozial- und Selbstkompetenz: reflexionsbasiert, hohe Anforderung an Selbstwahrnehmung und Perspektivwechsel
+- **KI-Kompetenz** — primär Methoden- und Fachkompetenz: problemlösungsbasiert, beginnend mit epistemischer Basiskompetenz (ich muss wissen was ich nicht weiß, bevor ich Einschätzungen treffe)
+- **Leadership** — emergente Transformation aller vier Kompetenz-Dimensionen: nicht additiv, sondern eine qualitative Veränderung, die Reflexionskompetenz und Problemlösekompetenz als Voraussetzungen benötigt
+
+Die optimale Aufbaureihenfolge folgt didaktischer Logik (Steinert): Reflexionskompetenz ist Voraussetzung für komplexe Problemlösekompetenz, beides ist Voraussetzung für Führungskompetenz. Das impliziert eine Sequenz: Kommunikation → KI-Kompetenz → Leadership.
+
+Ein zentrales Framing-Prinzip: Damit die drei Themen ihren Transfer-Effekt entfalten können, muss KAIA das gemeinsame Metaziel transparent machen. Steinert (2026, mündlich): *"Die Lernenden müssen erkennen, dass sie dasselbe lernen — nämlich Selbststeuerung — und nicht drei verschiedene Inhalte."* Im Onboarding sollte dieser Gedanke anklingen: nicht "ich lerne Kommunikation", sondern "ich lerne, wie ich lerne".
+
+### 2.11.4 Was "Lernen lernen" durch KAIA realistisch bedeutet
 
 Die vertretbare Behauptung lautet: KAIA kann durch sokratische Begleitung episodische Mastery-Erlebnisse erzeugen, die kurzfristig allgemeine Selbstwirksamkeitserwartungen stabilisieren und metakognitive Aufmerksamkeit für eigene Lernprozesse aktivieren. Ob sich daraus domain-übergreifende Problemlösekompetenz entwickelt, ist eine mittelfristige Hypothese, die die vorliegende Pilotstudie (N=32, 4 Wochen) nicht prüfen kann und nicht beansprucht zu prüfen.
 
@@ -296,6 +316,10 @@ Deci, E. L., & Ryan, R. M. (1985). *Intrinsic Motivation and Self-Determination 
 Deci, E. L., & Ryan, R. M. (2000). The "what" and "why" of goal pursuits: Human needs and the self-determination of behavior. *Psychological Inquiry, 11*(4), 227–268.
 
 Lepper, M. R., Greene, D., & Nisbett, R. E. (1973). Undermining children's intrinsic interest with extrinsic reward: A test of the "overjustification" hypothesis. *Journal of Personality and Social Psychology, 28*(1), 129–137.
+
+Erpenbeck, J., & Rosenstiel, L. v. (Hrsg.). (2007). *Handbuch Kompetenzmessung* (2. Aufl.). Schäffer-Poeschel.
+
+Flavell, J. H. (1979). Metacognition and cognitive monitoring: A new area of cognitive-developmental inquiry. *American Psychologist, 34*(10), 906–911.
 
 Perkins, D. N., & Salomon, G. (1989). Are cognitive skills context-bound? *Educational Researcher, 18*(1), 16–25.
 
