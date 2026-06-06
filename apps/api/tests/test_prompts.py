@@ -50,10 +50,13 @@ def test_prompt_wild_contains_key_elements() -> None:
 
 
 def test_all_prompts_forbid_answers() -> None:
-    """All characters must contain the no-answers rule."""
+    """All prompts must encode the no-answers / cognitive-work principle."""
     for prompt in [KAIA_PROMPT_V1_WARM, KAIA_PROMPT_V1_CHALLENGING, KAIA_PROMPT_V1_WILD]:
         lower = prompt.lower()
-        assert "keine antworten" in lower or "keine antwort" in lower or "antworten" in lower
+        # Accept either the old formulation or the new cognitive-work principle
+        old_form = "keine antworten" in lower or "keine antwort" in lower or "antworten" in lower
+        new_form = "kognitive arbeit" in lower or "kognitive operation" in lower
+        assert old_form or new_form, "Prompt missing no-answers / cognitive-work principle"
 
 
 def test_all_prompts_have_crisis_instruction() -> None:
