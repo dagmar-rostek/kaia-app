@@ -220,6 +220,31 @@ Die destillierten eigenen Formulierungen akkumulieren sich über Wochen zu einem
 
 Didaktisch operationalisiert dies das Spaced-Retrieval-Prinzip (Cepeda et al., 2006) und Steinerts Forderung nach zyklischer Rückbindung. Psychologisch stärkt es Selbstwirksamkeit durch Attribution: Der Lernende sieht, was er *selbst* gedacht hat — nicht was das System ihm erklärt hat.
 
+### 3.6.4 Outcome-Formulierung: Lernergebnis-Präzisierung als Onboarding-Schritt
+
+Das System akzeptiert keine vagen Lernthemen als Ausgangspunkt einer Lernroadmap. Stattdessen führt ein progressiver Dialog zur **Lernergebnis-Präzisierung** im Sinne von Outcome-Based Learning (Biggs & Tang, 2011) und kompetenzorientiertem Lernen nach Weinert (2001).
+
+Der Dialog folgt einer dreistufigen Struktur nach SDT (Deci & Ryan, 1985):
+1. *Kontext-Frage* — "Wofür gerade?" (situative Einbettung)
+2. *Vermeidungsmotiv* — "Was frustriert dich, was willst du vermeiden?" (unterschätzte, motivational stabile Kategorie)
+3. *Annäherungsmotiv* — "Wie sieht Erfolg für dich aus?" (Vision)
+
+Das Ergebnis ist ein präzisiertes Lernergebnis auf einer impliziten Bloom-Taxonomie-Ebene (Anderson & Krathwohl, 2001). Alle Motivationen sind valide — "nicht verarscht werden" ist genauso tragfähig wie "Karriereschritt machen". Das formulierte Outcome erscheint als **persistenter Anker** im Chat-Interface: kollabierbare Leiste oben, jederzeit sichtbar und editierbar. Das Outcome ist Kompass, nicht Käfig.
+
+### 3.6.5 Ressourcen-Agent: Drei-Pfad-Modell zur Kompetenzvertiefung
+
+Ein separater Agent-Modus — explizit nicht sokratisch — gibt konkrete Hinweise auf Lernwege. Moduswechsel durch expliziten Trigger; Interface zeigt Wechsel klar an: *"Ich zeige dir jetzt Wege, nicht Fragen."*
+
+Drei fundamental verschiedene Lernpfade als Prompt-Constraint (nicht LLM-Freiheit):
+
+| Pfad | Beschreibung |
+|---|---|
+| **Strukturiert** | Bücher, Kurse, Dokumentation, wissenschaftliche Quellen |
+| **Menschlich** | LinkedIn-Expert, Forum, Podcast-Interview |
+| **Durch Tun** | Eigenes Projekt, Hackathon, Open-Source-Beitrag |
+
+Web-Search optional und transparent. URLs immer als "zum Verifizieren" markiert.
+
 ### 3.6.6 Schutz vor Automatisierungsabhängigkeit
 
 Steinert (2026, mündlich) hat auf eine spezifische Gefahr hingewiesen: Profile die nie schrumpfen, erzeugen Lernende die immer mehr Unterstützung erwarten. Das Transparenz-Prinzip schließt daher explizit ein: Das System zeigt an, wenn Scaffold-Anteile über Zeit abnehmen — als sichtbares Signal wachsender Kompetenz, nicht als unsichtbare Systemoptimierung.
