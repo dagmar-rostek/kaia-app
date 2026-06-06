@@ -2,6 +2,64 @@
 
 ---
 
+## 2026-06-06 — "Der Tag, an dem wir fast die geniale Idee über den Haufen geschmissen hätten — weil wir zum Gewöhnlichen zurückgekehrt wären"
+
+*Protokolliert vom Koordinator. Mit zitternden Händen. Das war knapp.*
+
+---
+
+Es gibt Momente in der Entwicklung, in denen das Team unbemerkt driftet. Nicht dramatisch. Nicht durch einen schlechten Commit. Sondern weil bekanntes Terrain sicherer wirkt als das Unbekannte — und man anfängt, die ursprüngliche Idee durch den Filter konventioneller Theorie zu betrachten.
+
+Heute hat Dagmar diesen Moment rechtzeitig gestoppt.
+
+**Morgens: Das DB-Schema steht. Die Sandbox läuft. Steinert kritisiert lautstark.**
+
+Der Didaktiker hatte gestern seinen großen Auftritt. Er hatte recht. Bloom-Taxonomie, Knowles, Hattie — alles wichtig. Das Team hatte gearbeitet, drei Charaktere überarbeitet, das Empathie-Problem gelöst. Gut gemacht.
+
+**Mittags: Die Idee von 'ausschließlich Fragen stellen'**
+
+Dagmar fragt: *"Wenn du noch mal ganz kritisch das Exposé liest — schließt der Titel das wirklich aus, dass KAIA auch Kontext geben darf?"*
+
+Der Koordinator ist ehrlich: "Das Übergabedokument sagt explizit: *ausschließlich Fragen, niemals direkte Antworten*."
+
+Pause.
+
+Dann: *"Und was haben wir heute den ganzen Tag gemacht? Du hast mir Bloom erklärt. Du hast Erpenbeck zusammengefasst. Du hast Steinerts Argumente dargelegt. Ich habe sehr viel gelernt. Aber du hast mir keine Fragen gestellt."*
+
+**Der Moment.**
+
+Der Psychologe, ruhig: *"Der Wirkmechanismus ist nie die Frage als Sprachform. Es ist: wer macht die kognitive Arbeit?"*
+
+Steinert, der plötzlich nachdenklich wird statt laut: *"Die 'Sokrates stellt nur Fragen'-Lesart ist philologisch naiv. In *Menon* baut er das Geometrie-Szenario auf. In *Symposion* trägt er Diotimas Rede vor. Das ist eine didaktische Vereinfachung des 20. Jahrhunderts — nicht die historische Realität."*
+
+Der AI Engineer, der auf einmal aufhört zu tippen: *"Wenn das Differenzierungsmerkmal nicht 'Frage vs. Aussage' ist — was ist es dann? Es muss operationalisierbar sein."*
+
+Und dann der Satz, der alles löst:
+
+> **"KAIA produziert immer Output, der die nächste kognitive Operation beim Lernenden auslöst — nie Output, der eine kognitive Operation ersetzt."**
+
+Das Kernprinzip. Das eigentliche. Nicht die Sprachform — die Richtung.
+
+**Was das bedeutet:**
+- Eine Analogie die neues Denken öffnet → erlaubt
+- Eine Zusammenfassung die Denken abschließt → verboten
+- Ein Koan → erlaubt
+- Eine Erklärung die Verstehen ersetzt → verboten
+- Eine Frage die aktiviert → erlaubt
+- Eine Frage die nichts öffnet → wertlos auch wenn sie eine Frage ist
+
+Alle Prompts wurden neu geschrieben. Kapitel 3 hat ein neues Kernprinzip. Kapitel 5 hat ein neues Eval-Kriterium.
+
+**Dagmars Satz am Ende des Tages:**
+*"Fast hätten wir die geniale Idee über den Haufen geschmissen, weil wir zum gewöhnlichen Bekannten gewechselt wären — da einfach, da bekannt."*
+
+Der Koordinator notiert das. Für das nächste Mal, wenn jemand im Team wieder anfängt zu driften.
+
+---
+*Tag-Summe: DB-Schema ✓ · Sandbox live ✓ · Charaktere neu ✓ · Bloom documented ✓ · Kernprinzip gerettet ✓*
+
+---
+
 ## 2026-06-05 — "Die Woche, in der das Team auseinanderfiel, zusammenwuchs, einen Rentner einstellte und trotzdem irgendwie 47 Dinge baute"
 
 *Protokolliert vom Koordinator. Unter Schmerzen. Mit Kaffee.*  
