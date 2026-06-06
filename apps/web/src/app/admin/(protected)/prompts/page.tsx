@@ -75,7 +75,7 @@ Krisenhinweise: sofort unterbrechen → 0800 111 0 111 und 112.`,
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
 async function callClaude(systemPrompt: string, messages: Message[], signal: AbortSignal): Promise<string> {
-  const res = await fetch("/api/sandbox-chat", {
+  const res = await fetch("/admin/api/sandbox-chat", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     signal,
@@ -86,7 +86,7 @@ async function callClaude(systemPrompt: string, messages: Message[], signal: Abo
   })
   if (!res.ok) {
     const body = await res.json().catch(() => ({ error: `HTTP ${res.status}` })) as { error?: string }
-    throw new Error(body.error ?? `HTTP ${res.status}`)
+    throw new Error(body.error ?? `HTTP ${res.status} — Route nicht gefunden?`)
   }
   const data = await res.json() as { content: string }
   return data.content
