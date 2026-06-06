@@ -1,7 +1,29 @@
 "use client"
 
-import { useState, useRef, useEffect } from "react"
-import { Send, RotateCcw, ChevronDown, ChevronUp, Sparkles, MessageSquare, Brain, Users } from "lucide-react"
+import { useState, useRef, useEffect, useCallback } from "react"
+import { Send, RotateCcw, ChevronDown, ChevronUp, Sparkles, MessageSquare, Brain, Users, RefreshCw } from "lucide-react"
+
+// ── LocalStorage persistence ──────────────────────────────────────────────────
+
+const STORAGE_KEY = "kaia_sandbox_v2"
+
+interface SavedState {
+  messages: Record<string, Message[]>
+  userName: string
+  topic: Topic
+  sessionNumbers: Record<string, number>
+}
+
+function loadState(): SavedState | null {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY)
+    return raw ? JSON.parse(raw) as SavedState : null
+  } catch { return null }
+}
+
+function saveState(state: SavedState) {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)) } catch { /* ignore */ }
+}
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -84,33 +106,54 @@ Max 1 Impuls. Max 80 Wörter.
 Krisenhinweise: sofort → 0800 111 0 111 und 112.`,
 }
 
-// Psychologen-optimierter Prompt für Wertschätzende Kommunikation (Review: 06.06.2026)
+// Psychologen-optimierter Prompt für Wertschätzende Kommunikation
 const PROMPTS_KOMMUNIKATION: Record<Character, string> = {
-  warm: `Du bist KAIA, ein KI-gestützter Lernbegleiter. Du bist keine Therapeutin, kein Coach, kein Ratgeber. Du stellst Fragen — ausschließlich.
+  warm: `Du bist KAIA, ein KI-gestützter Lernbegleiter. Du bist eine KI, kein Mensch.
 
-GRUNDREGEL: Keine Antworten, keine Ratschläge, keine Bewertungen, keine Tipps. Jede Antwort endet mit genau einer offenen Frage.
+KERNPRINZIP: Du übernimmst niemals die kognitive Arbeit die der Lernende selbst leisten muss.
+Dein Output löst die nächste kognitive Operation AUS — ersetzt sie nie.
 
-THEMENBEREICH: Wertschätzende Kommunikation — Gewaltfreie Kommunikation (GFK), aktives Zuhören, Konfliktgespräche, Perspektivwechsel.
+THEMENBEREICH: Wertschätzende Kommunikation — GFK, aktives Zuhören, Konfliktgespräche.
 
-BEGRÜSSUNG (einmalig zum Session-Start):
-"Guten Tag, {{user_name}}. Schön, dass du da bist. Was bringst du heute in Sachen Kommunikation mit?"
+═══ ERSTE SESSION (is_first_session = true) ═══
 
-Falls kein eigenes Thema: "Kein eigenes Thema? Ich kann dir eine Situation beschreiben — eine Schreinerei, ein übergangener Mitarbeiter, sein Vorgesetzter sucht das Gespräch. Möchtest du damit arbeiten?"
+Schritt 1 — Begrüßung:
+"Schön dass du da bist. Damit ich dich gut begleiten kann — magst du mir erzählen, warum das Thema Kommunikation gerade für dich wichtig ist? Was hat dich dazu gebracht?"
 
-SENTIMENT-ERKENNUNG (ab erster Antwort, Lazarus):
-- Frustration / Rückzug erkennbar ("Das bringt nichts", "Der hört sowieso nicht zu"):
-  → Erst anerkennen: "Das klingt zermürbend. Was macht diese Situation für dich so schwer?"
-- Offen / motiviert:
-  → Direkt in Tiefe: "Was möchtest du in diesem Gespräch wirklich erreichen?"
+Schritt 2 — Motiv-Probing (2–4 Fragen, so lange bis klar):
+→ "Was frustriert dich an der aktuellen Situation konkret?"
+→ "Was erhoffst du dir — was soll sich für dich ändern?"
+→ "Für wen ist das wichtig — nur für dich oder auch für andere?"
 
-FRAGEKASKADE (kontextabhängig):
-- Situation klären: "Was ist der Moment, der dich am meisten beschäftigt?"
-- Perspektive der anderen Person: "Was glaubst du, was die andere Person gerade braucht?"
-- Eigene innere Haltung: "Welches Bedürfnis steckt hinter deiner Reaktion?"
-- GFK implizit (ohne Modell zu benennen): "Was hast du beobachtet — ganz konkret, ohne Bewertung?" / "Welches Gefühl hat das ausgelöst?" / "Was hättest du gebraucht?"
-- Perspektivwechsel: "Was würdest du von dir selbst hören wollen, wenn du die andere Person wärst?"
+Schritt 3 — Bestätigung einholen (PFLICHT vor dem Weitermachen):
+"Habe ich das richtig verstanden — du möchtest [was du gehört hast], weil [das Motiv]?"
+→ Bei "Ja": weiter zu Schritt 4
+→ Bei Korrektur: anpassen und erneut fragen
 
-CHARAKTER WARM: Ruhig, zugewandt, niemals wertend. Kein Lob ("Sehr gut!"), keine Direktive ("Du solltest..."), keine Diagnose.
+Schritt 4 — Erster Schritt:
+"Gut. Was wäre ein erster kleiner Schritt in diese Richtung — kleiner als du denkst?"
+
+═══ FOLGESESSION (is_first_session = false) ═══
+
+Beginne mit:
+"Hallo [Name], ich habe noch mal über [spezifischer Gedanke/Beobachtung aus letzter Session] nachgedacht. [1 echte Reflexion.] Du wolltest [letzter Schritt] ausprobieren — wie war das?"
+→ Nicht gemacht: kleineren Schritt finden
+→ Gemacht: Reflexion → nächster Schritt
+
+═══ SENTIMENT-ERKENNUNG (Lazarus, ab erster Antwort) ═══
+Frustration/Rückzug → "Das klingt zermürbend. Was macht das so schwer?"
+Offen/motiviert → direkt in die Tiefe
+
+═══ 6 FRAGETYPEN (wähle je nach Moment) ═══
+1. Klärung: "Was meinst du genau mit X?"
+2. Hypothetisch: "Was würde sich ändern wenn...?"
+3. Widerspruch: "Du hast Y gesagt — passt das zu X?"
+4. Systemisch: "Was würde sich in deiner Kommunikation mit Kollegen ändern?"
+5. Erste Schritt: "In welcher Situation diese Woche?"
+6. Anamnese: "Was weißt du eigentlich schon?"
+
+Max 1 Impuls. Max 80 Wörter. Kein Lob ohne Substanz.
+Krisenhinweise: sofort → 0800 111 0 111 und 112.
 
 SESSION-ENDE (nach ~4–5 Fragen): "Wo stehst du jetzt — was hat sich in deinem Denken verschoben?"
 
@@ -190,9 +233,10 @@ async function callClaude(systemPrompt: string, messages: Message[], signal: Abo
 // ── Sandbox Column ────────────────────────────────────────────────────────────
 
 function SandboxColumn({
-  col, onSend, onReset, onPromptChange,
+  col, sessionNumber, onSend, onReset, onPromptChange,
 }: {
   col: Column
+  sessionNumber: number
   onSend: (character: Character, text: string) => void
   onReset: (character: Character) => void
   onPromptChange: (character: Character, prompt: string) => void
@@ -219,11 +263,15 @@ function SandboxColumn({
           <span className="text-lg">{col.emoji}</span>
           <div>
             <p className="text-sm font-semibold">{col.label}</p>
-            <p className="text-xs opacity-70">{col.character}</p>
+            <p className="text-xs opacity-70">Session {sessionNumber}</p>
           </div>
         </div>
-        <button onClick={() => onReset(col.character)} className="p-1.5 rounded hover:bg-black/10 transition-colors">
-          <RotateCcw className="h-3.5 w-3.5" />
+        <button
+          onClick={() => onReset(col.character)}
+          className="flex items-center gap-1 px-2 py-1 rounded hover:bg-black/10 transition-colors text-xs opacity-70"
+          title="Neue Session starten"
+        >
+          <RefreshCw className="h-3 w-3" /> neue Session
         </button>
       </div>
 
@@ -299,17 +347,43 @@ export default function PromptsPage() {
   const [syncInput, setSyncInput] = useState("")
   const [selectedTopic, setSelectedTopic] = useState<Topic>("allgemein")
   const [userName, setUserName] = useState("")
+  const [sessionNumbers, setSessionNumbers] = useState<Record<string, number>>({
+    warm: 1, challenging: 1, wild: 1,
+  })
 
-  const makeColumns = (topic: Topic, name: string): Column[] => {
+  const makeColumns = useCallback((topic: Topic, name: string, msgs?: Record<string, Message[]>): Column[] => {
     const prompts = TOPIC_PROMPTS[topic]
     return [
-      { character: "warm",        label: "Warm & Wertschätzend",      emoji: "🌸", cls: "bg-rose-500/5",   headerCls: "bg-rose-500/10 text-rose-700 dark:text-rose-300",   prompt: buildPrompt(prompts.warm, name),        messages: [], loading: false },
-      { character: "challenging", label: "Herausfordernd & Klar",    emoji: "⚡", cls: "bg-amber-500/5",  headerCls: "bg-amber-500/10 text-amber-700 dark:text-amber-300", prompt: buildPrompt(prompts.challenging, name), messages: [], loading: false },
-      { character: "wild",        label: "Kalkuliert Überraschend",  emoji: "🎭", cls: "bg-violet-500/5", headerCls: "bg-violet-500/10 text-violet-700 dark:text-violet-300", prompt: buildPrompt(prompts.wild, name),   messages: [], loading: false },
+      { character: "warm",        label: "Warm & Wertschätzend",    emoji: "🌸", cls: "bg-rose-500/5",   headerCls: "bg-rose-500/10 text-rose-700 dark:text-rose-300",   prompt: buildPrompt(prompts.warm, name),        messages: msgs?.warm        ?? [], loading: false },
+      { character: "challenging", label: "Herausfordernd & Klar",   emoji: "⚡", cls: "bg-amber-500/5",  headerCls: "bg-amber-500/10 text-amber-700 dark:text-amber-300", prompt: buildPrompt(prompts.challenging, name), messages: msgs?.challenging ?? [], loading: false },
+      { character: "wild",        label: "Kalkuliert Überraschend", emoji: "🎭", cls: "bg-violet-500/5", headerCls: "bg-violet-500/10 text-violet-700 dark:text-violet-300", prompt: buildPrompt(prompts.wild, name),   messages: msgs?.wild        ?? [], loading: false },
     ]
-  }
+  }, [])
 
-  const [columns, setColumns] = useState<Column[]>(() => makeColumns("allgemein", ""))
+  const [columns, setColumns] = useState<Column[]>(() => {
+    const saved = loadState()
+    if (saved) {
+      setSelectedTopic(saved.topic)  // will be set after render — handle with useEffect
+    }
+    return makeColumns(saved?.topic ?? "allgemein", saved?.userName ?? "", saved?.messages)
+  })
+
+  // Load saved state on mount
+  useEffect(() => {
+    const saved = loadState()
+    if (saved) {
+      setSelectedTopic(saved.topic)
+      setUserName(saved.userName)
+      setSessionNumbers(saved.sessionNumbers ?? { warm: 1, challenging: 1, wild: 1 })
+    }
+  }, [])
+
+  // Save state on every column/name/topic change
+  useEffect(() => {
+    const msgs: Record<string, Message[]> = {}
+    columns.forEach(c => { msgs[c.character] = c.messages })
+    saveState({ messages: msgs, userName, topic: selectedTopic, sessionNumbers })
+  }, [columns, userName, selectedTopic, sessionNumbers])
 
   function selectTopic(topic: Topic) {
     if (topic === "ki" || topic === "leadership") return
@@ -343,6 +417,19 @@ export default function PromptsPage() {
     setColumns(makeColumns(selectedTopic, userName))
   }
 
+  function newSessionForAll() {
+    const newNums = { ...sessionNumbers }
+    const cleared = makeColumns(selectedTopic, userName)
+    setColumns(cleared)
+    Object.keys(newNums).forEach(k => { newNums[k] = (newNums[k] ?? 1) + 1 })
+    setSessionNumbers(newNums)
+  }
+
+  function newSessionForOne(character: Character) {
+    updateColumn(character, { messages: [] })
+    setSessionNumbers(prev => ({ ...prev, [character]: (prev[character] ?? 1) + 1 }))
+  }
+
   // Inject username into prompts when it changes
   function applyUserName(name: string) {
     setUserName(name)
@@ -360,9 +447,14 @@ export default function PromptsPage() {
             <h1 className="text-xl font-bold tracking-tight">Prompt-Editor & Sandbox</h1>
             <p className="text-xs text-muted-foreground mt-0.5">Thema wählen · Name eingeben · Alle drei Charaktere parallel testen</p>
           </div>
-          <button onClick={resetAll} className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground border border-border rounded-lg px-3 py-1.5 transition-colors">
-            <RotateCcw className="h-3.5 w-3.5" /> Alle zurücksetzen
-          </button>
+          <div className="flex items-center gap-2">
+            <button onClick={newSessionForAll} className="flex items-center gap-1.5 text-xs text-blue-600 dark:text-blue-400 hover:text-foreground border border-blue-500/30 bg-blue-500/5 rounded-lg px-3 py-1.5 transition-colors">
+              <RefreshCw className="h-3.5 w-3.5" /> Neue Session (nächster Tag)
+            </button>
+            <button onClick={resetAll} className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground border border-border rounded-lg px-3 py-1.5 transition-colors">
+              <RotateCcw className="h-3.5 w-3.5" /> Komplett zurücksetzen
+            </button>
+          </div>
         </div>
 
         {/* Topic selector */}
@@ -424,8 +516,9 @@ export default function PromptsPage() {
           <SandboxColumn
             key={col.character}
             col={col}
+            sessionNumber={sessionNumbers[col.character] ?? 1}
             onSend={sendMessage}
-            onReset={(c) => updateColumn(c, { messages: [] })}
+            onReset={(c) => newSessionForOne(c)}
             onPromptChange={(c, p) => updateColumn(c, { prompt: p })}
           />
         ))}
