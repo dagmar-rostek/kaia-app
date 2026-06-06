@@ -248,12 +248,13 @@ async function callClaude(systemPrompt: string, messages: Message[], signal: Abo
 // ── Sandbox Column ────────────────────────────────────────────────────────────
 
 function SandboxColumn({
-  col, sessionNumber, onSend, onReset, onPromptChange,
+  col, sessionNumber, lastStep, onSend, onReset, onPromptChange,
 }: {
   col: Column
   sessionNumber: number
+  lastStep: string
   onSend: (character: Character, text: string) => void
-  onReset: (character: Character) => void
+  onReset: (character: Character, step?: string) => void
   onPromptChange: (character: Character, prompt: string) => void
 }) {
   const [input, setInput] = useState("")
@@ -282,11 +283,14 @@ function SandboxColumn({
           </div>
         </div>
         <button
-          onClick={() => onReset(col.character)}
+          onClick={() => {
+            const step = window.prompt("Letzter Schritt (leer lassen wenn keiner):", lastStep) ?? lastStep
+            onReset(col.character, step)
+          }}
           className="flex items-center gap-1 px-2 py-1 rounded hover:bg-black/10 transition-colors text-xs opacity-70"
-          title="Neue Session starten"
+          title="Neue Session — nächster Tag"
         >
-          <RefreshCw className="h-3 w-3" /> neue Session
+          <RefreshCw className="h-3 w-3" /> nächster Tag
         </button>
       </div>
 
@@ -365,6 +369,9 @@ export default function PromptsPage() {
   const [sessionNumbers, setSessionNumbers] = useState<Record<string, number>>({
     warm: 1, challenging: 1, wild: 1,
   })
+  const [lastSteps, setLastSteps] = useState<Record<string, string>>({
+    warm: "", challenging: "", wild: "",
+  })
 
   const makeColumns = useCallback((topic: Topic, name: string, msgs?: Record<string, Message[]>): Column[] => {
     const prompts = TOPIC_PROMPTS[topic]
@@ -437,13 +444,29 @@ export default function PromptsPage() {
     for (const col of columns) sendMessage(col.character, text)
   }
 
+  function buildStartTrigger(character: Character): string {
+    const sNum = sessionNumbers[character] ?? 1
+    const step = lastSteps[character] ?? ""
+    if (sNum === 1) {
+      return AUTO_START_TRIGGER
+    }
+    // Follow-up session: give KAIA the context it needs
+    return `[FOLGESESSION_START. Name: ${userName}. Session: ${sNum}. ${step ? `Letzter vereinbarter Schritt: "${step}". ` : ""}Starte mit einer authentischen Beobachtung aus dem letzten Gespräch oder einem Gedanken der dich beschäftigt, dann frage nach dem Schritt. NICHT mit derselben Begrüßung wie Session 1 beginnen.]`
+  }
+
   function autoStartAll() {
-    // Only start if name is set and no messages yet in any column
     if (!userName.trim()) return
     for (const col of columns) {
       if (col.messages.length === 0) {
-        sendMessage(col.character, AUTO_START_TRIGGER)
+        sendMessage(col.character, buildStartTrigger(col.character))
       }
+    }
+  }
+
+  function autoStartOne(character: Character) {
+    const col = columns.find(c => c.character === character)!
+    if (col.messages.length === 0) {
+      sendMessage(character, buildStartTrigger(character))
     }
   }
 
@@ -451,17 +474,21 @@ export default function PromptsPage() {
     setColumns(makeColumns(selectedTopic, userName))
   }
 
-  function newSessionForAll() {
+  function newSessionForAll(step?: string) {
     const newNums = { ...sessionNumbers }
     const cleared = makeColumns(selectedTopic, userName)
     setColumns(cleared)
     Object.keys(newNums).forEach(k => { newNums[k] = (newNums[k] ?? 1) + 1 })
     setSessionNumbers(newNums)
+    if (step) {
+      setLastSteps({ warm: step, challenging: step, wild: step })
+    }
   }
 
-  function newSessionForOne(character: Character) {
+  function newSessionForOne(character: Character, step?: string) {
     updateColumn(character, { messages: [] })
     setSessionNumbers(prev => ({ ...prev, [character]: (prev[character] ?? 1) + 1 }))
+    if (step) setLastSteps(prev => ({ ...prev, [character]: step }))
   }
 
   // Inject username into prompts when it changes
@@ -482,9 +509,23 @@ export default function PromptsPage() {
             <p className="text-xs text-muted-foreground mt-0.5">Thema wählen · Name eingeben · Alle drei Charaktere parallel testen</p>
           </div>
           <div className="flex items-center gap-2">
-            <button onClick={newSessionForAll} className="flex items-center gap-1.5 text-xs text-blue-600 dark:text-blue-400 hover:text-foreground border border-blue-500/30 bg-blue-500/5 rounded-lg px-3 py-1.5 transition-colors">
-              <RefreshCw className="h-3.5 w-3.5" /> Neue Session (nächster Tag)
-            </button>
+            <div className="flex items-center gap-1.5">
+              <input
+                id="last-step-input"
+                placeholder="Letzter Schritt (optional)..."
+                className="text-xs bg-muted/30 border border-border rounded-lg px-2 py-1.5 w-44 focus:outline-none focus:border-blue-400"
+              />
+              <button
+                onClick={() => {
+                  const input = document.getElementById("last-step-input") as HTMLInputElement
+                  newSessionForAll(input?.value || "")
+                  if (input) input.value = ""
+                }}
+                className="flex items-center gap-1.5 text-xs text-blue-600 dark:text-blue-400 hover:text-foreground border border-blue-500/30 bg-blue-500/5 rounded-lg px-3 py-1.5 transition-colors shrink-0"
+              >
+                <RefreshCw className="h-3.5 w-3.5" /> Nächster Tag →
+              </button>
+            </div>
             <button onClick={resetAll} className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground border border-border rounded-lg px-3 py-1.5 transition-colors">
               <RotateCcw className="h-3.5 w-3.5" /> Komplett zurücksetzen
             </button>
@@ -559,8 +600,9 @@ export default function PromptsPage() {
             key={col.character}
             col={col}
             sessionNumber={sessionNumbers[col.character] ?? 1}
+            lastStep={lastSteps[col.character] ?? ""}
             onSend={sendMessage}
-            onReset={(c) => newSessionForOne(c)}
+            onReset={(c, step) => { newSessionForOne(c, step); setTimeout(() => autoStartOne(c), 100) }}
             onPromptChange={(c, p) => updateColumn(c, { prompt: p })}
           />
         ))}
