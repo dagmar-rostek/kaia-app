@@ -159,7 +159,19 @@ Für die vorliegende Studie ergibt sich daraus eine zweistufige Forschungslogik:
 
 ---
 
-## 2.9 Synthetisches Rahmenwerk: Theoretische Begründung von KAIA
+## 2.9 Personalisierung und Individualisierung: Begriffsklärung und Forschungsspannung ✓
+
+Der Titel dieser Arbeit — *"neuroadaptive personalisierte Lernbegleitung"* — enthält eine terminologische Spannung, die im Deutschen Didaktikdiskurs explizit gemacht werden muss, weil die Begriffe in der Literatur uneinheitlich verwendet werden.
+
+In der Tradition der deutschen Allgemeinen Didaktik (Klafki, 1985; Heimann et al., 1965) bezeichnet **Individualisierung** die lernerseitige Selbststeuerung: Der Lernende gestaltet seinen Weg, wählt Tempo, Thema und Tiefe — die Kontrolle liegt beim Menschen. **Personalisierung** bezeichnet demgegenüber die systemseitige Adaptation: Das System passt Inhalte, Schwierigkeitsgrad oder Gesprächsstil auf Basis eines Nutzerprofils an — ohne notwendig aktive Beteiligung des Lernenden. In der anglo-amerikanischen HCI-Literatur sind diese Begriffe häufig vertauscht.
+
+Diese Arbeit folgt der deutschen Didaktiktradition. Ein **neuroadaptiver Lernbegleiter** ist damit primär ein *personalisierendes* System im didaktischen Sinne: Er adaptiert basierend auf infériertem Kontext (Lazarus-Stressmuster, Gesprächsindikatoren). Die Forschungsleistung besteht nicht darin, Personalisierung zu betreiben — das leisten viele Systeme. Sie besteht darin, Personalisierung so zu gestalten, dass das Grundbedürfnis nach Autonomie (Deci & Ryan, 2000) nicht verletzt, sondern gestärkt wird. Dies ist nur möglich, wenn drei Bedingungen erfüllt sind: (1) Die systemseitigen Adaptionen sind für den Lernenden sichtbar (*Transparenz*), (2) der Lernende kann sie überschreiben (*Kontrollierbarkeit*), und (3) die sokratische Gesprächsführung stellt sicher, dass die Anpassung niemals die Eigenleistung ersetzt (*Sokratisches Schutzprinzip*).
+
+Das Spannungsfeld zwischen systemseitiger Adaptation (Personalisierung) und lernerseitiger Selbststeuerung (Individualisierung) ist damit keine konzeptionelle Schwäche des Designs — es ist die Forschungsfrage, die diese Arbeit bearbeitet: *Unter welchen Designbedingungen kann ein neuroadaptiver KI-Agent Selbstwirksamkeit stärken statt untergraben?*
+
+---
+
+## 2.11 Synthetisches Rahmenwerk: Theoretische Begründung von KAIA
 
 Die in den vorangegangenen Abschnitten dargestellten Theorien sind nicht additiv zu verstehen, sondern bilden ein kohärentes theoretisches Rahmenwerk, aus dem sich KAIAs Designentscheidungen unmittelbar ableiten lassen.
 

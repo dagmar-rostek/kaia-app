@@ -1,15 +1,15 @@
 # Kapitel 3 — Konzeptionelles Rahmenwerk
 
-> **Stand:** 05. Juni 2026 · **Version:** 1.0-DRAFT  
-> **Reviewer:** Psychologe (3.2, 3.3) ✓ · AI Engineer (3.3, 3.4, 3.5) ✓ · Architect  
-> **Geplanter Umfang:** ca. 18–22 Seiten (~4.500–5.500 Wörter)  
-> **Status:** Vollständig überarbeitete Version — alle vier Systemkomponenten dokumentiert
+> **Stand:** 06. Juni 2026 · **Version:** 1.1-DRAFT  
+> **Reviewer:** Psychologe (3.2, 3.3) ✓ · AI Engineer (3.3–3.6) ✓ · Didaktiker (3.6) ✓ · Architect  
+> **Geplanter Umfang:** ca. 20–25 Seiten (~5.000–6.000 Wörter)  
+> **Status:** Fünf Systemkomponenten — Transparenz-Layer als 5. Komponente ergänzt (v1.1)
 
 ---
 
 ## Überblick
 
-Dieses Kapitel entwickelt das konzeptionelle Rahmenwerk von KAIA. Es übersetzt die theoretischen Grundlagen (Kapitel 2) in operative Designentscheidungen und beschreibt das Vier-Komponenten-Modell: (1) regelbasiertes Adaptionssystem, (2) Mehr-Modus-Interaktionsarchitektur, (3) Lernroadmap-Integration, (4) Zwei-Schicht-Gedächtnis und wachsendes Nutzerprofil.
+Dieses Kapitel entwickelt das konzeptionelle Rahmenwerk von KAIA. Es übersetzt die theoretischen Grundlagen (Kapitel 2) in operative Designentscheidungen und beschreibt das **Fünf-Komponenten-Modell**: (1) regelbasiertes Adaptionssystem, (2) Mehr-Modus-Interaktionsarchitektur, (3) Lernroadmap-Integration, (4) Zwei-Schicht-Gedächtnis und wachsendes Nutzerprofil, (5) Transparenz-Layer und nutzergetriebene Modussteuerung. Die fünfte Komponente löst das zentrale Spannungsfeld des Thesis-Titels auf: Wie kann systemseitige Adaptation (Personalisierung) Selbstwirksamkeit stärken statt untergraben?
 
 Der Thesis-Titel — *"Entwicklung eines empathischen AI-Agenten zur neuroadaptiven personalisierten Lernbegleitung"* — enthält vier Designanforderungen, die in diesem Kapitel operationalisiert werden: Empathie (computational empathy, explizit als KI kommuniziert), Neuroadaptivität (regelbasiertes Adaptionssystem informiert durch Lazarus), Personalisierung (wachsendes Nutzerprofil), Lernbegleitung (sokratisch und scaffolding, kein Instruktionssystem).
 
@@ -183,11 +183,42 @@ Nach jeder Session wird ein separater LLM-Call mit `temperature=0` und dediziert
 
 ---
 
-## 3.6 Synthese: Das KAIA-Rahmenwerk als Designartefakt
+## 3.6 Komponente 5: Transparenz-Layer und nutzergetriebene Modussteuerung
 
-Das konzeptionelle Rahmenwerk von KAIA ist ein Designartefakt im Sinne von Hevner et al. (2004). Seine vier Komponenten bilden keine unabhängigen Teilsysteme, sondern ein kohärentes System, in dem jede Entscheidung theoretisch begründet ist:
+### 3.6.1 Das Spannungsfeld als Designprinzip
 
-Das regelbasierte Adaptionssystem (Lazarus) liefert die Zustandssignale → die Mehr-Modus-Architektur wählt den passenden Interaktionsstil → die Lernroadmap gibt den inhaltlichen Kontext → das wachsende Nutzerprofil akkumuliert die Erkenntnisse für Folgesessions. Jede Session baut auf der vorherigen auf; jede Interaktion fließt in die Personalisierung ein.
+Der Titel dieser Arbeit — *"neuroadaptive personalisierte Lernbegleitung"* — enthält ein theoretisches Spannungsfeld: Neuroadaptivität bezeichnet systemseitige Adaptation (Personalisierung im deutschen Didaktiksinne), während der Anspruch auf Selbstwirksamkeitsstärkung eine lernerseitige Kontrolle (Individualisierung) voraussetzt. Dieses Spannungsfeld ist kein konzeptioneller Fehler — es ist die zentrale Forschungsfrage, die das Design beantworten muss: *Unter welchen Bedingungen kann systemseitige Adaptation Selbstwirksamkeit stärken statt untergraben?*
+
+Die Antwort liegt in einer fünften Systemkomponente: dem Transparenz-Layer mit nutzergetriebener Modussteuerung.
+
+### 3.6.2 Transparenz-Layer: Sichtbarkeit der Adaptation
+
+Ein System, das unsichtbar adaptiert, trifft automatisierte Einzelentscheidungen über den Lernenden — rechtlich problematisch nach DSGVO Art. 22, didaktisch problematisch nach SDT (Deci & Ryan, 2000). Der Transparenz-Layer macht drei Klassen von Informationen zugänglich:
+
+1. **Aktiver Interaktionsmodus** — welcher der vier Modi gerade aktiv ist und warum (basierend auf welchen Signalen)
+2. **Inferiertes Profil** — was das System über den Lernenden abgeleitet hat (Stärken-Zusammenfassung, Hürden, Vokabular-Level, Stimmung der letzten Session)
+3. **Änderungshistorie** — wann und warum das System den Modus gewechselt hat
+
+### 3.6.3 `user_mode_override`: Nutzerkontrolle als First-Class-Konzept
+
+Die technische Konsequenz des Transparenz-Prinzips ist der `user_mode_override` — die Möglichkeit für den Lernenden, den aktiven Modus zu überschreiben, abzulehnen oder zu kommentieren. Dies ist kein Edge Case, sondern ein zentrales Konzept in der Zustandsmaschine des Systems.
+
+Mögliche Interaktionen:
+- *"Kannst du mich gerade mehr unterstützen statt nur zu fragen?"* → Aktiviert Scaffolding-Modus, unabhängig von Lazarus-Signal
+- *"Die gestrige Einschätzung war falsch, ich war nicht frustriert"* → Korrektur der session-aggregierten Profildaten
+- *"Lösch mein Lernprofil"* → Art. 17 DSGVO, technisch als Reset implementiert
+
+### 3.6.4 Schutz vor Automatisierungsabhängigkeit
+
+Steinert (2026, mündlich) hat auf eine spezifische Gefahr hingewiesen: Profile die nie schrumpfen, erzeugen Lernende die immer mehr Unterstützung erwarten. Das Transparenz-Prinzip schließt daher explizit ein: Das System zeigt an, wenn Scaffold-Anteile über Zeit abnehmen — als sichtbares Signal wachsender Kompetenz, nicht als unsichtbare Systemoptimierung.
+
+---
+
+## 3.7 Synthese: Das KAIA-Rahmenwerk als Designartefakt
+
+Das konzeptionelle Rahmenwerk von KAIA ist ein Designartefakt im Sinne von Hevner et al. (2004). Seine fünf Komponenten bilden keine unabhängigen Teilsysteme, sondern ein kohärentes System:
+
+Das regelbasierte Adaptionssystem (Lazarus) liefert die Zustandssignale → die Mehr-Modus-Architektur wählt den passenden Interaktionsstil → die Lernroadmap gibt den inhaltlichen Kontext → das wachsende Nutzerprofil akkumuliert die Erkenntnisse → der Transparenz-Layer gibt dem Lernenden Einsicht und Kontrolle über alles. Jede Session baut auf der vorherigen auf; keine Adaptation geschieht unsichtbar.
 
 Diese Architektur adressiert direkt das Spannungsfeld aus Kapitel 2: Sie schützt Eigenleistung (sokratischer Modus bei Flow), bietet Unterstützung ohne Antworten (Scaffolding bei Überforderung), stärkt Selbstwirksamkeit durch Fortschrittserfahrung (Roadmap) und wächst mit der lernenden Person (Nutzerprofil).
 

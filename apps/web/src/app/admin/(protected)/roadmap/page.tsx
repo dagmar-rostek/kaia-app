@@ -78,6 +78,7 @@ const FEATURES: Feature[] = [
 
   // ── JUNI — Woche 3 (15.–21. Juni) ──
   { title: "LLM-Integration (3 Modelle)", desc: "Gemeinsames Abstraktions-Interface Claude/GPT-4o/Mistral. Versionierte Model-IDs. DPAs vor Integration.", status: "planned", month: "juni", chapter: "Kap. 4 · Kap. 5", tags: ["AI","LLM-Eval"], agents: ["ai-engineer","security","mlops"], aufwand: "4h", week: 3, icon: Zap },
+  { title: "Transparenz-Layer + user_mode_override", desc: "Sichtbarkeit aktiver Modus + Inferenz-Begründung. user_mode_override als First-Class-Konzept: Lernende können Modus überschreiben, Profil korrigieren, Session-Schätzungen widersprechen. DSGVO Art. 22 Compliance.", status: "planned", month: "juni", chapter: "Kap. 3 · Kap. 4", tags: ["DSGVO","UX","AI"], agents: ["ux-designer","ai-engineer","compliance","didaktiker"], aufwand: "3h", week: 3, icon: Eye },
   { title: "GSE Pre-Measurement", desc: "10 Items, 4-stufige Likert-Skala vor erster Session. Pflicht für Studienstart.", status: "planned", month: "juni", chapter: "Kap. 3 · Kap. 6", tags: ["Psychometrie","Studie"], agents: ["psychologist","ux-designer","ai-ethics"], aufwand: "3h", week: 3, icon: FlaskConical },
   { title: "Lernroadmap-Feature", desc: "Persönliche Lernroadmap: Ziele, Fortschritt (user-owned), Domänen. Fließt als aktives Ziel in jeden Session-Kontext ein.", status: "planned", month: "juni", chapter: "Kap. 3", tags: ["Frontend","Studie"], agents: ["ux-designer","product-owner","didaktiker"], aufwand: "3h", week: 3, icon: Target },
 
