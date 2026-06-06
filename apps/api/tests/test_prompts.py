@@ -111,7 +111,11 @@ def test_v2_warm_has_verbatim_objection_phrase() -> None:
 
 def test_v2_warm_has_context_reference_ban() -> None:
     lower = KAIA_PROMPT_V2_WARM.lower()
-    assert "laut deinem profil" in lower or "kontext-referenz" in lower or "kein-kontext-referenz" in lower
+    assert (
+        "laut deinem profil" in lower
+        or "kontext-referenz" in lower
+        or "kein-kontext-referenz" in lower
+    )
 
 
 def test_v2_warm_has_hallucination_guard() -> None:
