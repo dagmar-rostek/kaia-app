@@ -16,6 +16,7 @@ type AgentId =
   | "coordinator" | "product-owner" | "discovery-researcher" | "psychologist"
   | "compliance"  | "architect"     | "ai-engineer"          | "ai-ethics"
   | "ux-designer" | "security"      | "qa-tester"            | "mlops"
+  | "didaktiker"
 
 interface Feature {
   title: string
@@ -48,6 +49,7 @@ const AGENT_CONFIG: Record<AgentId, { label: string; cls: string }> = {
   security:               { label: "Security",    cls: "bg-red-500/10 text-red-700 border-red-500/20 dark:text-red-400" },
   "qa-tester":            { label: "QA",          cls: "bg-emerald-500/10 text-emerald-700 border-emerald-500/20 dark:text-emerald-400" },
   mlops:                  { label: "MLOps",       cls: "bg-cyan-500/10 text-cyan-700 border-cyan-500/20 dark:text-cyan-400" },
+  didaktiker:             { label: "Didaktiker",  cls: "bg-lime-500/10 text-lime-700 border-lime-500/20 dark:text-lime-400" },
 }
 
 // ── Feature data ──────────────────────────────────────────────────────────────
