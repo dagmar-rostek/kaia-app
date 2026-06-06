@@ -124,6 +124,47 @@ pgvector-Zugriffe sind an `user_id` gebunden. Kein direkter Tabellenzugriff ohne
 
 ---
 
+## 4.7 Iterative Prompt-Entwicklung als Forschungsmethodik
+
+### 4.7.1 Das Problem des "guten" Prompts
+
+Ein zentrales methodisches Problem bei der Entwicklung LLM-basierter Systeme ist die fehlende formale Spezifikation für "guten" Output: Es gibt keine allgemeine mathematische Funktion, die misst, ob ein sokratisch-empathischer Lernbegleiter seinen Auftrag erfüllt. Die Güte eines Systemprompts ist kontextabhängig, nutzerspezifisch und lässt sich nicht vollständig vor der Nutzung evaluieren. Dies stellt einen fundamentalen Unterschied zu klassischer Software-Entwicklung dar, in der Korrektheit durch Tests formal verifizierbar ist.
+
+Die Entwicklung des KAIA-Systemprompts folgt daher einem **iterativen Feldforschungs-Ansatz**: Die Forscherin interagiert selbst mit dem System, beobachtet das Verhalten, formuliert Hypothesen über Prompt-Schwächen und Verbesserungen, und revidiert den Prompt — in direkter Anlehnung an den Design-Evaluate-Revise-Zyklus von Hevner et al. (2004).
+
+### 4.7.2 Technische Infrastruktur für Prompt-Iteration
+
+Um diesen Prozess methodisch zu unterstützen, wurde eine eigene Sandbox-Umgebung implementiert (`/admin/prompts`). Diese ermöglicht:
+
+1. **Drei-Charakter-Vergleich**: Derselbe Nutzer-Input wird gleichzeitig an drei Prompt-Varianten mit unterschiedlichem Charakterprofil (warm/herausfordernd/unberechenbar) gesendet. Die parallele Darstellung der Antworten macht Stärken und Schwächen des Prompts unmittelbar sichtbar.
+
+2. **Live-Editing**: Der Systemprompt ist direkt im Interface editierbar. Änderungen wirken sofort auf die nächste Antwort — kein Re-Deployment notwendig.
+
+3. **Versionierung in der Datenbank**: Jede Prompt-Version wird mit Timestamp, Versionsnummer und Begründung gespeichert. Damit ist die Entwicklungshistorie des Prompts Teil der wissenschaftlichen Dokumentation — reproduzierbar und auditierbar.
+
+4. **Study-Lock**: Ab `STUDY_MODE=locked` sind keine Prompt-Änderungen mehr möglich. Dieser Mechanismus sichert die Reproduzierbarkeit der Studienbedingungen und verhindert unbewusste Eingriffe der Forscherin nach Beginn der Datenerhebung.
+
+### 4.7.3 Kriterien für Prompt-Güte
+
+Die Evaluation des Prompts erfolgt entlang vier operationalisierbarer Kriterien:
+
+| Kriterium | Operationalisierung |
+|---|---|
+| **Sokratische Integrität** | Gibt der Agent in >90% der Antworten keine direkte Antwort? Verwendet er alle drei Fragetypen (Klärung/Hypothetisch/Widerspruch)? |
+| **Sentiment-Responsivität** | Wechselt der Agent den Modus erkennbar wenn Überforderungs-Signale auftreten? |
+| **Charakterkonsistenz** | Bleibt der gewählte Charakter über eine Session stabil (gemessen durch Lexik und Tonalität)? |
+| **Outcome-Orientierung** | Bezieht der Agent seine Fragen erkennbar auf das formulierte Lernziel des Nutzers? |
+
+Diese Kriterien werden sowohl in den eigenen Testsessions der Forscherin als auch — in formalisierter Form — im LLM-Evaluationsbericht (Kapitel 5) angewendet.
+
+### 4.7.4 Der Entwicklungsprozess als Forschungsbeitrag
+
+Die iterative Prompt-Entwicklung ist nicht nur ein technischer Prozess, sondern ein methodischer Beitrag in eigener Sache: Sie dokumentiert, *wie* ein empathischer, neuroadaptiver Systemprompt entsteht. Jede Iteration — jeder Test, jede Reformulierung, jede Beobachtung — ist Teil des DSR-Artefakts. Die Prompt-Versionsdatenbank ist insofern nicht nur technische Infrastruktur, sondern Forschungsdokumentation.
+
+Dieser Ansatz hat eine bekannte Limitation: Die Forscherin ist gleichzeitig Entwicklerin und erste Testnutzerin. Das Risiko des Confirmation Bias — unbewusste Optimierung auf die eigene Kommunikationsweise — wird im Methodenkapitel (Kapitel 6) adressiert und durch die Vielfalt der Studienteilnehmenden im Feldtest empirisch geprüft.
+
+---
+
 ## Literaturverzeichnis (Kapitel 4)
 
 Hevner, A. R., March, S. T., Park, J., & Ram, S. (2004). Design science in information systems research. *MIS Quarterly, 28*(1), 75–105.
