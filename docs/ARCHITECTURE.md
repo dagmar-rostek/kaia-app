@@ -4,7 +4,7 @@
 > Jede strukturelle Änderung muss hier dokumentiert werden — CI prüft das.
 > Die `/architektur`-Seite im Frontend rendert dieses Dokument direkt.
 
-**Stand:** Juni 2026 · Version 0.4.0
+**Stand:** Juni 2026 · Version 0.5.0
 
 ---
 
@@ -113,7 +113,7 @@ kaia-app/
 | Observability | Sentry + Slack-Webhook | Fehler + Business-Events |
 | Logging | structlog (JSON) + Correlation IDs | Debuggable in Produktion |
 | LLM | Claude (Anthropic) · GPT (OpenAI) · Mistral | A/B-testbar via Prompt-Variants |
-| Prompt-Mgmt | DB-gespeichert + Jinja2 | Live-editierbar, versioniert |
+| Prompt-Mgmt | DB-gespeichert + Jinja2 + `<thinking>`-Split | Live-editierbar, versioniert, Backend strippt Reasoning-Block |
 | Hosting | Hetzner CX23 + Docker Compose | EU, DSGVO, kostengünstig |
 | TLS | Caddy + Let's Encrypt | Automatisch, zero-config |
 
@@ -206,11 +206,47 @@ In der lokalen Entwicklung liest `readDoc()` aus `../../docs` relativ zum `apps/
 
 ---
 
-## Aktueller Stand (v0.4.0)
+## Prompt-Architektur (v2)
+
+Alle Prompt-Templates sind versioniert in der DB gespeichert und über `/admin/prompts` live editierbar.
+
+```
+User-Input
+    │
+    ├── [INPUT GUARD — geplant]
+    │   ├── PII-Anonymisierung (Microsoft Presidio)
+    │   ├── Topic-Constraint (BART zero-shot, verbotene Themen)
+    │   ├── Injection-Detection (Regex-Patterns)
+    │   └── Längenbegrenzung
+    │
+    ▼
+KAIA_PROMPT_V2_WARM (Jinja2-Template in DB)
+    │   ├── 8 interne Klassifikationsschritte im <thinking>-Block
+    │   │   (Lazarus, Fragetyp, Crisis, Grenz, Grounded, Phase, Rupture, Erwünschtheit)
+    │   └── <final_answer> — max. 80 Wörter, ein Impuls
+    │
+Claude API (claude-sonnet-4-6)
+    │
+    ├── Backend: <thinking>-Block strippen vor SSE-Ausgabe
+    │
+    ├── [OUTPUT GUARD — geplant]
+    │   ├── Wort-Limit-Check (80 Wörter)
+    │   ├── Kontext-Referenz-Check (Regex)
+    │   └── Direkte-Lösung-Check (LLM-as-Judge)
+    │
+    ▼
+User-Output (SSE-Stream)
+```
+
+Prompt-Versionen: `kaia_system_v1_warm` (Regression-Baseline, inaktiv) · `kaia_system_v2_warm` (aktiv) · `kaia_system_v1_challenging` · `kaia_system_v1_wild`
+
+---
+
+## Aktueller Stand (v0.5.0)
 
 **Live auf kaia.rostek-dagmar.eu:**
 - Landing Page, /wissenschaft, /release-notes, /architektur, /datenschutz (öffentlich)
-- Admin-Bereich: Dashboard, Production Readiness, Changelog, Architektur, Kosten, Tagebuch, Roadmap, User-Approval
+- Admin-Bereich: Dashboard, Production Readiness, Changelog, Architektur, Kosten, Tagebuch, Roadmap, User-Approval, Prompt-Sandbox (v2)
 - Bug-Report-Widget → Slack
 - Health-Endpoint GET /api/v1/health
 
@@ -234,7 +270,14 @@ In der lokalen Entwicklung liest `readDoc()` aus `../../docs` relativ zum `apps/
 - /admin/users (User-Approval UI, Server Actions)
 - /admin/roadmap (Filter-Bar, Agents, SHA)
 
+**Prompt-System implementiert:**
+- `KAIA_PROMPT_V2_WARM` — 29 Prompt-Engineering-Erkenntnisse, `<thinking>`-Split, Few-Shot Kontrast-Paare, Guardrails-Constraints
+- Sandbox `/admin/prompts` — 3-Charakter-Vergleich, thinking-stripping, localStorage-Persistenz
+- Prompt-Versionierung in DB (`kaia_system_v2_warm` aktiv, v1 als Regression-Baseline)
+- Forschungsgrundlage: `docs/PROMPT_ENGINEERING_RESEARCH.md` (6 Quellen, APA-7)
+
 **Noch nicht implementiert:**
+- Input/Output Guards (Presidio PII, BART Topic-Constraint, Injection-Detection)
 - DSGVO-Endpunkte: Datenexport, Konto löschen, Consent-Update
-- Chat, Onboarding, GSE-Messung
+- Chat Core (SSE-Streaming), Onboarding-Flow, GSE-Messung
 - LLM-Provider-Integration (Claude/GPT-4o/Mistral)

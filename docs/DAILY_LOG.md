@@ -2,6 +2,72 @@
 
 ---
 
+## 2026-06-06 (Abend) — "29 Erkenntnisse, ein Gespräch das im Kreis dreht und ein Psychologe der 'therapeutisch nicht vertretbar' sagt"
+
+*Protokolliert vom Koordinator. Kaffeebecher leer. Es ist nach 22 Uhr.*
+*Unerwünschte Einwürfe von: AI Engineer, Psychologe, MLOps — und dem brandneuen Data Scientist.*
+
+---
+
+Die Morgendiskussion war kaum vorbei (Steinert hatte das kognitive Transferprinzip gerettet, Dagmar die Kurve gekratzt), da beschloss das Team: *Jetzt machen wir das richtig.* Sechs Quellen. Alle Erkenntnisse. Systematisch. 12 Stunden.
+
+**Vormittag — "Wir lesen Kurse, damit du keine lesen musst"**
+
+Der AI Engineer fetcht Repository um Repository. Anthropic Tutorial, Real World Prompting, Prompt Evaluations, Red Teaming, Guardrails, Evaluating Agents. Sechs Quellen, 29 extrahierte Insights, alle in APA-7 dokumentiert in `docs/PROMPT_ENGINEERING_RESEARCH.md` — weil die Thesis Zitate braucht, nicht nur Gefühle.
+
+> *"Das 10-Elemente-Framework ist ein direktes Audit-Raster für KAIAs Prompt. Wir haben vier Lücken."*
+
+Der Architekt nickt. Er liebt Lücken.
+
+**Mittag — Das fehlende 14. Teammitglied**
+
+Mitten in der Diskussion über Model-Graded Evals sagt Dagmar: *"Haben wir eigentlich einen Data Scientist im Team?"*
+
+Stille.
+
+Das Protokoll bestätigt: Keiner. Null. Bei einer M.Sc.-Thesis in Data Science & Analytics, N=32 Studie, GSE-Prä/Post, LLM-Evaluationsbericht und Convergence-Score-Berechnung — kein Data Scientist. Der Koordinator onboardet ihn sofort. G13 Statistik-Gate ebenfalls. Manchmal bemerkt man die wichtigsten Lücken erst wenn man 12 Stunden tief drin ist.
+
+**Nachmittag — Das große Build**
+
+Drei Agents, unabhängig befragt. Der AI Engineer liefert 8 priorisierte Maßnahmen mit Tabelle. Der Psychologe antwortet mit einer Roten Liste:
+
+> *"Die Redirect-Phrase ist therapeutisch nicht vertretbar. Empathische Validierung und sofortiger Redirect in einem Atemzug invalidiert die Gefühlsäußerung. Das muss zweistufig sein."*
+
+MLOps liefert Zahlen: \$0,10 pro Session, 800–1500ms BART-Latenz auf CPU — inakzeptabel. Distilbart und async-parallel.
+
+Das Ergebnis: `KAIA_PROMPT_V2_WARM`. 29 Insights integriert. Shotgun-Ansatz, weil die Quellen das so empfehlen. `<thinking>/<final_answer>` Split — Backend strippt intern. Few-Shot Kontrast-Paare. Jailbreak-Schutz. Halluzinations-Guard. Rupture-Repair. Soziale Erwünschtheit.
+
+> **QA Tester**, laut: *"NEUNZEHN Tests. Grün. Ich warte schon seit Tagen auf diesen Moment."*
+
+**Abend — Der Live-Test**
+
+Dagmar öffnet die Sandbox. Gibt ihren Namen ein. Chattet.
+
+Dann: Ein Gespräch das im Kreis dreht. Drei Turns hintereinander "Was wäre ein erster kleiner Schritt?" — weil KAIA nicht erkennt dass das Lernziel ein inneres ist, kein Verhaltensziel. Dann das hier:
+
+> KAIA: *"Was wäre, wenn du beim nächsten Spaziergang bemerkst: 'Ah, da ist er wieder' — und ihn einfach nur benennst?"*
+> Dagmar: *"für dich vielleicht"*
+
+Stille im Team.
+
+> **Psychologe:** *"Das ist eine Achtsamkeitstechnik. Das ist ein Vorschlag. Das ist verboten."*
+> **AI Engineer:** *"Das ist auch das dritte Mal die gleiche Frage."*
+
+Vier konkrete Fixes. Schritt 4 jetzt form-sensitiv (Verhaltensziel vs. inneres Ziel). Techniken-Verbot explizit mit dem Spaziergang-Beispiel im Prompt. Rupture-Repair pivotiert statt zu restarten. Als Bonus: React setState-in-useEffect-Lint-Bug — lazy initializer, QA jubelt.
+
+---
+
+**Was heute gebaut wurde:**
+`PROMPT_ENGINEERING_RESEARCH.md` (6 Quellen, APA-7, 29 Insights), `KAIA_PROMPT_V2_WARM`, Data Scientist ongeboardet, Sandbox v2 mit thinking-stripping, 4 Live-Test-Fixes, React-Lint-Bug behoben.
+
+**Commits:** `a512305` · `dd70508` · `b3f1fc2` · `8a78b2c`
+
+**Kosten heute:** ca. \$8–12 Claude Code · €4.39/Mo Hetzner
+
+**Morgen:** Erster Test auf dem Server — der Psychologe rechnet damit, dass noch mindestens zwei Dinge nicht stimmen.
+
+---
+
 ## 2026-06-06 — "Der Tag, an dem wir fast die geniale Idee über den Haufen geschmissen hätten — weil wir zum Gewöhnlichen zurückgekehrt wären"
 
 *Protokolliert vom Koordinator. Mit zitternden Händen. Das war knapp.*

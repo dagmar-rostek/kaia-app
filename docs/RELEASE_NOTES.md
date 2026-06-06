@@ -9,8 +9,39 @@
 
 ---
 
-**Stand heute:** Wednesday, 03. June 2026  
-**34 Einträge insgesamt · 7 Release-Tage · ~27 h 45 min Gesamt-Aufwand**
+**Stand heute:** Friday, 06. June 2026  
+**42 Einträge insgesamt · 8 Release-Tage · ~35 h 30 min Gesamt-Aufwand**
+
+---
+
+## Friday, 06. June 2026
+*8 Einträge · Tag-Summe ca. 7 h 45 min*
+
+### 🆕 Neu
+
+**06.06.2026 · `a512305`** — `KAIA_PROMPT_V2_WARM`: Alle 29 Erkenntnisse aus 6 Prompt-Engineering-Quellen integriert (Anthropic Tutorial, Real World Prompting, Prompt Evaluations, Red Teaming, Guardrails, Evaluating AI Agents). Neue Elemente: XML-Tags für Daten/Instruktions-Trennung, `<thinking>/<final_answer>`-Split mit 8 internen Klassifikationsschritten (Lazarus, Fragetyp, Crisis, Grenz, Grounded, Session-Phase, Rupture, Erwünschtheit), Few-Shot Kontrast-Paare für Fragetypen 3/4/5, Jailbreak-Schutz, Bias-Neutralitäts-Constraint, Halluzinations-Guard, Kontext-Referenz-Verbot, diskrete Eval-Targets, Convergence-Constraint (4–6 Turns), Soziale-Erwünschtheit-Intervention, Rupture-Repair-Protokoll. v1 bleibt als inaktive Regression-Baseline. 19 Tests grün. · `4h`  
+*feat: KAIA_PROMPT_V2_WARM mit 29 Prompt-Engineering-Erkenntnissen*
+
+**Wissenschaftlicher Impact:** Der v2-Prompt ist die erste vollständig aus der Fachliteratur abgeleitete Prompt-Architektur für KAIA — zitierfähig für Kap. 4.7 (Iterative Prompt-Entwicklung). `PROMPT_ENGINEERING_RESEARCH.md` dokumentiert alle 6 Quellen mit APA-7-Vollzitaten und KAIA-Relevanz-Markern.
+
+**06.06.2026 · `a512305`** — Data Scientist als 14. Teammitglied ongeboardet: Rolle, Trigger-Bedingungen (LLM-Evaluationsbericht, Studienauswertung, Experiment-Framework), G13 Statistik-Gate (Eval-Methodik, Convergence-Score, Stichprobenqualität). · `15min`  
+*feat: Data Scientist onboarded, G13 Statistik-Gate*
+
+### ⚡ Verbesserung
+
+**06.06.2026 · `dd70508`** — Sandbox-Kommunikation-Warm-Prompt auf v2 gehoben (identisch mit `KAIA_PROMPT_V2_WARM`, ohne Jinja2). Sandbox-Backend (`/admin/api/sandbox-chat`) strippt `<thinking>`-Blöcke vor der Ausgabe an den Nutzer — nur `<final_answer>`-Inhalt sichtbar. Rupture-Repair und Soziale-Erwünschtheit testbar in der Sandbox. · `30min`  
+*feat: Sandbox v2-Prompt + thinking-stripping im Backend*
+
+**06.06.2026 · `8a78b2c`** — Neue Prompt-Regel: Sobald Lernende eine eigene Formulierung, einen Plan oder eine Erkenntnis produzieren, fragt KAIA nach Wirkung — nicht nach Verbesserung. KAIA ersetzt niemals die Formulierung des Lernenden durch eine eigene. · `20min`  
+*fix: neue Prompt-Regel — eigene Formulierung des Lernenden nie ersetzen*
+
+### 🔧 Fix
+
+**06.06.2026 · `b3f1fc2`** — Vier Fixes aus Live-Gesprächsanalyse: (1) Schritt 4 form-sensitiv — unterscheidet Verhaltensziele (erster Schritt) von inneren Zielen (erstes Zeichen). (2) Techniken-/Methoden-Vorschläge explizit verboten — auch als "Was wäre wenn..."-Frage verkleidet. (3) Rupture-Repair geht nicht zurück an den Anfang — pivotiert mit "Was wäre jetzt hilfreicher?". (4) React setState-in-useEffect-Lint-Fehler behoben — lazy useState-Initializer statt useEffect für localStorage-Restore. · `45min`  
+*fix: Prompt-Korrekturen aus Live-Test + React setState-Lint-Fix*
+
+**06.06.2026 · `dd70508`** — Sandbox-Motiv-Probing überarbeitet: keine Checkliste mehr — KAIA folgt dem echten Gesprächsfaden. Schritt 3 (Der Spiegel) mit explizitem Gewicht — KAIA geht nicht zu Schritt 4 bevor der Lernende den Spiegel bestätigt hat. Spiegel spiegelt das Motiv, nicht das Thema. Rupture-Repair um Kontraindikation erweitert: nach Rupture nie zurück an den Anfang. · `15min`  
+*fix: Schritt 2 Motiv-Probing + Spiegel-Gewicht + Rupture-Repair*
 
 ---
 
