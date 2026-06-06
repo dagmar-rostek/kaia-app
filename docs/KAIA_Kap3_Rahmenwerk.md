@@ -122,15 +122,22 @@ Sokratisch-explorativ (Stufe 4) fördert metakognitive Selbststeuerung durch Fra
 
 Eine verbleibende Lücke: Kein Modus adressiert explizit den Aufbau mentaler Modelle und Schemata (Stufe 3 nach Johnson-Laird, 1983). Das Scaffolding-Modus kommt dem am nächsten, ist aber nicht spezifisch auf Schemaaufbau ausgelegt. Diese Limitierung ist in der Thesis transparent zu kommunizieren.
 
-### 3.3.4 Operationalisierung: Was macht KAIA sokratisch?
+### 3.3.4 Operationalisierung: Sechs sokratische Fragetypen
 
-"Sokratisch" ist kein selbsterklärender Begriff. Der Anspruch, sokratisch zu sein, ist wertlos, wenn nicht spezifiziert wird welche Fragetypen welche kognitive Operation auslösen sollen. KAIA operationalisiert sokratisches Vorgehen über drei distinkte Fragetypen, die dem LLM im Systemprompt beschrieben werden:
+"Sokratisch" ist kein selbsterklärender Begriff. KAIA operationalisiert sokratisches Vorgehen über sechs distinkte Fragetypen — alle in der sokratischen Tradition verankert, aber mit präziser moderner Entsprechung:
 
-1. *Klärungsfragen* — "Was genau meinst du mit X?" Ziel: Vagheit sichtbar machen, Präzisierung erzwingen (Bloom: Verstehen)
-2. *Hypothetische Fragen* — "Was würde sich ändern, wenn...?" Ziel: Transferdenken anregen, Grenzen des Konzepts explorieren (Bloom: Anwenden, Analysieren)
-3. *Widerspruchsfragen* — "Du hast vorhin Y gesagt — passt das zu X?" Ziel: Kognitive Dissonanz erzeugen, Restrukturierung auslösen (Bloom: Analysieren, Bewerten)
+| Typ | Beispiel | Kognitive Funktion | Bloom | Theoretische Basis |
+|---|---|---|---|---|
+| **Klärungsfrage** | "Was genau meinst du mit X?" | Vagheit sichtbar machen, Präzisierung | 2 | Elenchos (Sokrates) |
+| **Hypothetische Frage** | "Was würde sich ändern, wenn...?" | Transferdenken, Grenzen erkunden | 3–4 | Aporetik; Konjunktiv als Denkraum |
+| **Widerspruchsfrage** | "Du hast vorhin Y gesagt — passt das zu X?" | Kognitive Dissonanz, Restrukturierung | 4–5 | Elenchos; Piaget (kognitive Konflikte) |
+| **Systemische Frage** | "Was würde sich in deiner Kommunikation mit Kollegen/Vorgesetzten ändern?" | Lernen in Anwendungskontext verankern | 3–4 | Lave & Wenger (1991): situated learning |
+| **Erste-Schritt-Frage** | "In welcher konkreten Situation diese Woche könntest du das ausprobieren?" | Erkenntnis → Handlung überführen, Transfer | 3 | Perkins & Salomon (1989): Transfer Bridging |
+| **Anamnese-Frage** | "Was weißt du eigentlich schon darüber, wenn du mal innehältst?" | Vorwissen aktivieren, Eigenverantwortung | 1→2 | Ausubel (1968): Prior Knowledge; Platon, Menon |
 
-Dieses dreistufige Fragetypen-Repertoire ist die Mindestspezifikation für Reproduzierbarkeit: Im LLM-Evaluationsbericht (Kapitel 5) wird getestet, welches Modell die drei Typen konsistent und korrekt anwendet. "KAIA stellt Fragen" ist keine evaluierbare Aussage. "KAIA stellt Klärungsfragen, hypothetische Fragen und Widerspruchsfragen nach definierten Auslösebedingungen" ist es.
+**Hinweis zur systemischen Frage:** Sokrates hat nicht Kommunikation *gelehrt* — er hat Kommunikation als Methode genutzt, um Geometrie, Ethik und Politik zu erschließen. Die systemische Frage ("Was würde sich in deiner Kommunikation mit X ändern?") folgt diesem Muster: sie ist kein Kommunikations-Unterricht, sondern die sokratische Technik, Verstehen durch Anwendungskontext zu testen. In Platons Dialogen fragt Sokrates wiederholt "Was würdest du dazu sagen wenn Kriton dich fragt?" — das ist der Prototyp der systemischen Frage.
+
+Die sechs Fragetypen sind die Mindestspezifikation für Reproduzierbarkeit. Im LLM-Evaluationsbericht (Kapitel 5) wird getestet welches Modell diese Typen konsistent und korrekt anwendet, und insbesondere: ob die systemische Frage und die Erste-Schritt-Frage zum richtigen Zeitpunkt eingesetzt werden.
 
 ### 3.3.5 Session-Architektur: Drei-Phasen-Skript
 
