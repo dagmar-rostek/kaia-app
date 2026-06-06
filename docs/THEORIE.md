@@ -1,11 +1,11 @@
 # Kapitel 2 — Theoretischer Hintergrund
 
-> **Stand:** 05. Juni 2026 · **Version:** 1.2  
-> **Reviewer:** Psychologe (Abschnitte 2.2–2.6) ✓ · AI Engineer (2.7) · Architect (2.8–2.10)  
+> **Stand:** 06. Juni 2026 · **Version:** 1.4  
+> **Reviewer:** Psychologe (2.2–2.11) ✓ · Didaktiker (2.11) ✓ · AI Engineer (2.10) · Architect (2.12)  
 > **Nächste Revision:** bei inhaltlicher Erweiterung oder neuen Quellenfunden  
 >
 > *Dieses Dokument ist ein lebendiger Thesis-Draft. Abschnitte mit ✓ sind durch den Psychologen freigegeben.*  
-> *v1.2: Selbstbestimmungstheorie (Deci & Ryan) als neuer Abschnitt 2.6 ergänzt.*
+> *v1.4: Abschnitt 2.11 — Selbstreguliertes Lernen + "Lernen lernen"-Hypothese + Transfer-Limitierung*
 
 ---
 
@@ -171,7 +171,29 @@ Das Spannungsfeld zwischen systemseitiger Adaptation (Personalisierung) und lern
 
 ---
 
-## 2.11 Synthetisches Rahmenwerk: Theoretische Begründung von KAIA
+## 2.11 Selbstreguliertes Lernen, Metakognition und die "Lernen lernen"-Hypothese ✓
+
+Eine der zentralen Fragen an KAIA ist: Führt sokratische Begleitung langfristig zur Fähigkeit, domain-übergreifend zu lernen — zum sogenannten "Lernen lernen"? Diese Frage ist für die vorliegende Thesis aus drei Gründen bedeutsam: Sie begründet die theoretische Relevanz des Ansatzes, sie schärft die Grenzen der empirischen Behauptungen, und sie öffnet eine Forschungsperspektive, die über die Pilotstudie hinausgeht.
+
+### 2.11.1 Die theoretische Kette
+
+Die Verbindung zwischen KAIAs sokratischem Ansatz und domain-übergreifender Kompetenz lässt sich als Kette beschreiben:
+
+**Glied 1 — stark und verteidigbar:** Sokratische Begleitung erzeugt eigenständig erarbeitete Lösungen (Mastery Experiences). Diese sind nach Bandura (1997) die stärkste Quelle von Selbstwirksamkeitserwartungen. Ein System das niemals Antworten liefert, sondern Erkenntnisse hervorlockt, maximiert die Wahrscheinlichkeit, dass die lernende Person die Lösung sich selbst attribuiert — und damit ihre allgemeine Handlungskompetenzerwartung stärkt (GSE nach Schwarzer & Jerusalem, 1995).
+
+**Glied 2 — theoretisch plausibel, empirisch voraussetzungsreich:** Ein erhöhter GSE-Wert korreliert empirisch mit tieferen Lernstrategien, größerer Ausdauer und flexiblerem Problemlöseverhalten — auch in neuen Domänen (Zimmermann, 2000; Pajares, 1996). Selbstreguliertes Lernen (Zimmermann, 2000) — das zielorientierte Planen, Überwachen und Anpassen eigener Lernprozesse — ist nach aktuellem Forschungsstand eine der stärksten Prädiktoren für domänenübergreifende Lernkompetenz. Ein erhöhter GSE-Wert macht den Einstieg in selbstregulierte Lernprozesse wahrscheinlicher.
+
+**Das schwache Glied — Transfer:** Dass aus GSE-Stärkung und reflektiver Kompetenz automatisch domain-übergreifende Problemlösekompetenz entsteht, ist nicht belegt. Perkins und Salomon (1989) zeigen in ihrer vielzitierten Analyse, dass Lerntransfer nicht automatisch geschieht — er benötigt explizites "Bridging": die bewusste Verbindung zwischen dem Gelernten und neuen Kontexten. Ein sokratischer Begleiter kann diese Brücke anregen, aber nicht garantieren.
+
+### 2.11.2 Was "Lernen lernen" durch KAIA realistische bedeutet
+
+Die vertretbare Behauptung lautet: KAIA kann durch sokratische Begleitung episodische Mastery-Erlebnisse erzeugen, die kurzfristig allgemeine Selbstwirksamkeitserwartungen stabilisieren und metakognitive Aufmerksamkeit für eigene Lernprozesse aktivieren. Ob sich daraus domain-übergreifende Problemlösekompetenz entwickelt, ist eine mittelfristige Hypothese, die die vorliegende Pilotstudie (N=32, 4 Wochen) nicht prüfen kann und nicht beansprucht zu prüfen.
+
+"Lernen lernen" ist damit kein Outcome dieser Studie — es ist die theoretische Vision, die KAIAs Designprinzipien motiviert, und eine Forschungsperspektive für Folgestudien mit längerem Zeithorizont und explizitem Transferdesign.
+
+---
+
+## 2.12 Synthetisches Rahmenwerk: Theoretische Begründung von KAIA
 
 Die in den vorangegangenen Abschnitten dargestellten Theorien sind nicht additiv zu verstehen, sondern bilden ein kohärentes theoretisches Rahmenwerk, aus dem sich KAIAs Designentscheidungen unmittelbar ableiten lassen.
 
@@ -274,5 +296,7 @@ Deci, E. L., & Ryan, R. M. (1985). *Intrinsic Motivation and Self-Determination 
 Deci, E. L., & Ryan, R. M. (2000). The "what" and "why" of goal pursuits: Human needs and the self-determination of behavior. *Psychological Inquiry, 11*(4), 227–268.
 
 Lepper, M. R., Greene, D., & Nisbett, R. E. (1973). Undermining children's intrinsic interest with extrinsic reward: A test of the "overjustification" hypothesis. *Journal of Personality and Social Psychology, 28*(1), 129–137.
+
+Perkins, D. N., & Salomon, G. (1989). Are cognitive skills context-bound? *Educational Researcher, 18*(1), 16–25.
 
 Weiner, B. (1985). An attributional theory of achievement motivation and emotion. *Psychological Review, 92*(4), 548–573.
