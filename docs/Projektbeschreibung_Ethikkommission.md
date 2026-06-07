@@ -29,7 +29,7 @@ Die Studie untersucht, inwieweit die Nutzung eines sokratisch konfigurierten KI-
 - Wochen 1–4: Mindestens 3 Chat-Sessions mit dem Agenten (je 5–15 Minuten, frei wählbares Lernthema)
 - Nach Woche 4: Post-Messung GSE (ca. 3 Minuten), optionales Abschlussinterview (~45 Min., mit gesonderter Einwilligung zur Aufzeichnung)
 
-**Messinstrument:** Skala zur Allgemeinen Selbstwirksamkeitserwartung (GSE, Schwarzer & Jerusalem, 1995), 10 Items, 4-stufige Likert-Skala.
+**Messinstrument:** Skala zur Allgemeinen Selbstwirksamkeitserwartung (SWE/GSE, Schwarzer & Jerusalem, 1995), 10 Items, 4-stufige Likert-Skala (1 = stimmt nicht bis 4 = stimmt genau), Summenscore 10–40. Lizenz: CC BY-NC-ND 3.0 (Jerusalem & Schwarzer, 1999, PsychArchives DOI: 10.23668/psycharchives.307). Cronbach α .80–.90 (deutsche Stichproben), bevölkerungsrepräsentative Normwerte verfügbar (Hinz et al., 2006, M ≈ 29, SD ≈ 4). Vollständige Items und Auswertungskonzept: Anhang A / `docs/GSE_Fragebogen_Auswertung.md`.
 
 ---
 
