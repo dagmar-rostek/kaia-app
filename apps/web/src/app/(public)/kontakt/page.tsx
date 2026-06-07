@@ -178,11 +178,11 @@ export default function KontaktPage() {
             dagmar@ecoaching-rostek.de
           </a>
           <a
-            href="tel:+49"
+            href="tel:+4917661159403"
             className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
           >
             <Phone className="h-3.5 w-3.5" />
-            Telefonnummer auf Anfrage
+            +49 176 61159403
           </a>
         </div>
       </div>
