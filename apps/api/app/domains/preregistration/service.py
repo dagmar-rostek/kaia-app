@@ -2,7 +2,6 @@ from app.core.config import settings
 from app.observability.email import send_email
 from app.observability.slack import notify
 
-
 BASE_URL = "https://kaia.rostek-dagmar.eu"
 
 

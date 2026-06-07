@@ -16,7 +16,7 @@ router = APIRouter(prefix="/preregister", tags=["preregister"])
 
 
 @router.get("/stats", response_model=StatsResponse)
-async def stats(db: AsyncSession = Depends(get_db)) -> StatsResponse:
+async def stats(db: AsyncSession = Depends(get_db)) -> StatsResponse:  # noqa: B008
     repo = PreRegistrationRepo(db)
     total = await repo.count_active()
     return StatsResponse(
@@ -29,7 +29,7 @@ async def stats(db: AsyncSession = Depends(get_db)) -> StatsResponse:
 @router.post("", response_model=PreRegisterResponse, status_code=status.HTTP_201_CREATED)
 async def preregister(
     body: PreRegisterRequest,
-    db: AsyncSession = Depends(get_db),
+    db: AsyncSession = Depends(get_db),  # noqa: B008
 ) -> PreRegisterResponse:
     repo = PreRegistrationRepo(db)
 
@@ -50,7 +50,10 @@ async def preregister(
 
 
 @router.get("/unsubscribe/{token}", response_model=PreRegisterResponse)
-async def unsubscribe(token: str, db: AsyncSession = Depends(get_db)) -> PreRegisterResponse:
+async def unsubscribe(
+    token: str,
+    db: AsyncSession = Depends(get_db),  # noqa: B008
+) -> PreRegisterResponse:
     repo = PreRegistrationRepo(db)
     entry = await repo.get_by_token(token)
     if not entry:
@@ -63,16 +66,28 @@ async def unsubscribe(token: str, db: AsyncSession = Depends(get_db)) -> PreRegi
 
 # ── Admin ──────────────────────────────────────────────────────────────────────
 
-@router.get("/admin/list", response_model=list[PreRegistrationItem], dependencies=[Depends(require_admin)])
-async def admin_list(db: AsyncSession = Depends(get_db)) -> list[PreRegistrationItem]:
+
+@router.get(
+    "/admin/list",
+    response_model=list[PreRegistrationItem],
+    dependencies=[Depends(require_admin)],  # noqa: B008
+)
+async def admin_list(db: AsyncSession = Depends(get_db)) -> list[PreRegistrationItem]:  # noqa: B008
     repo = PreRegistrationRepo(db)
     return [PreRegistrationItem.model_validate(e) for e in await repo.list_all()]
 
 
-@router.delete("/admin/{id}", response_model=PreRegisterResponse, dependencies=[Depends(require_admin)])
-async def admin_remove(id: str, db: AsyncSession = Depends(get_db)) -> PreRegisterResponse:
+@router.delete(
+    "/admin/{entry_id}",
+    response_model=PreRegisterResponse,
+    dependencies=[Depends(require_admin)],  # noqa: B008
+)
+async def admin_remove(
+    entry_id: str,
+    db: AsyncSession = Depends(get_db),  # noqa: B008
+) -> PreRegisterResponse:
     repo = PreRegistrationRepo(db)
-    entry = await repo.get_by_id(id)
+    entry = await repo.get_by_id(entry_id)
     if not entry:
         raise HTTPException(status_code=404, detail="Nicht gefunden.")
     if entry.status == "removed":

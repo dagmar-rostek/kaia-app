@@ -34,9 +34,7 @@ class PreRegistrationRepo:
         return result.scalar_one_or_none()
 
     async def get_by_id(self, id_: str) -> PreRegistration | None:
-        result = await self.db.execute(
-            select(PreRegistration).where(PreRegistration.id == id_)
-        )
+        result = await self.db.execute(select(PreRegistration).where(PreRegistration.id == id_))
         return result.scalar_one_or_none()
 
     async def set_status(self, entry: PreRegistration, status: str) -> None:
