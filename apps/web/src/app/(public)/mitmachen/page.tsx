@@ -258,62 +258,17 @@ export default function MitmachenPage() {
               aber du kannst jederzeit mehr machen.
             </p>
 
-            <div className="rounded-lg bg-muted/40 border border-border p-3 text-xs space-y-3">
-              <p className="font-medium text-foreground">Wie läuft eine erste Session ab?</p>
-              <div className="space-y-2 text-muted-foreground">
-                <p>
-                  <strong className="text-foreground">KAIA fragt zuerst:</strong>{" "}
-                  <em>&ldquo;Was hat dich dazu gebracht, dass du jetzt genau daran arbeiten möchtest?&rdquo;</em>{" "}
-                  — nicht was du lernen willst, sondern warum es dir gerade wichtig ist.
-                </p>
-                <p>
-                  <strong className="text-foreground">Dann hört KAIA zu.</strong>{" "}
-                  Zwei, drei, vier Fragen — bis sie verstanden hat, was dich wirklich antreibt.
-                  Nicht das Thema. Das Motiv dahinter.
-                </p>
-                <p>
-                  <strong className="text-foreground">Dann spiegelt KAIA:</strong>{" "}
-                  <em>&ldquo;Habe ich das richtig verstanden — du möchtest [X], weil [Y]?&rdquo;</em>{" "}
-                  Dieser Moment ist der wichtigste der ersten Session.
-                  Du korrigierst, ergänzt, bestätigst. KAIA hört zu.
-                </p>
-                <p>
-                  <strong className="text-foreground">Dann kommt der erste Schritt.</strong>{" "}
-                  Nicht von KAIA vorgeschlagen — von dir erarbeitet.
-                  <em>&ldquo;Was wäre ein erster kleiner Schritt — kleiner als du denkst?&rdquo;</em>
-                </p>
-              </div>
-            </div>
-
             <div className="rounded-lg bg-muted/40 border border-border p-3 text-xs space-y-2">
-              <p className="font-medium text-foreground">Wie laufen Folgesessions ab?</p>
               <p className="text-muted-foreground leading-relaxed">
-                KAIA beginnt immer mit dem vereinbarten Schritt:{" "}
-                <em>&ldquo;Du wolltest [X] ausprobieren. Wie war das?&rdquo;</em>{" "}
-                Nicht gemacht? Kein Problem — gemeinsam herausfinden warum,
-                und einen kleineren Schritt finden. Gemacht? Reflektieren, was sich verändert hat,
-                und den nächsten Schritt entwickeln.
+                Was in einer Session passiert, lässt sich schwer vorausschreiben —
+                das ist auch der Sinn der Sache.
+                KAIA beginnt mit einer Frage. Du antwortest.
+                Irgendwo dazwischen entsteht meistens etwas, womit du nicht gerechnet hast.
               </p>
               <p className="text-muted-foreground leading-relaxed">
-                Jede Session endet gleich:{" "}
-                <em>&ldquo;Was würdest du jemandem erklären, der nicht dabei war?&rdquo;</em>{" "}
-                Und:{" "}
-                <em>&ldquo;Was wäre ein erster Schritt diese Woche?&rdquo;</em>
-              </p>
-            </div>
-
-            <div className="rounded-lg bg-muted/40 border border-border p-3 text-xs space-y-2">
-              <p className="font-medium text-foreground">Was KAIA niemals tut</p>
-              <p className="text-muted-foreground leading-relaxed">
-                Fertige Antworten. Konkrete Techniken. Ratschläge.
-                Auch nicht verkleidet als Frage:{" "}
-                <em>&ldquo;Was wäre, wenn du beim nächsten Meeting einfach...&rdquo;</em>{" "}
-                ist kein sokratischer Impuls — das ist ein Vorschlag.
-                KAIA fragt. Was du daraus machst, liegt bei dir.
-              </p>
-              <p className="text-muted-foreground leading-relaxed">
-                Und wenn das Gespräch in Kreisen dreht? KAIA benennt es:{" "}
-                <em>&ldquo;Ich merke, das passt gerade nicht. Was wäre für dich jetzt hilfreicher?&rdquo;</em>
+                Was du am Ende einer Session mitnimmst: mindestens eine Erkenntnis,
+                die du selbst erarbeitet hast — und einen konkreten nächsten Schritt,
+                den du dir selbst gesetzt hast.
               </p>
             </div>
           </StepCard>
