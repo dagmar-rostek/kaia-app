@@ -221,18 +221,18 @@ export default function DailyLogPage() {
                     <details
                       key={entry.date}
                       open={isNewest}
-                      className="group rounded-lg border border-border overflow-hidden"
+                      className="group rounded-lg border border-border"
                     >
-                      <summary className="flex items-center justify-between px-5 py-4 cursor-pointer select-none list-none hover:bg-muted/30 transition-colors gap-3">
-                        <div className="flex items-center gap-3 min-w-0">
+                      <summary className="flex items-start justify-between px-5 py-4 cursor-pointer select-none list-none hover:bg-muted/30 transition-colors gap-3">
+                        <div className="flex items-start gap-3 min-w-0">
                           {isNewest && (
-                            <span className="shrink-0 inline-flex items-center rounded-md border px-1.5 py-0.5 text-xs font-medium bg-emerald-500/10 text-emerald-500 border-emerald-500/20">
+                            <span className="shrink-0 mt-0.5 inline-flex items-center rounded-md border px-1.5 py-0.5 text-xs font-medium bg-emerald-500/10 text-emerald-500 border-emerald-500/20">
                               neu
                             </span>
                           )}
-                          <span className="text-sm font-medium truncate">{entry.title}</span>
+                          <span className="text-sm font-medium leading-snug">{entry.title}</span>
                         </div>
-                        <span className="shrink-0 text-muted-foreground text-xs transition-transform group-open:rotate-180">
+                        <span className="shrink-0 mt-0.5 text-muted-foreground text-xs transition-transform group-open:rotate-180">
                           ▾
                         </span>
                       </summary>
