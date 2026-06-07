@@ -142,13 +142,38 @@ export default function MitmachenPage() {
         </p>
 
         <p className="text-sm text-muted-foreground leading-relaxed">
-          Das Besondere: KAIA passt sich dir an. Wenn du feststeckst,
-          hilft sie dich einen Schritt weiterzudenken. Wenn du im Fluss bist,
-          stellt sie die Frage, die dich weiter treibt. Wenn du einen Durchbruch hattest,
-          spiegelt sie dir zurück, was du gerade selbst herausgefunden hast.
-          Und von Session zu Session lernt KAIA, wie du denkst — und wird besser darin,
-          die richtigen Fragen zu stellen.
+          Das Kernprinzip: KAIA übernimmt niemals die kognitive Arbeit, die du selbst leisten kannst.
+          Jede Antwort von KAIA hat nur ein Ziel — deinen nächsten eigenen Denkschritt auszulösen.
+          Keine fertigen Lösungen. Keine Techniken die du ausprobieren sollst.
+          Keine Ratschläge. Nur Fragen, die dich weiterbringen.
         </p>
+
+        <p className="text-sm text-muted-foreground leading-relaxed">
+          KAIA liest deinen Gesprächszustand und passt sich an.
+          Wenn du überwältigt oder frustriert klingst, stellt sie einfachere, klärende Fragen.
+          Wenn du im Fluss bist, öffnet sie den Denkraum weiter.
+          Wenn du einen Durchbruch formuliert hast, hält sie dir den Spiegel —
+          nicht als Lob, sondern als Bestätigung was du gerade selbst erarbeitet hast.
+        </p>
+
+        <div className="rounded-lg bg-muted/40 border border-border p-4 text-sm space-y-3">
+          <p className="font-medium text-foreground text-xs">Sechs Arten wie KAIA fragt</p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            {[
+              { label: "Klärend",       eg: "„Was genau meinst du mit X?"" },
+              { label: "Hypothetisch",  eg: "„Was würde sich ändern, wenn...?"" },
+              { label: "Widerspruch",   eg: "„Vorhin sagst du A — jetzt B. Was passiert da?"" },
+              { label: "Systemisch",    eg: "„Was verändert sich, wenn du das wirklich lebst?"" },
+              { label: "Erster Schritt", eg: "„In welcher Situation diese Woche?"" },
+              { label: "Vorwissen",     eg: "„Was weißt du eigentlich schon?"" },
+            ].map(({ label, eg }) => (
+              <div key={label} className="space-y-0.5">
+                <p className="text-xs font-medium text-foreground">{label}</p>
+                <p className="text-xs text-muted-foreground italic">{eg}</p>
+              </div>
+            ))}
+          </div>
+        </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           {[
@@ -168,7 +193,8 @@ export default function MitmachenPage() {
           <p className="text-muted-foreground leading-relaxed">
             KAIA ist eine Künstliche Intelligenz, kein Mensch. Ihre Einfühlsamkeit
             basiert auf Sprachmustern, nicht auf echtem Mitgefühl.
-            Sie ist kein Therapeut und kein Notfalldienst.
+            Sie gibt keine Ratschläge, Techniken oder konkreten Methoden — auch nicht
+            verkleidet als Frage. Sie ist kein Therapeut, kein Coach und kein Notfalldienst.
             Das kommunizieren wir offen — du bestätigst das einmalig bei der Registrierung.
           </p>
         </div>
@@ -250,30 +276,65 @@ export default function MitmachenPage() {
             <p>
               Du chatterst mit KAIA über dein Lernthema — kurz, fokussiert, wann du willst.
               Mindestens drei Sessions über vier Wochen sind für die Auswertung nötig,
-              aber du kannst jederzeit mehr machen. Es gibt kein Richtig oder Falsch.
+              aber du kannst jederzeit mehr machen.
             </p>
 
-            <p>
-              Jede Session beginnt mit einer einfachen Frage von KAIA:{" "}
-              <em className="text-foreground">&ldquo;Was möchtest du nach dieser Session verstanden oder weitergedacht haben?&rdquo;</em>{" "}
-              Und sie endet mit:{" "}
-              <em className="text-foreground">&ldquo;Was würdest du jemandem erklären, der nicht dabei war?&rdquo;</em>{" "}
-              Dazwischen passiert das eigentliche Lernen.
-            </p>
+            <div className="rounded-lg bg-muted/40 border border-border p-3 text-xs space-y-3">
+              <p className="font-medium text-foreground">Wie läuft eine erste Session ab?</p>
+              <div className="space-y-2 text-muted-foreground">
+                <p>
+                  <strong className="text-foreground">KAIA fragt zuerst:</strong>{" "}
+                  <em>&ldquo;Was hat dich dazu gebracht, dass du jetzt genau daran arbeiten möchtest?&rdquo;</em>{" "}
+                  — nicht was du lernen willst, sondern warum es dir gerade wichtig ist.
+                </p>
+                <p>
+                  <strong className="text-foreground">Dann hört KAIA zu.</strong>{" "}
+                  Zwei, drei, vier Fragen — bis sie verstanden hat, was dich wirklich antreibt.
+                  Nicht das Thema. Das Motiv dahinter.
+                </p>
+                <p>
+                  <strong className="text-foreground">Dann spiegelt KAIA:</strong>{" "}
+                  <em>&ldquo;Habe ich das richtig verstanden — du möchtest [X], weil [Y]?&rdquo;</em>{" "}
+                  Dieser Moment ist der wichtigste der ersten Session.
+                  Du korrigierst, ergänzt, bestätigst. KAIA hört zu.
+                </p>
+                <p>
+                  <strong className="text-foreground">Dann kommt der erste Schritt.</strong>{" "}
+                  Nicht von KAIA vorgeschlagen — von dir erarbeitet.
+                  <em>&ldquo;Was wäre ein erster kleiner Schritt — kleiner als du denkst?&rdquo;</em>
+                </p>
+              </div>
+            </div>
 
             <div className="rounded-lg bg-muted/40 border border-border p-3 text-xs space-y-2">
-              <p className="font-medium text-foreground">Wie verhält sich KAIA in einer Session?</p>
+              <p className="font-medium text-foreground">Wie laufen Folgesessions ab?</p>
               <p className="text-muted-foreground leading-relaxed">
-                KAIA liest, wie es dir gerade geht — und passt sich an.
-                Wenn du klar im Fluss bist, stellt sie die Frage, die dich weiter antreibt.
-                Wenn du feststeckst, hilft sie dir, den nächsten kleinen Schritt zu sehen.
-                Wenn du gerade einen Durchbruch hattest, benennt sie, was du selbst
-                herausgefunden hast — nicht als Lob, sondern als Spiegel.
+                KAIA beginnt immer mit dem vereinbarten Schritt:{" "}
+                <em>&ldquo;Du wolltest [X] ausprobieren. Wie war das?&rdquo;</em>{" "}
+                Nicht gemacht? Kein Problem — gemeinsam herausfinden warum,
+                und einen kleineren Schritt finden. Gemacht? Reflektieren, was sich verändert hat,
+                und den nächsten Schritt entwickeln.
               </p>
               <p className="text-muted-foreground leading-relaxed">
-                Eines bleibt immer gleich: Fertige Antworten liefert KAIA nicht.
-                Das kann am Anfang ungewohnt wirken — und wird mit der Zeit
-                das Interessanteste an der ganzen Erfahrung sein.
+                Jede Session endet gleich:{" "}
+                <em>&ldquo;Was würdest du jemandem erklären, der nicht dabei war?&rdquo;</em>{" "}
+                Und:{" "}
+                <em>&ldquo;Was wäre ein erster Schritt diese Woche?&rdquo;</em>
+              </p>
+            </div>
+
+            <div className="rounded-lg bg-muted/40 border border-border p-3 text-xs space-y-2">
+              <p className="font-medium text-foreground">Was KAIA niemals tut</p>
+              <p className="text-muted-foreground leading-relaxed">
+                Fertige Antworten. Konkrete Techniken. Ratschläge.
+                Auch nicht verkleidet als Frage:{" "}
+                <em>&ldquo;Was wäre, wenn du beim nächsten Meeting einfach...&rdquo;</em>{" "}
+                ist kein sokratischer Impuls — das ist ein Vorschlag.
+                KAIA fragt. Was du daraus machst, liegt bei dir.
+              </p>
+              <p className="text-muted-foreground leading-relaxed">
+                Und wenn das Gespräch in Kreisen dreht? KAIA benennt es:{" "}
+                <em>&ldquo;Ich merke, das passt gerade nicht. Was wäre für dich jetzt hilfreicher?&rdquo;</em>
               </p>
             </div>
           </StepCard>
