@@ -1,11 +1,12 @@
 import Link from "next/link"
 import { ThemeToggle } from "@/components/ThemeToggle"
 import { logoutAction } from "./actions"
-import { LayoutDashboard, CheckSquare, ScrollText, Network, Euro, BookOpen, LogOut, Map, Users, GraduationCap, Sparkles } from "lucide-react"
+import { LayoutDashboard, CheckSquare, ScrollText, Network, Euro, BookOpen, LogOut, Map, Users, GraduationCap, Sparkles, ClipboardList } from "lucide-react"
 
 const NAV = [
   { href: "/admin", label: "Übersicht", icon: LayoutDashboard },
   { href: "/admin/users", label: "Teilnehmende", icon: Users },
+  { href: "/admin/vorregistrierung", label: "Voranmeldungen", icon: ClipboardList },
   { href: "/admin/roadmap", label: "Roadmap", icon: Map },
   { href: "/admin/prompts", label: "Prompts & Sandbox", icon: Sparkles },
   { href: "/admin/thesis", label: "Masterthesis", icon: GraduationCap },
