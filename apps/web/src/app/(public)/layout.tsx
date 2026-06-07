@@ -3,6 +3,7 @@ import { ThemeToggle } from "@/components/ThemeToggle"
 
 const NAV = [
   { href: "/mitmachen",     label: "Mitmachen" },
+  { href: "/kontakt",       label: "Kontakt" },
   { href: "/tagebuch",      label: "Tagebuch" },
   { href: "/roadmap",       label: "Roadmap" },
   { href: "/wissenschaft",  label: "Wissenschaft" },

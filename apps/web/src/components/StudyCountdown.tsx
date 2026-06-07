@@ -32,7 +32,6 @@ export function StudyCountdown({ label = "Registrierung öffnet in" }: { label?:
   const [t, setT] = useState<TimeLeft | null>(null)
 
   useEffect(() => {
-    setT(getTimeLeft())
     const id = setInterval(() => setT(getTimeLeft()), 1000)
     return () => clearInterval(id)
   }, [])
