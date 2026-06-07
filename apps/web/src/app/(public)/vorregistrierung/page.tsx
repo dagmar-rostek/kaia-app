@@ -7,13 +7,16 @@ import { Send, Sparkles } from "lucide-react"
 const API = process.env.NEXT_PUBLIC_API_URL ?? ""
 
 const REASONS = [
-  "Neugier. Einfach so. Das reicht doch.",
-  "Weil ChatGPT mir zu viele Antworten gibt.",
-  "Ich lerne gerne — und teste noch lieber Neues.",
-  "Weil meine Therapeutin sagte, ich soll Neues ausprobieren.",
-  "Für die Wissenschaft. Und ein bisschen für mich.",
-  "Um mal mit einer DSGVO-konformen KI zu chatten.",
-  "Weil ich schon lange wissen wollte ob ich das Lernen verlernt habe.",
+  "Weil mir gerade langweilig ist.",
+  "Weil du mir ein Eis versprochen hast.",
+  "Ich will dir einen Gefallen tun.",
+  "Neugier. Was ist das überhaupt?",
+  "Weil ich der KI mal auf den Zahn fühlen will.",
+  "Für die Wissenschaft. Klingt gut, oder?",
+  "Weil alle anderen auch mitmachen. Schafe, die ich bin.",
+  "Ich lerne seit Jahren nicht mehr. Vielleicht hilft das.",
+  "Weil ich sonst Netflix geschaut hätte.",
+  "Dagmar hat mich so nett gefragt.",
 ]
 
 export default function VorregistrierungPage() {
