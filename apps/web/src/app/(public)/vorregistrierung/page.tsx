@@ -4,7 +4,7 @@ import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { Send, Sparkles } from "lucide-react"
 
-const API = process.env.NEXT_PUBLIC_API_URL ?? ""
+const API = ""  // relative URLs — Caddy proxies /api/* to FastAPI
 
 const REASONS = [
   "Weil mir gerade langweilig ist.",

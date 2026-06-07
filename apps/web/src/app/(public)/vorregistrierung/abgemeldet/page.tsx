@@ -5,7 +5,7 @@ import { Suspense, useEffect, useState } from "react"
 import { useSearchParams } from "next/navigation"
 import { CheckCircle2, XCircle } from "lucide-react"
 
-const API = process.env.NEXT_PUBLIC_API_URL ?? ""
+const API = ""
 
 function AbgemeldetContent() {
   const params = useSearchParams()
