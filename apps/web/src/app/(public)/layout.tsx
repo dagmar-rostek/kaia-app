@@ -1,5 +1,6 @@
 import Link from "next/link"
 import { ThemeToggle } from "@/components/ThemeToggle"
+import { LegalFooter } from "@/components/LegalFooter"
 
 const NAV = [
   { href: "/mitmachen",     label: "Mitmachen" },
@@ -33,6 +34,7 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
         </nav>
       </header>
       {children}
+      <LegalFooter />
     </div>
   )
 }

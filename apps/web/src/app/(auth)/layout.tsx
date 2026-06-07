@@ -1,5 +1,6 @@
 import Link from "next/link"
 import { ThemeToggle } from "@/components/ThemeToggle"
+import { LegalFooter } from "@/components/LegalFooter"
 
 export default function AuthLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -13,6 +14,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
       <div className="flex-1 flex items-center justify-center px-4 py-12">
         {children}
       </div>
+      <LegalFooter />
     </div>
   )
 }

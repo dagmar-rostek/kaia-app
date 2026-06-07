@@ -1,6 +1,7 @@
 import Link from "next/link"
 import { ThemeToggle } from "@/components/ThemeToggle"
 import { logoutAction } from "./actions"
+import { LegalFooter } from "@/components/LegalFooter"
 import { LayoutDashboard, CheckSquare, ScrollText, Network, Euro, BookOpen, LogOut, Map, Users, GraduationCap, Sparkles, ClipboardList } from "lucide-react"
 
 const NAV = [
@@ -50,6 +51,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               Abmelden
             </button>
           </form>
+          <div className="px-3 pt-2 flex gap-3 text-xs text-muted-foreground/60">
+            <Link href="/impressum" className="hover:text-muted-foreground transition-colors">Impressum</Link>
+            <Link href="/datenschutz" className="hover:text-muted-foreground transition-colors">Datenschutz</Link>
+          </div>
         </div>
       </aside>
       <main className="flex-1 overflow-auto">{children}</main>
