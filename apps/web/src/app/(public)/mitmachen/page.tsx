@@ -160,12 +160,12 @@ export default function MitmachenPage() {
           <p className="font-medium text-foreground text-xs">Sechs Arten wie KAIA fragt</p>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
             {[
-              { label: "Klärend",       eg: "„Was genau meinst du mit X?"" },
-              { label: "Hypothetisch",  eg: "„Was würde sich ändern, wenn...?"" },
-              { label: "Widerspruch",   eg: "„Vorhin sagst du A — jetzt B. Was passiert da?"" },
-              { label: "Systemisch",    eg: "„Was verändert sich, wenn du das wirklich lebst?"" },
-              { label: "Erster Schritt", eg: "„In welcher Situation diese Woche?"" },
-              { label: "Vorwissen",     eg: "„Was weißt du eigentlich schon?"" },
+              { label: "Klärend",        eg: '„Was genau meinst du mit X?"' },
+              { label: "Hypothetisch",   eg: '„Was würde sich ändern, wenn...?"' },
+              { label: "Widerspruch",    eg: '„Vorhin sagst du A — jetzt B. Was passiert da?"' },
+              { label: "Systemisch",     eg: '„Was verändert sich, wenn du das wirklich lebst?"' },
+              { label: "Erster Schritt", eg: '„In welcher Situation diese Woche?"' },
+              { label: "Vorwissen",      eg: '„Was weißt du eigentlich schon?"' },
             ].map(({ label, eg }) => (
               <div key={label} className="space-y-0.5">
                 <p className="text-xs font-medium text-foreground">{label}</p>
