@@ -2,6 +2,68 @@
 
 ---
 
+## 2026-06-07 — "Der Tag an dem das Team aufhörte, CI-Fehler zu fürchten, und anfing, eine echte Website zu sein"
+
+*Protokolliert vom Koordinator. Mit unerwünschten Einwürfen von: UX Designerin (hatte erwartungsgemäß Recht), Security Engineer (paranoid, wie immer), Compliance Officer (DSGVO, natürlich), QA Tester (feiert heute doppelt).*
+
+---
+
+Es gibt Tage, an denen man morgens aufmacht und denkt: "Heute bauen wir den Chat Core." Und dann passiert — alles andere.
+
+**Morgens — "Das CI bellt, aber beißt heute zum letzten Mal"**
+
+Der Tag begann mit dem obligatorischen CI-Fehlertanz. Ruff. ESLint. Mypy. Die üblichen Verdächtigen. Der QA Tester, normalerweise schadenfroh, war heute merkwürdig ruhig.
+
+> *"Wartet kurz."*
+
+30 Minuten später: Pre-Commit Hooks. Ein Shell-Script. `scripts/setup-hooks.sh` — einmal ausführen, nie wieder CI-Fehler aus Versehen pushen. Ruff und ESLint laufen jetzt lokal bevor git commit durchgeht.
+
+> **QA Tester**, triumphierend: *"Das war mein Geburtstag heute. Metaphorisch."*
+
+**Mittag — Gesetz, Ästhetik und ein Psychologe der nichts damit zu tun hatte**
+
+Die UX Designerin meldete sich unaufgefordert zu Wort:
+
+> *"Impressum und Datenschutz müssen von JEDER Seite erreichbar sein. Das ist kein Nice-to-have. Das ist § 5 TMG."*
+
+Der Compliance Officer nickte so heftig, dass die Kamera wackelte.
+
+Also: Impressum gebaut (Dagmar Rostek, Klosterstr. 12, 52511 Geilenkirchen — ja, die echte Adresse, das ist Pflicht). `LegalFooter`-Komponente. Public Layout, Auth Layout, Admin-Sidebar — überall. Die Landing Page bekam gleichzeitig eine Generalüberholung: kein kaputtes "Konto erstellen" mehr, das auf eine 404-Seite zeigte. Peinlich, aber jetzt behoben.
+
+Und dann, fast beiläufig: Plausible Analytics. Ein Script-Tag. DSGVO-konform, kein Cookie-Banner, EU-Server. Dagmar kann jetzt sehen ob jemand auf `/mitmachen` kommt. Kann sie. Jemand tut es.
+
+**Nachmittag — Das Voranmeldungs-Feature kämpfte bis zum Schluss**
+
+Die Voranmeldung, die gestern Abend so glatt lief, hatte heute Morgen plötzlich Meinungen. Doppeltes `/api`-Präfix. Cookie-HMAC statt echtem Passwort. Re-Registrierung nach Abmeldung: blockiert. Fünf Commits. Fünf Fixes. Beim sechsten Test lief es.
+
+> **Security Engineer:** *"Der Admin-Endpunkt war serverseitig. Gut. Wäre er clientseitig gewesen, hätten wir ein Problem gehabt."*
+> **Koordinator:** *"Er war clientseitig."*
+> *[Stille]*
+> **Security Engineer:** *"Jetzt ist er serverseitig. Gut."*
+
+**Abend — Das Schema schließt sich**
+
+Kurz vor Feierabend: eine letzte Migration. `llm_usage`, `audit_events`, `prompt_templates`. Das DB-Schema ist jetzt vollständig. 11 Tabellen. Alles was KAIA braucht um zu leben — Chat, Gedächtnis, GSE, Prompts, Kosten, DSGVO-Audit — liegt bereit in der Datenbank.
+
+Der AI Engineer starrte auf den leeren Chat-Core-Ordner.
+
+> *"Morgen."*
+
+Der Koordinator notiert das. Morgen.
+
+---
+
+**Was heute gebaut wurde:**
+Pre-Commit Hooks, Plausible Analytics, Impressum, LegalFooter auf jeder Seite, Landing Page neu, Voranmeldungs-Fixes (5 Commits), DB-Schema vollständig (Migration `c8f2e4b6d1a3`).
+
+**Commits:** `76714cb` · `6c895d4` · `805993b` · `4664036` · `e0265f3` · `32bd2df` · `6933f5c` · `feaf707` · `04f3e91` · `52fb87d`
+
+**Kosten heute:** ca. \$5–8 Claude Code · €4.39/Mo Hetzner · €9/Mo Plausible (neu)
+
+**Morgen:** Chat Core. Der AI Engineer hat seit Stunden einen leeren Ordner vor sich. Das ist kein guter Zustand für einen AI Engineer.
+
+---
+
 ## 2026-06-06 (Abend) — "29 Erkenntnisse, ein Gespräch das im Kreis dreht und ein Psychologe der 'therapeutisch nicht vertretbar' sagt"
 
 *Protokolliert vom Koordinator. Kaffeebecher leer. Es ist nach 22 Uhr.*

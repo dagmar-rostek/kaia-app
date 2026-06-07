@@ -10,7 +10,72 @@
 ---
 
 **Stand heute:** Saturday, 07. June 2026  
-**50 Einträge insgesamt · 9 Release-Tage · ~38 h 15 min Gesamt-Aufwand**
+**72 Einträge insgesamt · 9 Release-Tage · ~45 h Gesamt-Aufwand**
+
+---
+
+## Saturday, 07. June 2026 (Abend)
+*22 Einträge · Tag-Summe ca. 10 h*
+
+### 🆕 Neu
+
+**07.06.2026 · `a69adf1`** — Voranmeldungs-Feature komplett: max. 50 Plätze mit Live-Counter, witziges Formular mit Inspiration-Button, Bestätigungsmail via Brevo, Slack-Notification, Danke-Seite mit Countdown, Abmelde-Link. Admin `/admin/vorregistrierung` mit Entfernen-Button. · `2h`  
+*feat: Voranmeldung komplett (Backend + Frontend + Admin + E-Mails)*
+
+**07.06.2026 · `653c14e`** — Kontaktformular `/kontakt`: "Liegt dir was auf der Seele?" — Name optional, Kontaktart wählbar (E-Mail/Telefon/Lieber nicht), Slack-Notification bei Absenden. Telefonnummer +49 176 61159403 eingetragen. · `30min`  
+*feat: Kontaktformular + Telefonnummer*
+
+**07.06.2026 · `4664036`** — Pre-Commit Hook: ruff + ESLint laufen jetzt lokal vor jedem Commit. Blockiert bei Fehlern, zeigt Fix-Anleitung. Einmalige Installation: `bash scripts/setup-hooks.sh`. · `20min`  
+*feat: Pre-Commit Hook für ruff + ESLint*
+
+**07.06.2026 · `805993b`** — Plausible Analytics eingebunden: datenschutzkonform, kein Cookie-Banner, DSGVO out-of-the-box, EU-Server. Eigene Aufrufe per `localStorage.setItem('plausible_ignore', 'true')` ausschließen. · `10min`  
+*feat: Plausible Analytics*
+
+**07.06.2026 · `32bd2df`** — Impressum nach § 5 TMG: Dagmar Rostek, Klosterstr. 12, 52511 Geilenkirchen. Verantwortlich nach § 18 Abs. 2 MStV, KI-Hinweis mit Krisentelefon. · `15min`  
+*feat: Impressum — § 5 TMG*
+
+**07.06.2026 · `6933f5c`** — Landing Page komplett neu: klare Botschaft, drei Informationskarten, primärer CTA "Jetzt vorregistrieren", kein kaputtes "Konto erstellen" mehr. Anmelden-Link unauffällig erhalten. · `20min`  
+*feat: Landing Page neu*
+
+**07.06.2026 · `76714cb`** — Migration `c8f2e4b6d1a3`: `llm_usage` (Token/Kosten-Tracking pro Session), `audit_events` (DSGVO append-only Audit-Log), `prompt_templates` (DB-managed Jinja2-Prompts). DB-Schema damit vollständig — alle 11 Tabellen live. · `20min`  
+*feat: Migration — llm_usage, audit_events, prompt_templates*
+
+### ⚡ Verbesserung
+
+**07.06.2026 · `e0265f3`** — Impressum + Datenschutz auf jeder Seite: `LegalFooter`-Komponente in public und auth Layout, Impressum/Datenschutz-Links am Ende der Admin-Sidebar. · `15min`  
+*fix: Impressum+Datenschutz auf jeder Seite*
+
+**07.06.2026 · `b644da5`** — Session-Ablauf auf Mitmachen-Seite bewusst offen gelassen: Mechanismus nicht beschreiben, Neugier wecken. Wissenschaftlich sinnvoll — Teilnehmende die den Ablauf kennen, verhalten sich anders. · `10min`  
+*feat: Session-Beschreibung offen lassen*
+
+**07.06.2026 · `5e70086`** — "Was ist KAIA?": Sechs Fragetypen-Liste entfernt, Mechanismus nicht erklärt. "Was in einer Session passiert, lässt sich schwer vorausschreiben — das ist auch der Sinn der Sache." · `10min`  
+*feat: KAIA-Beschreibung neugierig statt technisch*
+
+**07.06.2026 · `4c6135b`** — "Voranmeldungen" in Admin-Sidebar ergänzt. · `5min`  
+*feat: Voranmeldungen in Admin-Sidebar*
+
+**07.06.2026 · `6c895d4`** — `docs/ANALYTICS.md`: Plausible-Tracking deaktivieren, Setup neuer Rechner, Pre-Commit Notfall-Bypass dokumentiert. · `10min`  
+*docs: Analytics + Pre-Commit Anleitung*
+
+### 🔧 Fix
+
+**07.06.2026 · `feaf707`** — Voranmeldung: abgemeldete E-Mails können sich wieder anmelden (`create_or_reactivate`). Nur aktive werden als doppelt blockiert. Placeholder ohne Therapeutin-Satz. · `20min`  
+*fix: Voranmeldung — Re-Registrierung, Lint, Placeholder*
+
+**07.06.2026 · `04f3e91`** — Admin-Voranmeldung als Server Component: nutzt `INTERNAL_API_URL` + `ADMIN_PASSWORD` direkt statt Cookie-HMAC. Proxy-Route für Entfernen-Button. · `20min`  
+*fix: Admin-Voranmeldung als Server Component*
+
+**07.06.2026 · `52fb87d`** — Doppeltes `/api/api/v1/...` in Voranmeldungs-Requests: relative URLs statt `NEXT_PUBLIC_API_URL`. · `10min`  
+*fix: relative URLs in Voranmeldung*
+
+**07.06.2026 · `e0265f3`** — mypy: `get_db` direkt aus `app.db.session` importiert. SMTP- und `ADMIN_EMAIL`-Env-Vars in `docker-compose.prod.yml` ergänzt. · `10min`  
+*fix: mypy get_db + docker-compose SMTP*
+
+**07.06.2026 · `2bf799e`** — Ruff I001 + ESLint: unused vars (`MessageSquare`, `bqContent`, `CheckCircle2`, `Clock`, `AlertTriangle`) entfernt. `setState` in `abgemeldet/page.tsx` via `setTimeout(fn, 0)` deferred. · `10min`  
+*fix: ruff + ESLint cleanup*
+
+**07.06.2026 · `6714dd4`** — ruff format `email.py`. · `2min`  
+*fix: ruff format email.py*
 
 ---
 

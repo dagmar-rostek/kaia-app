@@ -4,7 +4,7 @@
 > Jede strukturelle Änderung muss hier dokumentiert werden — CI prüft das.
 > Die `/architektur`-Seite im Frontend rendert dieses Dokument direkt.
 
-**Stand:** Juni 2026 · Version 0.5.0
+**Stand:** Juni 2026 · Version 0.6.0
 
 ---
 
@@ -276,8 +276,26 @@ Prompt-Versionen: `kaia_system_v1_warm` (Regression-Baseline, inaktiv) · `kaia_
 - Prompt-Versionierung in DB (`kaia_system_v2_warm` aktiv, v1 als Regression-Baseline)
 - Forschungsgrundlage: `docs/PROMPT_ENGINEERING_RESEARCH.md` (6 Quellen, APA-7)
 
+**DB-Schema vollständig (v0.6.0):**
+Alle 11 Tabellen live: `users` · `refresh_tokens` · `chat_sessions` · `messages` · `memory_chunks` · `gse_results` · `consent_logs` · `user_profiles` · `roadmap_goals` · `prompt_templates` · `llm_usage` · `audit_events` · `preregistrations`
+
+**Voranmeldungs-System:**
+- `/vorregistrierung` — max. 50 Plätze, Live-Counter, Bestätigungsmail (Brevo), Slack-Notification
+- `/admin/vorregistrierung` — Server Component, Entfernen mit E-Mail-Benachrichtigung
+- Abmelde-Link mit Token in jeder Bestätigungsmail
+
+**Analytics:**
+- Plausible Analytics (EU-Cloud) — datenschutzkonform, kein Cookie-Banner, DSGVO-konform
+- Dashboard: https://plausible.io/kaia.rostek-dagmar.eu
+
+**Observability (lokal):**
+- Pre-Commit Hook: ruff + ESLint vor jedem Commit (`scripts/setup-hooks.sh`)
+- Anleitung: `docs/ANALYTICS.md`
+
 **Noch nicht implementiert:**
 - Input/Output Guards (Presidio PII, BART Topic-Constraint, Injection-Detection)
 - DSGVO-Endpunkte: Datenexport, Konto löschen, Consent-Update
-- Chat Core (SSE-Streaming), Onboarding-Flow, GSE-Messung
+- **Chat Core (SSE-Streaming) — nächster Schritt**
 - LLM-Provider-Integration (Claude/GPT-4o/Mistral)
+- GSE Pre-Messung Frontend
+- Study-Lock (STUDY_MODE=locked)
