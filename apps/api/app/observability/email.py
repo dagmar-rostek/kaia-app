@@ -15,10 +15,10 @@ log = structlog.get_logger()
 def _send_sync(to: str, subject: str, html: str, text: str) -> None:
     msg = MIMEMultipart("alternative")
     msg["Subject"] = subject
-    msg["From"]    = f"KAIA <{settings.smtp_from}>"
-    msg["To"]      = to
+    msg["From"] = f"KAIA <{settings.smtp_from}>"
+    msg["To"] = to
     msg.attach(MIMEText(text, "plain", "utf-8"))
-    msg.attach(MIMEText(html,  "html",  "utf-8"))
+    msg.attach(MIMEText(html, "html", "utf-8"))
 
     with smtplib.SMTP(settings.smtp_host, settings.smtp_port) as s:
         s.starttls()
