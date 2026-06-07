@@ -5,11 +5,12 @@ import {
   Star, Users, Calendar, BookOpen, AlertTriangle,
   Target, Sparkles, Map,
 } from "lucide-react"
+import { StudyCountdown } from "@/components/StudyCountdown"
 
 export const metadata = {
   title: "Mitmachen — KAIA Pilotstudie",
   description:
-    "Werde Teil der KAIA-Pilotstudie: Ein KI-Lernbegleiter der sich an dich anpasst, dich begleitet statt belehrt — und dich das Lernen selbst lernen lässt. Start: Juli 2026.",
+    "Werde Teil der KAIA-Pilotstudie: Ein KI-Lernbegleiter der sich an dich anpasst, dich begleitet statt belehrt — und dich das Lernen selbst lernen lässt. Start: 16. Juli 2026.",
 }
 
 // ── Helpers ────────────────────────────────────────────────────────────────────
@@ -78,11 +79,22 @@ export default function MitmachenPage() {
   return (
     <main className="max-w-2xl mx-auto px-6 py-16 space-y-20">
 
+      {/* ── COUNTDOWN BANNER ── */}
+      <section className="rounded-xl border border-border bg-muted/20 p-6 text-center space-y-4">
+        <p className="text-sm font-medium">
+          Registrierung öffnet am <strong>16. Juli 2026</strong>
+        </p>
+        <StudyCountdown label="Noch" />
+        <p className="text-xs text-muted-foreground">
+          Lies schon mal weiter — du weißt dann genau worauf du dich einlässt.
+        </p>
+      </section>
+
       {/* ── HERO ── */}
       <section className="space-y-6 text-center">
         <div className="flex justify-center gap-2 flex-wrap">
           <Badge>Masterthesis · SRH Riedlingen</Badge>
-          <Badge>Start: Juli 2026</Badge>
+          <Badge>Start: 16. Juli 2026</Badge>
           <Badge>~32 Teilnehmende gesucht</Badge>
         </div>
 
@@ -100,12 +112,12 @@ export default function MitmachenPage() {
         </p>
 
         <div className="flex flex-col sm:flex-row gap-3 justify-center pt-2">
-          <Link
-            href="/registrierung"
-            className="inline-flex items-center justify-center gap-2 rounded-lg bg-foreground text-background px-6 py-3 text-sm font-medium hover:opacity-90 transition-opacity"
+          <span
+            className="inline-flex items-center justify-center gap-2 rounded-lg bg-muted text-muted-foreground px-6 py-3 text-sm font-medium cursor-not-allowed opacity-60"
+            title="Öffnet am 16. Juli 2026"
           >
-            Jetzt anmelden <ArrowRight className="h-4 w-4" />
-          </Link>
+            Anmeldung ab 16. Juli <Clock className="h-4 w-4" />
+          </span>
           <a
             href="#ablauf"
             className="inline-flex items-center justify-center gap-2 rounded-lg border border-border px-6 py-3 text-sm text-muted-foreground hover:text-foreground hover:border-foreground/40 transition-colors"
@@ -453,20 +465,21 @@ export default function MitmachenPage() {
       </section>
 
       {/* ── CTA ── */}
-      <section className="rounded-xl border border-foreground/20 bg-foreground/3 p-8 text-center space-y-5">
+      <section className="rounded-xl border border-foreground/20 bg-foreground/3 p-8 text-center space-y-6">
         <div className="space-y-2">
-          <h2 className="text-2xl font-bold tracking-tight">Bereit mitzumachen?</h2>
+          <h2 className="text-2xl font-bold tracking-tight">Fast so weit.</h2>
           <p className="text-muted-foreground text-sm max-w-md mx-auto">
-            Die Studie startet Mitte Juli 2026 — nach Vorliegen des Ethikvotums der SRH.
-            Registriere dich jetzt und du wirst per E-Mail benachrichtigt sobald es losgeht.
+            Die Registrierung öffnet am <strong className="text-foreground">16. Juli 2026</strong> —
+            nach Vorliegen des Ethikvotums der SRH.
           </p>
         </div>
-        <Link
-          href="/registrierung"
-          className="inline-flex items-center gap-2 rounded-lg bg-foreground text-background px-8 py-3.5 text-sm font-medium hover:opacity-90 transition-opacity"
+        <StudyCountdown label="Noch" />
+        <span
+          className="inline-flex items-center gap-2 rounded-lg bg-muted text-muted-foreground px-8 py-3.5 text-sm font-medium cursor-not-allowed opacity-60"
+          title="Öffnet am 16. Juli 2026"
         >
-          Jetzt anmelden <ArrowRight className="h-4 w-4" />
-        </Link>
+          Anmeldung ab 16. Juli <Clock className="h-4 w-4" />
+        </span>
         <p className="text-xs text-muted-foreground">
           Noch Fragen?{" "}
           <a href="mailto:Dagmar.Rostek@stud.mobile-university.de" className="underline hover:text-foreground transition-colors">

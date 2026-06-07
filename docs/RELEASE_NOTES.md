@@ -9,8 +9,43 @@
 
 ---
 
-**Stand heute:** Friday, 06. June 2026  
-**42 Einträge insgesamt · 8 Release-Tage · ~35 h 30 min Gesamt-Aufwand**
+**Stand heute:** Saturday, 07. June 2026  
+**50 Einträge insgesamt · 9 Release-Tage · ~38 h 15 min Gesamt-Aufwand**
+
+---
+
+## Saturday, 07. June 2026
+*8 Einträge · Tag-Summe ca. 2 h 45 min*
+
+### 🆕 Neu
+
+**07.06.2026 · `HEAD`** — 404-Seite: Witzige KAIA-spezifische Not-Found-Seite — das Modell stellt natürlich eine Frage zurück. Buttons zu Startseite und Mitmachen-Seite. · `15min`  
+*feat: 404-Seite mit KAIA-Charakter*
+
+**07.06.2026 · `HEAD`** — Öffentliches Entwicklungs-Tagebuch unter `/tagebuch`: Liest `docs/DAILY_LOG.md` und rendert alle Einträge formatiert. In der öffentlichen Navigation verlinkt. Fördert Transparenz und Neugier — der Entwicklungsprozess ist Teil des Projekts. · `30min`  
+*feat: öffentliches Tagebuch unter /tagebuch*
+
+**07.06.2026 · `HEAD`** — GSE-Fragebogen und Auswertungskonzept vollständig dokumentiert (`docs/GSE_Fragebogen_Auswertung.md`): alle 10 deutschen Items (exakter Originalwortlaut), Antwortkategorien, Auswertungskonzept (Summenscore 10–40, Wilcoxon-Test, Effektgröße r), Normwerte (Hinz et al. 2006, M≈29), Gütekriterien (α .80–.90), Lizenznachweis (CC BY-NC-ND 3.0), 4 APA-7-Vollzitate. Projektbeschreibung für Ethikkommission aktualisiert. · `20min`  
+*docs: GSE-Fragebogen + Auswertungskonzept für Ethikvotum*
+
+### ⚡ Verbesserung
+
+**07.06.2026 · `HEAD`** — Registrierung und Login gesperrt bis 16. Juli 2026: Beide Seiten zeigen rückwärtszählenden Countdown (Tage/Stunden/Minuten/Sekunden) statt des Formulars. Öffnet automatisch am 16.07.2026 00:00. · `30min`  
+*feat: Registrierung + Login gesperrt mit Countdown bis 16. Juli*
+
+**07.06.2026 · `HEAD`** — Mitmachen-Seite: Countdown-Banner oben + CTA-Buttons deaktiviert bis 16. Juli. Zweiter Countdown-Block im unteren CTA-Bereich. Registrierungs-Button zeigt "Anmeldung ab 16. Juli" mit Schloss-Icon. · `20min`  
+*feat: Mitmachen-Seite mit Countdown + deaktivierten CTAs*
+
+**07.06.2026 · `HEAD`** — KAIA-Link in Auth-Layout ergänzt: Login- und Registrierungsseiten haben jetzt einen sichtbaren Header mit KAIA-Link zurück zur Startseite und Theme-Toggle. · `10min`  
+*feat: KAIA-Header in Auth-Layout*
+
+**07.06.2026 · `HEAD`** — Öffentliche Navigation um "Tagebuch" erweitert — erscheint auf allen öffentlichen Seiten zwischen Mitmachen und Wissenschaft. · `5min`  
+*feat: Tagebuch in öffentliche Navigation*
+
+### 🔧 Fix
+
+**07.06.2026 · `3576924`** — ruff E501: Test-Assertion in `test_prompts.py` war zu lang (107 > 100 Zeichen) — auf mehrere Zeilen aufgeteilt. · `5min`  
+*fix: ruff E501 — test assertion auf mehrere Zeilen aufgeteilt*
 
 ---
 

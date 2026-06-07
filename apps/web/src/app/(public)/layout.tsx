@@ -2,11 +2,12 @@ import Link from "next/link"
 import { ThemeToggle } from "@/components/ThemeToggle"
 
 const NAV = [
-  { href: "/mitmachen", label: "Mitmachen" },
-  { href: "/wissenschaft", label: "Wissenschaft" },
+  { href: "/mitmachen",     label: "Mitmachen" },
+  { href: "/tagebuch",      label: "Tagebuch" },
+  { href: "/wissenschaft",  label: "Wissenschaft" },
   { href: "/release-notes", label: "Release Notes" },
-  { href: "/architektur", label: "Architektur" },
-  { href: "/datenschutz", label: "Datenschutz" },
+  { href: "/architektur",   label: "Architektur" },
+  { href: "/datenschutz",   label: "Datenschutz" },
 ]
 
 export default function PublicLayout({ children }: { children: React.ReactNode }) {
