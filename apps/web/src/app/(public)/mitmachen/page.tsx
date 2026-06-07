@@ -135,45 +135,25 @@ export default function MitmachenPage() {
         </div>
 
         <p className="text-sm text-muted-foreground leading-relaxed">
-          KAIA ist ein KI-Lernbegleiter — aber kein Nachhilfelehrer und kein Suchmaschinen-Ersatz.
-          Die meisten KI-Tools liefern Antworten. KAIA fragt zurück.
-          Nicht weil sie keine Antworten kennt, sondern weil Wissen,
-          das du selbst erarbeitest, tiefer sitzt und länger hält.
+          Die meisten KI-Tools liefern Antworten.
+          KAIA tut das nicht — nicht weil sie keine hätte,
+          sondern weil Wissen das du selbst erarbeitest
+          tiefer sitzt und länger hält.
         </p>
 
         <p className="text-sm text-muted-foreground leading-relaxed">
-          Das Kernprinzip: KAIA übernimmt niemals die kognitive Arbeit, die du selbst leisten kannst.
-          Jede Antwort von KAIA hat nur ein Ziel — deinen nächsten eigenen Denkschritt auszulösen.
-          Keine fertigen Lösungen. Keine Techniken die du ausprobieren sollst.
-          Keine Ratschläge. Nur Fragen, die dich weiterbringen.
+          Was KAIA stattdessen tut, lässt sich kaum beschreiben ohne es
+          ein bisschen zu verderben. Es hat mit Fragen zu tun.
+          Mit dem Moment kurz bevor eine Erkenntnis entsteht.
+          Und mit der Fähigkeit zu spüren, wo du gerade stehst —
+          und was dich einen Schritt weiterbringt.
         </p>
 
         <p className="text-sm text-muted-foreground leading-relaxed">
-          KAIA liest deinen Gesprächszustand und passt sich an.
-          Wenn du überwältigt oder frustriert klingst, stellt sie einfachere, klärende Fragen.
-          Wenn du im Fluss bist, öffnet sie den Denkraum weiter.
-          Wenn du einen Durchbruch formuliert hast, hält sie dir den Spiegel —
-          nicht als Lob, sondern als Bestätigung was du gerade selbst erarbeitet hast.
+          Manche Teilnehmenden finden es am Anfang ungewohnt.
+          Manche finden es überraschend ehrlich.
+          Fast alle finden es anders als erwartet.
         </p>
-
-        <div className="rounded-lg bg-muted/40 border border-border p-4 text-sm space-y-3">
-          <p className="font-medium text-foreground text-xs">Sechs Arten wie KAIA fragt</p>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-            {[
-              { label: "Klärend",        eg: '„Was genau meinst du mit X?"' },
-              { label: "Hypothetisch",   eg: '„Was würde sich ändern, wenn...?"' },
-              { label: "Widerspruch",    eg: '„Vorhin sagst du A — jetzt B. Was passiert da?"' },
-              { label: "Systemisch",     eg: '„Was verändert sich, wenn du das wirklich lebst?"' },
-              { label: "Erster Schritt", eg: '„In welcher Situation diese Woche?"' },
-              { label: "Vorwissen",      eg: '„Was weißt du eigentlich schon?"' },
-            ].map(({ label, eg }) => (
-              <div key={label} className="space-y-0.5">
-                <p className="text-xs font-medium text-foreground">{label}</p>
-                <p className="text-xs text-muted-foreground italic">{eg}</p>
-              </div>
-            ))}
-          </div>
-        </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           {[
@@ -191,10 +171,9 @@ export default function MitmachenPage() {
         <div className="rounded-lg bg-muted/40 border border-border p-4 text-xs space-y-2">
           <p className="font-medium text-foreground">Was KAIA ist — und was nicht</p>
           <p className="text-muted-foreground leading-relaxed">
-            KAIA ist eine Künstliche Intelligenz, kein Mensch. Ihre Einfühlsamkeit
-            basiert auf Sprachmustern, nicht auf echtem Mitgefühl.
-            Sie gibt keine Ratschläge, Techniken oder konkreten Methoden — auch nicht
-            verkleidet als Frage. Sie ist kein Therapeut, kein Coach und kein Notfalldienst.
+            KAIA ist eine Künstliche Intelligenz, kein Mensch.
+            Ihre Einfühlsamkeit basiert auf Sprachmustern, nicht auf echtem Mitgefühl.
+            Sie ist kein Therapeut, kein Coach und kein Notfalldienst.
             Das kommunizieren wir offen — du bestätigst das einmalig bei der Registrierung.
           </p>
         </div>
