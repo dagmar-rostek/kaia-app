@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { useState } from "react"
-import { Send, CheckCircle2, MessageSquare, Phone, Mail, Ghost } from "lucide-react"
+import { Send, CheckCircle2, Phone, Mail, Ghost } from "lucide-react"
 
 type Kontaktart = "email" | "telefon" | "keine"
 

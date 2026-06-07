@@ -62,7 +62,6 @@ function renderBlocks(md: string): React.ReactNode[] {
         bqLines.push(lines[i].replace(/^>\s?/, ""))
         i++
       }
-      const bqContent = bqLines.join("\n")
       // Check for bold label (e.g. **Stand:**)
       nodes.push(
         <blockquote key={i} className="border-l-4 border-border pl-4 my-4 text-sm text-muted-foreground italic space-y-1">

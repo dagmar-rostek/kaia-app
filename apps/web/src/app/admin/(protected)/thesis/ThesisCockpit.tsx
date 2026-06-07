@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from "react"
 import {
   BookOpen, Brain, Target, Code2, FlaskConical, GraduationCap,
-  CheckCircle2, Clock, AlertTriangle, ChevronDown,
+  ChevronDown,
 } from "lucide-react"
 
 // ── Countdown ─────────────────────────────────────────────────────────────────

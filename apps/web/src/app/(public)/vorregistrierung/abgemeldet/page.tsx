@@ -13,7 +13,10 @@ function AbgemeldetContent() {
   const [status, setStatus] = useState<"loading" | "ok" | "error">("loading")
 
   useEffect(() => {
-    if (!token) { setStatus("error"); return }
+    if (!token) {
+      setTimeout(() => setStatus("error"), 0)
+      return
+    }
     fetch(`${API}/api/v1/preregister/unsubscribe/${token}`)
       .then(r => r.ok ? setStatus("ok") : setStatus("error"))
       .catch(() => setStatus("error"))
