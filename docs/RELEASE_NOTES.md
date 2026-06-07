@@ -15,37 +15,43 @@
 ---
 
 ## Saturday, 07. June 2026
-*8 Einträge · Tag-Summe ca. 2 h 45 min*
+*10 Einträge · Tag-Summe ca. 4 h*
 
 ### 🆕 Neu
 
-**07.06.2026 · `HEAD`** — 404-Seite: Witzige KAIA-spezifische Not-Found-Seite — das Modell stellt natürlich eine Frage zurück. Buttons zu Startseite und Mitmachen-Seite. · `15min`  
+**07.06.2026 · `f1109c6`** — 404-Seite: KAIA stellt natürlich eine Gegenfrage zurück. Buttons zu Startseite und Mitmachen-Seite. · `15min`  
 *feat: 404-Seite mit KAIA-Charakter*
 
-**07.06.2026 · `HEAD`** — Öffentliches Entwicklungs-Tagebuch unter `/tagebuch`: Liest `docs/DAILY_LOG.md` und rendert alle Einträge formatiert. In der öffentlichen Navigation verlinkt. Fördert Transparenz und Neugier — der Entwicklungsprozess ist Teil des Projekts. · `30min`  
+**07.06.2026 · `f1109c6`** — Öffentliches Entwicklungs-Tagebuch unter `/tagebuch`: Liest `docs/DAILY_LOG.md` und rendert alle Einträge. In der öffentlichen Navigation verlinkt — der Entwicklungsprozess ist Teil des Projekts. · `30min`  
 *feat: öffentliches Tagebuch unter /tagebuch*
 
-**07.06.2026 · `HEAD`** — GSE-Fragebogen und Auswertungskonzept vollständig dokumentiert (`docs/GSE_Fragebogen_Auswertung.md`): alle 10 deutschen Items (exakter Originalwortlaut), Antwortkategorien, Auswertungskonzept (Summenscore 10–40, Wilcoxon-Test, Effektgröße r), Normwerte (Hinz et al. 2006, M≈29), Gütekriterien (α .80–.90), Lizenznachweis (CC BY-NC-ND 3.0), 4 APA-7-Vollzitate. Projektbeschreibung für Ethikkommission aktualisiert. · `20min`  
+**07.06.2026 · `4a3ca65`** — GSE-Fragebogen und Auswertungskonzept vollständig dokumentiert: alle 10 deutschen Items, Auswertungskonzept (Summenscore 10–40, Wilcoxon-Test, Effektgröße r), Normwerte (Hinz et al. 2006, M≈29), Gütekriterien (α .80–.90), Lizenznachweis (CC BY-NC-ND 3.0), 4 APA-7-Vollzitate. Projektbeschreibung Ethikkommission aktualisiert. · `20min`  
 *docs: GSE-Fragebogen + Auswertungskonzept für Ethikvotum*
 
 ### ⚡ Verbesserung
 
-**07.06.2026 · `HEAD`** — Registrierung und Login gesperrt bis 16. Juli 2026: Beide Seiten zeigen rückwärtszählenden Countdown (Tage/Stunden/Minuten/Sekunden) statt des Formulars. Öffnet automatisch am 16.07.2026 00:00. · `30min`  
+**07.06.2026 · `f1109c6`** — Registrierung und Login gesperrt bis 16. Juli 2026: Beide Seiten zeigen rückwärtszählenden Countdown (Tage/Stunden/Minuten/Sekunden). Öffnet automatisch am 16.07.2026 00:00. · `30min`  
 *feat: Registrierung + Login gesperrt mit Countdown bis 16. Juli*
 
-**07.06.2026 · `HEAD`** — Mitmachen-Seite: Countdown-Banner oben + CTA-Buttons deaktiviert bis 16. Juli. Zweiter Countdown-Block im unteren CTA-Bereich. Registrierungs-Button zeigt "Anmeldung ab 16. Juli" mit Schloss-Icon. · `20min`  
+**07.06.2026 · `f1109c6`** — Mitmachen-Seite: Countdown-Banner oben + CTA-Buttons deaktiviert bis 16. Juli. · `20min`  
 *feat: Mitmachen-Seite mit Countdown + deaktivierten CTAs*
 
-**07.06.2026 · `HEAD`** — KAIA-Link in Auth-Layout ergänzt: Login- und Registrierungsseiten haben jetzt einen sichtbaren Header mit KAIA-Link zurück zur Startseite und Theme-Toggle. · `10min`  
+**07.06.2026 · `369583f`** — Mitmachen-Seite: "Was ist KAIA?" und Session-Ablauf auf v2-Prompt-Design aktualisiert. Kernprinzip direkt kommuniziert, 6 Fragetypen sichtbar, 4-Schritte-Onboarding mit Spiegel-Schritt, "Was KAIA niemals tut"-Box, Rupture-Repair sichtbar gemacht. · `30min`  
+*feat: Mitmachen-Seite aktualisiert — KAIA v2-Beschreibung*
+
+**07.06.2026 · `f1109c6`** — KAIA-Link in Auth-Layout: Login- und Registrierungsseiten haben jetzt Header mit KAIA-Link und Theme-Toggle. · `10min`  
 *feat: KAIA-Header in Auth-Layout*
 
-**07.06.2026 · `HEAD`** — Öffentliche Navigation um "Tagebuch" erweitert — erscheint auf allen öffentlichen Seiten zwischen Mitmachen und Wissenschaft. · `5min`  
+**07.06.2026 · `f1109c6`** — Öffentliche Navigation um "Tagebuch" erweitert. · `5min`  
 *feat: Tagebuch in öffentliche Navigation*
 
 ### 🔧 Fix
 
-**07.06.2026 · `3576924`** — ruff E501: Test-Assertion in `test_prompts.py` war zu lang (107 > 100 Zeichen) — auf mehrere Zeilen aufgeteilt. · `5min`  
+**07.06.2026 · `3576924`** — ruff E501: Test-Assertion zu lang — auf mehrere Zeilen aufgeteilt. · `5min`  
 *fix: ruff E501 — test assertion auf mehrere Zeilen aufgeteilt*
+
+**07.06.2026 · `331acd6`** — Build-Fehler: deutsche Anführungszeichen in JS-String-Literalen verursachten Parsing-Fehler (exit code 1 beim Docker-Build). · `5min`  
+*fix: Anführungszeichen in Fragetypen-Array — single quotes statt double*
 
 ---
 

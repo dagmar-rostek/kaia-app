@@ -4,6 +4,7 @@ import { ThemeToggle } from "@/components/ThemeToggle"
 const NAV = [
   { href: "/mitmachen",     label: "Mitmachen" },
   { href: "/tagebuch",      label: "Tagebuch" },
+  { href: "/roadmap",       label: "Roadmap" },
   { href: "/wissenschaft",  label: "Wissenschaft" },
   { href: "/release-notes", label: "Release Notes" },
   { href: "/architektur",   label: "Architektur" },
