@@ -18,7 +18,7 @@ export default function DatenschutzPage() {
         <h1 className="text-3xl font-bold tracking-tight">Datenschutzerklärung</h1>
         <p className="text-sm text-muted-foreground">
           Stand: Juni 2026 · Gültig für die KAIA-Pilotstudie im Rahmen einer Masterthesis
-          an der SRH Fernhochschule Riedlingen
+          an der SRH Fernhochschule
         </p>
       </div>
 
@@ -30,7 +30,7 @@ export default function DatenschutzPage() {
         <div className="rounded-lg border border-border p-4 text-sm space-y-1">
           <p className="font-medium text-foreground">Dagmar Rostek</p>
           <p>Masterstudentin M.Sc. Data Science &amp; Analytics</p>
-          <p>SRH Fernhochschule Riedlingen</p>
+          <p>SRH Fernhochschule</p>
           <p>
             Kontakt:{" "}
             <a href="mailto:Dagmar.Rostek@stud.mobile-university.de" className="underline hover:text-foreground transition-colors">

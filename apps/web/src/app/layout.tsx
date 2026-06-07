@@ -11,7 +11,7 @@ const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"]
 export const metadata: Metadata = {
   title: "KAIA – Kinetic AI Agent",
   description:
-    "Ein KI-Lernbegleiter der ausschließlich Fragen stellt. Masterthesis Dagmar Rostek, SRH Fernhochschule Riedlingen.",
+    "Ein KI-Lernbegleiter der ausschließlich Fragen stellt. Masterthesis Dagmar Rostek, SRH Fernhochschule.",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

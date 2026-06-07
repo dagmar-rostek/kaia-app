@@ -10,7 +10,7 @@ export default function Home() {
         <div className="space-y-6">
           <div className="inline-flex items-center gap-1.5 rounded-full border border-border px-4 py-1.5 text-xs text-muted-foreground">
             <FlaskConical className="h-3 w-3" />
-            Masterthesis · SRH Fernhochschule Riedlingen · 2026
+            Masterthesis · SRH Fernhochschule · 2026
           </div>
 
           <h1 className="text-5xl sm:text-6xl font-bold tracking-tight leading-tight">

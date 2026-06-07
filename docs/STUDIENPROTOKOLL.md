@@ -2,7 +2,7 @@
 
 **Version:** 1.0  
 **Datum:** Juni 2026  
-**Status:** Entwurf für Ethikvotum SRH Fernhochschule Riedlingen
+**Status:** Entwurf für Ethikvotum SRH Fernhochschule
 
 ---
 
@@ -10,7 +10,7 @@
 
 **Titel:** KAIA (Kinetic AI Agent) — Explorative Pilotstudie zur neuroadaptiven, KI-gestützten Lernbegleitung und ihrer Wirkung auf die allgemeine Selbstwirksamkeitserwartung
 
-**Einrichtung:** SRH Fernhochschule Riedlingen, Masterstudiengang Data Science & Analytics
+**Einrichtung:** SRH Fernhochschule, Masterstudiengang Data Science & Analytics
 
 **Verantwortliche Forscherin:** Dagmar Rostek  
 **E-Mail:** Dagmar.Rostek@stud.mobile-university.de  

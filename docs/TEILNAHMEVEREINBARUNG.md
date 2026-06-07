@@ -1,5 +1,5 @@
 # Teilnahmevereinbarung und Einwilligungserklärung
-## KAIA Pilotstudie — Masterthesis SRH Fernhochschule Riedlingen
+## KAIA Pilotstudie — Masterthesis SRH Fernhochschule
 
 **Version:** 1.0 · Juni 2026
 
@@ -14,7 +14,7 @@ Deine Teilnahme ist vollständig freiwillig.
 
 Diese Studie untersucht, ob die Nutzung eines KI-gestützten Lernbegleiters (KAIA) über einen Zeitraum von vier Wochen die **allgemeine Selbstwirksamkeitserwartung** beeinflusst. Selbstwirksamkeit bezeichnet die Überzeugung, schwierige Aufgaben durch eigene Anstrengung meistern zu können.
 
-Die Studie ist Teil einer Masterthesis an der SRH Fernhochschule Riedlingen (M.Sc. Data Science & Analytics) und folgt den Grundsätzen wissenschaftlicher Integrität.
+Die Studie ist Teil einer Masterthesis an der SRH Fernhochschule (M.Sc. Data Science & Analytics) und folgt den Grundsätzen wissenschaftlicher Integrität.
 
 ---
 

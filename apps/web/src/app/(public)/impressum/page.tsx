@@ -48,7 +48,7 @@ export default function ImpressumPage() {
         </h2>
         <p className="text-sm text-muted-foreground leading-relaxed">
           Diese Website entsteht im Rahmen einer Masterthesis an der{" "}
-          <strong className="text-foreground">SRH Fernhochschule Riedlingen</strong>{" "}
+          <strong className="text-foreground">SRH Fernhochschule</strong>{" "}
           (M.Sc. Data Science & Analytics). KAIA ist ein Forschungsprototyp —
           kein kommerzielles Produkt, kein Therapieangebot, kein Ersatz für professionelle Unterstützung.
         </p>

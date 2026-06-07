@@ -3,7 +3,7 @@
 **Eingereicht bei:** Gemeinsame Ethikkommission der PH Heidelberg und SRH University  
 **Datum:** 06. Juni 2026  
 **Forschende:** Dagmar Rostek, Dagmar.Rostek@stud.mobile-university.de  
-**Einrichtung:** SRH Fernhochschule Riedlingen, M.Sc. Data Science & Analytics  
+**Einrichtung:** SRH Fernhochschule, M.Sc. Data Science & Analytics  
 **Betreuer:in:** [Name eintragen]
 
 ---
@@ -16,7 +16,7 @@ Entwicklung eines empathischen AI-Agenten zur neuroadaptiven personalisierten Le
 
 ## Forschungsfrage und Ziel
 
-Die Studie untersucht, inwieweit die Nutzung eines sokratisch konfigurierten KI-Agenten zur Lernbegleitung über vier Wochen die allgemeine Selbstwirksamkeitserwartung von Lernenden beeinflusst. Der Agent ist eine Webanwendung, die Lernende durch gezielte Fragen beim selbstständigen Erarbeiten von Lerninhalten begleitet — ohne fertige Antworten zu liefern. Das System passt seinen Gesprächsstil adaptiv an den wahrgenommenen Lernzustand der Person an (neuroadaptive Komponente). Die Studie ist Teil einer Masterthesis im Rahmen des Studiengangs M.Sc. Data Science & Analytics an der SRH Fernhochschule Riedlingen.
+Die Studie untersucht, inwieweit die Nutzung eines sokratisch konfigurierten KI-Agenten zur Lernbegleitung über vier Wochen die allgemeine Selbstwirksamkeitserwartung von Lernenden beeinflusst. Der Agent ist eine Webanwendung, die Lernende durch gezielte Fragen beim selbstständigen Erarbeiten von Lerninhalten begleitet — ohne fertige Antworten zu liefern. Das System passt seinen Gesprächsstil adaptiv an den wahrgenommenen Lernzustand der Person an (neuroadaptive Komponente). Die Studie ist Teil einer Masterthesis im Rahmen des Studiengangs M.Sc. Data Science & Analytics an der SRH Fernhochschule.
 
 ---
 

@@ -93,7 +93,7 @@ export default function MitmachenPage() {
       {/* ── HERO ── */}
       <section className="space-y-6 text-center">
         <div className="flex justify-center gap-2 flex-wrap">
-          <Badge>Masterthesis · SRH Riedlingen</Badge>
+          <Badge>Masterthesis · SRH Fernhochschule</Badge>
           <Badge>Start: 16. Juli 2026</Badge>
           <Badge>~32 Teilnehmende gesucht</Badge>
         </div>
@@ -487,7 +487,7 @@ export default function MitmachenPage() {
       <section className="border-t border-border pt-8 text-center space-y-2">
         <p className="text-xs text-muted-foreground">
           Diese Studie wurde im Rahmen einer Masterthesis an der{" "}
-          <strong className="text-foreground">SRH Fernhochschule Riedlingen</strong>{" "}
+          <strong className="text-foreground">SRH Fernhochschule</strong>{" "}
           (M.Sc. Data Science & Analytics) entwickelt und wird durch das
           Ethikkomitee der SRH geprüft.
         </p>
