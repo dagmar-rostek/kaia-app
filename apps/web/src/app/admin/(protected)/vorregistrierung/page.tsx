@@ -46,7 +46,10 @@ export default function VorregistrierungAdminPage() {
     }
   }
 
-  useEffect(() => { load() }, [])
+  useEffect(() => {
+    const id = setTimeout(load, 0)
+    return () => clearTimeout(id)
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   async function remove(id: string, name: string) {
     if (!confirm(`${name} wirklich entfernen? Die Person bekommt eine E-Mail.`)) return

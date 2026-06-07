@@ -144,7 +144,7 @@ export default function VorregistrierungPage() {
             onFocus={() => setHint("Ein Satz reicht. Wirklich.")}
             onBlur={() => setHint(null)}
             rows={3}
-            placeholder="Ein ehrlicher Satz — von «Neugier» bis «meine Therapeutin hat mich geschickt»."
+            placeholder="Ein ehrlicher Satz — von «Neugier» bis «Dagmar hat mich so nett gefragt»."
             className="w-full rounded-lg border border-border bg-background px-4 py-3 text-sm placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-foreground/20 resize-none leading-relaxed"
           />
           {hint && <p className="text-xs text-muted-foreground">{hint}</p>}

@@ -33,14 +33,16 @@ async def preregister(
 ) -> PreRegisterResponse:
     repo = PreRegistrationRepo(db)
 
+    # Check if already active (not just existing)
+    existing = await repo.get_by_email(body.email)
+    if existing and existing.status == "active":
+        raise HTTPException(status_code=409, detail="Diese E-Mail ist bereits aktiv registriert.")
+
     total = await repo.count_active()
     if total >= settings.max_preregistrations:
         raise HTTPException(status_code=409, detail="Alle Plätze belegt.")
 
-    if await repo.exists_email(body.email):
-        raise HTTPException(status_code=409, detail="Diese E-Mail ist bereits registriert.")
-
-    entry = await repo.create(body.name, body.email, body.reason)
+    entry = await repo.create_or_reactivate(body.name, body.email, body.reason)
 
     new_total = total + 1
     await service.send_confirmation(entry.name, entry.email, entry.unsubscribe_token)

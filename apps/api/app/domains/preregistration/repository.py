@@ -14,13 +14,22 @@ class PreRegistrationRepo:
         )
         return result.scalar_one()
 
-    async def exists_email(self, email: str) -> bool:
+    async def get_by_email(self, email: str) -> PreRegistration | None:
         result = await self.db.execute(
-            select(PreRegistration.id).where(PreRegistration.email == email)
+            select(PreRegistration).where(PreRegistration.email == email)
         )
-        return result.first() is not None
+        return result.scalar_one_or_none()
 
-    async def create(self, name: str, email: str, reason: str) -> PreRegistration:
+    async def create_or_reactivate(self, name: str, email: str, reason: str) -> PreRegistration:
+        existing = await self.get_by_email(email)
+        if existing:
+            # Reactivate removed registration
+            existing.name = name
+            existing.reason = reason
+            existing.status = "active"
+            await self.db.commit()
+            await self.db.refresh(existing)
+            return existing
         entry = PreRegistration(name=name, email=email, reason=reason)
         self.db.add(entry)
         await self.db.commit()
