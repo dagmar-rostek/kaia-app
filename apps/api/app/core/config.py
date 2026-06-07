@@ -37,6 +37,17 @@ class Settings(BaseSettings):
     # Admin
     admin_password: str = "changeme"  # noqa: S105
 
+    # E-Mail (Brevo SMTP)
+    smtp_host: str = "smtp-relay.brevo.com"
+    smtp_port: int = 587
+    smtp_user: str = ""
+    smtp_password: str = ""  # noqa: S105
+    smtp_from: str = "noreply@kaia.rostek-dagmar.eu"
+    admin_email: str = "dagmar@ecoaching-rostek.de"
+
+    # Voranmeldung
+    max_preregistrations: int = 50
+
     # Studie
     study_mode: StudyMode = StudyMode.DEVELOPMENT
 

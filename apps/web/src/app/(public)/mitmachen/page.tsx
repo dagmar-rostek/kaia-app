@@ -112,12 +112,12 @@ export default function MitmachenPage() {
         </p>
 
         <div className="flex flex-col sm:flex-row gap-3 justify-center pt-2">
-          <span
-            className="inline-flex items-center justify-center gap-2 rounded-lg bg-muted text-muted-foreground px-6 py-3 text-sm font-medium cursor-not-allowed opacity-60"
-            title="Öffnet am 16. Juli 2026"
+            <Link
+            href="/vorregistrierung"
+            className="inline-flex items-center justify-center gap-2 rounded-lg bg-foreground text-background px-6 py-3 text-sm font-medium hover:opacity-90 transition-opacity"
           >
-            Anmeldung ab 16. Juli <Clock className="h-4 w-4" />
-          </span>
+            Jetzt vorregistrieren <ArrowRight className="h-4 w-4" />
+          </Link>
           <a
             href="#ablauf"
             className="inline-flex items-center justify-center gap-2 rounded-lg border border-border px-6 py-3 text-sm text-muted-foreground hover:text-foreground hover:border-foreground/40 transition-colors"
@@ -514,12 +514,12 @@ export default function MitmachenPage() {
           </p>
         </div>
         <StudyCountdown label="Noch" />
-        <span
-          className="inline-flex items-center gap-2 rounded-lg bg-muted text-muted-foreground px-8 py-3.5 text-sm font-medium cursor-not-allowed opacity-60"
-          title="Öffnet am 16. Juli 2026"
+        <Link
+          href="/vorregistrierung"
+          className="inline-flex items-center gap-2 rounded-lg bg-foreground text-background px-8 py-3.5 text-sm font-medium hover:opacity-90 transition-opacity"
         >
-          Anmeldung ab 16. Juli <Clock className="h-4 w-4" />
-        </span>
+          Jetzt vorregistrieren <ArrowRight className="h-4 w-4" />
+        </Link>
         <p className="text-xs text-muted-foreground">
           Noch Fragen?{" "}
           <a href="mailto:Dagmar.Rostek@stud.mobile-university.de" className="underline hover:text-foreground transition-colors">

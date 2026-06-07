@@ -28,6 +28,10 @@ services:
       ADMIN_PASSWORD: ${ADMIN_PASSWORD}
       JWT_SECRET: ${JWT_SECRET}
       STUDY_MODE: ${STUDY_MODE:-development}
+      SMTP_USER: ${SMTP_USER:-}
+      SMTP_PASSWORD: ${SMTP_PASSWORD:-}
+      SMTP_FROM: ${SMTP_FROM:-noreply@kaia.rostek-dagmar.eu}
+      ADMIN_EMAIL: ${ADMIN_EMAIL:-dagmar@ecoaching-rostek.de}
     depends_on:
       db:
         condition: service_healthy
@@ -49,6 +53,7 @@ services:
       INTERNAL_API_URL: http://api:8000/api
       SENTRY_KAIA_WEB: ${SENTRY_KAIA_WEB}
       ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
+      SLACK_WEBHOOK_URL: ${SLACK_WEBHOOK_URL}
     volumes:
       - ../docs:/docs:ro
 
