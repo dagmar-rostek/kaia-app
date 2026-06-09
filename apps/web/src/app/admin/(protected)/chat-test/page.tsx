@@ -361,7 +361,7 @@ export default function AdminChatTestPage() {
   }
 
   if (tokenError) return (
-    <div className="fixed top-0 left-56 right-0 bottom-0 flex flex-col items-center justify-center gap-4 p-8 bg-background">
+    <div className="h-full flex flex-col items-center justify-center gap-4 p-8">
       <p className="text-sm text-red-500">{tokenError}</p>
       <button
         onClick={() => { setToken(null); setTokenError(null); setFetchTrigger(t => t + 1) }}
@@ -371,13 +371,13 @@ export default function AdminChatTestPage() {
   )
 
   if (!token) return (
-    <div className="fixed top-0 left-56 right-0 bottom-0 flex items-center justify-center bg-background">
+    <div className="h-full flex items-center justify-center">
       <p className="text-sm text-muted-foreground animate-pulse">Token wird vorbereitet…</p>
     </div>
   )
 
   return (
-    <div className="fixed top-0 left-56 right-0 bottom-0 flex overflow-hidden bg-background">
+    <div className="h-full flex overflow-hidden">
 
       {/* ── Left: Chat ────────────────────────────────────────────────────── */}
       <div className="flex flex-col flex-1 min-w-0 border-r border-border">
