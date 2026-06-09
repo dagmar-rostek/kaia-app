@@ -149,7 +149,7 @@ async def stream_response(
     history = await repo.get_messages(session.id)
     # Exclude the user message we just saved (it's already at the end)
     api_messages = [
-        {"role": m.role.value, "content": m.content}
+        {"role": str(m.role), "content": m.content}
         for m in history
         if m.content  # skip empty
     ]
