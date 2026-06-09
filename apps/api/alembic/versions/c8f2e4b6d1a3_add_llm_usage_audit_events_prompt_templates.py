@@ -23,7 +23,7 @@ def upgrade() -> None:
     op.create_table(
         "prompt_templates",
         sa.Column("id", sa.Integer(), primary_key=True),
-        sa.Column("name", sa.String(100), nullable=False, index=True),
+        sa.Column("name", sa.String(100), nullable=False),
         sa.Column("character", sa.String(20), nullable=False),
         sa.Column("template", sa.Text(), nullable=False),
         sa.Column("is_active", sa.Boolean(), nullable=False, server_default="false"),
