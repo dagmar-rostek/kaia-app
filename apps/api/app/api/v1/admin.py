@@ -1,9 +1,12 @@
+import secrets
+from datetime import UTC, datetime
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.deps import require_admin
+from app.core.security import create_access_token, hash_password
 from app.db.session import get_db
 from app.domains.users.models import User, UserStatus
 from app.domains.users.repository import RefreshTokenRepository, UserRepository
@@ -56,3 +59,36 @@ async def reject_user(
 ) -> User:
     user = await _get_user_or_404(user_id, db)
     return await svc.reject_user(user, data.reason)
+
+
+@router.post("/test-token")
+async def create_test_token(
+    db: Annotated[AsyncSession, Depends(get_db)],
+) -> dict[str, str]:
+    """Return a short-lived JWT for admin chat testing.
+
+    Creates a dedicated test user (admin_test@kaia.internal) if it doesn't exist.
+    The account can never be logged into via the normal login flow — its password
+    is a random secret that is never exposed.
+    """
+    repo = UserRepository(db)
+    test_email = "admin_test@kaia.internal"
+    user = await repo.get_by_email(test_email)
+    if not user:
+        user = User(
+            email=test_email,
+            username="admin_test",
+            password_hash=hash_password(secrets.token_urlsafe(32)),
+            status=UserStatus.ACTIVE,
+            consent_data=True,
+            consent_analytics=True,
+            consent_version="1.0",
+            consent_at=datetime.now(UTC),
+            onboarding_complete=True,
+            approved_at=datetime.now(UTC),
+            approved_by="system",
+        )
+        db.add(user)
+        await db.commit()
+        await db.refresh(user)
+    return {"access_token": create_access_token(user.id)}
