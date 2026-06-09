@@ -40,6 +40,9 @@ class ChatSession(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), index=True)
 
+    # Character / prompt variant
+    character: Mapped[str] = mapped_column(String(20), server_default="warm")
+
     # Didactic context (3-phase session script)
     daily_plan: Mapped[str | None] = mapped_column(Text, nullable=True)
     active_goal_id: Mapped[int | None] = mapped_column(

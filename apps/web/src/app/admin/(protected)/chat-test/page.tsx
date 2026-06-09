@@ -18,6 +18,32 @@ interface SSEDone  { type: "done";  message_id: number; input_tokens: number; ou
 interface SSEError { type: "error"; message: string }
 type SSEEvent = SSEDelta | SSEDone | SSEError
 
+async function readSSEStream(
+  response: Response,
+  onDelta: (content: string) => void,
+  onDone: () => void,
+): Promise<void> {
+  const reader = response.body?.getReader()
+  if (!reader) return
+  const decoder = new TextDecoder()
+  let buf = ""
+  while (true) {
+    const { done, value } = await reader.read()
+    if (done) break
+    buf += decoder.decode(value, { stream: true })
+    const lines = buf.split("\n")
+    buf = lines.pop() ?? ""
+    for (const line of lines) {
+      if (!line.startsWith("data: ")) continue
+      try {
+        const evt = JSON.parse(line.slice(6)) as SSEEvent
+        if (evt.type === "delta") onDelta(evt.content)
+        else if (evt.type === "done") onDone()
+      } catch { /* ignore malformed lines */ }
+    }
+  }
+}
+
 export default function AdminChatTestPage() {
   const [token,        setToken]        = useState<string | null>(null)
   const [tokenError,   setTokenError]   = useState<string | null>(null)
@@ -28,6 +54,7 @@ export default function AdminChatTestPage() {
   const [loading,      setLoading]      = useState(false)
   const [character,    setCharacter]    = useState<Character>("warm")
   const [chatError,    setChatError]    = useState<string | null>(null)
+  const [openTrigger,  setOpenTrigger]  = useState(0)
 
   const bottomRef   = useRef<HTMLDivElement>(null)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
@@ -36,6 +63,7 @@ export default function AdminChatTestPage() {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" })
   }, [messages])
 
+  // Fetch admin test token
   useEffect(() => {
     let cancelled = false
     fetch("/admin/api/test-token", { method: "POST" })
@@ -44,7 +72,7 @@ export default function AdminChatTestPage() {
         return res.json() as Promise<{ access_token: string }>
       })
       .then(data => { if (!cancelled) { setToken(data.access_token); setTokenError(null) } })
-      .catch(e => { if (!cancelled) { setTokenError(e instanceof Error ? e.message : "Fehler") } })
+      .catch(e => { if (!cancelled) setTokenError(e instanceof Error ? e.message : "Fehler") })
     return () => { cancelled = true }
   }, [fetchTrigger])
 
@@ -53,11 +81,60 @@ export default function AdminChatTestPage() {
     [token]
   )
 
+  // Auto-create session + fetch KAIA opening when token is ready or session resets
+  useEffect(() => {
+    if (!token) return
+    let cancelled = false
+    const streamId = `a-open-${Date.now()}`
+
+    const run = async () => {
+      setLoading(true)
+      try {
+        const sessRes = await fetch("/api/v1/chat/sessions", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", ...authHeader },
+          body: JSON.stringify({ character }),
+        })
+        if (!sessRes.ok) throw new Error(`Session-Start fehlgeschlagen (${sessRes.status})`)
+        const { id: sid } = await sessRes.json() as { id: number }
+        if (cancelled) return
+        setSessionId(sid)
+        setMessages([{ id: streamId, role: "assistant", content: "", streaming: true }])
+
+        const openRes = await fetch(`/api/v1/chat/sessions/${sid}/opening`, {
+          method: "POST",
+          headers: { ...authHeader },
+        })
+        if (!openRes.ok) throw new Error("Opening fehlgeschlagen")
+        await readSSEStream(
+          openRes,
+          (content) => { if (!cancelled) setMessages(prev => prev.map(m =>
+            m.id === streamId ? { ...m, content: m.content + content } : m
+          )) },
+          () => { if (!cancelled) setMessages(prev => prev.map(m =>
+            m.id === streamId ? { ...m, streaming: false } : m
+          )) },
+        )
+      } catch (e) {
+        if (!cancelled) {
+          setMessages([])
+          setChatError(e instanceof Error ? e.message : "Verbindungsfehler")
+        }
+      } finally {
+        if (!cancelled) setLoading(false)
+      }
+    }
+
+    void run()
+    return () => { cancelled = true }
+  }, [token, openTrigger, character, authHeader])
+
   const resetSession = useCallback((newChar?: Character) => {
     if (newChar) setCharacter(newChar)
     setSessionId(null)
     setMessages([])
     setChatError(null)
+    setOpenTrigger(t => t + 1)
   }, [])
 
   const sendMessage = useCallback(async () => {
@@ -101,38 +178,15 @@ export default function AdminChatTestPage() {
         const body = await res.json().catch(() => ({ detail: "Fehler" })) as { detail: string }
         throw new Error(body.detail)
       }
-
-      const reader = res.body?.getReader()
-      if (!reader) throw new Error("Kein Stream")
-
-      const decoder = new TextDecoder()
-      let buf = ""
-      while (true) {
-        const { done, value } = await reader.read()
-        if (done) break
-        buf += decoder.decode(value, { stream: true })
-        const lines = buf.split("\n")
-        buf = lines.pop() ?? ""
-        for (const line of lines) {
-          if (!line.startsWith("data: ")) continue
-          try {
-            const evt = JSON.parse(line.slice(6)) as SSEEvent
-            if (evt.type === "delta") {
-              setMessages(prev => prev.map(m =>
-                m.id === streamId ? { ...m, content: m.content + evt.content } : m
-              ))
-            } else if (evt.type === "done") {
-              setMessages(prev => prev.map(m =>
-                m.id === streamId ? { ...m, streaming: false } : m
-              ))
-            } else if (evt.type === "error") {
-              setMessages(prev => prev.map(m =>
-                m.id === streamId ? { ...m, content: evt.message, streaming: false } : m
-              ))
-            }
-          } catch { /* ignore malformed lines */ }
-        }
-      }
+      await readSSEStream(
+        res,
+        (content) => setMessages(prev => prev.map(m =>
+          m.id === streamId ? { ...m, content: m.content + content } : m
+        )),
+        () => setMessages(prev => prev.map(m =>
+          m.id === streamId ? { ...m, streaming: false } : m
+        )),
+      )
     } catch (e) {
       setMessages(prev => prev.filter(m => m.id !== streamId))
       setChatError(e instanceof Error ? e.message : "Verbindungsfehler")
@@ -214,14 +268,6 @@ export default function AdminChatTestPage() {
 
       {/* Messages */}
       <div className="flex-1 overflow-y-auto px-4 py-6">
-        {messages.length === 0 && (
-          <div className="max-w-md mx-auto text-center space-y-3 pt-16">
-            <p className="text-lg font-medium">Bereit.</p>
-            <p className="text-sm text-muted-foreground leading-relaxed">
-              Echter Produktions-Chat — Prompt aus DB, SSE-Stream, llm_usage-Logging.
-            </p>
-          </div>
-        )}
         <div className="max-w-2xl mx-auto space-y-4">
           {messages.map(msg => (
             <div key={msg.id} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
@@ -257,7 +303,7 @@ export default function AdminChatTestPage() {
             value={input}
             onChange={e => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder="Nachricht schreiben…"
+            placeholder="Antworte KAIA…"
             rows={1}
             disabled={loading}
             className="flex-1 resize-none rounded-xl border border-border bg-muted/40 px-4 py-3 text-sm placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-foreground/20 disabled:opacity-50 leading-relaxed"

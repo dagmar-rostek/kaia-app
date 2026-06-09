@@ -209,6 +209,70 @@ async def stream_response(
     )
 
 
+async def stream_opening(
+    db: AsyncSession,
+    session: ChatSession,
+) -> AsyncGenerator[str, None]:
+    """Generate KAIA's opening message for a fresh session.
+
+    No user message is stored — only KAIA's response persists.
+    Uses an invisible system trigger so Claude knows to open the conversation.
+    """
+    repo = ChatRepository(db)
+    user = await repo.get_user(session.user_id)
+    user_name = user.username if user else ""
+
+    ctx = PromptContext(
+        user_name=user_name,
+        is_first_session=session.session_number == 1,
+        last_first_step="",
+        last_session_observation="",
+        outcome=session.daily_plan or "",
+        daily_plan=session.daily_plan or "",
+    )
+
+    character = CharacterMode(session.character)
+    raw_template = await get_active_template(db, character)
+    system_prompt = render_prompt(raw_template, ctx)
+
+    # Invisible trigger — instructs KAIA to open. Never stored.
+    trigger = "[Gesprächsstart — stelle deine Eröffnungsfrage.]"
+
+    client = AsyncAnthropic(api_key=settings.anthropic_api_key)
+    raw_chunks: list[str] = []
+    input_tokens = 0
+    output_tokens = 0
+
+    try:
+        async with client.messages.stream(
+            model=MODEL,
+            max_tokens=MAX_TOKENS,
+            system=system_prompt,
+            messages=[{"role": "user", "content": trigger}],
+        ) as stream:
+            async for text in stream.text_stream:
+                raw_chunks.append(text)
+            final_msg = await stream.get_final_message()
+            input_tokens = final_msg.usage.input_tokens
+            output_tokens = final_msg.usage.output_tokens
+
+    except Exception as exc:
+        log.error("llm_opening_error", error=str(exc), session_id=session.id)
+        yield _error("KAIA ist gerade nicht erreichbar.")
+        return
+
+    final_content = _thinking_strip_generator(raw_chunks)
+    if not final_content:
+        final_content = "Hallo! Womit darf ich dich heute begleiten?"
+
+    yield _delta(final_content)
+
+    assistant_msg = await repo.save_message(session.id, MessageRole.ASSISTANT, final_content)
+    await _log_usage(db, session, input_tokens, output_tokens)
+    yield _done(assistant_msg.id, input_tokens, output_tokens)
+    log.info("llm_opening_complete", session_id=session.id)
+
+
 async def _log_usage(
     db: AsyncSession,
     session: ChatSession,

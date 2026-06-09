@@ -11,7 +11,7 @@ from app.domains.chat.schemas import (
     SessionResponse,
     SessionWithMessages,
 )
-from app.domains.chat.service import stream_response
+from app.domains.chat.service import stream_opening, stream_response
 
 router = APIRouter(prefix="/chat", tags=["chat"])
 
@@ -83,6 +83,27 @@ async def send_message(
             "Cache-Control": "no-cache",
             "X-Accel-Buffering": "no",  # disable Nginx/Caddy buffering
         },
+    )
+
+
+@router.post("/sessions/{session_id}/opening")
+async def generate_opening(
+    session_id: int,
+    user: CurrentUser,
+    db: AsyncSession = Depends(get_db),  # noqa: B008
+) -> StreamingResponse:
+    """Generate KAIA's opening message for a new session (SSE stream)."""
+    repo = ChatRepository(db)
+    session = await repo.get_session(session_id, user.id)
+    if not session:
+        raise HTTPException(status_code=404, detail="Session nicht gefunden.")
+    if session.ended_at is not None:
+        raise HTTPException(status_code=409, detail="Session ist bereits beendet.")
+
+    return StreamingResponse(
+        stream_opening(db, session),
+        media_type="text/event-stream",
+        headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"},
     )
 
 

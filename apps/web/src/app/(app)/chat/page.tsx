@@ -36,6 +36,34 @@ function getAuthHeader(): Record<string, string> {
   return token ? { Authorization: `Bearer ${token}` } : {}
 }
 
+// ── SSE stream reader ─────────────────────────────────────────────────────────
+
+async function readSSEStream(
+  response: Response,
+  onDelta: (content: string) => void,
+  onDone: () => void,
+): Promise<void> {
+  const reader = response.body?.getReader()
+  if (!reader) return
+  const decoder = new TextDecoder()
+  let buf = ""
+  while (true) {
+    const { done, value } = await reader.read()
+    if (done) break
+    buf += decoder.decode(value, { stream: true })
+    const lines = buf.split("\n")
+    buf = lines.pop() ?? ""
+    for (const line of lines) {
+      if (!line.startsWith("data: ")) continue
+      try {
+        const evt = JSON.parse(line.slice(6)) as SSEEvent
+        if (evt.type === "delta") onDelta(evt.content)
+        else if (evt.type === "done") onDone()
+      } catch { /* ignore malformed lines */ }
+    }
+  }
+}
+
 // ── Chat page ─────────────────────────────────────────────────────────────────
 
 const CHARACTER_LABELS = {
@@ -47,12 +75,13 @@ const CHARACTER_LABELS = {
 type Character = keyof typeof CHARACTER_LABELS
 
 export default function ChatPage() {
-  const [sessionId,  setSessionId]  = useState<number | null>(null)
-  const [messages,   setMessages]   = useState<ChatMessage[]>([])
-  const [input,      setInput]      = useState("")
-  const [loading,    setLoading]    = useState(false)
-  const [error,      setError]      = useState<string | null>(null)
-  const [character,  setCharacter]  = useState<Character>("warm")
+  const [sessionId,   setSessionId]   = useState<number | null>(null)
+  const [messages,    setMessages]    = useState<ChatMessage[]>([])
+  const [input,       setInput]       = useState("")
+  const [loading,     setLoading]     = useState(false)
+  const [error,       setError]       = useState<string | null>(null)
+  const [character,   setCharacter]   = useState<Character>("warm")
+  const [openTrigger, setOpenTrigger] = useState(0)
 
   const bottomRef   = useRef<HTMLDivElement>(null)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
@@ -61,11 +90,65 @@ export default function ChatPage() {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" })
   }, [messages])
 
+  // Auto-create session + fetch KAIA opening on mount and after reset
+  useEffect(() => {
+    let cancelled = false
+    const streamId = `a-open-${Date.now()}`
+
+    const run = async () => {
+      setLoading(true)
+      try {
+        // Create session
+        const sessRes = await fetch(`${API_BASE}/api/v1/chat/sessions`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json", ...getAuthHeader() },
+          body: JSON.stringify({ character }),
+        })
+        if (!sessRes.ok) throw new Error(`Session-Start fehlgeschlagen (${sessRes.status})`)
+        const { id: sid } = await sessRes.json() as { id: number }
+        if (cancelled) return
+        setSessionId(sid)
+        setMessages([{ id: streamId, role: "assistant", content: "", streaming: true }])
+
+        // Fetch opening
+        const openRes = await fetch(`${API_BASE}/api/v1/chat/sessions/${sid}/opening`, {
+          method: "POST",
+          headers: { ...getAuthHeader() },
+        })
+        if (!openRes.ok) throw new Error("Opening fehlgeschlagen")
+        await readSSEStream(
+          openRes,
+          (content) => {
+            if (!cancelled) setMessages(prev => prev.map(m =>
+              m.id === streamId ? { ...m, content: m.content + content } : m
+            ))
+          },
+          () => {
+            if (!cancelled) setMessages(prev => prev.map(m =>
+              m.id === streamId ? { ...m, streaming: false } : m
+            ))
+          },
+        )
+      } catch (e) {
+        if (!cancelled) {
+          setMessages([])
+          setError(e instanceof Error ? e.message : "Verbindungsfehler")
+        }
+      } finally {
+        if (!cancelled) setLoading(false)
+      }
+    }
+
+    void run()
+    return () => { cancelled = true }
+  }, [openTrigger, character])
+
   const resetSession = useCallback((newChar?: Character) => {
     if (newChar) setCharacter(newChar)
     setSessionId(null)
     setMessages([])
     setError(null)
+    setOpenTrigger(t => t + 1)
   }, [])
 
   const sendMessage = useCallback(async () => {
@@ -76,7 +159,7 @@ export default function ChatPage() {
     setLoading(true)
     setError(null)
 
-    // Ensure session exists
+    // Session should exist from opening — fallback: create one
     let sid = sessionId
     if (!sid) {
       try {
@@ -96,10 +179,7 @@ export default function ChatPage() {
       }
     }
 
-    // Add user message
     setMessages(prev => [...prev, { id: `u-${Date.now()}`, role: "user", content: userContent }])
-
-    // Placeholder for streaming assistant reply
     const streamId = `a-${Date.now()}`
     setMessages(prev => [...prev, { id: streamId, role: "assistant", content: "", streaming: true }])
 
@@ -109,45 +189,19 @@ export default function ChatPage() {
         headers: { "Content-Type": "application/json", ...getAuthHeader() },
         body: JSON.stringify({ content: userContent }),
       })
-
       if (!res.ok) {
         const body = await res.json().catch(() => ({ detail: "Unbekannter Fehler" })) as { detail: string }
         throw new Error(body.detail)
       }
-
-      const reader = res.body?.getReader()
-      if (!reader) throw new Error("Kein Stream erhalten")
-
-      const decoder = new TextDecoder()
-      let buf = ""
-
-      while (true) {
-        const { done, value } = await reader.read()
-        if (done) break
-        buf += decoder.decode(value, { stream: true })
-        const lines = buf.split("\n")
-        buf = lines.pop() ?? ""
-
-        for (const line of lines) {
-          if (!line.startsWith("data: ")) continue
-          try {
-            const evt = JSON.parse(line.slice(6)) as SSEEvent
-            if (evt.type === "delta") {
-              setMessages(prev => prev.map(m =>
-                m.id === streamId ? { ...m, content: m.content + evt.content } : m
-              ))
-            } else if (evt.type === "done") {
-              setMessages(prev => prev.map(m =>
-                m.id === streamId ? { ...m, streaming: false } : m
-              ))
-            } else if (evt.type === "error") {
-              setMessages(prev => prev.map(m =>
-                m.id === streamId ? { ...m, content: evt.message, streaming: false } : m
-              ))
-            }
-          } catch { /* ignore malformed lines */ }
-        }
-      }
+      await readSSEStream(
+        res,
+        (content) => setMessages(prev => prev.map(m =>
+          m.id === streamId ? { ...m, content: m.content + content } : m
+        )),
+        () => setMessages(prev => prev.map(m =>
+          m.id === streamId ? { ...m, streaming: false } : m
+        )),
+      )
     } catch (e) {
       setMessages(prev => prev.filter(m => m.id !== streamId))
       setError(e instanceof Error ? e.message : "Verbindungsfehler")
@@ -201,15 +255,6 @@ export default function ChatPage() {
 
       {/* Messages */}
       <div className="flex-1 overflow-y-auto px-4 py-6">
-        {messages.length === 0 && (
-          <div className="max-w-md mx-auto text-center space-y-3 pt-16">
-            <p className="text-lg font-medium">Hallo.</p>
-            <p className="text-sm text-muted-foreground leading-relaxed">
-              Schreib etwas — KAIA fragt zurück.
-            </p>
-          </div>
-        )}
-
         <div className="max-w-2xl mx-auto space-y-4">
           {messages.map(msg => (
             <div key={msg.id} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
@@ -247,7 +292,7 @@ export default function ChatPage() {
             value={input}
             onChange={e => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder="Schreib etwas…"
+            placeholder="Antworte KAIA…"
             rows={1}
             disabled={loading}
             className="flex-1 resize-none rounded-xl border border-border bg-muted/40 px-4 py-3 text-sm placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-foreground/20 disabled:opacity-50 leading-relaxed overflow-y-auto"
