@@ -56,6 +56,9 @@ services:
       SLACK_WEBHOOK_URL: ${SLACK_WEBHOOK_URL}
     volumes:
       - ../docs:/docs:ro
+    depends_on:
+      api:
+        condition: service_healthy
 
   caddy:
     image: caddy:2-alpine
