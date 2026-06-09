@@ -132,7 +132,7 @@ export default function AdminChatTestPage() {
   const [sessionId,    setSessionId]    = useState<number | null>(null)
   const [messages,     setMessages]     = useState<ChatMessage[]>([])
   const [thinkingLog,  setThinkingLog]  = useState<ThinkingEntry[]>([])
-  const [thinkCounter, setThinkCounter] = useState(0)
+  const thinkCounterRef = useRef(0)
   const [input,        setInput]        = useState("")
   const [loading,      setLoading]      = useState(false)
   const [character,    setCharacter]    = useState<Character>("warm")
@@ -200,14 +200,11 @@ export default function AdminChatTestPage() {
           },
           (thinking) => {
             if (!cancelled) {
-              setThinkCounter(c => {
-                const idx = c + 1
-                setThinkingLog(log => [...log, { id: thinkId, index: idx, content: thinking }])
-                setMessages(prev => prev.map(m =>
-                  m.id === streamId ? { ...m, thinkingRef: thinkId } : m
-                ))
-                return idx
-              })
+              const idx = ++thinkCounterRef.current
+              setThinkingLog(log => [...log, { id: thinkId, index: idx, content: thinking }])
+              setMessages(prev => prev.map(m =>
+                m.id === streamId ? { ...m, thinkingRef: thinkId } : m
+              ))
             }
           },
           () => {
@@ -235,7 +232,7 @@ export default function AdminChatTestPage() {
     setSessionId(null)
     setMessages([])
     setThinkingLog([])
-    setThinkCounter(0)
+    thinkCounterRef.current = 0
     setChatError(null)
     setOpenTrigger(t => t + 1)
   }, [])
@@ -288,14 +285,11 @@ export default function AdminChatTestPage() {
           m.id === streamId ? { ...m, content: m.content + content } : m
         )),
         (thinking) => {
-          setThinkCounter(c => {
-            const idx = c + 1
-            setThinkingLog(log => [...log, { id: thinkId, index: idx, content: thinking }])
-            setMessages(prev => prev.map(m =>
-              m.id === streamId ? { ...m, thinkingRef: thinkId } : m
-            ))
-            return idx
-          })
+          const idx = ++thinkCounterRef.current
+          setThinkingLog(log => [...log, { id: thinkId, index: idx, content: thinking }])
+          setMessages(prev => prev.map(m =>
+            m.id === streamId ? { ...m, thinkingRef: thinkId } : m
+          ))
         },
         () => setMessages(prev => prev.map(m =>
           m.id === streamId ? { ...m, streaming: false } : m
