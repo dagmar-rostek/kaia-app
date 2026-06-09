@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 from fastapi.responses import StreamingResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -61,6 +61,7 @@ async def send_message(
     body: MessageCreate,
     user: CurrentUser,
     db: AsyncSession = Depends(get_db),  # noqa: B008
+    debug: bool = Query(default=False),
 ) -> StreamingResponse:
     """Send a message and receive KAIA's response as SSE stream.
 
@@ -77,7 +78,7 @@ async def send_message(
         raise HTTPException(status_code=409, detail="Session ist bereits beendet.")
 
     return StreamingResponse(
-        stream_response(db, session, body.content),
+        stream_response(db, session, body.content, debug=debug),
         media_type="text/event-stream",
         headers={
             "Cache-Control": "no-cache",
@@ -91,6 +92,7 @@ async def generate_opening(
     session_id: int,
     user: CurrentUser,
     db: AsyncSession = Depends(get_db),  # noqa: B008
+    debug: bool = Query(default=False),
 ) -> StreamingResponse:
     """Generate KAIA's opening message for a new session (SSE stream)."""
     repo = ChatRepository(db)
@@ -101,7 +103,7 @@ async def generate_opening(
         raise HTTPException(status_code=409, detail="Session ist bereits beendet.")
 
     return StreamingResponse(
-        stream_opening(db, session),
+        stream_opening(db, session, debug=debug),
         media_type="text/event-stream",
         headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"},
     )

@@ -66,21 +66,38 @@ def _done(message_id: int, input_tokens: int, output_tokens: int) -> str:
     )
 
 
+def _thinking_event(content: str) -> str:
+    return _sse({"type": "thinking", "content": content})
+
+
 # ── Thinking-strip ────────────────────────────────────────────────────────────
 
 
-def _thinking_strip_generator(raw_chunks: list[str]) -> str:
-    """Strip <thinking> blocks and extract <final_answer> from collected chunks."""
+def _thinking_strip_generator(raw_chunks: list[str]) -> tuple[str | None, str]:
+    """Extract thinking block and final answer from collected chunks.
+
+    Returns: (thinking_content | None, final_answer)
+    The thinking block is preserved for debug/analysis output.
+    """
     full = "".join(raw_chunks)
-    # Remove closed thinking blocks first, then catch unclosed ones (truncated by token limit)
+
+    # Extract inner thinking content (handles closed and unclosed blocks)
+    thinking: str | None = None
+    t_match = re.search(r"<thinking>([\s\S]*?)(?:</thinking>|$)", full, re.DOTALL)
+    if t_match:
+        t_text = t_match.group(1).strip()
+        if t_text:
+            thinking = t_text
+
+    # Remove thinking blocks from the main content
     full = re.sub(r"<thinking>[\s\S]*?</thinking>", "", full, flags=re.DOTALL)
     full = re.sub(r"<thinking>[\s\S]*$", "", full, flags=re.DOTALL)
+
     # Extract final_answer if present
     m = re.search(r"<final_answer>([\s\S]*?)</final_answer>", full, re.DOTALL)
     if m:
-        return m.group(1).strip()
-    # Fallback: return stripped content without tags
-    return full.replace("<final_answer>", "").replace("</final_answer>", "").strip()
+        return thinking, m.group(1).strip()
+    return thinking, full.replace("<final_answer>", "").replace("</final_answer>", "").strip()
 
 
 # ── Main streaming generator ───────────────────────────────────────────────────
@@ -90,6 +107,7 @@ async def stream_response(
     db: AsyncSession,
     session: ChatSession,
     user_content: str,
+    debug: bool = False,
 ) -> AsyncGenerator[str, None]:
     """Core SSE generator: crisis check → prompt → LLM → strip → persist → log."""
 
@@ -182,7 +200,11 @@ async def stream_response(
         return
 
     # 7. Strip thinking, extract final answer
-    final_content = _thinking_strip_generator(raw_chunks)
+    thinking, final_content = _thinking_strip_generator(raw_chunks)
+
+    # Emit thinking block for admin debug mode (before the answer)
+    if debug and thinking:
+        yield _thinking_event(thinking)
 
     if not final_content:
         final_content = "Ich bin einen Moment nicht sicher. Magst du das nochmal sagen?"
@@ -213,6 +235,7 @@ async def stream_response(
 async def stream_opening(
     db: AsyncSession,
     session: ChatSession,
+    debug: bool = False,
 ) -> AsyncGenerator[str, None]:
     """Generate KAIA's opening message for a fresh session.
 
@@ -262,7 +285,11 @@ async def stream_opening(
         yield _error("KAIA ist gerade nicht erreichbar.")
         return
 
-    final_content = _thinking_strip_generator(raw_chunks)
+    thinking, final_content = _thinking_strip_generator(raw_chunks)
+
+    if debug and thinking:
+        yield _thinking_event(thinking)
+
     if not final_content:
         final_content = "Hallo! Womit darf ich dich heute begleiten?"
 
