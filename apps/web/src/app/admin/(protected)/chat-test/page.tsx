@@ -23,9 +23,24 @@ interface ChatMessage {
 }
 
 interface ThinkingEntry {
-  id: string       // matches ChatMessage.thinkingRef
-  index: number    // 1-based display counter
-  content: string  // raw thinking text (inner content of <thinking>)
+  id: string          // matches ChatMessage.thinkingRef
+  index: number       // 1-based display counter
+  content: string     // raw thinking text (inner content of <thinking>)
+  phase: string       // conversation phase label
+  fragetyp: string | null  // extracted [N=Label] from Fragetyp line
+  lazarus: string | null   // extracted [signal] from Lazarus line
+}
+
+function getPhase(index: number): string {
+  if (index === 1) return "Eröffnung"
+  if (index === 2) return "Einstieg"
+  if (index <= 5)  return "Hauptteil"
+  return "Abschluss-Phase"
+}
+
+function extractBracket(content: string, label: string): string | null {
+  const m = new RegExp(`${label}[^[]*\\[([^\\]]+)\\]`).exec(content)
+  return m ? m[1] : null
 }
 
 interface SSEDelta   { type: "delta";    content: string }
@@ -97,22 +112,49 @@ function ThinkingContent({ content }: { content: string }) {
   )
 }
 
+const PHASE_COLORS: Record<string, string> = {
+  "Eröffnung":      "text-emerald-400 bg-emerald-400/10 border-emerald-400/20",
+  "Einstieg":       "text-sky-400 bg-sky-400/10 border-sky-400/20",
+  "Hauptteil":      "text-violet-400 bg-violet-400/10 border-violet-400/20",
+  "Abschluss-Phase":"text-rose-400 bg-rose-400/10 border-rose-400/20",
+}
+
 function ThinkingBlock({ entry, autoOpen }: { entry: ThinkingEntry; autoOpen: boolean }) {
   const [open, setOpen] = useState(autoOpen)
+  const phaseColor = PHASE_COLORS[entry.phase] ?? "text-amber-400 bg-amber-400/10 border-amber-400/20"
   return (
     <div className="rounded-lg border border-amber-500/20 overflow-hidden text-left">
       <button
         onClick={() => setOpen(o => !o)}
-        className="w-full flex items-center justify-between px-3 py-2 bg-amber-500/5 hover:bg-amber-500/10 transition-colors"
+        className="w-full flex flex-col gap-1.5 px-3 py-2.5 bg-amber-500/5 hover:bg-amber-500/10 transition-colors"
       >
-        <div className="flex items-center gap-2">
-          <Brain className="h-3 w-3 text-amber-400 shrink-0" />
-          <span className="text-xs font-mono text-amber-400">Analyse #{entry.index}</span>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Brain className="h-3 w-3 text-amber-400 shrink-0" />
+            <span className="text-xs font-mono text-amber-400">Analyse #{entry.index}</span>
+            <span className={`text-xs px-1.5 py-0.5 rounded border font-medium ${phaseColor}`}>
+              {entry.phase}
+            </span>
+          </div>
+          {open
+            ? <ChevronDown className="h-3 w-3 text-amber-400/60 shrink-0" />
+            : <ChevronRight className="h-3 w-3 text-amber-400/60 shrink-0" />
+          }
         </div>
-        {open
-          ? <ChevronDown className="h-3 w-3 text-amber-400/60" />
-          : <ChevronRight className="h-3 w-3 text-amber-400/60" />
-        }
+        {(entry.fragetyp || entry.lazarus) && (
+          <div className="flex items-center gap-3 pl-5">
+            {entry.lazarus && (
+              <span className="text-xs text-muted-foreground/60">
+                Lazarus: <span className="text-sky-400 font-mono">[{entry.lazarus}]</span>
+              </span>
+            )}
+            {entry.fragetyp && (
+              <span className="text-xs text-muted-foreground/60">
+                Fragetyp: <span className="text-sky-400 font-mono">[{entry.fragetyp}]</span>
+              </span>
+            )}
+          </div>
+        )}
       </button>
       {open && (
         <div className="px-3 py-3 bg-zinc-950 overflow-x-auto max-h-[500px] overflow-y-auto">
@@ -201,7 +243,12 @@ export default function AdminChatTestPage() {
           (thinking) => {
             if (!cancelled) {
               const idx = ++thinkCounterRef.current
-              setThinkingLog(log => [...log, { id: thinkId, index: idx, content: thinking }])
+              setThinkingLog(log => [...log, {
+                id: thinkId, index: idx, content: thinking,
+                phase: getPhase(idx),
+                fragetyp: extractBracket(thinking, "Fragetyp"),
+                lazarus:  extractBracket(thinking, "Lazarus-Signal"),
+              }])
               setMessages(prev => prev.map(m =>
                 m.id === streamId ? { ...m, thinkingRef: thinkId } : m
               ))
@@ -286,7 +333,12 @@ export default function AdminChatTestPage() {
         )),
         (thinking) => {
           const idx = ++thinkCounterRef.current
-          setThinkingLog(log => [...log, { id: thinkId, index: idx, content: thinking }])
+          setThinkingLog(log => [...log, {
+            id: thinkId, index: idx, content: thinking,
+            phase: getPhase(idx),
+            fragetyp: extractBracket(thinking, "Fragetyp"),
+            lazarus:  extractBracket(thinking, "Lazarus-Signal"),
+          }])
           setMessages(prev => prev.map(m =>
             m.id === streamId ? { ...m, thinkingRef: thinkId } : m
           ))
@@ -309,7 +361,7 @@ export default function AdminChatTestPage() {
   }
 
   if (tokenError) return (
-    <div className="flex flex-col items-center justify-center h-full gap-4 p-8">
+    <div className="fixed top-0 left-56 right-0 bottom-0 flex flex-col items-center justify-center gap-4 p-8 bg-background">
       <p className="text-sm text-red-500">{tokenError}</p>
       <button
         onClick={() => { setToken(null); setTokenError(null); setFetchTrigger(t => t + 1) }}
@@ -319,13 +371,13 @@ export default function AdminChatTestPage() {
   )
 
   if (!token) return (
-    <div className="flex items-center justify-center h-full">
+    <div className="fixed top-0 left-56 right-0 bottom-0 flex items-center justify-center bg-background">
       <p className="text-sm text-muted-foreground animate-pulse">Token wird vorbereitet…</p>
     </div>
   )
 
   return (
-    <div className="flex h-screen overflow-hidden">
+    <div className="fixed top-0 left-56 right-0 bottom-0 flex overflow-hidden bg-background">
 
       {/* ── Left: Chat ────────────────────────────────────────────────────── */}
       <div className="flex flex-col flex-1 min-w-0 border-r border-border">
