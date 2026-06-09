@@ -1,10 +1,10 @@
 import { NextResponse } from "next/server"
 
 export async function POST(): Promise<NextResponse> {
-  const internalUrl = process.env.INTERNAL_API_URL ?? "http://api:8000"
+  const internalUrl = process.env.INTERNAL_API_URL ?? "http://localhost:8000/api"
   const adminPassword = process.env.ADMIN_PASSWORD ?? ""
 
-  const res = await fetch(`${internalUrl}/api/v1/admin/test-token`, {
+  const res = await fetch(`${internalUrl}/v1/admin/test-token`, {
     method: "POST",
     headers: { Authorization: `Bearer ${adminPassword}` },
   })
