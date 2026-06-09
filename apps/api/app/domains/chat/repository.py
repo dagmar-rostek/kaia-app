@@ -85,6 +85,7 @@ class ChatRepository:
         content: str,
         detected_state: str | None = None,
         interaction_mode: str | None = None,
+        thinking_raw: str | None = None,
     ) -> Message:
         msg = Message(
             session_id=session_id,
@@ -92,6 +93,7 @@ class ChatRepository:
             content=content,
             detected_state=detected_state,
             interaction_mode=interaction_mode,
+            thinking_raw=thinking_raw,
         )
         self.db.add(msg)
         await self.db.commit()

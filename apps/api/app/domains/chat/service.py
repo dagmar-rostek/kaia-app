@@ -212,11 +212,12 @@ async def stream_response(
     # 8. Stream the final answer to the client
     yield _delta(final_content)
 
-    # 9. Persist assistant message
+    # 9. Persist assistant message (including thinking block for research audit trail)
     assistant_msg = await repo.save_message(
         session.id,
         MessageRole.ASSISTANT,
         final_content,
+        thinking_raw=thinking,
     )
 
     # 10. Log LLM usage
@@ -295,7 +296,9 @@ async def stream_opening(
 
     yield _delta(final_content)
 
-    assistant_msg = await repo.save_message(session.id, MessageRole.ASSISTANT, final_content)
+    assistant_msg = await repo.save_message(
+        session.id, MessageRole.ASSISTANT, final_content, thinking_raw=thinking
+    )
     await _log_usage(db, session, input_tokens, output_tokens)
     yield _done(assistant_msg.id, input_tokens, output_tokens)
     log.info("llm_opening_complete", session_id=session.id)

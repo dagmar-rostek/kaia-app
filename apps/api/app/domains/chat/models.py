@@ -86,6 +86,7 @@ class Message(Base):
     # KAIA metadata for assistant messages
     detected_state: Mapped[DetectedState | None] = mapped_column(String(20), nullable=True)
     interaction_mode: Mapped[InteractionMode | None] = mapped_column(String(20), nullable=True)
+    thinking_raw: Mapped[str | None] = mapped_column(Text, nullable=True)
 
     session: Mapped[ChatSession] = relationship(back_populates="messages")
 
