@@ -21,7 +21,8 @@ from anthropic import AsyncAnthropic
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.config import settings
-from app.core.crisis import CRISIS_RESPONSE, is_crisis
+from app.core.crisis import CRISIS_RESPONSE
+from app.core.crisis import detect_crisis as is_crisis
 from app.domains.chat.models import ChatSession, MessageRole
 from app.domains.chat.repository import ChatRepository
 from app.domains.prompts.models import CharacterMode
