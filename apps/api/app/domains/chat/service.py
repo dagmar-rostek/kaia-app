@@ -34,7 +34,7 @@ log = structlog.get_logger()
 # ── Constants ──────────────────────────────────────────────────────────────────
 
 MODEL = "claude-sonnet-4-6"
-MAX_TOKENS = 600  # thinking (~200) + final_answer (~150) + buffer
+MAX_TOKENS = 1500  # thinking (~600) + final_answer (~300) + buffer
 
 # Cost per token in EUR (approximate, claude-sonnet-4-6)
 COST_INPUT_PER_TOKEN = Decimal("0.0000027")  # ~$3/MTok → ~€2.8/MTok
@@ -72,8 +72,9 @@ def _done(message_id: int, input_tokens: int, output_tokens: int) -> str:
 def _thinking_strip_generator(raw_chunks: list[str]) -> str:
     """Strip <thinking> blocks and extract <final_answer> from collected chunks."""
     full = "".join(raw_chunks)
-    # Remove thinking block
+    # Remove closed thinking blocks first, then catch unclosed ones (truncated by token limit)
     full = re.sub(r"<thinking>[\s\S]*?</thinking>", "", full, flags=re.DOTALL)
+    full = re.sub(r"<thinking>[\s\S]*$", "", full, flags=re.DOTALL)
     # Extract final_answer if present
     m = re.search(r"<final_answer>([\s\S]*?)</final_answer>", full, re.DOTALL)
     if m:
