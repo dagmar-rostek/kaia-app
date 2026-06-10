@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, Query, status
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Query, status
 from fastapi.responses import StreamingResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -11,7 +11,7 @@ from app.domains.chat.schemas import (
     SessionResponse,
     SessionWithMessages,
 )
-from app.domains.chat.service import stream_opening, stream_response
+from app.domains.chat.service import extract_session_summary, stream_opening, stream_response
 
 router = APIRouter(prefix="/chat", tags=["chat"])
 
@@ -113,6 +113,7 @@ async def generate_opening(
 async def end_session(
     session_id: int,
     user: CurrentUser,
+    background_tasks: BackgroundTasks,
     db: AsyncSession = Depends(get_db),  # noqa: B008
 ) -> SessionResponse:
     repo = ChatRepository(db)
@@ -121,4 +122,6 @@ async def end_session(
         raise HTTPException(status_code=404, detail="Session nicht gefunden.")
     if session.ended_at is None:
         await repo.end_session(session)
+        # Extract session summary in background — feeds cross-session memory
+        background_tasks.add_task(extract_session_summary, session_id)
     return SessionResponse.model_validate(session)

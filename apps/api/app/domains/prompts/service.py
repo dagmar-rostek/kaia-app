@@ -26,6 +26,7 @@ class PromptContext:
     is_first_session: bool = True
     last_first_step: str = ""
     last_session_observation: str = ""
+    insight_for_next_session: str = ""
     outcome: str = ""
     daily_plan: str = ""
 
@@ -43,6 +44,7 @@ def render_prompt(template_str: str, ctx: PromptContext) -> str:
             is_first_session=ctx.is_first_session,
             last_first_step=ctx.last_first_step,
             last_session_observation=ctx.last_session_observation,
+            insight_for_next_session=ctx.insight_for_next_session,
             outcome=ctx.outcome,
             daily_plan=ctx.daily_plan,
         )
