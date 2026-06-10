@@ -15,9 +15,11 @@ import json
 import re
 from collections.abc import AsyncGenerator
 from decimal import Decimal
+from typing import Any
 
 import structlog
 from anthropic import AsyncAnthropic
+from anthropic.types import TextBlock
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.config import settings
@@ -43,7 +45,7 @@ COST_OUTPUT_PER_TOKEN = Decimal("0.000013")  # ~$15/MTok → ~€13.8/MTok
 # ── SSE event helpers ──────────────────────────────────────────────────────────
 
 
-def _sse(data: dict) -> str:
+def _sse(data: dict[str, Any]) -> str:
     return f"data: {json.dumps(data, ensure_ascii=False)}\n\n"
 
 
@@ -134,6 +136,8 @@ async def stream_response(
     last_observation = ""
     outcome = ""
 
+    insight = ""
+
     if not is_first:
         prev = await repo.get_previous_session(session.user_id, session.id)
         if prev and prev.session_summary:
@@ -141,20 +145,18 @@ async def stream_response(
                 summary = json.loads(prev.session_summary)
                 last_step = summary.get("first_step", "")
                 last_observation = summary.get("observation", "")
+                insight = summary.get("insight_for_next_session", "")
             except (json.JSONDecodeError, AttributeError):
                 pass
 
-    if session.active_goal_id:
-        # Could load goal title from DB — skip for now, daily_plan covers it
-        outcome = session.daily_plan or ""
-    else:
-        outcome = session.daily_plan or ""
+    outcome = session.daily_plan or ""
 
     ctx = PromptContext(
         user_name=user_name,
         is_first_session=is_first,
         last_first_step=last_step,
         last_session_observation=last_observation,
+        insight_for_next_session=insight,
         outcome=outcome,
         daily_plan=session.daily_plan or "",
     )
@@ -184,7 +186,7 @@ async def stream_response(
             model=MODEL,
             max_tokens=MAX_TOKENS,
             system=system_prompt,
-            messages=api_messages,
+            messages=api_messages,  # type: ignore[arg-type]
         ) as stream:
             async for text in stream.text_stream:
                 raw_chunks.append(text)
@@ -233,6 +235,79 @@ async def stream_response(
     )
 
 
+async def extract_session_summary(session_id: int) -> None:
+    """Post-session extractor: analyse transcript → write JSON to session_summary.
+
+    Called as a background task after end_session. Creates its own DB session
+    because the request-scoped session will be closed by then.
+    """
+    from app.db.session import AsyncSessionLocal
+
+    extraction_model = "claude-haiku-4-5-20251001"
+    extraction_system = (
+        "Du bist ein Analyse-Assistent fuer KAIA, einen KI-Lernbegleiter.\n"
+        "Nach jeder Lernsession extrahierst du strukturierte Informationen"
+        " aus dem Gespraechsprotokoll.\n"
+        "Antworte NUR mit einem JSON-Objekt — kein Text davor oder danach,"
+        " keine Markdown-Fences.\n\n"
+        "Extrahiere exakt diese Felder:\n"
+        "- first_step: Der konkrete naechste Schritt den der User benannt hat"
+        " (string, leer wenn keiner vereinbart wurde)\n"
+        "- observation: KAIAs wichtigste Beobachtung ueber die Person —"
+        " Lernstil, Energie, Muster — nur auf Basis des Transkripts (string)\n"
+        "- insight_for_next_session: Eine Frage oder Beobachtung fuer die"
+        " naechste Session — formuliert als natuerlicher Gespraechseinstieg"
+        " den KAIA als eigene Reflexion bringen koennte,"
+        " z.B. 'Ich frage mich, was passiert wenn...' (string)\n"
+        "- mood: Grundstimmung des Users am Ende [positiv|neutral|frustriert|unklar]\n"
+        "- topics: Themen die besprochen wurden (array of strings, max 5)\n"
+        "- strengths_observed: Beobachtete Staerken oder positive Muster"
+        " (string, leer wenn keine erkennbar)\n"
+        "- friction_points: Beobachtete Reibungspunkte oder Blockaden"
+        " (string, leer wenn keine erkennbar)"
+    )
+
+    from sqlalchemy import select
+
+    async with AsyncSessionLocal() as db:
+        repo = ChatRepository(db)
+        result = await db.execute(select(ChatSession).where(ChatSession.id == session_id))
+        session = result.scalar_one_or_none()
+        if not session:
+            return
+
+        messages = await repo.get_messages(session_id)
+        if not messages:
+            return
+
+        # Build readable transcript
+        lines = []
+        for m in messages:
+            speaker = "User" if str(m.role) == "user" else "KAIA"
+            lines.append(f"{speaker}: {m.content}")
+        transcript = "\n".join(lines)
+
+        client = AsyncAnthropic(api_key=settings.anthropic_api_key)
+        try:
+            response = await client.messages.create(
+                model=extraction_model,
+                max_tokens=512,
+                system=extraction_system,
+                messages=[{"role": "user", "content": f"Transkript:\n\n{transcript}"}],
+            )
+            block = response.content[0]
+            if not isinstance(block, TextBlock):
+                raise ValueError(f"unexpected block type: {type(block).__name__}")
+            raw_json = block.text.strip()
+            # Validate by parsing — store raw JSON string
+            json.loads(raw_json)
+            session.session_summary = raw_json
+            await db.commit()
+            log.info("session_summary_extracted", session_id=session_id)
+        except Exception as exc:
+            log.error("session_summary_extraction_failed", session_id=session_id, error=str(exc))
+
+
 async def stream_opening(
     db: AsyncSession,
     session: ChatSession,
@@ -247,11 +322,28 @@ async def stream_opening(
     user = await repo.get_user(session.user_id)
     user_name = user.username if user else ""
 
+    is_first = session.session_number == 1
+    last_step = ""
+    last_observation = ""
+    insight = ""
+
+    if not is_first:
+        prev = await repo.get_previous_session(session.user_id, session.id)
+        if prev and prev.session_summary:
+            try:
+                summary = json.loads(prev.session_summary)
+                last_step = summary.get("first_step", "")
+                last_observation = summary.get("observation", "")
+                insight = summary.get("insight_for_next_session", "")
+            except (json.JSONDecodeError, AttributeError):
+                pass
+
     ctx = PromptContext(
         user_name=user_name,
-        is_first_session=session.session_number == 1,
-        last_first_step="",
-        last_session_observation="",
+        is_first_session=is_first,
+        last_first_step=last_step,
+        last_session_observation=last_observation,
+        insight_for_next_session=insight,
         outcome=session.daily_plan or "",
         daily_plan=session.daily_plan or "",
     )

@@ -26,7 +26,7 @@ async def get_active_template(db: AsyncSession, character: CharacterMode) -> str
     # Fallback: compiled-in seed templates
     fallback = {t["character"]: t["template"] for t in SEED_TEMPLATES if t["is_active"]}
     if character in fallback:
-        return fallback[character]
+        return str(fallback[character])
 
     # Last resort: always return warm
     return KAIA_PROMPT_V2_WARM

@@ -8,13 +8,14 @@ from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
+from app.api.v1 import v1_router
+from app.core.config import settings
+
 # Ensure all ORM models are in the SQLAlchemy mapper before FK resolution.
 # Domains covered by their routes (chat, users, preregistration, prompts) are
 # already registered; the remaining domains need an explicit import here.
-import app.domains.roadmap.models  # noqa: F401
-import app.domains.survey.models  # noqa: F401
-from app.api.v1 import v1_router
-from app.core.config import settings
+from app.domains.roadmap import models as _roadmap_models  # noqa: F401
+from app.domains.survey import models as _survey_models  # noqa: F401
 from app.observability.logging import configure_logging
 from app.observability.sentry import init_sentry
 
