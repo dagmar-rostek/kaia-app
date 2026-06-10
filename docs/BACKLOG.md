@@ -98,6 +98,14 @@
 - [ ] **PromptContext + render_prompt erweitern** — Neue Felder `knowledge_type`, `current_phase`, `routing_confidence` + Jinja2-Block `routing_context`.
 - [ ] **Thinking-Block Check 9 + 10** — Check 9: Wissensart-Klassifikation (welche der 4 Wissensarten nach Anderson & Krathwohl?). Check 10: Routing-Konsistenz-Check (passt aktuelle Frage zur routing_confidence?).
 
+### Funken-Feature (STORY-003 + STORY-004, Spec: docs/FEATURE_SPEC_FUNKEN.md)
+- [ ] **Funken: DB-Migration** — Neue Tabelle `funken (id UUID, user_id FK, session_id FK, content TEXT CHECK 1–2000, created_at)`. Kein `updated_at` — Funken sind unveränderlich by Design. Index auf `(user_id, created_at DESC)`.
+- [ ] **Funken: Backend-Endpoints** — `POST /sessions/{id}/funken` (speichern), `GET /users/me/funken?filter=today|yesterday|last_week` (abrufen), `DELETE /funken/{id}` (löschen, nur eigene). Alle: JWT-Auth + user_id Row-Level-Security.
+- [ ] **Funken: PDF-Export-Endpoint** — `GET /users/me/funken/export` → PDF mit allen Funken (Datum, Session-Nummer, Text). Dateiname: `kaia-funken-export-YYYY-MM-DD.pdf`. DSGVO Art. 20 Pflicht. Bibliothek-Entscheid: ReportLab vs. WeasyPrint (OQ-F1).
+- [ ] **Funken: Frontend Closing-Integration** — Textarea erscheint nach KAIA-Closing-Bubble (nur wenn `streaming: false`). Placeholder: "Schreib auf, was bleibt…". Button: "Diesen Funken speichern" (primär) · "Überspringen" (Ghost). Bestätigung inline, kein Toast. Vollständige Microcopy → FEATURE_SPEC_FUNKEN.md.
+- [ ] **Funken: Frontend Liste (/funken)** — Seite "Meine Funken". Chip-Filter "Alle · Heute · Gestern · Letzte Woche". Einträge: Datum + Session-Nummer + Text (2-Zeilen-Clamp, expandierbar). Löschen via `<dialog role="alertdialog">`, "Behalten" als Primäraktion. Leerzustand mit Erklärtext (kein CTA).
+- [ ] **Funken: Datenschutzerklärung** — Neue Sektion: Funken-Inhalte als personenbezogene Daten, Speicherdauer, Art. 20 Export, Art. 17 Löschrecht. Compliance-Sign-off nötig (OQ-F4).
+
 ---
 
 ## 🟡 PRE-STUDY — Vor Hauptstudie
@@ -112,6 +120,8 @@
 - [ ] **FKS-Integration** — Flow-Kurzskala (Rheinberg et al., 2003): 10 Items, 7-stufig, nach Session 2, 5, 8, 10. Frontend-Form, DB-Tabelle `fks_results`, API-Endpoint.
 - [ ] **Teilnahmevereinbarung aktualisieren** — Mindestens 10 Sessions (nicht 3) als Anforderung, Session-Dauer-Empfehlung (Sessions 1–2: 20–30 Min., Sessions 3–10: 10–15 Min.), FKS als 3. Messinstrument erwähnen.
 - [ ] **AUSWERTUNG.md aktualisieren** — Session-Mindestanzahl in SQL-Query von 3 auf 10 anpassen. FKS-Auswertungs-Queries ergänzen.
+- [ ] **Teilnahmevereinbarung: Funken-Feature** — Funken als freiwilliges Reflexionstool erwähnen. Optionaler separater Consent: "Ich stimme zu, dass meine Funken-Inhalte als anonymisierte qualitative Daten in der Studie ausgewertet werden dürfen." (Nur wenn qualitative Auswertung gewünscht.)
+- [ ] **AUSWERTUNG.md: Funken als Kovariate** — Funken-Nutzungsintensität (Anzahl Funken pro Session) und Häufigkeit als Kovariaten in GSE-Auswertung aufnehmen. SQL-Query für Funken-Nutzungsrate ergänzen. (Konfundierungsrisiko nach Psychologe 2026-06-10.)
 
 ### Technisch
 - [ ] **Consent-Version-Tracking** — consent_version in DB; Re-Consent-Flow bei Formular-Updates
@@ -163,7 +173,7 @@
 | Bereich | Offen | Kategorie |
 |---|---|---|
 | Blocker | 25 | Vor Studienstart |
-| Pre-Pilot | 31 | Vor n=3-5 |
-| Pre-Study | 21 | Vor Hauptstudie |
+| Pre-Pilot | 37 | Vor n=3-5 |
+| Pre-Study | 23 | Vor Hauptstudie |
 | Post-Thesis | 11 | Für Produkt |
-| **Gesamt** | **88** | |
+| **Gesamt** | **96** | |
