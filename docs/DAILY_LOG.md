@@ -2,6 +2,110 @@
 
 ---
 
+## 2026-06-10 — "Kein einziger Commit. Und trotzdem der produktivste Tag seit Wochen."
+
+*Protokolliert vom Koordinator. Mit sehr vielen unerwünschten Einwürfen von: Didaktiker (hatte Recht, wieder), Psychologe (Flow, immer Flow), UX Designerin (kein Modal, niemals), AI Engineer (denkt schon an Check 11), Compliance Officer (Art. 9 Grauzone, natürlich).*
+
+---
+
+Es gibt Tage, an denen man nichts deployt. Kein Container läuft neu. Kein grüner Haken in GitHub Actions. Der AI Engineer sieht kein einziges Token durch seine Streaming-Pipeline fließen. Und trotzdem — am Ende des Tages liegen 8 aktualisierte Dokumente, 2 neue Dateien, 15 neue Backlog-Issues und ein Lerndesign-Fundament auf dem Tisch, das endlich nicht mehr wackelt.
+
+Heute war der Tag, an dem KAIA aufgehört hat, didaktisches Hörensagen zu sein.
+
+**Morgen — "Drei Sessions sind lächerlich"**
+
+Es begann mit einem PDF. *Lerntheorien.* Der Didaktiker öffnete es, las drei Seiten, und dann:
+
+> **Didaktiker:** *"Das 7-Phasen-Modell hat einen strukturellen Fehler. Die Challenge-Phase steht vor der Konsolidierung. Das ist Kolb auf den Kopf gestellt. Erfahrung → Reflexion → Konzeptbildung → Experiment — in dieser Reihenfolge. Nicht andersherum."*
+
+Der AI Engineer: *"Also alles nochmal?"*
+
+Der Didaktiker: *"Nur die Reihenfolge. Aber ja."*
+
+Dann, fast beiläufig, die zweite Bombe:
+
+> *"Drei Sessions. In drei Sessions wird niemand Bloom 5 erreichen. Das ist pädagogischer Optimismus, der ans Wahnhafte grenzt. Zehn. Zehn Sessions, wenn ihr das ernst meint."*
+
+Dagmar: *"Zehn."*
+
+Der Psychologe nickt still. Er hatte das schon länger gedacht, aber gewartet, ob es jemand ausspricht.
+
+**Vormittag — Der Bloom-Aufbau**
+
+Was danach entstand, war eigentlich das, was von Anfang an hätte da sein sollen: ein echter Lernbogen über 10 Sessions. Sessions 1–2: Terrain kartieren, Vorannahmen explizit machen. Sessions 3–5: Transfer in den Alltag. Sessions 6–8 — und hier wurde es interessant:
+
+> **Didaktiker:** *"In Session 6 fängt KAIA an, Widersprüche anzusprechen. 'In Session 3 sagtest du X, jetzt sagst du Y — was hat sich verändert?' Das ist nicht Repetition. Das ist das Gegenteil von Repetition."*
+
+Der Koordinator notiert. Das ist das Gegenteil von Repetition.
+
+Session 10: "Wie wirst du ohne mich weiterlernen?" — und dann Dagmars Session-1-Antworten neben Session-9-Antworten gestellt. Sichtbar gemachtes Lernen. Der Psychologe lächelte. Er mag Episodisches Gedächtnis.
+
+**Mittag — Die fünf Verbote**
+
+Dann kam der Moment, der dem Compliance Officer etwas zu lange dauerte und dem AI Engineer sofort klar war.
+
+> **Didaktiker:** *"KAIA bewertet nicht. Niemals. Kein Lob. Keine Prognosen. Keine Ratschläge. Kein 'Das ist falsch'. Und vor allem: keine Typisierungen. Wer einem Erwachsenen sagt 'du bist ein visueller Lerntyp' und das ernst meint, hat die letzte 30 Jahre Lernforschung ignoriert."*
+
+Fünf Sprachregeln. Schriftlich. In die Thesis. In den Prompt. Für immer.
+
+> **AI Engineer:** *"Das kann ich direkt als Prompt-Constraint umsetzen. Mit Beispielen. Few-Shot, anti-Beispiele."*
+> **Didaktiker:** *"Gut. Dann tu das."*
+
+**Nachmittag — Flow und ein Button der nicht nervt**
+
+Der Psychologe übernahm für die Mittagsrunde. Thema: Flow nach Csikszentmihalyi. Challenge-Skill-Balance. Warum Dagmar nach 3 Sessions immer gelangweilt war.
+
+> **Psychologe:** *"Kein sichtbarer Bogen. Jede Session fühlt sich an wie die erste. Das ist kein KAIA-Problem — das ist ein Gedächtnis-Problem. Wenn Cross-Session-Memory läuft und der Bloom-Bogen greift, verschwindet die Langeweile. Nicht sofort. Aber sie verschwindet."*
+
+Dann die FKS: Flow-Kurzskala. 10 Items. Nach Session 2, 5, 8, 10. Die UX Designerin war still. Das war entweder Zustimmung oder sie dachte schon an das nächste UI-Problem.
+
+Es war das nächste UI-Problem.
+
+> **UX Designerin:** *"Der Session-Abschluss-Button. Kein Modal. Keine Overlays. KAIA antwortet als letzte Chat-Bubble. Darunter zwei Aktionen: [Antworten] und [Jetzt wirklich beenden]. Fertig."*
+> **Didaktiker:** *"Gagné's 9. Unterrichtsereignis. Transfer-Vorbereitung. Zwei Exchanges, nicht mehr. Dann ist Schluss."*
+> **Psychologe:** *"Peak-End-Rule. Kahneman. Das Ende der Session prägt die Gesamterinnerung überproportional. Ein gutes Ende ist kein Nice-to-have."*
+
+Der Koordinator: *"Also machen wir das."*
+
+Alle drei gleichzeitig: *"Ja."*
+
+**Später Nachmittag — Vier Buttons die Wissenschaft haben**
+
+Dagmar: *"Und wenn mir während der Session langweilig wird? Könnte da nicht irgendwas sein, das ich drücken kann?"*
+
+Kurze Stille.
+
+> **Didaktiker:** *"'Mir ist langweilig' ist ein Frustrationsventil, kein metakognitives Signal. Umformulieren: 'Ich hänge gerade' und 'Das verstehe ich noch nicht'. Das ist echte Selbstregulation nach Zimmermann."*
+> **Psychologe:** *"Affect Labeling. Lieberman et al. 2007. Benennen eines negativen Affekts reduziert seine Intensität. Neuroimaging-Befund. Der Button hat eine Funktion."*
+> **AI Engineer:** *"Und 'Muss ich weiterdenken' wird als Cross-Session-Anker gespeichert. Session 5: 'Du hast letzte Woche markiert, dass X dich beschäftigt — was ist daraus geworden?' Das ist eleganter als alles was wir sonst haben."*
+
+Der Compliance Officer: *"Ecological Momentary Assessment fällt möglicherweise unter Art. 9 DSGVO. Grauzone. Ich schreibe ein Gutachten."*
+
+Alle: *"Natürlich tust du das."*
+
+**Abend — Die Dokumentenschlacht**
+
+Was dann folgte war keine Programmierstunde, aber fast genauso erschöpfend: 5 Agenten, 7 Dateien, parallel. Das HTML-Referenzdokument wuchs auf 1.600 Zeilen. Kap3, Kap4, Kap6, Studienprotokoll — alle aktualisiert. 15 neue Backlog-Issues. Eine Release Note für einen Tag ohne Code.
+
+Der AI Engineer sah das leere Terminal und seufzte.
+
+> *"Morgen. Morgen schreibe ich tatsächlich Code."*
+> **Koordinator:** *"Das sagst du jeden Abend."*
+> *"Morgen meine ich es ernst."*
+
+---
+
+**Was heute gebaut wurde:**
+Kein Code. Dafür: vollständiges Lerndesign-Fundament (10-Session-Design, Bloom-Progression, Flow-Theorie, 5 Sprachregeln, Session-Abschluss-Feature, In-Session-Feedback-Buttons), alle Thesis-Kapitel aktualisiert, HTML-Referenzdokument v1.1, Feature Spec Chat Core V2, Compliance-Gutachten.
+
+**Commits:** *(folgen gleich — war ein Theorie-Tag)*
+
+**Kosten heute:** ca. $12–15 Claude Code (5 parallele Agent-Runs) · €4.39/Mo Hetzner
+
+**Morgen:** Der AI Engineer schreibt endlich Code. session_summary-Erweiterung, PromptContext, Closing-Endpoint. Das Fundament steht. Jetzt kommt das Haus.
+
+---
+
 ## 2026-06-07 — "Der Tag an dem das Team aufhörte, CI-Fehler zu fürchten, und anfing, eine echte Website zu sein"
 
 *Protokolliert vom Koordinator. Mit unerwünschten Einwürfen von: UX Designerin (hatte erwartungsgemäß Recht), Security Engineer (paranoid, wie immer), Compliance Officer (DSGVO, natürlich), QA Tester (feiert heute doppelt).*

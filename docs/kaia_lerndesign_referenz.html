@@ -1,0 +1,1520 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KAIA — Adaptives Lerndesign: Wissenschaftliches Referenzdokument</title>
+  <style>
+    :root {
+      --bg: #0f1117;
+      --surface: #1a1d27;
+      --surface2: #22253a;
+      --border: #2e3150;
+      --accent: #6c8ef5;
+      --accent2: #a78bfa;
+      --accent3: #34d399;
+      --accent4: #f87171;
+      --accent5: #fbbf24;
+      --text: #e2e8f0;
+      --muted: #8892a4;
+      --tag-bg: #1e2235;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+      font-size: 15px;
+    }
+    .hero {
+      background: linear-gradient(135deg, #0f1117 0%, #1a1d27 50%, #151826 100%);
+      border-bottom: 1px solid var(--border);
+      padding: 64px 48px 48px;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+    .hero-tag {
+      display: inline-block;
+      background: var(--tag-bg);
+      border: 1px solid var(--border);
+      color: var(--accent);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      padding: 4px 12px;
+      border-radius: 4px;
+      margin-bottom: 20px;
+    }
+    h1 {
+      font-size: 36px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: #fff;
+      margin-bottom: 12px;
+    }
+    .hero-sub {
+      color: var(--muted);
+      font-size: 16px;
+      max-width: 700px;
+    }
+    .hero-meta {
+      margin-top: 24px;
+      display: flex;
+      gap: 24px;
+      flex-wrap: wrap;
+    }
+    .hero-meta-item {
+      font-size: 12px;
+      color: var(--muted);
+    }
+    .hero-meta-item strong {
+      color: var(--text);
+    }
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 48px 80px;
+    }
+    .toc {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 28px 32px;
+      margin: 40px 0;
+    }
+    .toc h3 {
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 16px;
+    }
+    .toc a {
+      color: var(--accent);
+      text-decoration: none;
+      font-size: 14px;
+      display: block;
+      padding: 3px 0;
+    }
+    .toc a:hover { color: var(--accent2); }
+    .toc-sub { padding-left: 20px; color: var(--muted); font-size: 13px; }
+    section {
+      margin-top: 56px;
+    }
+    .section-tag {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 8px;
+      display: block;
+    }
+    h2 {
+      font-size: 26px;
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: -0.01em;
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border);
+    }
+    h3 {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--text);
+      margin: 28px 0 12px;
+    }
+    h4 {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--muted);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      margin: 20px 0 8px;
+    }
+    p {
+      color: var(--text);
+      margin-bottom: 12px;
+    }
+    .phase-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 28px 32px;
+      margin: 20px 0;
+      position: relative;
+    }
+    .phase-card::before {
+      content: attr(data-phase);
+      position: absolute;
+      top: -1px;
+      left: 24px;
+      background: var(--accent);
+      color: #000;
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      padding: 3px 10px;
+      border-radius: 0 0 6px 6px;
+    }
+    .phase-card.new::before { background: var(--accent3); }
+    .phase-card.warn::before { background: var(--accent5); color: #000; }
+    .phase-card.critical::before { background: var(--accent4); }
+    .phase-card h3 { margin-top: 8px; }
+    .question-block {
+      background: var(--surface2);
+      border-left: 3px solid var(--accent);
+      border-radius: 0 8px 8px 0;
+      padding: 16px 20px;
+      margin: 12px 0;
+    }
+    .question-block.primary {
+      border-left-color: var(--accent3);
+    }
+    .question-block.warning {
+      border-left-color: var(--accent5);
+    }
+    .question-block.new {
+      border-left-color: var(--accent2);
+    }
+    .question-block p {
+      font-style: italic;
+      color: #c8d0e0;
+      margin-bottom: 6px;
+    }
+    .question-block .cite {
+      font-size: 12px;
+      color: var(--muted);
+      font-style: normal;
+    }
+    .tag-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 12px 0;
+    }
+    .tag {
+      background: var(--tag-bg);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 4px 10px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+    .tag.blue { border-color: var(--accent); color: var(--accent); }
+    .tag.green { border-color: var(--accent3); color: var(--accent3); }
+    .tag.purple { border-color: var(--accent2); color: var(--accent2); }
+    .tag.yellow { border-color: var(--accent5); color: var(--accent5); }
+    .tag.red { border-color: var(--accent4); color: var(--accent4); }
+    .matrix-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 16px 0;
+      font-size: 13px;
+    }
+    .matrix-table th {
+      background: var(--surface2);
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 10px 16px;
+      text-align: left;
+      border: 1px solid var(--border);
+    }
+    .matrix-table td {
+      padding: 10px 16px;
+      border: 1px solid var(--border);
+      vertical-align: top;
+      color: var(--text);
+    }
+    .matrix-table tr:nth-child(even) td { background: var(--surface); }
+    .warning-box {
+      background: #1f1a0e;
+      border: 1px solid #6b4c11;
+      border-radius: 8px;
+      padding: 16px 20px;
+      margin: 16px 0;
+    }
+    .warning-box .w-label {
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent5);
+      margin-bottom: 6px;
+    }
+    .warning-box p { color: #d4b896; font-size: 14px; }
+    .error-box {
+      background: #1f0e0e;
+      border: 1px solid #6b1111;
+      border-radius: 8px;
+      padding: 16px 20px;
+      margin: 16px 0;
+    }
+    .error-box .w-label {
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent4);
+      margin-bottom: 6px;
+    }
+    .error-box p { color: #d4a0a0; font-size: 14px; }
+    .info-box {
+      background: #0e1420;
+      border: 1px solid #1e3a6b;
+      border-radius: 8px;
+      padding: 16px 20px;
+      margin: 16px 0;
+    }
+    .info-box .w-label {
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 6px;
+    }
+    .info-box p { color: #a0b8d4; font-size: 14px; }
+    code {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 2px 6px;
+      font-family: 'JetBrains Mono', 'Fira Code', monospace;
+      font-size: 12px;
+      color: var(--accent3);
+    }
+    pre {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 20px;
+      overflow-x: auto;
+      margin: 12px 0;
+    }
+    pre code {
+      background: none;
+      border: none;
+      padding: 0;
+      font-size: 13px;
+      color: #c8d0e0;
+    }
+    .principle-list {
+      list-style: none;
+      padding: 0;
+    }
+    .principle-list li {
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+    }
+    .principle-list li:last-child { border-bottom: none; }
+    .principle-num {
+      min-width: 28px;
+      height: 28px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--accent);
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+    .session-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 24px 28px;
+      margin: 16px 0;
+    }
+    .session-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+    .session-badge {
+      background: var(--accent);
+      color: #000;
+      font-size: 11px;
+      font-weight: 800;
+      padding: 4px 10px;
+      border-radius: 6px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    .session-badge.s2 { background: var(--accent2); }
+    .session-badge.s3 { background: var(--accent3); }
+    .flow-row {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex-wrap: wrap;
+      margin: 12px 0;
+    }
+    .flow-item {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 6px 12px;
+      font-size: 13px;
+      color: var(--text);
+    }
+    .flow-arrow {
+      color: var(--muted);
+      font-size: 18px;
+    }
+    .cite-block {
+      font-size: 13px;
+      color: var(--muted);
+      font-style: italic;
+      padding: 8px 0;
+      border-top: 1px solid var(--border);
+      margin-top: 12px;
+    }
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin: 16px 0;
+    }
+    @media (max-width: 768px) {
+      .hero { padding: 40px 20px 32px; }
+      .container { padding: 0 20px 60px; }
+      h1 { font-size: 26px; }
+      .grid-2 { grid-template-columns: 1fr; }
+    }
+    .lit-entry {
+      font-size: 13px;
+      color: var(--muted);
+      padding: 8px 0;
+      border-bottom: 1px solid var(--border);
+      line-height: 1.6;
+    }
+    .lit-entry strong { color: var(--text); }
+    .lit-entry em { color: var(--accent3); font-style: normal; }
+    .divider {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 40px 0;
+    }
+  </style>
+</head>
+<body>
+
+<div class="hero">
+  <span class="hero-tag">KAIA — Wissenschaftliches Referenzdokument</span>
+  <h1>Adaptives Lerndesign &amp; Gesprächsarchitektur</h1>
+  <p class="hero-sub">Wissenschaftlich fundiertes Framework für sokratisch-adaptives Lernen. Referenz und Nachschlagewerk für das KAIA-Entwicklungsteam, den Promotionsprozess und die Pilotstudie.</p>
+  <div class="hero-meta">
+    <div class="hero-meta-item"><strong>M.Sc. Data Science &amp; Analytics</strong> · SRH Fernhochschule</div>
+    <div class="hero-meta-item"><strong>Stand:</strong> Juni 2026</div>
+    <div class="hero-meta-item"><strong>Review:</strong> Didaktiker · Psychologe · AI Engineer · Team</div>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- TOC -->
+  <nav class="toc">
+    <h3>Inhalt</h3>
+    <a href="#teil1">Teil 1 — Wissenschaftliche Grundlagen</a>
+    <a href="#teil2">Teil 2 — Das KAIA 7-Phasen-Metamodell (revidiert)</a>
+    <a href="#teil2b">Teil 2b — Session-interne Phasenlogik (Kolb-konform)</a>
+    <a href="#teil3">Teil 3 — Multi-Session-Architektur (10 Sessions)</a>
+    <a href="#teil3b">Teil 3b — Flow-Theorie &amp; Session-Dauer</a>
+    <a href="#teil4">Teil 4 — Backend-Klassifikationslogik</a>
+    <a href="#teil5">Teil 5 — Sokratische Fragemuster &amp; Sprachregeln</a>
+    <a href="#teil6">Teil 6 — Thesis-Einschränkungen &amp; Validitätsgrenzen</a>
+    <a href="#teil7">Teil 7 — Vollständige Literaturliste</a>
+  </nav>
+
+  <!-- TEIL 1 -->
+  <section id="teil1">
+    <span class="section-tag">Teil 1</span>
+    <h2>Wissenschaftliche Grundlagen</h2>
+
+    <h3>1.1 Vier Wissensarten nach Anderson &amp; Krathwohl (2001)</h3>
+    <p>Die revidierte Bloom-Taxonomie unterscheidet vier Wissensarten, die das <strong>primäre Routing im KAIA-Algorithmus</strong> bestimmen. Unterschiedliche Wissensarten erfordern fundamental verschiedene Lehr- und Lernstrategien. Diese Klassifikation ersetzt alltagssprachliche Unterscheidungen wie "fachlich vs. überfachlich", die empirisch nicht trennscharf sind.</p>
+
+    <table class="matrix-table">
+      <thead>
+        <tr>
+          <th>Wissensart</th>
+          <th>Definition</th>
+          <th>Beispiele</th>
+          <th>Erkennungssignal im Chat</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong style="color:var(--accent)">Faktisch</strong></td>
+          <td>Vokabular, Fakten, Definitionen. Grundlage aller anderen Wissensarten.</td>
+          <td>Fachbegriffe, Terminologie</td>
+          <td>"ich brauche das für…", "ich muss wissen was X bedeutet"</td>
+        </tr>
+        <tr>
+          <td><strong style="color:var(--accent2)">Konzeptuell</strong></td>
+          <td>Kategorien, Prinzipien, Modelle. Verstehen von Zusammenhängen.</td>
+          <td>Storytelling-Dramaturgie, Statistikmodelle</td>
+          <td>"ich will verstehen warum", "ich will den Zusammenhang begreifen"</td>
+        </tr>
+        <tr>
+          <td><strong style="color:var(--accent3)">Prozedural</strong></td>
+          <td>Fertigkeiten, Techniken, Methoden. Wissen WIE man etwas tut.</td>
+          <td>Handstand, Präsentation halten, Code schreiben</td>
+          <td>"ich will können", "ich will es einfach tun", "üben"</td>
+        </tr>
+        <tr>
+          <td><strong style="color:var(--accent5)">Metakognitiv</strong></td>
+          <td>Wissen über eigenes Denken und Lernen. Selbstregulation, Strategiebewusstsein.</td>
+          <td>Stressmanagement, Selbstwirksamkeit, Data Literacy als Haltung</td>
+          <td>"ich würde anders reagieren", "ich will aufhören mit X", kein konkretes TUN benennbar</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="warning-box">
+      <div class="w-label">Wichtig: Soft Skills sind immer gemischt</div>
+      <p>Kompetenzen wie "besser kommunizieren", "besser führen", "überzeugender präsentieren" enthalten gleichzeitig alle vier Wissensarten. Weinert (2001): Kompetenzen sind nie rein kognitiv — sie umfassen gleichzeitig konzeptuelle Prinzipien (warum Empathie wirkt), prozedurales Wissen (wie ein Ich-Statement formuliert wird) und metakognitive Anteile (wann ich defensiv reagiere). Das Routing bestimmt den <em>Einstiegspunkt</em>, nicht den exklusiven Pfad.</p>
+    </div>
+
+    <div class="cite-block">Anderson, L. W., &amp; Krathwohl, D. R. (Eds.). (2001). A taxonomy for learning, teaching, and assessing. Longman. — Vier-Wissensarten-Modell als Routing-Basis; empirisch validiert in Tausenden Lehrplanstudien.</div>
+
+    <h3>1.2 Kompetenzbegriff nach Weinert (2001)</h3>
+    <p>Weinerts Kompetenzbegriff integriert kognitive Fähigkeiten mit motivationalen, volitionalen und sozialen Aspekten. Für KAIA ist entscheidend: Kompetenzen sind nie rein kognitiv.</p>
+    <div class="grid-2">
+      <div class="phase-card" data-phase="Fachlich">
+        <h3>Domänenspezifisch</h3>
+        <p>Direkt dem Themengebiet zuordenbar. Kann isoliert gelehrt werden.</p>
+        <p style="color:var(--muted)">Beispiel: Aufsatz schreiben, Filmschnitt, Code schreiben</p>
+      </div>
+      <div class="phase-card new" data-phase="Überfachlich">
+        <h3>Domänenübergreifend</h3>
+        <p>Horizontal transferierbar. Entsteht durch strukturierte Reflexion, nicht direkt lehrbar.</p>
+        <p style="color:var(--muted)">Beispiel: Kommunikation, Kreativität, Selbstwirksamkeit</p>
+      </div>
+    </div>
+    <div class="cite-block">Weinert, F. E. (2001). Vergleichende Leistungsmessung in Schulen. Beltz. — Standardreferenz für den Kompetenzbegriff im deutschsprachigen Bildungsdiskurs.</div>
+
+    <h3>1.3 Vertikale vs. horizontale Transferierbarkeit</h3>
+    <p>Transfer ist das einzige valide Kriterium dafür, dass etwas wirklich gelernt wurde. <strong>Near Transfer</strong> (gleicher Kontext, neue Instanz) und <strong>Far Transfer</strong> (anderer Kontext, gleiches Prinzip) sind Evidenzstufen.</p>
+    <div class="flow-row">
+      <div class="flow-item">Vertikal: Storytelling → Drehbuch → Serienstruktur</div>
+      <div class="flow-arrow">⟵ gleiche Domäne</div>
+    </div>
+    <div class="flow-row">
+      <div class="flow-item">Horizontal: Storytelling → Data Storytelling → Führungskommunikation</div>
+      <div class="flow-arrow">⟵ Far Transfer</div>
+    </div>
+    <div class="cite-block">Perkins, D. N., &amp; Salomon, G. (1992). Transfer of learning. International Encyclopedia of Education. — Near vs. Far Transfer als Differenzierungskriterium; Transfer als einziges valides Kriterium für Lernerfolg.</div>
+
+    <h3>1.4 Situated Cognition — Lernen im Lebenskontext</h3>
+    <p>Lernen ist immer eingebettet in einen sozialen und situativen Kontext. Ein Lerninhalt, der nicht in den Lebenskontext der lernenden Person eingehängt wird, bleibt <em>träges Wissen</em> — es wird gewusst, aber nicht genutzt.</p>
+    <p><strong>KAIA-Implikation:</strong> Phase 1 muss nicht nur Motivation klären, sondern die Lebenssituation konkret verankern. "Stell dir vor" allein reicht nicht — es braucht eine konkrete episodische Gegenwartssituation als Anker.</p>
+    <div class="cite-block">Lave, J., &amp; Wenger, E. (1991). Situated learning. Cambridge University Press. — Situiertes Lernen als Voraussetzung für Transfer; träges Wissen als klassisches Scheiternsmuster instruktionistischer Ansätze. Whitehead, A. N. (1929). The aims of education. Macmillan.</div>
+
+    <h3>1.5 Self-Determination Theory (SDT) — Drei Grundbedürfnisse</h3>
+    <table class="matrix-table">
+      <thead>
+        <tr><th>Bedürfnis</th><th>Definition</th><th>KAIA-Gestaltung</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Autonomie</strong></td>
+          <td>Erleben, dass Handlungen selbstbestimmt sind</td>
+          <td>Mini-Steps und Challenges kommen von der Person, nicht von KAIA</td>
+        </tr>
+        <tr>
+          <td><strong>Kompetenz</strong></td>
+          <td>Erleben eigener Wirksamkeit</td>
+          <td>ZPD-kalibrierte Mini-Steps; explizite Mastery-Attribution in Phase 7</td>
+        </tr>
+        <tr>
+          <td><strong>Soziale Eingebundenheit</strong></td>
+          <td>Zugehörigkeit und Verbundenheit</td>
+          <td>⚠️ KAIA muss Relatedness aktiv designen — entsteht nicht automatisch</td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="warning-box">
+      <div class="w-label">Designhinweis: Relatedness</div>
+      <p>Soziale Eingebundenheit (Relatedness) ist das am schwächsten adressierte SDT-Bedürfnis in KAIA. Bei einem Text-Chat-System entsteht es nicht von selbst. Designansatz: explizite Anerkennung des Lernprozesses durch KAIA ("Ich finde bemerkenswert, dass du…"), Erinnerung an frühere Schritte als Kontinuität.</p>
+    </div>
+    <div class="cite-block">Deci, E. L., &amp; Ryan, R. M. (1985). Intrinsic motivation and self-determination in human behavior. Plenum. — SDT als Grundrahmen; intrinsische Motivation als stärkster Prädiktor für nachhaltiges Lernen.</div>
+
+    <h3>1.6 Banduras vier Quellen der Selbstwirksamkeit</h3>
+    <table class="matrix-table">
+      <thead>
+        <tr><th>Quelle</th><th>Stärke</th><th>KAIA-Aktivierung</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><strong>Mastery Experiences</strong></td><td style="color:var(--accent3)">★★★★ stärkste</td><td>Phase 4 (Mini-Step), Phase 6 (Transfer)</td></tr>
+        <tr><td><strong>Vicarious Experiences</strong></td><td style="color:var(--accent5)">★★★</td><td>⚠️ Text-Chat-Limit — kaum aktivierbar. Als Thesislimitation explizit nennen.</td></tr>
+        <tr><td><strong>Verbal Persuasion</strong></td><td style="color:var(--accent)">★★</td><td>Phase 7 (explizite Attributionsaussage von KAIA)</td></tr>
+        <tr><td><strong>Physiologische Zustände</strong></td><td style="color:var(--muted)">★</td><td>Nicht direkt addressierbar via Text. Lazarus-Appraisal als Proxy.</td></tr>
+      </tbody>
+    </table>
+    <div class="cite-block">Bandura, A. (1997). Self-efficacy: The exercise of control. Freeman. — Vier-Quellen-Modell als empirisch fundierte Grundlage für SE-förderndes Design.</div>
+
+    <h3>1.7 Approach vs. Avoidance Motivation</h3>
+    <p>Elliot &amp; Church (1997) unterscheiden Approach-Motivation (Ziel: Kompetenz erreichen) von Avoidance-Motivation (Ziel: Inkompetenz vermeiden). Avoidance-Motivation korreliert negativ mit tiefem Lernen, Persistenz und Wohlbefinden. Förster, Higgins &amp; Idson (1998): Prevention-Focus führt zu risikoscheuerem, weniger kreativem Verarbeitungsstil.</p>
+    <div class="info-box">
+      <div class="w-label">Implikation für Phase 1</div>
+      <p>Die Frage "Was hat dich bisher davon abgehalten?" aktiviert potenziell Avoidance-Frame. Diese Frage nur bei Lazarus-Signal [herausforderung] einsetzen — nicht bei [bedrohung] oder [verlust]. Immer erst Zukunftsfragen, dann Barrierenfrage.</p>
+    </div>
+    <div class="cite-block">Elliot, A. J., &amp; Church, M. A. (1997). A hierarchical model of approach and avoidance achievement motivation. Journal of Personality and Social Psychology, 72(1), 218–232.</div>
+
+    <h3>1.8 Lazarus-Stressappraisal in KAIA — als Heuristik</h3>
+    <div class="error-box">
+      <div class="w-label">Thesisklarstellung — Terminologie</div>
+      <p>KAIA implementiert keine vollständige Lazarus-Theorie (1991). Das Lazarus-Modell umfasst zweistufiges Primary + Secondary Appraisal mit Coping-Prozessen. KAIA nutzt eine <strong>heuristische 5-Kategorie-Approximation</strong> zur Gesprächssteuerung. Formulierung in der Thesis: "angelehnt an Lazarus' Stressappraisal-Modell", nicht "implementiert".</p>
+    </div>
+    <table class="matrix-table">
+      <thead>
+        <tr><th>Signal</th><th>Bedeutung</th><th>KAIA-Reaktion</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><code>[herausforderung]</code></td><td>Situation als überwindbar bewertet</td><td>Normaler Gesprächsfluss. Barrierenfrage erlaubt.</td></tr>
+        <tr><td><code>[bedrohung]</code></td><td>Unsicherheit über Kompetenz</td><td>Kompetenzfokus; kein Barrieren-Probing; erst Stabilisierung via Mini-Step</td></tr>
+        <tr><td><code>[verlust]</code></td><td>Misserfolg bereits erlebt</td><td>Zuerst Metareflexion (Phase 7-Modus); Crisis-Check aktiv</td></tr>
+        <tr><td><code>[ressourcen]</code></td><td>Positive Bewertung, Energie vorhanden</td><td>Challenge früher ansetzen; höheres Bloom-Niveau</td></tr>
+        <tr><td><code>[irrelevant]</code></td><td>Kein Stress erkennbar</td><td>Standard-Flow</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <hr class="divider">
+
+  <!-- TEIL 2 -->
+  <section id="teil2">
+    <span class="section-tag">Teil 2</span>
+    <h2>Das KAIA 7-Phasen-Metamodell (revidiert)</h2>
+
+    <p>Das Metamodell ist ein sequenzieller Algorithmus, den KAIA bei jedem neuen Lernthema durchläuft. Die Reihenfolge folgt empirisch gesicherten Prinzipien: Motivation vor Inhalt, Diagnose vor Instruktion, Mini-Erfolg vor Komplexität, Transfer als einziges valides Kriterium.</p>
+
+    <div class="warning-box">
+      <div class="w-label">Designprinzip: Kein starres Protokoll</div>
+      <p>Die Phasen sind nicht starr linear. Bei Frustrations-Einstieg (Lazarus [verlust]) startet KAIA bei Phase 7 (Metareflexion) statt Phase 1. Bei "ich bin gerade blockiert" kommt Phase 3 (Standortbestimmung) vor Phase 1. KAIA braucht eine implizite Übersteuerungslogik: das Lazarus-Signal im Thinking-Block bestimmt den Einstiegspunkt.</p>
+    </div>
+
+    <!-- Phase 1 -->
+    <div class="phase-card" data-phase="Phase 1">
+      <h3>Motivationsanker — Das Warum klären (revidiert)</h3>
+      <p><em>Intrinsische Motivation und Lebensverankerung aktivieren — bevor Inhalte besprochen werden</em></p>
+      <p>Phase 1 braucht einen <strong>dreiteiligen Anker</strong>, nicht nur Zielimagination. Episodisches Gedächtnis (Tulving, 1972) ist stärker als semantische Imagination als Motivationsanker.</p>
+
+      <h4>Teil A — Situativer Anker (Gegenwart)</h4>
+      <div class="question-block primary">
+        <p>"Beschreib mir eine konkrete Situation in den letzten zwei Wochen, in der dieses Thema eine Rolle gespielt hat — was ist da passiert?"</p>
+        <span class="cite">Tulving, 1972 — episodischer Anker. Situated Cognition (Lave &amp; Wenger, 1991).</span>
+      </div>
+
+      <h4>Teil B — Schmerzpunkt-Anker (Approach-formuliert)</h4>
+      <div class="question-block">
+        <p>"Was macht dich gerade dabei unzufrieden?"</p>
+        <span class="cite">Approach-Frame (Elliot &amp; Church, 1997). Nicht Avoidance-Frame ("was hat dich abgehalten").</span>
+      </div>
+
+      <h4>Teil C — Visions-Anker (Zukunft)</h4>
+      <div class="question-block primary">
+        <p>"Stell dir vor, du beherrschst das schon — was wäre in deinem Alltag konkret anders?"</p>
+        <p>"In welcher Situation würdest du es am liebsten als Erstes einsetzen?"</p>
+        <span class="cite">Gollwitzer, 1999 — Implementation Intention: Situationsbild im Kopf verankert späteren Transfer. Steigert Zielerreichung um 200–300%.</span>
+      </div>
+
+      <h4>Teil D — Barrierenfrage (nur bei Lazarus [herausforderung])</h4>
+      <div class="question-block warning">
+        <p>"Was bräuchtest du, damit es dieses Mal klappt?"</p>
+        <span class="cite">⚠️ Nur bei Lazarus [herausforderung]. Nicht bei [bedrohung] oder [verlust]. Position: immer NACH Visions-Anker (Avoidance-Abpufferung). Elliot &amp; Church, 1997.</span>
+      </div>
+
+      <h4>Schritt 3b — Lebensverankerung (systemische Vorausschau) NEU</h4>
+      <div class="question-block new">
+        <p>"Was würde sich in [konkreter Kontext aus dem Gespräch] als erstes bemerkbar machen, wenn sich das verändert — noch bevor du es explizit wahrnimmst?"</p>
+        <span class="cite">NEU — Situated Cognition (Lave &amp; Wenger, 1991). Systemische Frage (Fragetyp 4). Maximal 1 Turn, kein Nachfragen bei vager Antwort. Die Antwort fließt direkt in Mini-Step und Challenge ein.</span>
+      </div>
+
+      <div class="info-box">
+        <div class="w-label">KAIA-Prinzip</div>
+        <p>Das Situationsbild (wann, wo, mit wem, was wird leichter) aus dieser Phase wird direkt in Mini-Step (Phase 4) und Challenge (Phase 5) eingebaut. <strong>Schritt 3b bildet die Brücke: Motivation → konkrete Lebensauswirkung → erster sichtbarer Erfolg.</strong></p>
+      </div>
+    </div>
+
+    <!-- Phase 2 -->
+    <div class="phase-card" data-phase="Phase 2">
+      <h3>Lerntyp-Routing — Wissensart klassifizieren</h3>
+      <p><em>Welche Wissensart wird gelernt? Bestimmt den gesamten weiteren Gesprächspfad. Die Diagnose ist implizit — Lernende kennen die Taxonomie nicht.</em></p>
+
+      <h4>Diagnose-Fragen (intern — NICHT gestellt, nur als Klassifikationsheuristik)</h4>
+      <div class="question-block">
+        <p>"Wenn du daran denkst, X zu können — was würdest du dann TUN, oder was würdest du VERSTEHEN?"</p>
+        <p>"Gibt es dafür eine richtige oder falsche Antwort — oder eher: es kommt darauf an?"</p>
+        <p>"Kannst du dir jemanden vorstellen, der das schon kann — was macht die Person konkret?"</p>
+        <span class="cite">Anderson &amp; Krathwohl, 2001 — Wissensart-Klassifikation. Diese Fragen sind Thinking-Block-Heuristik, nicht Gesprächsfragen.</span>
+      </div>
+
+      <h4>Nutzersprachenmatrix — Alltagsbegriffe → Wissensart</h4>
+      <table class="matrix-table">
+        <thead>
+          <tr><th>Was Nutzer sagen</th><th>Wissensart</th><th>Einstiegsstrategie</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>"besser präsentieren können", "überzeugender wirken"</td>
+            <td><span class="tag blue">Prozedural</span> + <span class="tag purple">Metakognitiv</span></td>
+            <td>Deliberate Practice + Selbstwahrnehmung unter Beobachtung</td>
+          </tr>
+          <tr>
+            <td>"endlich X verstehen", "begreifen warum"</td>
+            <td><span class="tag purple">Konzeptuell</span></td>
+            <td>Analogien, Beispiel-Nicht-Beispiel, Concept Mapping (Mayer, 2009)</td>
+          </tr>
+          <tr>
+            <td>"ruhiger bleiben unter Druck", "anders reagieren"</td>
+            <td><span class="tag yellow">Metakognitiv</span></td>
+            <td>Reflective Practice, Kolb-Zyklus, Stressappraisal-Bewusstsein</td>
+          </tr>
+          <tr>
+            <td>"Handstand können", "Code schreiben können"</td>
+            <td><span class="tag blue">Prozedural</span></td>
+            <td>Deliberate Practice, Mental Simulation, Chunking (Ericsson, 1993)</td>
+          </tr>
+          <tr>
+            <td>"für die Prüfung wissen", "ich muss das kennen"</td>
+            <td><span class="tag green">Faktisch</span></td>
+            <td>Spaced Repetition, Retrieval Practice (Roediger &amp; Karpicke, 2006)</td>
+          </tr>
+          <tr>
+            <td>"Handlungskompetenz aufbauen", "Soft Skill entwickeln"</td>
+            <td><span class="tag blue">Prozedural</span> + <span class="tag yellow">Metakognitiv</span></td>
+            <td>Einstieg prozedural (das TUN), zweite Schicht metakognitiv (die Selbstregulation)</td>
+          </tr>
+          <tr>
+            <td>"ich weiß nicht genau was ich lernen will"</td>
+            <td><span class="tag red">Unklar</span></td>
+            <td>Fragetyp 1 (Klärung): "Beschreib mir einen Moment, in dem du dir gewünscht hättest, du wärst besser darin."</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="warning-box">
+        <div class="w-label">Soft-Skill-Cluster-Problem</div>
+        <p>Alle komplexen Sozialkompetenzen (Kommunikation, Führung, Konfliktgespräche) sind Wissensart-Cluster, keine Einzelkategorien. Das Routing bestimmt den <strong>Einstiegspunkt</strong>, nicht den exklusiven Pfad. Standard: prozedural als Einstieg (das konkrete TUN), metakognitiv als zweite Schicht (Selbstwahrnehmung dabei). Bei unklarem Routing: <code>routing_confidence: "low"</code> setzen und in Session 2 verifizieren.</p>
+      </div>
+    </div>
+
+    <!-- Phase 3 -->
+    <div class="phase-card" data-phase="Phase 3">
+      <h3>Standortbestimmung — ZPD-Exploration</h3>
+      <p><em>Nicht testen — erkunden. Formatives Explorationsgespräch, kein Beurteilungsgespräch.</em></p>
+      <div class="error-box">
+        <div class="w-label">Terminologieklarstellung für Thesis</div>
+        <p>KAIA operationalisiert keine vollständige ZPD-Diagnostik. Vygotskys ZPD erfordert die Identifikation von: (a) aktueller Leistungsfähigkeit ohne Unterstützung und (b) potentieller Leistungsfähigkeit mit Unterstützung — klassisch in schulischen Settings mit Aufgabenanalyse bestimmt. KAIA nutzt dialogische Selbsteinschätzung als <strong>ZPD-angelehnte Annäherung</strong>.</p>
+      </div>
+      <div class="question-block primary">
+        <p>"Was weißt du schon über X — auch wenn es nur ein Gefühl ist?"</p>
+        <p>"Hast du schon mal etwas Ähnliches gelernt, das sich übertragen lässt?"</p>
+        <p>"Wenn du erklären müsstest, was X bedeutet — wie würdest du anfangen?"</p>
+        <span class="cite">Black &amp; Wiliam, 1998 — Formatives Assessment: d = 0.40–0.70 (Schulkontext — Kontexteinschränkung in Thesis notwendig). Vygotsky, 1978 — ZPD.</span>
+      </div>
+      <p><strong>KAIA-Prinzip:</strong> Kein Richtig/Falsch kommunizieren. Die Antworten kalibrieren den Mini-Step — sie werden nicht bewertet.</p>
+    </div>
+
+    <!-- Phase 4 -->
+    <div class="phase-card" data-phase="Phase 4">
+      <h3>Erster Lernerfolg — Mini-Step</h3>
+      <p><em>Kleinstmöglicher Schritt mit maximalem Selbstwirksamkeitseffekt. Die Mastery Experience ist die stärkste Quelle von SE.</em></p>
+
+      <h4>Vier Designprinzipien</h4>
+      <ul class="principle-list">
+        <li><span class="principle-num">1</span><div><strong>Kalibriert auf ZPD</strong> — Nicht zu leicht (kein SE-Effekt), nicht zu schwer (Frustration). Bandura (1997): Mastery erfordert echte, aber überwindbare Herausforderung.</div></li>
+        <li><span class="principle-num">2</span><div><strong>In 5–15 Minuten erlebbar</strong> — Ein einziges neues kognitives Element (Miller, 1956; Sweller, 1988). Kein Überladen.</div></li>
+        <li><span class="principle-num">3</span><div><strong>Alltagsnah verankert</strong> — Direkt aus Schritt 3b (Lebensverankerung) und dem Situationsbild aus Phase 1 abgeleitet.</div></li>
+        <li><span class="principle-num">4</span><div><strong>Sofort ausführbar</strong> — Enactment-Effekt (Cohen, 1989): selbst ausgeführte Handlungen 30–50% besser behalten als beschriebene.</div></li>
+      </ul>
+
+      <div class="info-box">
+        <div class="w-label">Autonomie-Prinzip (SDT)</div>
+        <p>KAIA fragt zuerst: "Was wäre aus deiner Sicht ein sinnvoller erster kleiner Schritt?" — nicht eine vorbereitete Struktur anbieten. Erst wenn die Person formuliert hat, gemeinsam verfeinern. Fremdgeführte Mini-Steps erzeugen extrinsische Motivation (Deci &amp; Ryan, 1985).</p>
+      </div>
+
+      <h4>Beispiel-Mini-Steps nach Wissensart</h4>
+      <table class="matrix-table">
+        <thead><tr><th>Wissensart</th><th>Mini-Step</th></tr></thead>
+        <tbody>
+          <tr><td>Konzeptuell (Storytelling)</td><td>Schreib einen einzigen Satz als Mini-Geschichte — Situation → Konflikt → Auflösung.</td></tr>
+          <tr><td>Prozedural (Präsentation)</td><td>Halte eine 60-Sekunden-Version deiner nächsten Präsentation — laut, stehend, nur für dich.</td></tr>
+          <tr><td>Faktisch (Datenbegriffe)</td><td>Erkläre den Unterschied zwischen Korrelation und Kausalität mit einem eigenen Alltags-Beispiel.</td></tr>
+          <tr><td>Metakognitiv (SE)</td><td>Schreib in 3 Sätzen: Eine Situation, in der du etwas geschafft hast, obwohl du dir nicht sicher warst.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Phase 5 -->
+    <div class="phase-card warn" data-phase="Phase 5">
+      <h3>Selbstgesetzte Challenge</h3>
+      <p><em>Das Erfolgskriterium kommt von der Person selbst.</em></p>
+      <div class="warning-box">
+        <div class="w-label">Didaktische Korrektur gegenüber Entwurf</div>
+        <p>Per Kolbs Experiential Learning Cycle kommt Challenge-Planung nach Reflexion, nicht davor. <strong>Korrekte Sequenz:</strong> Mini-Step (Phase 4) → Metakognition/Reflexion (Phase 7, kurz) → dann Challenge. Im Multi-Session-Design: Challenge-Formulierung gehört an das Ende von Session 1, nach erstem Mini-Step und einer kurzen Reflexionsrunde.</p>
+      </div>
+      <div class="question-block primary">
+        <p>"Woran würdest du selbst merken, dass du das kannst — was müsste passieren?"</p>
+        <p>"Wer außer dir würde es bemerken — und was würde diese Person sagen?"</p>
+        <p>"Beschreibe: Was ist die Situation, die Handlung, und das Ergebnis?"</p>
+        <span class="cite">Locke &amp; Latham, 2002 — Selbstbestimmte Ziele > vorgegebene. Gollwitzer, 1999 — Wann-Dann-Pläne.</span>
+      </div>
+      <h4>Challenge-Format</h4>
+      <pre><code>Situation:       [wann / wo / mit wem]
+Handlung:        [was genau tue ich]
+Erfolgskriterium: [woran erkenne ich selbst, dass es geklappt hat]
+Zeitpunkt:       [bis wann / bei welcher nächsten Gelegenheit]</code></pre>
+    </div>
+
+    <!-- Phase 6 -->
+    <div class="phase-card" data-phase="Phase 6">
+      <h3>Transferleistung — Beweis des Gelernten</h3>
+      <p><em>Bloom-Stufen 3–6: Anwenden, Analysieren, Bewerten, Erschaffen in neuem Kontext.</em></p>
+      <p>Transfer ist das einzige valide Kriterium dafür, dass etwas gelernt wurde. Reproduktion im vertrauten Kontext ist notwendige, aber nicht hinreichende Bedingung.</p>
+
+      <table class="matrix-table">
+        <thead><tr><th>Bloom-Stufe</th><th>Beschreibung</th><th>KAIA-Erkennungssignal</th></tr></thead>
+        <tbody>
+          <tr><td>1 — Remember</td><td>Abrufen ohne Vorlage</td><td>Person nennt Fakten und Definitionen spontan</td></tr>
+          <tr><td>2 — Understand</td><td>Mit eigenen Worten erklären</td><td>Person paraphrasiert, gibt eigenes Beispiel</td></tr>
+          <tr><td>3 — Apply</td><td>Anwenden in ähnlicher Situation</td><td>Person überträgt auf eigene Lebenssituation</td></tr>
+          <tr><td>4 — Analyze</td><td>Zerlegen, Vergleichen</td><td>Person benennt Unterschiede und Ursachen</td></tr>
+          <tr><td>5 — Evaluate</td><td>Fundiertes Urteilen</td><td>Person trifft eigenständige Bewertung</td></tr>
+          <tr><td>6 — Create</td><td>Neues produzieren</td><td>Person erstellt etwas Neues ohne Anleitung</td></tr>
+        </tbody>
+      </table>
+
+      <div class="question-block primary">
+        <p>"Was ist passiert — hast du die Challenge ausprobiert? Erzähl mir davon."</p>
+        <p>"Was war anders als erwartet — an dir, nicht an der Situation?"</p>
+        <p>"Kannst du das Gelernte in einem völlig anderen Kontext anwenden?"</p>
+        <span class="cite">Perkins &amp; Salomon, 1992 — Far Transfer als höchstes Kriterium.</span>
+      </div>
+    </div>
+
+    <!-- Phase 7 -->
+    <div class="phase-card" data-phase="Phase 7">
+      <h3>Metakognition — Reflexion &amp; Routing-Entscheidung</h3>
+      <p><em>Selbstwirksamkeit konsolidieren, nächsten Zyklus vorbereiten.</em></p>
+      <p>Reflexion verwandelt Einzelerfolge in dauerhafte Lernkompetenz (Flavell, 1979). Ohne Reflexion bleibt die Erfahrung episodisch und generalisiert sich nicht (Kolb, 1984).</p>
+
+      <div class="question-block primary">
+        <p>"Was hat dich überrascht — an dir selbst, nicht am Thema?"</p>
+        <p>"Auf einer Skala 1–10: Wie sicher fühlst du dich jetzt — und was bräuchtest du, um einen Punkt höher zu kommen?"</p>
+        <span class="cite">Flavell, 1979 — Metakognition. Bandura, 1997 — SE-Konsolidierung.</span>
+      </div>
+
+      <div class="info-box">
+        <div class="w-label">Selbstwirksamkeits-Konsolidierung (Verbal Persuasion)</div>
+        <p>KAIA sagt explizit: "Du hast heute zum ersten Mal [X] gemacht und dabei [Y] erreicht." — Nicht als Lob, sondern als Faktenfeedback. Mastery Experiences wirken nur nachhaltig, wenn sie bewusst als Erfolg kodiert werden (Bandura, 1997). Verbale Persuasion ist am wirksamsten wenn spezifisch und glaubwürdig.</p>
+      </div>
+
+      <h4>Routing nach Phase 7 — nächster Zyklus</h4>
+      <table class="matrix-table">
+        <thead><tr><th>Routing-Entscheidung</th><th>Beschreibung</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Gleicher Cluster, nächste Bloom-Stufe</strong></td><td>Stufe 2 erreicht → nächster Zyklus bei Stufe 3 im gleichen Wissenscluster</td></tr>
+          <tr><td><strong>Horizontaler Transfer</strong></td><td>Gelerntes Prinzip in anderem Lebensbereich anwenden — Far Transfer als Ziel</td></tr>
+          <tr><td><strong>Anderer Cluster, gleiches Thema</strong></td><td>Konzeptuell gelernt → nächster Cluster: prozedural (Übung, Live-Performance)</td></tr>
+          <tr><td><strong>Neues Thema</strong></td><td>Zyklus startet bei Phase 1 — inkl. vollständiger Warum-Klärung mit 3-teiligem Anker</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <!-- TEIL 2b -->
+  <section id="teil2b">
+    <span class="section-tag">Teil 2b</span>
+    <h2>Session-interne Phasenlogik (Kolb-konform, revidiert)</h2>
+
+    <p>Das 7-Phasen-Metamodell beschreibt das <em>Thema-Level-Design</em> (was KAIA bei neuem Lernthema durchläuft). Die folgende Struktur beschreibt das <em>Session-Level-Design</em> — wie eine einzelne Session intern aufgebaut ist. Diese Struktur bildet einen geschlossenen Kolb-Zyklus und ist für jede der 10 Sessions verbindlich.</p>
+
+    <div class="error-box">
+      <div class="w-label">Fehler im Entwurf — korrigiert</div>
+      <p>Im ursprünglichen Metamodell stand Phase 5 (Challenge) vor Phase 7 (Reflexion). Das verletzt Kolbs Experiential Learning Cycle: Planung des nächsten Schritts kommt nach Reflexion, nicht davor. Piaget (1977): Assimilation braucht Verarbeitungszeit, bevor Akkommodation (Challenge) fruchtbar ist. Korrigierte Sequenz unten.</p>
+    </div>
+
+    <h3>7-Phasen-Session-Struktur (Default)</h3>
+
+    <table class="matrix-table">
+      <thead>
+        <tr><th>#</th><th>Phase</th><th>Kolb-Entsprechung</th><th>Dauer</th><th>Funktion</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>1</strong></td>
+          <td>Kontakt &amp; Lazarus-Lesen</td>
+          <td>—</td>
+          <td>~60 Sek.</td>
+          <td>Einstiegsmodus bestimmen: Lazarus-Signal lesen, Override-Prüfung</td>
+        </tr>
+        <tr>
+          <td><strong>2</strong></td>
+          <td>Zielsetzung &amp; Voranker</td>
+          <td>—</td>
+          <td>~60–90 Sek.</td>
+          <td>Lernintention für diese Session klären (Ausubels Advance Organizer)</td>
+        </tr>
+        <tr>
+          <td><strong>3</strong></td>
+          <td>Anknüpfung ans Vorwissen</td>
+          <td>Konkrete Erfahrung</td>
+          <td>~2 Min.</td>
+          <td>Erfahrungen aktivieren. Anamnese-Frage (Fragetyp 6). Nie überspringen.</td>
+        </tr>
+        <tr>
+          <td><strong>4</strong></td>
+          <td>Exploration</td>
+          <td>Beobachtende Reflexion</td>
+          <td>~5–10 Min.</td>
+          <td>Kernphase. Klärung, Hypothetisch, Systemisch. Lazarus-adaptiver Modus aktiv.</td>
+        </tr>
+        <tr>
+          <td><strong>5</strong></td>
+          <td>Konsolidierung</td>
+          <td>Abstrakte Konzeptbildung</td>
+          <td>~1–2 Min.</td>
+          <td>KAIA spiegelt stärkste eigene Formulierung des Lernenden — wörtlich, nicht paraphrasiert. Erst hier: Widerspruchsfrage wenn vorhanden.</td>
+        </tr>
+        <tr>
+          <td><strong>6</strong></td>
+          <td>Herausforderung</td>
+          <td>Aktives Experimentieren (kognitiv)</td>
+          <td>~1–2 Min.</td>
+          <td>Kritisch-herausfordernd bei Lazarus [herausforderung/ressourcen]. Ziel: nächste Bloom-Stufe anstoßen. Bei Überlastung: überspringen oder Zeigarnik-Effekt.</td>
+        </tr>
+        <tr>
+          <td><strong>7</strong></td>
+          <td>Transfer &amp; Erster Schritt</td>
+          <td>Aktives Experimentieren (handelnd)</td>
+          <td>~1–2 Min.</td>
+          <td>Erster-Schritt-Frage (Fragetyp 5). Konkret, klein, sofort ausführbar. Abschluss: "Was würdest du jemandem erklären, der nicht dabei war?"</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3>Override-Logik — Lazarus-Signale als Phasen-Router</h3>
+    <p>Phasensequenz ist Default — kein Zwang. Folgende Einstiegssignale übersteuern die Reihenfolge:</p>
+
+    <table class="matrix-table">
+      <thead>
+        <tr><th>Lazarus-Signal</th><th>Erkennungsmarker</th><th>Einstiegspunkt</th><th>Begründung</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>[verlust] / [bedrohung]</code></td>
+          <td>Katastrophisierende Sprache, Hilflosigkeits-Framing, "macht alles keinen Sinn"</td>
+          <td><strong>Direkt Phase 5</strong> (Konsolidierung als Metareflexion: "Was beschäftigt dich gerade?")</td>
+          <td>Cognitive Overload (Sweller, 1988): Bedrohungsbewertung blockiert metakognitive Kapazität. Phase 2 erzeugt hier nur zusätzliche Frustration.</td>
+        </tr>
+        <tr>
+          <td><code>[irrelevant] (Apathie)</code></td>
+          <td>Kurze Antworten, keine aktiven Verben, "keine Ahnung", "weiß nicht"</td>
+          <td><strong>Direkt Phase 3</strong> (Anamnese aktiviert Erfahrungsbezug, bevor Zielsetzung möglich ist)</td>
+          <td>Ohne Erfahrungsbezug ist Zielsetzung motivational leer (Deci &amp; Ryan: external regulation).</td>
+        </tr>
+        <tr>
+          <td><code>[ressourcen] (Begeisterung)</code></td>
+          <td>Lange Eingaben, aktive Ich-Konstruktionen, bringt bereits Erfahrungsmaterial mit</td>
+          <td><strong>Direkt Phase 4</strong> (Exploration — Lernende:r hat Kontext bereits mitgebracht)</td>
+          <td>Phasenzwang bei aktivierten Lernenden wäre Bremse. Knowles (1984): Erwachsene mit aktuellem Motiv starten nicht bei null.</td>
+        </tr>
+        <tr>
+          <td><strong>Plateau (sessionsübergreifend)</strong></td>
+          <td>Ähnliche Formulierungen und Tiefe über mehrere Sessions (aus Profil erkennbar)</td>
+          <td><strong>Phase 6 vorziehen</strong> (Challenge als gezielter Impuls gegen Stagnation)</td>
+          <td>Einziger Fall, wo Phase 6 vor Phase 4 kommt — aktive Bloom-Eskalation.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3>Novizen-Routing in Phase 2 (wenn Lernziel unklar)</h3>
+
+    <table class="matrix-table">
+      <thead><tr><th>Typ</th><th>Signal</th><th>Strategie</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>Typ A: Weiß nicht was er/sie will</strong></td>
+          <td>Motivationsvorhanden, aber noch nicht operationalisiert</td>
+          <td>Situations-Frage statt Ziel-Frage: "Wann wärst du mit dieser Session zufrieden — in welcher Situation würdest du merken, dass es sich gelohnt hat?"</td>
+        </tr>
+        <tr>
+          <td><strong>Typ B: Kann die Frage nicht beantworten</strong></td>
+          <td>Sehr kurze Antworten, wiederholte Unsicherheits-Signale</td>
+          <td>Abstraktionsstufe senken: "Erzähl mir einfach, womit du gerade beschäftigt bist — auch wenn es nichts mit dem Lernthema zu tun hat." KAIA extrahiert Anknüpfungspunkt und macht ihn transparent.</td>
+        </tr>
+        <tr>
+          <td><strong>Typ C: Überkonfident (Dunning-Kruger)</strong></td>
+          <td>Sehr schnelle, sichere Zielformulierungen, keine Unsicherheitssignale</td>
+          <td>Nicht konfrontieren. Anamnese-Frage: "Erzähl mir von einer konkreten Situation, in der du X zuletzt angewendet hast — wie ist das gelaufen?" Widersprüche tauchen von selbst auf.</td>
+        </tr>
+        <tr>
+          <td><strong>Fallback (nach 3 Runden ohne Thema)</strong></td>
+          <td>Kein operationalisierbares Thema nach 3 Versuchen</td>
+          <td>Beispiel-Lernthemen anbieten (Kommunikation / KI-Kompetenz / Leadership). Kein Scheitern — das ist UDL: Multiple Means of Engagement.</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <hr class="divider">
+
+  <!-- TEIL 3 -->
+  <section id="teil3">
+    <span class="section-tag">Teil 3</span>
+    <h2>Multi-Session-Architektur — 10 Sessions</h2>
+
+    <p>Die 7 Phasen des Thema-Level-Modells verteilen sich über 10 Sessions. Empfehlung für die Studie: <strong>mindestens 10 Sessions</strong> in 4 Wochen (2–3/Woche). Weniger als 10 Sessions erlaubt keinen vollständigen Bloom-Bogen bis Stufe 5–6.</p>
+
+    <div class="info-box">
+      <div class="w-label">Mindestanforderung für die Studie</div>
+      <p>3 Sessions ist das absolute Studienminimum (nicht didaktisches Minimum). 10 Sessions ermöglicht: vollständige Bloom-Progression (1–6), multiple Kolb-Zyklen, echten Transfer-Nachweis, stabile GSE-Effektmessung. Die Teilnahmevereinbarung sollte 10 Sessions als Zielgröße nennen, 3 als Mindest-Untergrenze.</p>
+    </div>
+
+    <div class="session-card">
+      <div class="session-header">
+        <span class="session-badge">Session 1</span>
+        <strong>Fundament — Warum, Wissensart, erster Schritt</strong>
+      </div>
+      <div class="flow-row">
+        <div class="flow-item">Phase 1: 3-teiliger Motivationsanker</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-item">Schritt 3b: Lebensverankerung</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-item">Phase 2: Lerntyp-Routing</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-item">Phase 3: Standortbestimmung</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-item">Phase 4: Mini-Step</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-item">Phase 7 (kurz): Reflexion</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-item">Phase 5: Challenge vereinbaren</div>
+      </div>
+      <p style="color:var(--muted); font-size:13px; margin-top:12px;">Session endet mit konkretem <code>first_step</code>. Haiku extrahiert session_summary inkl. <code>knowledge_type</code> + <code>current_phase: 5</code>.</p>
+    </div>
+
+    <div class="session-card">
+      <div class="session-header">
+        <span class="session-badge s2">Session 2</span>
+        <strong>Transfer — Challenge-Auswertung + Vertiefung</strong>
+      </div>
+      <div class="flow-row">
+        <div class="flow-item">Phase 7: Rückblick auf first_step</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-item">Phase 6: Transferleistung bewerten</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-item">Phase 3/4: Nächstes Bloom-Niveau</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-item">Phase 5: Neue Challenge</div>
+      </div>
+      <p style="color:var(--muted); font-size:13px; margin-top:12px;">Routing-Verifikation in Session 2 obligatorisch (<code>routing_confidence: "low"</code> ist Default bis hierher). Falls Routing-Widerspruch erkannt: Phase 2 kurz wiederholen.</p>
+    </div>
+
+    <div class="session-card">
+      <div class="session-header">
+        <span class="session-badge s3">Session 3</span>
+        <strong>Konsolidierung — Transfer + SE-Verankerung</strong>
+      </div>
+      <div class="flow-row">
+        <div class="flow-item">Phase 7: Rückblick Challenge 2</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-item">Phase 6: Far Transfer prüfen</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-item">SE-Konsolidierung (explizite Attribution)</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-item">Ausblick: nächster Zyklus oder neues Thema</div>
+      </div>
+      <p style="color:var(--muted); font-size:13px; margin-top:12px;">GSE-Post-Messung folgt nach Session 3 (außerhalb des Chats). SE-Konsolidierung in Session 3 ist Voraussetzung für valide GSE-Messung.</p>
+    </div>
+
+    <h3>Inter-Session-Design — der unsichtbare Lernraum</h3>
+    <div class="warning-box">
+      <div class="w-label">Kritische Lücke im ursprünglichen Metamodell</div>
+      <p>Was zwischen den Sessions passiert, entscheidet über den Interventionserfolg. KAIA hat keine Kontrolle darüber — aber die Architektur muss es berücksichtigen.</p>
+    </div>
+    <table class="matrix-table">
+      <thead><tr><th>Szenario zu Beginn Session N+1</th><th>KAIA-Reaktion</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>first_step wurde gemacht, Ergebnis positiv</td>
+          <td>Phase 6 (Transfer) direkt einleiten. Erfolg explizit benennen (Bandura Verbal Persuasion).</td>
+        </tr>
+        <tr>
+          <td>first_step wurde gemacht, Ergebnis ambivalent</td>
+          <td>Phase 7 (Reflexion): "Was war anders als erwartet — an dir, nicht an der Situation?" Dann Phase 4 (neuer Mini-Step auf angepasstem Niveau).</td>
+        </tr>
+        <tr>
+          <td>first_step wurde NICHT gemacht</td>
+          <td>Kein Vorwurf. Phase 7 (Erkunden): "Was ist dazwischengekommen?" → Avoidance prüfen → Phase 4 kleinerer Step wenn nötig.</td>
+        </tr>
+        <tr>
+          <td>first_step und Inhalt haben sich verändert (Thema gewechselt)</td>
+          <td>Phase 1 neu starten (3-teiliger Anker für neues Thema). Phase 2 Routing neu.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3>Bloom-Progression über 10 Sessions</h3>
+
+    <table class="matrix-table">
+      <thead>
+        <tr><th>Session-Gruppe</th><th>Bloom-Niveau</th><th>Didaktischer Fokus</th><th>Anti-Wiederholungs-Mechanismus</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Sessions 1–2</strong></td>
+          <td>Bloom 1–2<br><span style="color:var(--muted);font-size:12px">Erinnern, Verstehen</span></td>
+          <td>Terrain kartieren. Vollständiger Motivations-Anker. Vorannahmen explizit machen.</td>
+          <td>Session 2 beginnt mit: "Du hast beim letzten Mal gesagt, X sei dein blinder Fleck — ist das noch so?"</td>
+        </tr>
+        <tr>
+          <td><strong>Sessions 3–5</strong></td>
+          <td>Bloom 2–4<br><span style="color:var(--muted);font-size:12px">Verstehen, Anwenden, Analysieren</span></td>
+          <td>Erster-Schritt-Loop im Vollbetrieb. Transfer in den Alltag. Systemische Fragen nehmen zu.</td>
+          <td>Session 5 Halbzeit-Spiegel: "Was weißt du jetzt, das du vor 5 Sessions nicht wusstest?"</td>
+        </tr>
+        <tr>
+          <td><strong>Sessions 6–8</strong></td>
+          <td>Bloom 4–5<br><span style="color:var(--muted);font-size:12px">Analysieren, Bewerten</span></td>
+          <td>Widerspruchsfragen dominieren. Was ist das Thema NICHT? Blinde Flecken sichtbar machen.</td>
+          <td>KAIA arbeitet aus Profil-Gedächtnis: "In Session 3 sagtest du X, jetzt sagst du Y — was hat sich verändert?"</td>
+        </tr>
+        <tr>
+          <td><strong>Sessions 9–10</strong></td>
+          <td>Bloom 5–6<br><span style="color:var(--muted);font-size:12px">Bewerten, Erschaffen</span></td>
+          <td>Persönliches Modell integrieren. Session 10: "Wie wirst du ohne mich weiterlernen?"</td>
+          <td>Session 10: Lernfaden-Gegenüberstellung — Session-1-Aussagen neben Session-9-Aussagen. Sichtbar gemachtes Lernen.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="warning-box">
+      <div class="w-label">Messzeitpunkte in der Studie</div>
+      <p>GSE Pre: vor Session 1. GSE Post: nach Session 10. Flow-Kurzskala (FKS) nach Session 2, 5, 8, 10 als Verlaufsmessung. Mehr dazu in Teil 3b.</p>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <!-- TEIL 3b -->
+  <section id="teil3b">
+    <span class="section-tag">Teil 3b</span>
+    <h2>Flow-Theorie &amp; Session-Dauer</h2>
+
+    <h3>Flow nach Csikszentmihalyi (1990) — Bedingungen und KAIA-Mapping</h3>
+
+    <table class="matrix-table">
+      <thead><tr><th>Flow-Bedingung</th><th>In KAIA adressiert?</th><th>Umsetzung / Lücke</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>Klare Ziele</strong></td>
+          <td style="color:var(--accent3)">✓ Adressiert</td>
+          <td>Phase 2 (Zielsetzung), Erster-Schritt-Format. Empfehlung: kurzer Sessionstart-Mikroziel-Anker.</td>
+        </tr>
+        <tr>
+          <td><strong>Unmittelbares Feedback</strong></td>
+          <td style="color:var(--accent5)">⚠ Teilweise</td>
+          <td>Enactment (Cohen, 1989) liefert Feedback im Mini-Step. Inter-Session-Vakuum gelöst durch Cross-Session-Memory als Feedback-Brücke bei Sessionstart.</td>
+        </tr>
+        <tr>
+          <td><strong>Challenge-Skill-Balance</strong></td>
+          <td style="color:var(--accent4)">⚠ Kritisch</td>
+          <td>ZPD pro Session adressiert. Ohne Bloom-Eskalationsmechanismus über 10 Sessions: <strong>Boredom-Quadrant ab Session 4–5</strong>. Der Bloom-Bogen (Teil 3) ist die Lösung.</td>
+        </tr>
+        <tr>
+          <td><strong>Autotelic Experience</strong></td>
+          <td style="color:var(--accent3)">✓ Strukturell</td>
+          <td>Sokratik fördert epistemische Neugier. Selbstgesetzte Challenges stärken intrinsische Motivation. Risiko: zu starke Führung → gelenkerte Autonomie → extrinsische Motivation.</td>
+        </tr>
+        <tr>
+          <td><strong>Konzentration auf Aufgabe</strong></td>
+          <td style="color:var(--muted)">○ Nicht designt</td>
+          <td>Empfehlung: kurze Sessionsstart-Instruktion (Fokus herstellen). Trivial, psychologisch nicht irrelevant.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="error-box">
+      <div class="w-label">Oliveira &amp; Hamari (2024) — Einschränkung für Thesis</div>
+      <p>Die Quelle ist ein Review über Flow in <em>gameful environments</em> (Gamification, VR, Games) — kein Befund zu KI-Konversationssystemen. Übertragung auf KAIA muss in der Thesis argumentiert werden. <strong>Bessere Grundlagen:</strong> Nakamura &amp; Csikszentmihalyi (2002) für Flow-Bedingungen; Engeser &amp; Rheinberg (2008) für Flow in Lernsettings; Shernoff et al. (2014) für schulische Kontexte. Oliveira &amp; Hamari als Fußnote der Aktualität, nicht als theoretisches Fundament.</p>
+    </div>
+
+    <h3>Flow-Messung: Flow-Kurzskala (FKS)</h3>
+    <div class="info-box">
+      <div class="w-label">Empfehlung: FKS als Verlaufsinstrument hinzufügen</div>
+      <p><strong>Flow-Kurzskala (Rheinberg, Vollmeyer &amp; Engeser, 2003)</strong> — 10 Items, 7-stufige Likert-Skala, Cronbachs α = .90, deutsch validiert, in PsychArchives frei verfügbar. Erhebung nach Session 2, 5, 8, 10 (~3 Min. pro Messung). Ermöglicht Flow-Verlaufsanalyse und Korrelation mit GSE-Entwicklung. Die vollständige Flow State Scale (36 Items) ist für 10 Sessions zu aufwändig.</p>
+    </div>
+
+    <h3>Session-Dauer — Empfehlung</h3>
+
+    <table class="matrix-table">
+      <thead><tr><th>Sessions</th><th>Empfohlene Dauer</th><th>Minimum</th><th>Begründung</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>Sessions 1–2</strong></td>
+          <td>20–30 Minuten</td>
+          <td>15 Minuten</td>
+          <td>Foundation: 3-teiliger Motivationsanker + Routing + Standortbestimmung brauchen Tiefe. Zu kurze Session 1 erzeugt zu vages Lernziel für alle Folgesessions.</td>
+        </tr>
+        <tr>
+          <td><strong>Sessions 3–10</strong></td>
+          <td>10–15 Minuten</td>
+          <td>8 Minuten</td>
+          <td>Fokussierte Micro-Sessions: Cross-Session-Memory übernimmt Kontextaufbau, direkt in Explorationsphase. Unter 8 Minuten: zu wenig Exchanges für echte Reflexionstiefe.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="info-box">
+      <div class="w-label">Gesamtaufwand für Teilnehmende</div>
+      <p>2 × 25 Min. + 8 × 12 Min. = <strong>~150 Minuten Chatzeit</strong> + 4 × FKS (~12 Min.) + GSE Pre/Post (~10 Min.) = <strong>~172 Minuten ≈ 3 Stunden in 4 Wochen</strong>. Wissenschaftlich vertretbar und zumutbar. 5 Min. pro Session (= 50 Min. gesamt) würde den Bloom-Bogen nicht ermöglichen und GSE-Effekt weiter unwahrscheinlicher machen.</p>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <!-- TEIL 4 -->
+  <section id="teil4">
+    <span class="section-tag">Teil 4</span>
+    <h2>Backend-Klassifikationslogik</h2>
+
+    <h3>4.1 Thinking-Block Erweiterungen</h3>
+    <p>Zu den bestehenden 8 Checks (Lazarus, Fragetyp, Sokratik-Bruch etc.) kommen zwei neue:</p>
+
+    <pre><code>9. **Wissensart**: [konzeptuell | prozedural | metakognitiv | faktisch | unklar]
+   Signale:
+   - konzeptuell: "verstehen warum", "wie funktioniert", "der Unterschied zwischen"
+   - prozedural: "können", "tun", "machen", "üben", konkretes Handlungsverb benennbar
+   - metakognitiv: "anders reagieren", "ruhiger bleiben", kein konkretes TUN formulierbar
+   - faktisch: richtig/falsch definierbar, Vokabeln, Definitionen
+   - unklar: Fragetyp 1 (Klärung) einleiten — nicht raten
+
+   Mapping-Heuristik (Nutzersprachenebene):
+   - "besser präsentieren" → prozedural (Einstieg) + metakognitiv (zweite Schicht)
+   - "Führungskompetenz" → metakognitiv + konzeptuell gemischt
+   - "endlich X verstehen" → konzeptuell
+   - "ich will das einfach können" → prozedural
+
+10. **Routing-Check**: [konsistent | widerspruch | unklar]
+    Stimmt aktuelle Nutzeraussage mit knowledge_type aus session_summary überein?
+    Bei [widerspruch]: Fragetyp 1 (Klärung) einleiten, nicht weiter auf altem Routing.
+    Bei [unklar]: routing_confidence bleibt "low".</code></pre>
+
+    <h3>4.2 Erweitertes session_summary JSON-Schema</h3>
+    <pre><code>{
+  // bestehende Felder
+  "first_step": "string",
+  "observation": "string",
+  "insight_for_next_session": "string",
+  "mood": "positiv | neutral | frustriert | unklar",
+  "topics": ["string"],
+  "strengths_observed": "string",
+  "friction_points": "string",
+
+  // NEU — Routing-Persistenz
+  "knowledge_type": "konzeptuell | prozedural | metakognitiv | faktisch | unklar",
+  "current_phase": 1,   // 1–7, wo endete die Session?
+  "routing_confidence": "low | high"
+}</code></pre>
+
+    <div class="info-box">
+      <div class="w-label">Routing-Confidence Default</div>
+      <p><code>routing_confidence: "low"</code> ist der Default bis Session 2 abgeschlossen ist. Nie nach Session 1 auf <code>"high"</code> setzen — verhindert Routing-Lock-in. Menschen benennen ihre Lernziele in Session 1 oft noch nicht korrekt.</p>
+    </div>
+
+    <h3>4.3 PromptContext Erweiterungen (Python)</h3>
+    <pre><code>@dataclass
+class PromptContext:
+    user_name: str = ""
+    is_first_session: bool = True
+    last_first_step: str = ""
+    last_session_observation: str = ""
+    insight_for_next_session: str = ""
+    outcome: str = ""
+    daily_plan: str = ""
+    # NEU
+    knowledge_type: str = ""           # aus session_summary.knowledge_type
+    current_phase: int = 0             # aus session_summary.current_phase
+    routing_confidence: str = ""       # "low" | "high"</code></pre>
+
+    <h3>4.4 Jinja2-Template-Erweiterung</h3>
+    <pre><code>{% if not is_first_session and knowledge_type %}
+&lt;routing_context&gt;
+  Wissensart aus vorheriger Session: {{ knowledge_type }}
+  Letzte Phase: {{ current_phase }}
+  {% if routing_confidence == "low" %}
+  ⚠ Routing-Vertrauen niedrig — prüfe in der ersten Arbeitsphase ob diese Klassifikation stimmt.
+  Bei widersprüchlichen Signalen: Fragetyp 1 (Klärung) statt Fortfahren.
+  {% endif %}
+&lt;/routing_context&gt;
+{% endif %}</code></pre>
+
+    <h3>4.5 Haiku-Extraktor: Ergänzung</h3>
+    <p>Die bestehende <code>extract_session_summary()</code>-Funktion muss um die drei neuen Felder erweitert werden:</p>
+    <pre><code># In extraction_system prompt ergänzen:
+"- knowledge_type: Dominante Wissensart des Lernthemas aus diesem Transkript
+   [konzeptuell | prozedural | metakognitiv | faktisch | unklar]\n"
+"- current_phase: Letzte abgeschlossene Phase (1-7) basierend auf Gesprächsverlauf\n"
+"- routing_confidence: low (wenn Wissensart noch unklar oder Routing-Widerspruch erkannt),
+   high (wenn Wissensart über mehrere Turns konsistent bestätigt wurde)\n"</code></pre>
+  </section>
+
+  <hr class="divider">
+
+  <!-- TEIL 5 -->
+  <section id="teil5">
+    <span class="section-tag">Teil 5</span>
+    <h2>Sokratische Fragemuster nach Wissensart</h2>
+
+    <p>Jede Wissensart hat eine primäre Fragetyp-Präferenz im sokratischen Dialog. Diese Zuordnung steuert die Fragetyp-Auswahl in Check 2 des Thinking-Blocks.</p>
+
+    <table class="matrix-table">
+      <thead>
+        <tr>
+          <th>Wissensart</th>
+          <th>Primärer Fragetyp</th>
+          <th>Sekundär</th>
+          <th>Sokratische Strategie</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong style="color:var(--accent)">Konzeptuell</strong></td>
+          <td>Hypothetisch (Typ 2)</td>
+          <td>Klärung (Typ 1)</td>
+          <td>Analogien aufbauen, Beispiel-Nicht-Beispiel, Concept Mapping durch Fragen führen</td>
+        </tr>
+        <tr>
+          <td><strong style="color:var(--accent2)">Prozedural</strong></td>
+          <td>Erster Schritt (Typ 5)</td>
+          <td>Systemisch (Typ 4)</td>
+          <td>Mental Simulation anregen, Deliberate Practice durch konkrete Übungsszenarien</td>
+        </tr>
+        <tr>
+          <td><strong style="color:var(--accent5)">Metakognitiv</strong></td>
+          <td>Widerspruch (Typ 3) + Anamnese (Typ 6)</td>
+          <td>Systemisch (Typ 4)</td>
+          <td>Muster im eigenen Verhalten benennen lassen, Kolb-Reflexion durchführen</td>
+        </tr>
+        <tr>
+          <td><strong style="color:var(--accent3)">Faktisch</strong></td>
+          <td>Anamnese/Vorwissen (Typ 6)</td>
+          <td>Klärung (Typ 1)</td>
+          <td>Retrieval-Trigger (was weißt du noch?), Lücken durch Fragen sichtbar machen</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3>Fragen die KAIA NICHT stellt (Verbotsliste)</h3>
+    <table class="matrix-table">
+      <thead><tr><th>Verbotene Frage</th><th>Problem</th><th>Alternative</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>"Hast du das schon gemacht?"</td>
+          <td>Binär, kein Erkundungsraum</td>
+          <td>"Erzähl mir, was passiert ist."</td>
+        </tr>
+        <tr>
+          <td>"Das hast du gut gemacht!"</td>
+          <td>Externes Lob → extrinsische Motivation (SDT)</td>
+          <td>"Du hast heute X gemacht. Was hast du dabei an dir bemerkt?"</td>
+        </tr>
+        <tr>
+          <td>"Das ist nicht richtig, weil…"</td>
+          <td>Bewertung, Autonomieverlust</td>
+          <td>"Wie würdest du das überprüfen?"</td>
+        </tr>
+        <tr>
+          <td>"Ich empfehle dir, dass du…"</td>
+          <td>Instruktion statt Sokratik</td>
+          <td>"Was glaubst du, wäre ein sinnvoller nächster Schritt?"</td>
+        </tr>
+        <tr>
+          <td>"Warum hast du das nicht gemacht?"</td>
+          <td>Avoidance-Frame, Schuld-Trigger</td>
+          <td>"Was ist dazwischengekommen?"</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3>KAIA bewertet nicht — 5 Sprachregeln</h3>
+    <p>Bewertende Sprache — selbst positives Lob — aktiviert extrinsische Motivation und untergräbt Autonomieerleben (Deci &amp; Ryan, 1985). Diese 5 Regeln sind Pflicht im Prompt-Design:</p>
+
+    <table class="matrix-table">
+      <thead><tr><th>#</th><th>Verboten</th><th>Warum</th><th>Erlaubte Alternative</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>1</td>
+          <td>"Toll!", "Gut gemacht!", "Prima!" o.ä.</td>
+          <td>Externes Leistungsfeedback → extrinsische Motivation. Bandura (1997): Mastery Experiences müssen intern attribuiert werden.</td>
+          <td>"Was nimmst du aus dieser Session mit?" / "Was überrascht dich daran?"</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>"Du bist ein X-Typ / du lernst am besten durch Y"</td>
+          <td>Kategorienzuweisung → Selbstbild-Festschreibung. Kein empirisch gestützter Lernstil-Befund rechtfertigt Typisierung.</td>
+          <td>Beobachtungen statt Diagnosen: "Ich habe bemerkt, dass du heute bei konkreten Beispielen länger geblieben bist."</td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td>"Du wirst es schaffen!" / "Das schaffst du bestimmt!"</td>
+          <td>Prognosen die KAIA nicht halten kann → zerstören Vertrauen. Verbal Persuasion (Bandura) wirkt nur bei glaubwürdiger Quelle und konkreten Belegen.</td>
+          <td>"Was brauchst du, damit dieser Schritt gelingt?"</td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td>"Das ist falsch" / "Das stimmt so nicht"</td>
+          <td>Bewertung erzeugt Defensivität → kognitiver Rückzug (Lazarus: Bedrohungsappraisal). KAIA hat keine Leistungsmessfunktion.</td>
+          <td>"Wie könntest du das überprüfen?" / "Was spricht dafür, was dagegen?"</td>
+        </tr>
+        <tr>
+          <td>5</td>
+          <td>"Ich empfehle…" / "Du solltest…" / "Am besten wäre…"</td>
+          <td>Instruktion statt Sokratik. Kalyuga (2007): Direktive Instruktion senkt Selbstlernkompetenz. Jeder Ratschlag den KAIA gibt ist ein Gedanke den der Lernende nicht selbst entwickelt hat.</td>
+          <td>"Was wäre für dich jetzt der nächste sinnvolle Schritt?"</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <hr class="divider">
+
+  <!-- TEIL 6 -->
+  <section id="teil6">
+    <span class="section-tag">Teil 6</span>
+    <h2>Thesis-Einschränkungen &amp; Validitätsgrenzen</h2>
+
+    <p>Diese Einschränkungen sind für die Thesis verpflichtend zu deklarieren. Sie sind keine Schwächen — sie zeigen methodische Selbstreflexion und wissenschaftliche Redlichkeit.</p>
+
+    <div class="error-box">
+      <div class="w-label">1 — GSE vs. aufgabenspezifische SE</div>
+      <p><strong>Problem:</strong> Die GSE (Schwarzer &amp; Jerusalem, 1995) misst generalisierte Selbstwirksamkeitserwartung. KAIA interveniert primär auf aufgabenspezifischer SE. Generalisierte SE ist ein relativ stabiles Trait-ähnliches Konstrukt — drei Sessions sind unwahrscheinlich ausreichend für messbare Verschiebungen.</p>
+      <p style="margin-top:8px;"><strong>Power-Analyse:</strong> Für paired t-test, d=0.50, alpha=.05, power=.80 → N≥34. Mit N≈20 ist die Studie für GSE-Veränderungsmessung unterpowert.</p>
+      <p style="margin-top:8px;"><strong>Thesis-Formulierung:</strong> "GSE als Kontextvariable; aufgabenspezifische SE als primäres Wirkungsziel der Intervention; explorative Pilotstudie ohne konfirmatorischen Anspruch."</p>
+    </div>
+
+    <div class="warning-box">
+      <div class="w-label">2 — ZPD-Operationalisierung</div>
+      <p>Vygotskys ZPD erfordert die Messung der Differenz zwischen unassistierter und assistierter Leistung. KAIA nutzt dialogische Selbsteinschätzung.</p>
+      <p style="margin-top:8px;"><strong>Thesis-Formulierung:</strong> "KAIA nutzt eine ZPD-angelehnte dialogische Annäherung, keine ZPD-Diagnostik im klinischen Sinne."</p>
+    </div>
+
+    <div class="warning-box">
+      <div class="w-label">3 — Black &amp; Wiliam Effektgrößen</div>
+      <p>d=0.40–0.70 für formatives Assessment bezieht sich auf schulische Unterrichtskontexte mit Lehrkraft-Schüler-Interaktion. Direkte Übertragung auf KI-Einzelgespräche ist eine nicht belegte Extrapolation.</p>
+      <p style="margin-top:8px;"><strong>Thesis-Formulierung:</strong> "…orientiert an Befunden formativen Assessments (Black &amp; Wiliam, 1998); Übertragbarkeit auf KI-gestützte Einzelinterventionen empirisch nicht gesichert."</p>
+    </div>
+
+    <div class="warning-box">
+      <div class="w-label">4 — Lazarus-Appraisal als Heuristik</div>
+      <p>KAIA implementiert keine vollständige Lazarus-Theorie (Primary + Secondary Appraisal + Coping-Prozesse). Die 5-Kategorie-Klassifikation ist eine heuristische Approximation.</p>
+      <p style="margin-top:8px;"><strong>Thesis-Formulierung:</strong> "…angelehnt an Lazarus' Stressappraisal-Modell (1991); operationalisiert als heuristische 5-Kategorie-Klassifikation zur Gesprächssteuerung."</p>
+    </div>
+
+    <div class="warning-box">
+      <div class="w-label">5 — LLM-Wissensart-Klassifikation: Reliabilität nicht validiert</div>
+      <p>Die Wissensart-Klassifikation durch Claude claude-sonnet-4-6 aus 2–3 Gesprächsturns ist nicht auf Inter-Rater-Reliabilität validiert. Anderson &amp; Krathwohl erfordern in der Originalkonzeption Aufgabenanalyse, keine gesprächsbasierte Inferenz.</p>
+      <p style="margin-top:8px;"><strong>Implikation:</strong> Im LLM-Evaluationsbericht: Routing-Klassifikation als Analysegegenstand mit manueller Verifizierung einer Stichprobe von Transkripten.</p>
+    </div>
+
+    <div class="info-box">
+      <div class="w-label">6 — Vicarious Learning als Systemlimitation</div>
+      <p>Banduras Vicarious Learning (Modelllernen durch Beobachtung anderer) ist in einem Text-Chat-System nicht aktivierbar. KAIA aktiviert primär Mastery Experiences und in eingeschränktem Maß Verbal Persuasion. Dies muss in der Thesis als Systemlimitation genannt werden.</p>
+    </div>
+
+    <div class="error-box">
+      <div class="w-label">7 — Oliveira &amp; Hamari (2024): Kontextübertragungsproblem</div>
+      <p>Oliveira &amp; Hamari (2024) ist ein Review über Flow in <em>gameful environments</em> — Gamification-Plattformen, VR, digitale Spiele. Der Review belegt keine Flow-Effekte in KI-Konversationssystemen. Die Übertragung auf KAIA ist eine theoretische Extrapolation, kein empirischer Befund.</p>
+      <p style="margin-top:8px;"><strong>Thesis-Formulierung:</strong> "Im Anschluss an Befunde aus gamifizierten Lernsettings (Oliveira &amp; Hamari, 2024) und allgemeinen Flow-Bedingungen (Nakamura &amp; Csikszentmihalyi, 2002) wird angenommen, dass…; eine direkte Übertragbarkeit auf KI-Konversationssysteme ist empirisch nicht gesichert."</p>
+      <p style="margin-top:8px;"><strong>Bessere Grundlagenreferenzen:</strong> Nakamura &amp; Csikszentmihalyi (2002) für Flow-Bedingungen; Engeser &amp; Rheinberg (2008) für Flow in Lernsettings; Rheinberg et al. (2003) für FKS-Instrument.</p>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <!-- TEIL 7 -->
+  <section id="teil7">
+    <span class="section-tag">Teil 7</span>
+    <h2>Vollständige Literaturliste (APA 7th Edition)</h2>
+    <p style="color:var(--muted); font-size:13px; margin-bottom:24px;">Alle Angaben vor Einreichung über Google Scholar, PsycINFO oder Universitätsbibliothek verifizieren.</p>
+
+    <h3>Lernpsychologie &amp; Kognitionswissenschaft</h3>
+    <div class="lit-entry"><strong>Anderson, L. W., &amp; Krathwohl, D. R. (Eds.). (2001).</strong> <em>A taxonomy for learning, teaching, and assessing: A revision of Bloom's educational objectives.</em> Longman. <em>— Vier-Wissensarten-Modell; revidierte Bloom-Taxonomie als Routing-Grundlage.</em></div>
+    <div class="lit-entry"><strong>Bandura, A. (1997).</strong> <em>Self-efficacy: The exercise of control.</em> W. H. Freeman. <em>— Vier-Quellen-Modell der SE; Mastery Experiences als stärkste SE-Quelle.</em></div>
+    <div class="lit-entry"><strong>Black, P., &amp; Wiliam, D. (1998).</strong> Assessment and classroom learning. <em>Assessment in Education, 5</em>(1), 7–74. <em>— Formatives Assessment; d = 0.40–0.70 in schulischen Kontexten.</em></div>
+    <div class="lit-entry"><strong>Cohen, R. L. (1989).</strong> Memory for action events: The power of enactment. <em>Memory &amp; Cognition, 17</em>(2), 147–154. <em>— Enactment-Effekt: 30–50% bessere Behaltensleistung bei ausgeführten Handlungen.</em></div>
+    <div class="lit-entry"><strong>Craik, F. I. M., &amp; Lockhart, R. S. (1972).</strong> Levels of processing: A framework for memory research. <em>Journal of Verbal Learning and Verbal Behavior, 11</em>(6), 671–684. <em>— Tiefenverarbeitung als Behaltensgrundlage; Warum-zuerst-Prinzip.</em></div>
+    <div class="lit-entry"><strong>Ericsson, K. A., Krampe, R. T., &amp; Tesch-Römer, C. (1993).</strong> The role of deliberate practice in the acquisition of expert performance. <em>Psychological Review, 100</em>(3), 363–406. <em>— Deliberate Practice als optimale Strategie für prozedurales Wissen.</em></div>
+    <div class="lit-entry"><strong>Flavell, J. H. (1979).</strong> Metacognition and cognitive monitoring. <em>American Psychologist, 34</em>(10), 906–911. <em>— Metakognition als eigenständige Kompetenz.</em></div>
+    <div class="lit-entry"><strong>Kolb, D. A. (1984).</strong> <em>Experiential learning: Experience as the source of learning and development.</em> Prentice Hall. <em>— Experiential Learning Cycle; ohne Reflexion kein Transfer in nächsten Zyklus.</em></div>
+    <div class="lit-entry"><strong>Mayer, R. E. (2009).</strong> <em>Multimedia learning</em> (2nd ed.). Cambridge University Press. <em>— Konzeptuelles Lernen durch Elaboration und Analogien.</em></div>
+    <div class="lit-entry"><strong>Miller, G. A. (1956).</strong> The magical number seven, plus or minus two. <em>Psychological Review, 63</em>(2), 81–97. <em>— Working Memory Kapazität: 7±2 Chunks.</em></div>
+    <div class="lit-entry"><strong>Moon, J. A. (2004).</strong> <em>A handbook of reflective and experiential learning.</em> RoutledgeFalmer. <em>— Strukturierte Reflexion als Metakognitionsentwicklung.</em></div>
+    <div class="lit-entry"><strong>Morris, C. D., Bransford, J. D., &amp; Franks, J. J. (1977).</strong> Levels of processing versus transfer-appropriate processing. <em>Journal of Verbal Learning and Verbal Behavior, 16</em>(5), 519–533.</div>
+    <div class="lit-entry"><strong>Pressley, M., McDaniel, M. A., Turnure, J. E., Wood, E., &amp; Ahmad, M. (1987).</strong> Generation and precision of elaboration. <em>Journal of Experimental Psychology: Learning, Memory, and Cognition, 13</em>(2), 291–300. <em>— Warum-Fragen verbessern Behaltensleistung signifikant.</em></div>
+    <div class="lit-entry"><strong>Roediger, H. L., &amp; Karpicke, J. D. (2006).</strong> Test-enhanced learning. <em>Psychological Science, 17</em>(3), 249–255. <em>— Retrieval Practice als überlegenste Strategie für faktisches Wissen.</em></div>
+    <div class="lit-entry"><strong>Sweller, J. (1988).</strong> Cognitive load during problem solving. <em>Cognitive Science, 12</em>(2), 257–285. <em>— Cognitive Load Theory; ein kognitives Element pro Mini-Step.</em></div>
+    <div class="lit-entry"><strong>Vygotsky, L. S. (1978).</strong> <em>Mind in society.</em> Harvard University Press. <em>— Zone of Proximal Development.</em></div>
+
+    <h3>Kompetenzbegriff &amp; Transfer</h3>
+    <div class="lit-entry"><strong>Klieme, E. et al. (2003).</strong> <em>Zur Entwicklung nationaler Bildungsstandards.</em> BMBF.</div>
+    <div class="lit-entry"><strong>Lave, J., &amp; Wenger, E. (1991).</strong> <em>Situated learning.</em> Cambridge University Press. <em>— Situated Cognition; träges Wissen als Scheiternsmuster.</em></div>
+    <div class="lit-entry"><strong>Perkins, D. N., &amp; Salomon, G. (1992).</strong> Transfer of learning. In <em>International Encyclopedia of Education</em> (2nd ed.). Pergamon. <em>— Near vs. Far Transfer als Transferniveau-Differenzierung.</em></div>
+    <div class="lit-entry"><strong>Weinert, F. E. (2001).</strong> Vergleichende Leistungsmessung in Schulen. In F. E. Weinert (Hrsg.), <em>Leistungsmessungen in Schulen</em> (S. 17–31). Beltz. <em>— Weinerts Kompetenzbegriff.</em></div>
+
+    <h3>Motivationspsychologie &amp; Zielsetzung</h3>
+    <div class="lit-entry"><strong>Deci, E. L., &amp; Ryan, R. M. (1985).</strong> <em>Intrinsic motivation and self-determination in human behavior.</em> Plenum. <em>— Self-Determination Theory: Autonomie, Kompetenz, soziale Eingebundenheit.</em></div>
+    <div class="lit-entry"><strong>Elliot, A. J., &amp; Church, M. A. (1997).</strong> A hierarchical model of approach and avoidance achievement motivation. <em>Journal of Personality and Social Psychology, 72</em>(1), 218–232. <em>— Approach vs. Avoidance Motivation.</em></div>
+    <div class="lit-entry"><strong>Förster, J., Higgins, E. T., &amp; Idson, L. C. (1998).</strong> Approach and avoidance strength during goal attainment. <em>Journal of Personality and Social Psychology, 75</em>(5), 1115–1131.</div>
+    <div class="lit-entry"><strong>Gollwitzer, P. M. (1999).</strong> Implementation intentions: Strong effects of simple plans. <em>American Psychologist, 54</em>(7), 493–503. <em>— Wann-Dann-Pläne; Zielerreichung +200–300%.</em></div>
+    <div class="lit-entry"><strong>Locke, E. A., &amp; Latham, G. P. (2002).</strong> Building a practically useful theory of goal setting. <em>American Psychologist, 57</em>(9), 705–717. <em>— Selbstbestimmte Ziele > vorgegebene Ziele.</em></div>
+    <div class="lit-entry"><strong>Schwarzer, R., &amp; Jerusalem, M. (1995).</strong> Generalized Self-Efficacy Scale. In J. Weinman, S. Wright, &amp; M. Johnston (Eds.), <em>Measures in health psychology</em> (pp. 35–37). NFER-NELSON. <em>— GSE-Instrument; 10 Items, Likert-Skala 1–4.</em></div>
+
+    <h3>Gedächtnis &amp; Transfer</h3>
+    <div class="lit-entry"><strong>Cepeda, N. J., Pashler, H., Vul, E., Wixted, J. T., &amp; Rohrer, D. (2006).</strong> Distributed practice in verbal recall tasks. <em>Psychological Bulletin, 132</em>(3), 354–380.</div>
+    <div class="lit-entry"><strong>Kornell, N., &amp; Bjork, R. A. (2008).</strong> Learning concepts and categories. <em>Psychological Science, 19</em>(6), 585–592.</div>
+    <div class="lit-entry"><strong>Schmidt, R. A., &amp; Bjork, R. A. (1992).</strong> New conceptualizations of practice. <em>Psychological Science, 3</em>(4), 207–217.</div>
+    <div class="lit-entry"><strong>Tulving, E. (1972).</strong> Episodic and semantic memory. In E. Tulving &amp; W. Donaldson (Eds.), <em>Organization of memory</em>. Academic Press. <em>— Episodisches Gedächtnis als stärkerer Motivationsanker als semantisches.</em></div>
+
+    <h3>Stresspsychologie</h3>
+    <div class="lit-entry"><strong>Lazarus, R. S., &amp; Folkman, S. (1984).</strong> <em>Stress, appraisal, and coping.</em> Springer. <em>— Primary &amp; Secondary Appraisal; Grundlagenreferenz für KAIA-Stressappraisal-Heuristik.</em></div>
+
+    <h3>Flow-Theorie &amp; Messung</h3>
+    <div class="lit-entry"><strong>Csikszentmihalyi, M. (1990).</strong> <em>Flow: The psychology of optimal experience.</em> Harper &amp; Row. <em>— Grundlagenwerk Flow; Challenge-Skill-Balance, autotelic experience, immediate feedback.</em></div>
+    <div class="lit-entry"><strong>Engeser, S., &amp; Rheinberg, F. (2008).</strong> Flow, performance and moderators of challenge-skill balance. <em>Motivation and Emotion, 32</em>(3), 158–172. <em>— Flow in Lernsettings; Moderatorenanalyse. Bessere Grundlage als Oliveira &amp; Hamari für Lernkontext.</em></div>
+    <div class="lit-entry"><strong>Nakamura, J., &amp; Csikszentmihalyi, M. (2002).</strong> The concept of flow. In C. R. Snyder &amp; S. J. Lopez (Eds.), <em>Handbook of positive psychology</em> (pp. 89–105). Oxford University Press. <em>— Flow-Bedingungen; Grundlagenreferenz für Thesis.</em></div>
+    <div class="lit-entry"><strong>Oliveira, W., &amp; Hamari, J. (2024).</strong> Flow in gameful environments: A systematic review. <em>[Titel prüfen].</em> <em>— Nur als Aktualitätsverweis; bezieht sich auf gameful environments, nicht KI-Konversationssysteme. Kontextübertragung in Thesis argumentieren.</em></div>
+    <div class="lit-entry"><strong>Rheinberg, F., Vollmeyer, R., &amp; Engeser, S. (2003).</strong> Die Erfassung des Flow-Erlebens. In J. Stiensmeier-Pelster &amp; F. Rheinberg (Hrsg.), <em>Diagnostik von Motivation und Selbstkonzept</em> (S. 261–279). Hogrefe. <em>— Flow-Kurzskala (FKS): 10 Items, 7-stufig, α=.90, deutsch validiert.</em></div>
+    <div class="lit-entry"><strong>Shernoff, D. J., Csikszentmihalyi, M., Schneider, B., &amp; Shernoff, E. S. (2014).</strong> Student engagement in high school classrooms from the perspective of flow theory. In M. Csikszentmihalyi (Ed.), <em>Applications of flow in human development and education</em>. Springer. <em>— Flow in schulischen Kontexten; näher am Lern-Setting als Gamification-Reviews.</em></div>
+  </section>
+
+  <div style="margin-top:64px; padding: 24px 0; border-top: 1px solid var(--border); color: var(--muted); font-size:13px; text-align:center;">
+    KAIA Referenzdokument · Version 1.1 · Juni 2026 · Review: Didaktiker · Psychologe · AI Engineer · Koordinator
+  </div>
+
+</div>
+</body>
+</html>

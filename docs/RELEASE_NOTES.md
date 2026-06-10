@@ -9,8 +9,31 @@
 
 ---
 
-**Stand heute:** Saturday, 07. June 2026  
-**72 Einträge insgesamt · 9 Release-Tage · ~45 h Gesamt-Aufwand**
+**Stand heute:** Tuesday, 10. June 2026  
+**73 Einträge insgesamt · 10 Release-Tage · ~51 h Gesamt-Aufwand**
+
+---
+
+## 2026-06-10 — Lerndesign-Fundament vollständig (Theorie-Sprint)
+
+**Was sich verändert hat:** Das didaktische und psychologische Fundament von KAIA wurde heute in einem intensiven Theorie-Sprint vollständig überarbeitet und dokumentiert. Kein Code-Commit — aber die Grundlage für alles was als nächstes implementiert wird.
+
+**Kernentscheidungen:**
+
+- **10-Session-Design statt 3** — Bloom-Progression erfordert kumulativen Aufbau. 3 Sessions erreichen maximal Bloom 3; Transfer und Metakognition (Bloom 5–6) brauchen Sessions 9–10.
+- **Session-Dauer**: Sessions 1–2: 20–30 Min. (Foundation); Sessions 3–10: 10–15 Min. (Micro-Sessions). Gesamtaufwand ~172 Min. in 4 Wochen.
+- **Flow-Kurzskala (FKS)** als zusätzliches Messinstrument nach Session 2, 5, 8, 10 — Verlaufsanalyse neben GSE.
+- **Kolb-konforme Phasenkorrektur**: Challenge NACH Konsolidierung (nicht davor).
+- **Routing-Confidence "low" als Default** bis Session 2 — verhindert Routing-Lock-in nach nur 2–3 Turns.
+- **KAIA bewertet nicht — 5 Sprachregeln**: Kein Lob, keine Typisierungen, keine Prognosen, keine Bewertungen, keine Ratschläge.
+- **Session-Abschluss-Feature designed**: KAIA generiert Abschluss-Bubble vor echtem Session-End (Gagné's 9. Unterrichtsereignis). Max. 2 Exchanges. Kein Paternalismus (kein Early-Exit-Detektor).
+- **In-Session Feedback Buttons designed**: Transfer-Marker ("Muss ich weiterdenken"), Engagement ("Wow"), Metacognitive ("Ich hänge gerade", "Das verstehe ich noch nicht"). Basiert auf EMA und Experience Sampling. Transfer-Marker werden als Cross-Session-Anker gespeichert.
+- **Oliveira & Hamari (2024) richtig kontextualisiert**: Review über gameful environments, nicht KI-Konversationssysteme — Übertragbarkeit in Thesis argumentieren.
+
+**Thesis-Relevanz:** Kapitel 3 (Rahmenwerk), 4 (Implementierung), 6 (Pilotstudie) aktualisiert. STUDIENPROTOKOLL aktualisiert. Vollständiges HTML-Referenzdokument erstellt (kaia_lerndesign_referenz.html v1.1). Feature-Spec für Chat-Core-V2 erstellt.
+
+**Aufwand:** ~6h Theorie-Sprint (Teamdiskussion 5 Agenten)
+**Kategorie:** Docs · Design
 
 ---
 

@@ -80,6 +80,24 @@
 - [ ] **User Hard-Delete** — Admin kann User ohne Einwilligung löschen (DSGVO Art. 17 Admin-Perspektive); Audit-Log-Pflicht
 - [ ] **Audit-Log-Seite** — Alle DSGVO-relevanten Aktionen chronologisch
 
+### Chat-Core-V2: Session-Abschluss mit Closure-Phase
+- [ ] **Closing-Endpoint** — `POST /api/v1/chat/sessions/{id}/closing`: KAIA generiert Abschluss-Bubble via SSE (wie /opening) ohne User-Input. `extract_session_summary()` läuft erst danach.
+- [ ] **Chat-UI Abschluss-Flow** — Neuer Frontend-State "pending_closure": KAIA's Abschluss-Bubble als normale Chat-Bubble, darunter [Antworten] (primär, volle Breite) · [Jetzt wirklich beenden] (Ghost-Link). Mobile: vertikal gestackt. Kein Modal/Overlay.
+- [ ] **Timeout-Handling nach Closure** — Nach 10 Min. Inaktivität post-Closing → automatisches Session-End mit sichtbarer Notification im Chat. Client-seitig implementiert.
+- [ ] **aria-live="polite" auf Nachrichten-Container** — Pflicht für Screen Reader. Muss gleichzeitig mit Closing-Feature implementiert werden.
+
+### Chat-Core-V2: In-Session Feedback Buttons
+- [ ] **session_feedback Tabelle** — Schema: `id, session_id, user_id, feedback_type ENUM('transfer_marker', 'engagement', 'stuck', 'unclear'), message_id FK NULLABLE, created_at`. Alembic-Migration.
+- [ ] **Feedback-Endpoint** — `POST /api/v1/chat/sessions/{id}/feedback` — nimmt `feedback_type`, optional `message_id`. Speichert in DB.
+- [ ] **Feedback-Buttons Frontend** — 4 Buttons neben Chat: "Muss ich weiterdenken" / "Wow — das trifft was" / "Ich hänge gerade" / "Das verstehe ich noch nicht". Kein Gamification (keine Animation, keine Punkte). Dezente Platzierung rechts neben Chat oder unter Eingabefeld.
+- [ ] **KAIA-Reaktion auf metacognitive Buttons** — Bei "Ich hänge gerade" und "Das verstehe ich noch nicht": KAIA sendet Meta-Frage als Trigger-Message ins Chat ("Was hängt gerade?" — Fragetyp Klärung). KEIN Modus-Switch (Hysterese-Logik bleibt intakt).
+- [ ] **Cross-Session Transfer-Anker** — "Muss ich weiterdenken"-Klicks werden in session_summary.transfer_markers[] gespeichert. Haiku-Extraktor: neue Felder `transfer_markers`, `knowledge_type`, `current_phase`, `routing_confidence`.
+
+### Chat-Core-V2: Backend-Erweiterungen
+- [ ] **session_summary JSON-Schema erweitern** — Neue Felder: `knowledge_type` (konzeptuell|prozedural|metakognitiv|faktisch|unklar), `current_phase` (1-7), `routing_confidence` (low|high). Default: routing_confidence="low" bis Session 2.
+- [ ] **PromptContext + render_prompt erweitern** — Neue Felder `knowledge_type`, `current_phase`, `routing_confidence` + Jinja2-Block `routing_context`.
+- [ ] **Thinking-Block Check 9 + 10** — Check 9: Wissensart-Klassifikation (welche der 4 Wissensarten nach Anderson & Krathwohl?). Check 10: Routing-Konsistenz-Check (passt aktuelle Frage zur routing_confidence?).
+
 ---
 
 ## 🟡 PRE-STUDY — Vor Hauptstudie
@@ -91,6 +109,9 @@
 - [ ] **Statistischer Analyseplan** — Welche Tests, Assumptions, Confounder-Kontrolle — vor Datensicht
 - [ ] **Conflict-of-Interest-Statement** — Im Thesis-Methodik-Kapitel offen deklarieren
 - [ ] **Inter-Rater-Reliabilität** — Zweiten Codierer für qualitative Analyse identifizieren; Cohen's Kappa ≥ 0.70 anstreben
+- [ ] **FKS-Integration** — Flow-Kurzskala (Rheinberg et al., 2003): 10 Items, 7-stufig, nach Session 2, 5, 8, 10. Frontend-Form, DB-Tabelle `fks_results`, API-Endpoint.
+- [ ] **Teilnahmevereinbarung aktualisieren** — Mindestens 10 Sessions (nicht 3) als Anforderung, Session-Dauer-Empfehlung (Sessions 1–2: 20–30 Min., Sessions 3–10: 10–15 Min.), FKS als 3. Messinstrument erwähnen.
+- [ ] **AUSWERTUNG.md aktualisieren** — Session-Mindestanzahl in SQL-Query von 3 auf 10 anpassen. FKS-Auswertungs-Queries ergänzen.
 
 ### Technisch
 - [ ] **Consent-Version-Tracking** — consent_version in DB; Re-Consent-Flow bei Formular-Updates
@@ -142,7 +163,7 @@
 | Bereich | Offen | Kategorie |
 |---|---|---|
 | Blocker | 25 | Vor Studienstart |
-| Pre-Pilot | 19 | Vor n=3-5 |
-| Pre-Study | 18 | Vor Hauptstudie |
+| Pre-Pilot | 31 | Vor n=3-5 |
+| Pre-Study | 21 | Vor Hauptstudie |
 | Post-Thesis | 11 | Für Produkt |
-| **Gesamt** | **73** | |
+| **Gesamt** | **88** | |

@@ -1,9 +1,9 @@
 # Kapitel 3 — Konzeptionelles Rahmenwerk
 
-> **Stand:** 06. Juni 2026 · **Version:** 1.1-DRAFT  
-> **Reviewer:** Psychologe (3.2, 3.3) ✓ · AI Engineer (3.3–3.6) ✓ · Didaktiker (3.6) ✓ · Architect  
+> **Stand:** 10. Juni 2026 · **Version:** 1.2-DRAFT  
+> **Reviewer:** Psychologe (3.2, 3.3) ✓ · AI Engineer (3.3–3.6) ✓ · Didaktiker (3.6–3.8) ✓ · Architect  
 > **Geplanter Umfang:** ca. 20–25 Seiten (~5.000–6.000 Wörter)  
-> **Status:** Fünf Systemkomponenten — Transparenz-Layer als 5. Komponente ergänzt (v1.1)
+> **Status:** 10-Session-Design, Kolb-Korrektur, Flow-Messung, Sprachregeln, Wissensarten-Routing ergänzt (v1.2)
 
 ---
 
@@ -139,20 +139,50 @@ Eine verbleibende Lücke: Kein Modus adressiert explizit den Aufbau mentaler Mod
 
 Die sechs Fragetypen sind die Mindestspezifikation für Reproduzierbarkeit. Im LLM-Evaluationsbericht (Kapitel 5) wird getestet welches Modell diese Typen konsistent und korrekt anwendet, und insbesondere: ob die systemische Frage und die Erste-Schritt-Frage zum richtigen Zeitpunkt eingesetzt werden.
 
-### 3.3.5 Session-Architektur: Drei-Phasen-Skript
+### 3.3.5 Session-Architektur: 10-Session-Design mit Bloom-Progression
 
-Basierend auf Hattie & Timperley (2007), Anderson & Krathwohl (2001) und Erkenntnissen zu Spaced Learning (Cepeda et al., 2006) folgt jede KAIA-Session einem internen Drei-Phasen-Skript. Dieses Skript ist ein Prompt-Engineering-Konzept — es ist nicht als Interface-Element sichtbar. Die Phasengrenzen sind fließend und zeitbasiert, nicht rigid.
+#### 3.3.5.1 Strukturelle Grundentscheidung: Warum 10 Sessions?
 
-**Phase 1 — Aktivierung (erste 60–90 Sekunden):**  
-Einstiegsfrage: *"Was möchtest du nach dieser Session verstanden oder weitergedacht haben?"* Diese Frage aktiviert Vorwissen (Ausubel, 1968), erzwingt eine Lernintention (Locke & Latham, 1990) und orientiert das LLM auf den aktuellen Fokus. Ohne diese Aktivierung beginnt KAIA reaktiv — ein didaktisches Defizit.
+Das ursprüngliche Konzept implizierte drei Sessions ohne explizite Progression. Dieses Design ist didaktisch nicht ausreichend begründet. Drei Sitzungen ermöglichen allenfalls einen ersten Orientierungsdialog, aber keinen messbaren Lernfortschritt im Sinne einer Bloom-Eskalation. Die Mindestrequirements für einen nachweisbaren Kompetenzaufbau ergeben sich aus zwei Quellen: dem Spaced-Learning-Prinzip (Cepeda et al., 2006), das verteiltes Üben über Zeit als Voraussetzung nachhaltiger Enkodierung beschreibt, und der kumulativen Logik der Bloom-Taxonomie (Anderson & Krathwohl, 2001), die höhere kognitive Operationen (Analysieren, Bewerten, Erschaffen) nur auf einer gefestigten Wissens- und Verstehensbasis erlaubt. Aus diesen beiden Anforderungen ergibt sich eine Mindestarchitektur von 10 Sessions.
 
-**Phase 2 — Arbeitsphase (Kernzeit der Session):**  
+#### 3.3.5.2 Bloom-Progression über die 10 Sessions
+
+Die 10 Sessions sind in vier Cluster gegliedert, die jeweils eine Bloom-Progressionsstufe abdecken. Innerhalb der Cluster ist keine starre Schrittfolge vorgegeben — die Progression ist Designleitlinie, kein Algorithmus. Das System erkennt durch Cross-Session-Gedächtnis, auf welcher Verständnisstufe sich der Lernende tatsächlich befindet, und passt die Fragetypen entsprechend an.
+
+**Sessions 1–2: Bloom-Stufen 1–2 (Erinnern, Verstehen) — Terrain kartieren**
+
+Ziel dieser Sessions ist nicht Wissensvermittlung, sondern epistemische Verortung: Welche Vorannahmen, welches Vorwissen und welche Lücken bringt der Lernende mit? Session 2 beginnt obligatorisch mit einem Callback auf Session 1: *"Du hast beim letzten Mal gesagt, dass X — ist das noch so, oder hat sich deine Einschätzung verschoben?"* Dieser Callback dient zwei Zwecken: Er aktiviert Spaced Retrieval (Cepeda et al., 2006) und signalisiert dem Lernenden, dass das System erinnert und ernst nimmt, was gesagt wurde. Methodisch dominieren Anamnese-Fragen (Typ 6) und Klärungsfragen (Typ 1) aus dem sokratischen Fragetypenrepertoire.
+
+**Sessions 3–5: Bloom-Stufen 2–4 (Verstehen, Anwenden, Analysieren) — Transfer in den Alltag**
+
+Ab Session 3 verschiebt sich der Schwerpunkt von der Verortung zur Anwendung. Systemische Fragen (Typ 4) und Erste-Schritt-Fragen (Typ 5) dominieren. Der Erster-Schritt-Loop (Abschnitt 3.3.6) entfaltet hier seine volle Wirkung: jede Session endet mit einem konkreten Handlungsauftrag, jede Folgesession beginnt mit der Überprüfung. Session 5 markiert die Halbzeit und enthält einen obligatorischen Spiegel: *"Was weißt du jetzt, das du vor fünf Sessions noch nicht wusstest?"* Diese Frage operiert auf Bloom-Stufe 2 (Verstehen) und bereitet die Analysephase vor, indem sie Wissensfortschritt explizit sichtbar macht.
+
+**Sessions 6–8: Bloom-Stufen 4–5 (Analysieren, Bewerten) — Widerspruchsarbeit**
+
+Diese Sessions sind die didaktisch anspruchsvollste Phase. Widerspruchsfragen (Typ 3) dominieren. KAIA arbeitet aktiv aus dem Profil-Gedächtnis: *"In Session 3 hast du gesagt, dass X. Jetzt sagst du Y. Was hat sich verändert?"* Diese cross-sessionalen Widerspruchsfragen sind der operative Kern des Analysemodus. Sie erzeugen kognitive Dissonanz (Festinger, 1957) ohne Bedrohungsappraisal, weil sie auf selbstgeäußertes Material zurückgreifen, nicht auf Fremdurteile. Bloom-Stufe 5 (Bewerten) wird durch hypothetische Fragen (Typ 2) adressiert: der Lernende entwickelt Bewertungskriterien, anstatt sie übernehmen zu müssen.
+
+**Sessions 9–10: Bloom-Stufen 5–6 (Bewerten, Erschaffen) — Synthese und Autonomisierung**
+
+Die Abschlussphase richtet sich explizit auf Transfer-Autonomie: Was hat der Lernende erarbeitet, und wie wird er nach dem Ende der Studienphase damit weiterarbeiten? Session 10 enthält zwei obligatorische Strukturelemente: (1) die Frage *"Wie wirst du ohne mich weiterlernen?"* — sie operiert auf Bloom-Stufe 6 (Erschaffen) und erzwingt die Produktion einer eigenen Lernstrategie; (2) die Gegenüberstellung von Lernfaden-Einträgen aus Session 1 und Session 9 — der Lernende sieht seine eigene kognitive Entwicklung in seinen eigenen Worten. Diese Gegenüberstellung ist das stärkste Selbstwirksamkeits-Instrument des gesamten Designs (Bandura, 1997: Mastery Experience durch Reflexion auf eigene Leistung).
+
+#### 3.3.5.3 Session-Dauer und Gesamtaufwand
+
+Die Sessiondauer folgt einer begründeten Asymmetrie: Die ersten beiden Sessions dauern 20–30 Minuten, da sie den gesamten kontextuellen Aufbau leisten, den das Gedächtnissystem später übernimmt. Ab Session 3 sind 10–15 Minuten als Micro-Session-Format vorgesehen — das Cross-Session-Gedächtnis (Abschnitt 3.5) übernimmt den Kontextaufbau, sodass jede Session ohne Einführungsphase in die eigentliche kognitive Arbeit einsteigen kann. Der Gesamtaufwand über vier Wochen beträgt kalkulatorisch ca. 150 Minuten Chatzeit, ergänzt durch vier FKS-Erhebungen (Flow-Kurzskala, Rheinberg et al., 2003; nach Sessions 2, 5, 8, 10) und die GSE-Prä/Post-Messung (General Self-Efficacy Scale, Schwarzer & Jerusalem, 1995). Der Gesamtaufwand für Teilnehmende beläuft sich auf ca. 172 Minuten über die Studiendauer — ein vertretbares Maß für eine explorative Pilotstudie mit zwanzig Teilnehmenden.
+
+#### 3.3.5.4 Das Drei-Phasen-Skript als Mikrostruktur jeder Session
+
+Unabhängig von der übergreifenden Bloom-Progression folgt jede einzelne Session einem internen Drei-Phasen-Skript, basierend auf Hattie & Timperley (2007) und Merrill (2002). Dieses Skript ist ein Prompt-Engineering-Konzept — es ist nicht als Interface-Element sichtbar. Die Phasengrenzen sind fließend und zeitbasiert, nicht rigid.
+
+**Phase 1 — Aktivierung (erste 60–90 Sekunden):**
+Einstiegsfrage: *"Was möchtest du nach dieser Session verstanden oder weitergedacht haben?"* Diese Frage aktiviert Vorwissen (Ausubel, 1968), erzwingt eine Lernintention (Locke & Latham, 1990) und orientiert das LLM auf den aktuellen Fokus. Ab Session 2 wird die Aktivierungsphase durch den Callback auf den offenen Schritt der Vorwoche ersetzt oder ergänzt.
+
+**Phase 2 — Arbeitsphase (Kernzeit der Session):**
 KAIA wechselt nach Lazarus-Signal in den jeweils angemessenen Modus (sokratisch / scaffolding / herausfordernd). Maximal eine Frage pro Antwort. Antworten unter 80 Wörtern (Scaffolding-Modus: unter 120 Wörtern). Keine Listen. Keine Bullet Points.
 
-**Phase 3 — Sicherung und Transfer (letzte 60–90 Sekunden):**  
-Abschlussfrage: *"Was würdest du jemandem erklären, der nicht dabei war?"* Diese Frage erzwingt Elaboration (Bloom: Verstehen/Anwenden), ist als Transfer-Aufgabe konzipiert (Merrill, 2002) und liefert gleichzeitig Material für die Post-Session-Profil-Extraktion. Der UX-Designer bestätigt: Diese Abschlussfrage ist das einzige session-strukturelle Element das ins Interface gehört — als natürliche Gesprächsgeste, nicht als pädagogisches Formular.
+**Phase 3 — Sicherung und Transfer (letzte 60–90 Sekunden):**
+Abschlussfrage: *"Was würdest du jemandem erklären, der nicht dabei war?"* Diese Frage erzwingt Elaboration (Bloom: Verstehen/Anwenden), ist als Transfer-Aufgabe konzipiert (Merrill, 2002) und liefert gleichzeitig Material für die Post-Session-Profil-Extraktion.
 
-**Hinweis zur Interface-Umsetzung** (nach UX-Designer-Review): Die Drei-Phasen-Struktur bleibt für Nutzende unsichtbar. Was sichtbar ist: Die Einstiegs- und Abschlussfrage als natürliche Gesprächsbestandteile. Fortschrittsanzeigen oder Phasenlabels ("Phase: Sicherung") sind verboten — sie zerstören den kognitiven Flow (Oliveira & Hamari, 2024) und infantilisieren erwachsene Lernende (Knowles, 1980).
+**Hinweis zur Interface-Umsetzung** (nach UX-Designer-Review): Die Drei-Phasen-Struktur bleibt für Nutzende unsichtbar. Fortschrittsanzeigen oder Phasenlabels ("Phase: Sicherung") sind verboten — sie zerstören den kognitiven Flow und infantilisieren erwachsene Lernende (Knowles, 1980).
 
 ### 3.3.6 Erster-Schritt-Loop: Der GSE-Aufbau-Mechanismus
 
@@ -187,9 +217,84 @@ Jede Session beginnt anders — das unterstützt den Wiederbesuchs-Anreiz und ve
 
 **Was explizit verboten ist:** Erfundene Alltagsgeschichten ("Heute morgen habe ich..."), fabricated emotions ("Ich war traurig als..."), oder Behauptungen die menschliche Körperlichkeit voraussetzen. KAIA ist eine KI — das ist keine Einschränkung sondern eine Eigenheit, die ehrlich kommuniziert wird und die eigene Form von Authentizität erlaubt.
 
----
+### 3.3.8 Phasenkorrektur: Kolb-konforme Sequenzierung im 7-Phasen-Metamodell
 
-## 3.4 Komponente 3: Persönliche Lernroadmap
+In früheren Entwürfen der Session-Architektur wurde die Challenge-Phase vor der Konsolidierungsphase platziert. Diese Sequenzierung ist theoretisch nicht haltbar. Kolbs Experiential Learning Cycle (1984) beschreibt eine invariante Abfolge: konkrete Erfahrung → reflektierende Beobachtung → abstrakte Begriffsbildung → aktives Experimentieren. Eine herausfordernde Widerspruchsfrage — die Challenge — greift auf die Abstraktionsstufe zu; sie setzt voraus, dass Reflexion und Begriffsbildung bereits stattgefunden haben. Eine Challenge vor der Konsolidierung ist didaktisch äquivalent zu einer Prüfung vor dem Unterricht.
+
+Die korrekte Sequenz des KAIA-Phasenmodells lautet damit:
+
+> Motivationsanker → Lerntyp-Routing → Standortbestimmung → Mini-Step (Enactment/Konkrete Erfahrung) → Konsolidierung (Reflexion + Begriffsbildung) → Challenge (Abstraktion/Widerspruch) → Transfer/Reflexion (Aktives Experimentieren)
+
+Diese Korrektur ist nicht nur ein Ordnungsproblem. Sie hat eine unmittelbare Prompt-Engineering-Konsequenz: Der Trigger für Widerspruchsfragen (Fragetyp 3) und kritisch-herausfordernde Formulierungen darf erst nach dem Enactment-Schritt aktiviert werden. Ein System, das herausfordert bevor es Sicherheit aufgebaut hat, produziert Bedrohungsappraisal statt Lernmotivation — ein Fehler, den das Lazarus-Modell präzise vorhersagt.
+
+### 3.3.9 Flow-Theorie als Designrahmen: Csikszentmihalyi, Rheinberg und die Messung
+
+#### 3.3.9.1 Theoretische Grundlage
+
+Flow bezeichnet nach Csikszentmihalyi (1990) einen Zustand vollständiger Aufmerksamkeitsabsorption, der durch vier Bedingungen konstituiert wird: klare Ziele, unmittelbares Feedback, ein ausgewogenes Challenge-Skill-Verhältnis sowie eine autotelic experience — das Erleben der Tätigkeit als intrinsisch befriedigend. Die lernpsychologisch relevante Operationalisierung von Flow in Lernsettings liefern Nakamura & Csikszentmihalyi (2002) und Engeser & Rheinberg (2008), die Flow als messbaren Zustand mit stabilen empirischen Korrelaten beschreiben.
+
+Für KAIA ist die Challenge-Skill-Balance die kritischste Bedingung. Ohne Bloom-Eskalation über die Sessions hinweg tendiert das System ab Session 4–5 in den Boredom-Quadrant: die Anforderungen stagnieren, die Kompetenzen wachsen, das Challenge-Skill-Verhältnis kippt unter die Flow-Schwelle. Umgekehrt führt eine zu schnelle Bloom-Eskalation in den Anxiety-Quadrant — Überforderung, Bedrohungsappraisal und Motivationsabbruch. Das 10-Session-Design (Abschnitt 3.3.5) ist aus dieser Perspektive nicht nur eine taxonomische Struktur, sondern eine Flow-Schutzarchitektur.
+
+**Einschränkung zur Primärquelle:** Die Referenz Oliveira & Hamari (2024) in früheren Entwürfen dieses Kapitels bezog sich auf gameful environments und gamification-Kontexte, nicht auf KI-Konversationssysteme. Diese Übertragung ist nicht ohne weiteres zulässig. In dieser Arbeit werden stattdessen Nakamura & Csikszentmihalyi (2002) und Engeser & Rheinberg (2008) als Primärquellen für Flow in Lernsettings verwendet.
+
+#### 3.3.9.2 KAIA-Mapping: Vier Flow-Bedingungen
+
+Das KAIA-Design adressiert die vier Flow-Bedingungen wie folgt:
+
+*Klare Ziele:* Die Lernroadmap (Abschnitt 3.4) und die Mikroziel-Anker zu Sessionstart (Phase 1 des Drei-Phasen-Skripts) erfüllen diese Bedingung strukturell. Kein KAIA-Gespräch beginnt ohne explizite Lernintention.
+
+*Unmittelbares Feedback:* Der Enactment-Effekt (Cohen, 1989) liefert Feedback durch konkrete Handlungserfahrungen zwischen den Sessions. Die Cross-Session-Brücke ("Du wolltest X ausprobieren — wie war das?") ist das einzige unmittelbare Feedback-Element innerhalb des Systems. Diese Bedingung ist im Vergleich zu den anderen am schwächsten erfüllt: KAIA gibt kein Leistungsfeedback und kann es auch nicht geben, ohne in die bewertende Sprache zu verfallen (vgl. Abschnitt 3.3.10). Die FKS-Messung nach jeder zweiten Session liefert hier gleichzeitig Forschungsdaten und eine Form von indirektem Meta-Feedback für das System.
+
+*Challenge-Skill-Balance:* Dies ist das strukturell kritischste Element. Die Bloom-Progression (Abschnitt 3.3.5.2) ist die primäre Designantwort. Ergänzend steuert das regelbasierte Adaptionssystem (Abschnitt 3.2) situativ: Überforderungssignale lösen den Scaffolding-Modus aus (Anxiety-Quadrant verlassen), Unterforderungssignale den kritisch-herausfordernden Modus (Boredom-Quadrant verlassen).
+
+*Autotelic Experience:* Sokratische Begleitung fördert epistemische Neugier, weil sie das Denken als befriedigende Tätigkeit inszeniert — der Lernende löst Probleme, statt Lösungen zu konsumieren. Dies ist die stärkste autotelic-Eigenschaft des KAIA-Designs und gleichzeitig schwer messbar.
+
+#### 3.3.9.3 Messung: Flow-Kurzskala (FKS)
+
+Als Erhebungsinstrument wird die Flow-Kurzskala (FKS) nach Rheinberg, Vollmeyer & Engeser (2003) eingesetzt. Die FKS umfasst 10 Items auf siebenstufigen Likert-Skalen (1 = trifft nicht zu, 7 = trifft zu) und erfasst zwei Faktoren: Fluency (glatter Handlungsablauf, Selbstvergessenheit) und Absorbiertheit (Aufmerksamkeitszentrierung, Zeitwahrnehmungsverzerrung). Die Skala weist eine interne Konsistenz von α ≥ .90 auf (Rheinberg et al., 2003) und ist für den deutschsprachigen Raum validiert.
+
+Die FKS wird nach den Sessions 2, 5, 8 und 10 erhoben. Diese vier Messzeitpunkte decken alle vier Bloom-Cluster ab und erlauben die Analyse des Flow-Verlaufs über die Studienphase als Längsschnittdimension. Die Messung unmittelbar nach der Session — nicht erst Stunden später — ist für die ökologische Validität der FKS essenziell (Rheinberg et al., 2003).
+
+### 3.3.10 Sprachprinzip: KAIA bewertet nicht
+
+#### 3.3.10.1 Theoretische Begründung
+
+Bewertende Sprache untergräbt Autonomieerleben. Die Selbstbestimmungstheorie (Deci & Ryan, 1985) unterscheidet zwischen informationalem und kontrollierendem Feedback: Informational feedback unterstützt Kompetenzerleben und intrinsische Motivation; kontrollierendes Feedback — positiv wie negativ — reduziert wahrgenommene Selbstbestimmung und schwächt intrinsische Motivation (Ryan & Deci, 2000). Pauschal-positives Feedback ("Toll!", "Gut gemacht!") ist eine Sonderform kontrollierenden Feedbacks: Es externalisiert den Bewertungsmaßstab, macht den Lernenden von der Bestätigung durch das System abhängig und erzeugt extrinsische Motivation, wo intrinsische entstehen sollte.
+
+Für ein System das Selbstwirksamkeit stärken will, ist bewertende Sprache strukturell kontraproduktiv. Banduras (1997) vierte Quelle von Selbstwirksamkeit — Verbal Persuasion — erfordert eine glaubwürdige Quelle und spezifische Evidenz, um wirksam zu sein. "Du schaffst das!" von einem KI-System ohne spezifische Grundlage ist keine Verbal Persuasion; es ist Rauschen.
+
+#### 3.3.10.2 Fünf operative Sprachregeln
+
+Diese Regeln sind nicht Stilempfehlungen, sondern Prompt-Constraints, die das LLM-Verhalten als Negativliste einschränken:
+
+**Regel 1 — Kein pauschales Lob.** Formulierungen wie "Toll!", "Ausgezeichnet!", "Sehr gut!" sind verboten. Sie externalisieren den Bewertungsmaßstab und erzeugen extrinsische Verstärkung statt intrinsischer Motivation (Deci & Ryan, 1985). Erlaubt ist spezifisches, attributionales Spiegeln: "Du hast gerade X und Y selbst verknüpft" — das ist eine Beobachtung, kein Urteil.
+
+**Regel 2 — Keine Typisierungen.** Aussagen wie "Du bist ein analytischer Typ" oder "Du lernst visuell" schreiben ein Selbstbild fest, das der Lernende möglicherweise nicht bestätigen will. Typisierungen reduzieren die Komplexität eines Menschen auf eine Kategorie und schränken zukünftige Selbstwahrnehmung ein (Dweck, 2006: Mindset-Theorie).
+
+**Regel 3 — Keine Prognosen.** "Du wirst das schaffen" oder "Das klingt nach einem sehr erfolgreichen Weg" sind verbal-persuasive Aussagen, die nur dann Selbstwirksamkeit aufbauen, wenn die Quelle glaubwürdig ist und spezifische Evidenz vorliegt (Bandura, 1997). Ohne diese Bedingungen sind sie Schmeichelei, keine Unterstützung.
+
+**Regel 4 — Keine inhaltlichen Bewertungen.** "Das ist falsch", "Das ist ein Missverständnis", "Das siehst du nicht ganz richtig" aktivieren Bedrohungsappraisal (Lazarus & Folkman, 1984) und Defensivität. Die Alternative ist die Widerspruchsfrage (Fragetyp 3): "In Session 3 hast du X gesagt — wie verhält sich das zu dem, was du gerade sagst?"
+
+**Regel 5 — Keine Ratschläge.** "Ich empfehle dir...", "Du solltest..." sind Aussagen, die einen kognitiven Vorgang abschließen, den der Lernende selbst vollziehen muss. Jede Empfehlung ist ein Gedanke, den der Lernende nicht selbst entwickelt hat (Kalyuga, 2007). Die Konsequenz: Wo ein Ratschlag entsteht, steht stattdessen eine Erste-Schritt-Frage (Fragetyp 5).
+
+#### 3.3.10.3 Operative Alternative: Elaborative Interrogation
+
+Die konstruktive Alternative zu bewertender Sprache ist die elaborative Interrogation (Woloshyn et al., 1992): Fragen, die Erklärungen und Begründungen einfordern, ohne das Ergebnis vorwegzunehmen. Typische Formulierungen: "Was hast du dabei bemerkt?", "Wie würdest du das überprüfen?", "Was würde jemand einwenden, der anderer Meinung ist?" Diese Fragen erzeugen tiefen Verarbeitungsgrad (Craik & Lockhart, 1972) ohne Bewertungsimplikation.
+
+### 3.3.11 Wissensarten als Routing-Grundlage: Anderson & Krathwohl (2001)
+
+Die revidierte Bloom-Taxonomie (Anderson & Krathwohl, 2001) unterscheidet nicht nur zwischen Kognitionsstufen, sondern auch zwischen vier Wissensarten: Faktisches Wissen (deklarative Fakten und Terminologie), Konzeptuelles Wissen (Kategorien, Prinzipien, Theorien), Prozedurales Wissen (Methoden, Algorithmen, Techniken) und Metakognitives Wissen (Wissen über das eigene Denken, Lernstrategien, kognitive Stile).
+
+Diese Unterscheidung ist für KAIA als Routing-Grundlage relevant, weil die vier Wissensarten unterschiedliche Fragetypen erfordern. Die folgende Tabelle gibt das operative Mapping:
+
+| Wissensart | Charakteristik | Primärer KAIA-Fragetyp | Kognitive Funktion |
+|---|---|---|---|
+| **Faktisch** | Terminologie, Einzelfakten, Definitionen | Anamnese-Frage (Typ 6) | Vorwissen aktivieren, Lücken sichtbar machen |
+| **Konzeptuell** | Prinzipien, Kategorien, Strukturen | Hypothetische Frage (Typ 2) | Konzeptgrenzen erkunden, Transfer vorbereiten |
+| **Prozedural** | Abläufe, Methoden, Handlungsschritte | Erste-Schritt-Frage (Typ 5) | Erkenntnis in konkrete Handlung überführen |
+| **Metakognitiv** | Strategien, Selbstüberwachung, Lernreflexion | Widerspruchs- (Typ 3) + Anamnese-Frage (Typ 6) | Selbstbild mit Verhalten abgleichen, Strategiereflexion |
+
+**Routing-Konfidenz und Fehlertoleranz.** Das Routing nach Wissensart wird vom System als unsicher behandelt, bis Session 2 abgeschlossen ist. Ein LLM kann nach 2–3 Gesprächsturns falsch klassifizieren — insbesondere bei Lernenden die kontext-abhängig zwischen faktischen und metakognitiven Aussagen wechseln. Das System implementiert daher einen Default "low confidence" für Wissensart-Routing in Sessions 1–2: Es wird der neutralste Fragetyp gewählt (Anamnese/Klärung), kein Lock-in auf eine Wissensart. Erst ab Session 3, wenn das Profil ausreichend akkumuliert ist, wird die Routing-Konfidenz als stabil behandelt.
 
 ### 3.4.0 Motiv-Probing: Das Lernziel hinter dem Lernziel
 
@@ -373,12 +478,34 @@ Anderson, L. W., & Krathwohl, D. R. (Hrsg.). (2001). *A Taxonomy for Learning, T
 
 Ausubel, D. P. (1968). *Educational Psychology: A Cognitive View*. Holt.
 
+Cohen, P. A. (1989). Teaching academic skills through tutoring. *Review of Educational Research, 59*(1), 77–97.
+
+Craik, F. I. M., & Lockhart, R. S. (1972). Levels of processing: A framework for memory research. *Journal of Verbal Learning and Verbal Behavior, 11*(6), 671–684.
+
 Deci, E. L., & Ryan, R. M. (1985). *Intrinsic Motivation and Self-Determination in Human Behavior*. Plenum.
 
 Deci, E. L., & Ryan, R. M. (2000). The "what" and "why" of goal pursuits: Human needs and the self-determination of behavior. *Psychological Inquiry, 11*(4), 227–268.
 
+Dweck, C. S. (2006). *Mindset: The New Psychology of Success*. Random House.
+
 Edelmann, W. (2000). *Lernpsychologie* (6. Aufl.). Beltz.
+
+Engeser, S., & Rheinberg, F. (2008). Flow, performance and moderators of challenge-skill balance. *Motivation and Emotion, 32*(3), 158–172.
+
+Festinger, L. (1957). *A Theory of Cognitive Dissonance*. Stanford University Press.
 
 Johnson-Laird, P. N. (1983). *Mental Models*. Cambridge University Press.
 
+Kolb, D. A. (1984). *Experiential Learning: Experience as the Source of Learning and Development*. Prentice-Hall.
+
+Nakamura, J., & Csikszentmihalyi, M. (2002). The concept of flow. In C. R. Snyder & S. J. Lopez (Hrsg.), *Handbook of Positive Psychology* (S. 89–105). Oxford University Press.
+
+Rheinberg, F., Vollmeyer, R., & Engeser, S. (2003). Die Erfassung des Flow-Erlebens. In J. Stiensmeier-Pelster & F. Rheinberg (Hrsg.), *Diagnostik von Motivation und Selbstkonzept* (S. 261–279). Hogrefe.
+
+Ryan, R. M., & Deci, E. L. (2000). Intrinsic and extrinsic motivations: Classic definitions and new directions. *Contemporary Educational Psychology, 25*(1), 54–67.
+
+Schwarzer, R., & Jerusalem, M. (1995). Generalized Self-Efficacy scale. In J. Weinman, S. Wright, & M. Johnston (Hrsg.), *Measures in health psychology: A user's portfolio* (S. 35–37). NFER-NELSON.
+
 Weiner, B. (1985). An attributional theory of achievement motivation and emotion. *Psychological Review, 92*(4), 548–573.
+
+Woloshyn, V. E., Pressley, M., & Schneider, W. (1992). Elaborative-interrogation and prior-knowledge effects on learning of facts. *Journal of Educational Psychology, 84*(1), 115–124.

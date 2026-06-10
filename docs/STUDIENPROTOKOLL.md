@@ -1,7 +1,7 @@
 # Studienprotokoll — KAIA Pilotstudie
 
-**Version:** 1.0  
-**Datum:** Juni 2026  
+**Version:** 1.1  
+**Datum:** 10. Juni 2026  
 **Status:** Entwurf für Ethikvotum SRH Fernhochschule
 
 ---
@@ -37,7 +37,9 @@ Relevante theoretische Grundlagen:
 
 *Inwieweit beeinflusst die Nutzung eines sokratisch konfigurierten KI-Lernbegleiters (KAIA) über einen Zeitraum von vier Wochen die allgemeine Selbstwirksamkeitserwartung von Lernenden?*
 
-Ergänzende Forschungsfrage: *Welche Konvergenz oder Divergenz zeigt sich zwischen der subjektiven Selbstwahrnehmung (GSE-Skala) und der KI-basierten Fremdwahrnehmung aus Gesprächstranskripten?*
+Ergänzende Forschungsfrage 1: *Welche Konvergenz oder Divergenz zeigt sich zwischen der subjektiven Selbstwahrnehmung (GSE-Skala) und der KI-basierten Fremdwahrnehmung aus Gesprächstranskripten?*
+
+Ergänzende Forschungsfrage 2 (hinzugefügt 10.06.2026): *Verändert sich das Flow-Erleben der Teilnehmenden (operationalisiert mit der Flow-Kurzskala; Rheinberg et al., 2003) über die 10 Sessions und korreliert es mit der GSE-Veränderung?*
 
 ---
 
@@ -54,6 +56,9 @@ Es besteht ein positiver Zusammenhang zwischen der Häufigkeit der KAIA-Nutzung 
 **H3 (explorativ, methodisch):**  
 Die durch LLM-Analyse aus Gesprächstranskripten abgeleiteten Indikatoren für Handlungskontrolle und Problemlösezuversicht konvergieren über die Studienlaufzeit mit den GSE-Selbstaussagen der Teilnehmenden.
 
+**H4 (explorativ, ergänzend, hinzugefügt 10.06.2026):**  
+Das Flow-Erleben, gemessen mit der Flow-Kurzskala (FKS; Rheinberg et al., 2003), verändert sich über die vier Messzeitpunkte (nach Session 2, 5, 8, 10) und korreliert positiv mit der GSE-Prä-Post-Differenz.
+
 *Hinweis: Aufgrund der kleinen Stichprobe (N ≈ 20) haben alle Hypothesen explorativen Charakter. Statistische Signifikanztests werden als ergänzend, nicht als primäres Erkenntnisziel betrachtet.*
 
 ---
@@ -64,14 +69,23 @@ Die durch LLM-Analyse aus Gesprächstranskripten abgeleiteten Indikatoren für H
 
 **Empirisches Design:** Einfaktorielle Prä-Post-Untersuchung ohne Kontrollgruppe (Pilotstudie). Die fehlende Kontrollgruppe ist begründet durch die explorative Natur und die kleine Stichprobe; konfirmatorische Aussagen sind explizit nicht beabsichtigt.
 
-**Messinstrument:** Skala zur Allgemeinen Selbstwirksamkeitserwartung (GSE, Schwarzer & Jerusalem, 1995) — 10 Items, 4-stufige Likert-Skala (1 = stimmt nicht, 4 = stimmt genau), validiertes deutsches Instrument mit guten psychometrischen Gütekriterien (Cronbachs α > .80 in zahlreichen Studien).
+**Messinstrumente:**
+
+1. *Skala zur Allgemeinen Selbstwirksamkeitserwartung* (GSE; Schwarzer & Jerusalem, 1995) — 10 Items, 4-stufige Likert-Skala; Prä-Messung (Woche 0) und Post-Messung (nach Woche 4). Cronbachs α > .80 in zahlreichen Validierungsstudien.
+
+2. *Flow-Kurzskala* (FKS; Rheinberg, Vollmeyer & Engeser, 2003) — 10 Items, 7-stufige Likert-Skala, Cronbachs α = .90; Erhebung nach Session 2, 5, 8 und 10 (vier Messzeitpunkte). Frei verfügbar in PsychArchives (ZPID). Hinzugefügt am 10.06.2026.
+
+3. *In-Session Feedback* (qualitativ-indikativ) — Zwei diskrete Buttons ("Muss ich weiterdenken", "Ich hänge gerade") zur Erfassung von Transfer-Momenten und kognitivem Overloading. Gespeichert in `session_feedback`. Hinzugefügt am 10.06.2026.
 
 **Analysemethoden:**  
 - Deskriptive Statistik (Mittelwerte, Standardabweichungen, Verteilung)
-- Wilcoxon-Vorzeichenrangtest für Prä-Post-Vergleich (bei N < 30 nonparametrisch)
-- Korrelation Nutzungshäufigkeit × GSE-Differenz (Spearman-Rho)
-- Qualitative Inhaltsanalyse ausgewählter Gesprächstranskripte
-- Explorative LLM-Analyse (strukturierte Extraktion psychologischer Indikatoren)
+- Wilcoxon-Vorzeichenrangtest für Prä-Post-Vergleich (bei N < 30 nonparametrisch); Effektgröße r = z/√N
+- Korrelation Nutzungshäufigkeit × GSE-Differenz (Spearman-Rho) — H2
+- Friedman-Test (Messwiederholung, nonparametrisch) für FKS-Verlauf über MZP 1–4; Kendall's W als Effektgröße; Post-hoc nach Dunn-Bonferroni — H4
+- Spearman-Rho: FKS-Gesamtwert × GSE-Differenz — H4
+- Qualitative Inhaltsanalyse ausgewählter Gesprächstranskripte — H3
+- Explorative LLM-Analyse (strukturierte Extraktion psychologischer Indikatoren) — H3
+- Qualitativ-interpretative Analyse der In-Session Feedback-Daten
 
 ---
 
@@ -85,14 +99,18 @@ Die durch LLM-Analyse aus Gesprächstranskripten abgeleiteten Indikatoren für H
 |---|---|
 | Test | Wilcoxon-Vorzeichenrangtest, einstichprobenartig |
 | Signifikanzniveau α | 0.05 (zweiseitig) |
-| Erwartete Effektgröße | d = 0.5 (mittel; Cohen, 1988) |
-| Minimales N für 80% Power | 32 (ARE-korrigiert) |
-| Ziel-N | **32** |
-| Power bei N=32 | **80.0%** |
+| Ursprüngliche Effektschätzung | d = 0.5 (mittel; Cohen, 1988) |
+| Revidierte Effektschätzung (10.06.2026) | d = 0.4 (konservativ; s. Begründung unten) |
+| Minimales N für 80% Power bei d=0.5 | 32 (ARE-korrigiert) |
+| Minimales N für 80% Power bei d=0.4 | **51** (ARE-korrigiert) |
+| Ziel-N (dokumentiertes Studienziel) | **32** |
+| Power bei N=32, d=0.4 | ca. 60% |
+| Power bei N=20, d=0.4 | ca. 37% (dokumentierte Limitation) |
 | Dropout-Puffer | 30% → Rekrutierungsziel ~46 |
-| Fallback bei N=20 | 56.5% Power (dokumentierte Limitation) |
 
-**Begründung:** N=32 ist das Minimum für 80% Teststärke bei einem mittleren Effekt (d=0.5). Mit einem konservativen Dropout-Puffer von 30% (typisch für unvergütete Pilotstudien) ist ein Rekrutierungsziel von ~46 Personen erforderlich. Rekrutierung über das persönliche Netzwerk der Forscherin. Falls nur N=20 erreichbar sind, wird dies als Limitation deklariert und die Power (56.5%) explizit berichtet.
+**Begründung der revidierten Effektschätzung (10.06.2026):** Mit der Anhebung der Mindest-Sessions-Anforderung auf 10 und einem Gesamtzeitaufwand von ca. 150 Minuten Chatzeit in 4 Wochen (statt ursprünglich unklar definierter ≥3 Sessions) erscheint eine konservativere Schätzung von d = 0.4 methodisch besser begründet. Kürzere Gesamtinterventionszeiten erzeugen im Mittel geringere Selbstwirksamkeitsveränderungen als intensivere Interventionen (Bandura, 1997; Scherer et al., 1982). Bei d = 0.4 ergibt sich ein Mindest-N von 51 für 80% Power — ein Wert, der mit dem Rekrutierungsziel von ~46 ohnehin nicht erreichbar war und der die bekannte Unterpower-Problematik weiter unterstreicht.
+
+**Konsequenz:** Die Studie bleibt in jedem Szenario unterpowert für konfirmatorische Zwecke. Die explorative Natur wird explizit kommuniziert; statistische Signifikanztests dienen der Hypothesengenerierung für eine Folgestudie, nicht dem Hypothesentest im strengen Sinne. Dies entspricht dem angemessenen Umgang mit Pilotstudien (Thabane et al., 2010).
 
 **Einschlusskriterien:**
 - Volljährig (≥ 18 Jahre)
@@ -113,15 +131,23 @@ Die durch LLM-Analyse aus Gesprächstranskripten abgeleiteten Indikatoren für H
 ## 6. Ablauf der Studie
 
 ```
-Woche 0   Registrierung, Einwilligung, KI-Disclosure, GSE Prä-Messung
-Wochen 1–4  Freie KAIA-Nutzung (Empfehlung: ≥ 3 Sessions)
-Woche 4/5  GSE Post-Messung, optionaler kurzer Erfahrungsbericht
-Nach Ende  Datenlöschung: spätestens 1 Jahr nach Abschlussnote
+Woche 0     Registrierung, Einwilligung, KI-Disclosure, GSE Prä-Messung
+Wochen 1–4  Strukturierte KAIA-Nutzung (Mindest: ≥ 10 Sessions)
+              Sessions 1–2: Foundation-Sessions, 20–30 Min.
+                (Motivationsanker, Lerntyp-Routing, Standortbestimmung)
+              Sessions 3–10: Micro-Sessions, 10–15 Min.
+                (Cross-Session-Memory übernimmt Kontextaufbau)
+            FKS nach Session 2, 5, 8, 10 (je ~3 Min.)
+Woche 4/5   GSE Post-Messung, FKS MZP 4 (falls nicht nach S10 erfolgt),
+            optionaler kurzer Erfahrungsbericht
+Nach Ende   Datenlöschung: spätestens 1 Jahr nach Abschlussnote
 ```
 
-**Mindestvorgabe:** Mindestens 3 Chat-Sessions innerhalb der 4 Wochen für Einschluss in die Auswertung.
+**Mindestvorgabe (aktualisiert 10.06.2026):** Mindestens **10** abgeschlossene Chat-Sessions innerhalb der 4 Wochen für Einschluss in die Auswertung. Teilnehmende mit weniger als 10 Sessions werden als Dropout ausgewiesen (Intent-to-Treat-Reporting). Die frühere Vorgabe von ≥ 3 Sessions war wissenschaftlich unzureichend begründet (s. Begründung in Kapitel 6.4 des Thesis-Manuskripts).
 
-**Keine Vorgaben** für Gesprächsthemen — die Teilnehmenden wählen selbst, womit sie KAIA nutzen. Das entspricht dem explorativen Charakter der Studie.
+**Zeitaufwand für Teilnehmende:** ca. 168 Minuten über 4 Wochen (Sessions + FKS + GSE).
+
+**Keine Vorgaben** für Gesprächsthemen — die Teilnehmenden wählen selbst, womit sie KAIA nutzen. Das entspricht dem explorativen Charakter der Studie und der ökologischen Validität des Feldeinsatzes.
 
 ---
 
@@ -176,6 +202,7 @@ Bei wiederholten Krisen-Treffern für eine Benutzer-ID wird die Forscherin via S
 | Bias durch Forscherin-Teilnehmenden-Beziehung | Mittel | Mittel | Vorregistrierte Hypothesen, standardisiertes Instrument |
 | KI-Fehlfunktion / halluzinierte Inhalte | Gering | Mittel | Explizite KI-Disclosure, sokratischer Modus reduziert faktische Aussagen |
 | Dependency-Effekt (Überabhängigkeit von KAIA) | Sehr gering | Gering | Sokratischer Ansatz fördert Eigenständigkeit; 4-Wochen-Limit |
+| Erhöhter Dropout durch 10-Sessions-Anforderung (hinzugefügt 10.06.2026) | Mittel | Mittel | Transparente Kommunikation des Aufwands bei Rekrutierung; Reminder-Mechanismus im System; Dropout-Puffer von 30% bereits eingerechnet; Intent-to-Treat-Reporting |
 
 ---
 
