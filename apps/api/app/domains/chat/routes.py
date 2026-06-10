@@ -11,7 +11,12 @@ from app.domains.chat.schemas import (
     SessionResponse,
     SessionWithMessages,
 )
-from app.domains.chat.service import extract_session_summary, stream_opening, stream_response
+from app.domains.chat.service import (
+    extract_session_summary,
+    stream_closing,
+    stream_opening,
+    stream_response,
+)
 
 router = APIRouter(prefix="/chat", tags=["chat"])
 
@@ -104,6 +109,31 @@ async def generate_opening(
 
     return StreamingResponse(
         stream_opening(db, session, debug=debug),
+        media_type="text/event-stream",
+        headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"},
+    )
+
+
+@router.post("/sessions/{session_id}/closing")
+async def generate_closing(
+    session_id: int,
+    user: CurrentUser,
+    db: AsyncSession = Depends(get_db),  # noqa: B008
+    debug: bool = Query(default=False),
+) -> StreamingResponse:
+    """Generate KAIA's closing question (SSE stream).
+
+    Called when user initiates session end. Session stays open until /end is called.
+    """
+    repo = ChatRepository(db)
+    session = await repo.get_session(session_id, user.id)
+    if not session:
+        raise HTTPException(status_code=404, detail="Session nicht gefunden.")
+    if session.ended_at is not None:
+        raise HTTPException(status_code=409, detail="Session ist bereits beendet.")
+
+    return StreamingResponse(
+        stream_closing(db, session, debug=debug),
         media_type="text/event-stream",
         headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"},
     )

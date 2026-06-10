@@ -396,6 +396,105 @@ async def stream_opening(
     log.info("llm_opening_complete", session_id=session.id)
 
 
+CLOSING_TRIGGER = (
+    "[Gesprächsende — stelle jetzt genau eine Abschlussfrage. "
+    "Keine Bewertung, kein Lob, keine Zusammenfassung. "
+    "Eine kurze, offene Frage die den eigenen Gedanken des Lernenden weitertragen lässt. "
+    "Maximal zwei Sätze.]"
+)
+
+
+async def stream_closing(
+    db: AsyncSession,
+    session: ChatSession,
+    debug: bool = False,
+) -> AsyncGenerator[str, None]:
+    """Generate KAIA's closing question (SSE stream).
+
+    Called when the user triggers session end. Session stays open — the client
+    calls /end only after the user confirms. Follows the same pattern as
+    stream_opening: no user message stored, only KAIA's response persists.
+    """
+    repo = ChatRepository(db)
+    user = await repo.get_user(session.user_id)
+    user_name = user.username if user else ""
+
+    is_first = session.session_number == 1
+    last_step = ""
+    last_observation = ""
+    insight = ""
+
+    if not is_first:
+        prev = await repo.get_previous_session(session.user_id, session.id)
+        if prev and prev.session_summary:
+            try:
+                summary = json.loads(prev.session_summary)
+                last_step = summary.get("first_step", "")
+                last_observation = summary.get("observation", "")
+                insight = summary.get("insight_for_next_session", "")
+            except (json.JSONDecodeError, AttributeError):
+                pass
+
+    ctx = PromptContext(
+        user_name=user_name,
+        is_first_session=is_first,
+        last_first_step=last_step,
+        last_session_observation=last_observation,
+        insight_for_next_session=insight,
+        outcome=session.daily_plan or "",
+        daily_plan=session.daily_plan or "",
+    )
+
+    character = CharacterMode(session.character)
+    raw_template = await get_active_template(db, character)
+    system_prompt = render_prompt(raw_template, ctx)
+
+    # Full conversation history + closing trigger as last user turn
+    history = await repo.get_messages(session.id)
+    api_messages = [{"role": str(m.role), "content": m.content} for m in history if m.content]
+    api_messages.append({"role": "user", "content": CLOSING_TRIGGER})
+
+    client = AsyncAnthropic(api_key=settings.anthropic_api_key)
+    raw_chunks: list[str] = []
+    input_tokens = 0
+    output_tokens = 0
+
+    try:
+        async with client.messages.stream(
+            model=MODEL,
+            max_tokens=300,
+            system=system_prompt,
+            messages=api_messages,  # type: ignore[arg-type]
+        ) as stream:
+            async for text in stream.text_stream:
+                raw_chunks.append(text)
+            final_msg = await stream.get_final_message()
+            input_tokens = final_msg.usage.input_tokens
+            output_tokens = final_msg.usage.output_tokens
+
+    except Exception as exc:
+        log.error("llm_closing_error", error=str(exc), session_id=session.id)
+        yield _error("KAIA ist gerade nicht erreichbar.")
+        return
+
+    thinking, final_content = _thinking_strip_generator(raw_chunks)
+
+    if debug and thinking:
+        yield _thinking_event(thinking)
+
+    if not final_content:
+        final_content = "Was möchtest du aus diesem Gespräch mitnehmen?"
+
+    yield _delta(final_content)
+
+    assistant_msg = await repo.save_message(
+        session.id, MessageRole.ASSISTANT, final_content, thinking_raw=thinking
+    )
+    await _log_usage(db, session, input_tokens, output_tokens)
+    yield _done(assistant_msg.id, input_tokens, output_tokens)
+    log.info("llm_closing_complete", session_id=session.id)
+
+
 async def _log_usage(
     db: AsyncSession,
     session: ChatSession,

@@ -1,7 +1,7 @@
 "use client"
 
-import { useEffect, useRef, useState, useCallback } from "react"
-import { Send, Plus, Loader2 } from "lucide-react"
+import { useCallback, useEffect, useRef, useState } from "react"
+import { Loader2, Plus, Send, X } from "lucide-react"
 import { LegalFooter } from "@/components/LegalFooter"
 
 const API_BASE = ""  // relative — Caddy proxies /api/* to FastAPI
@@ -15,11 +15,19 @@ interface ChatMessage {
   role: Role
   content: string
   streaming?: boolean
+  isClosing?: boolean  // marks the closure bubble
 }
 
-interface SSEDelta { type: "delta"; content: string }
-interface SSEDone  { type: "done";  message_id: number; input_tokens: number; output_tokens: number }
-interface SSEError { type: "error"; message: string }
+// Closure state machine:
+//   idle            → normal chat
+//   loading         → /closing SSE in flight
+//   awaiting_confirm→ KAIA's closing bubble done, showing [Antworten] / [Jetzt beenden]
+//   ended           → /end called, session over
+type ClosureState = "idle" | "loading" | "awaiting_confirm" | "ended"
+
+interface SSEDelta { type: "delta";  content: string }
+interface SSEDone  { type: "done";   message_id: number; input_tokens: number; output_tokens: number }
+interface SSEError { type: "error";  message: string }
 type SSEEvent = SSEDelta | SSEDone | SSEError
 
 // ── Auth helper ───────────────────────────────────────────────────────────────
@@ -74,21 +82,34 @@ const CHARACTER_LABELS = {
 
 type Character = keyof typeof CHARACTER_LABELS
 
-export default function ChatPage() {
-  const [sessionId,   setSessionId]   = useState<number | null>(null)
-  const [messages,    setMessages]    = useState<ChatMessage[]>([])
-  const [input,       setInput]       = useState("")
-  const [loading,     setLoading]     = useState(false)
-  const [error,       setError]       = useState<string | null>(null)
-  const [character,   setCharacter]   = useState<Character>("warm")
-  const [openTrigger, setOpenTrigger] = useState(0)
+// Inactivity timeout after closure bubble appears (10 min)
+const CLOSURE_TIMEOUT_MS = 10 * 60 * 1000
 
-  const bottomRef   = useRef<HTMLDivElement>(null)
-  const textareaRef = useRef<HTMLTextAreaElement>(null)
+export default function ChatPage() {
+  const [sessionId,    setSessionId]    = useState<number | null>(null)
+  const [messages,     setMessages]     = useState<ChatMessage[]>([])
+  const [input,        setInput]        = useState("")
+  const [loading,      setLoading]      = useState(false)
+  const [error,        setError]        = useState<string | null>(null)
+  const [character,    setCharacter]    = useState<Character>("warm")
+  const [openTrigger,  setOpenTrigger]  = useState(0)
+  const [closureState,    setClosureState]    = useState<ClosureState>("idle")
+  const [closureExchanges, setClosureExchanges] = useState(0)
+
+  const bottomRef       = useRef<HTMLDivElement>(null)
+  const textareaRef     = useRef<HTMLTextAreaElement>(null)
+  const closureTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" })
   }, [messages])
+
+  // Clear inactivity timer on unmount
+  useEffect(() => {
+    return () => {
+      if (closureTimerRef.current) clearTimeout(closureTimerRef.current)
+    }
+  }, [])
 
   // Auto-create session + fetch KAIA opening on mount and after reset
   useEffect(() => {
@@ -97,8 +118,9 @@ export default function ChatPage() {
 
     const run = async () => {
       setLoading(true)
+      setClosureState("idle")
+      setClosureExchanges(0)
       try {
-        // Create session
         const sessRes = await fetch(`${API_BASE}/api/v1/chat/sessions`, {
           method: "POST",
           headers: { "Content-Type": "application/json", ...getAuthHeader() },
@@ -110,7 +132,6 @@ export default function ChatPage() {
         setSessionId(sid)
         setMessages([{ id: streamId, role: "assistant", content: "", streaming: true }])
 
-        // Fetch opening
         const openRes = await fetch(`${API_BASE}/api/v1/chat/sessions/${sid}/opening`, {
           method: "POST",
           headers: { ...getAuthHeader() },
@@ -144,12 +165,82 @@ export default function ChatPage() {
   }, [openTrigger, character])
 
   const resetSession = useCallback((newChar?: Character) => {
+    if (closureTimerRef.current) clearTimeout(closureTimerRef.current)
     if (newChar) setCharacter(newChar)
     setSessionId(null)
     setMessages([])
     setError(null)
+    setClosureState("idle")
+    setClosureExchanges(0)
     setOpenTrigger(t => t + 1)
   }, [])
+
+  // ── Closure flow ──────────────────────────────────────────────────────────────
+  // NOTE: endSession is declared before startClosure because startClosure
+  // references it in a setTimeout callback.
+
+  const endSession = useCallback(async () => {
+    if (closureTimerRef.current) clearTimeout(closureTimerRef.current)
+    if (!sessionId) { setClosureState("ended"); return }
+
+    try {
+      await fetch(`${API_BASE}/api/v1/chat/sessions/${sessionId}/end`, {
+        method: "POST",
+        headers: { ...getAuthHeader() },
+      })
+    } catch { /* best-effort */ }
+
+    setClosureState("ended")
+  }, [sessionId])
+
+  const startClosure = useCallback(async () => {
+    if (!sessionId || closureState !== "idle" || loading) return
+    setClosureState("loading")
+    setError(null)
+
+    const streamId = `a-close-${Date.now()}`
+    setMessages(prev => [...prev, {
+      id: streamId, role: "assistant", content: "", streaming: true, isClosing: true,
+    }])
+
+    try {
+      const res = await fetch(`${API_BASE}/api/v1/chat/sessions/${sessionId}/closing`, {
+        method: "POST",
+        headers: { ...getAuthHeader() },
+      })
+      if (!res.ok) throw new Error("Abschluss fehlgeschlagen")
+
+      await readSSEStream(
+        res,
+        (content) => setMessages(prev => prev.map(m =>
+          m.id === streamId ? { ...m, content: m.content + content } : m
+        )),
+        () => setMessages(prev => prev.map(m =>
+          m.id === streamId ? { ...m, streaming: false } : m
+        )),
+      )
+
+      setClosureState("awaiting_confirm")
+
+      // 10-min inactivity timeout → auto-end
+      closureTimerRef.current = setTimeout(() => { void endSession() }, CLOSURE_TIMEOUT_MS)
+
+    } catch (e) {
+      setMessages(prev => prev.filter(m => m.id !== streamId))
+      setError(e instanceof Error ? e.message : "Verbindungsfehler")
+      setClosureState("idle")
+    }
+  }, [sessionId, closureState, loading, endSession])
+
+  // User clicks "Antworten" after a closure bubble → back to normal chat
+  const replyAfterClosure = useCallback(() => {
+    if (closureTimerRef.current) clearTimeout(closureTimerRef.current)
+    setClosureExchanges(n => n + 1)
+    setClosureState("idle")
+    textareaRef.current?.focus()
+  }, [])
+
+  // ── Send message ──────────────────────────────────────────────────────────────
 
   const sendMessage = useCallback(async () => {
     if (!input.trim() || loading) return
@@ -159,7 +250,6 @@ export default function ChatPage() {
     setLoading(true)
     setError(null)
 
-    // Session should exist from opening — fallback: create one
     let sid = sessionId
     if (!sid) {
       try {
@@ -183,6 +273,7 @@ export default function ChatPage() {
     const streamId = `a-${Date.now()}`
     setMessages(prev => [...prev, { id: streamId, role: "assistant", content: "", streaming: true }])
 
+    let streamOk = false
     try {
       const res = await fetch(`${API_BASE}/api/v1/chat/sessions/${sid}/messages`, {
         method: "POST",
@@ -202,6 +293,7 @@ export default function ChatPage() {
           m.id === streamId ? { ...m, streaming: false } : m
         )),
       )
+      streamOk = true
     } catch (e) {
       setMessages(prev => prev.filter(m => m.id !== streamId))
       setError(e instanceof Error ? e.message : "Verbindungsfehler")
@@ -209,7 +301,12 @@ export default function ChatPage() {
       setLoading(false)
       textareaRef.current?.focus()
     }
-  }, [input, loading, sessionId, character])
+
+    // After 2 post-closure exchanges, re-trigger the closure bubble
+    if (streamOk && closureExchanges >= 2) {
+      void startClosure()
+    }
+  }, [input, loading, sessionId, character, closureExchanges, startClosure])
 
   function handleKeyDown(e: React.KeyboardEvent<HTMLTextAreaElement>) {
     if (e.key === "Enter" && !e.shiftKey) {
@@ -217,6 +314,13 @@ export default function ChatPage() {
       void sendMessage()
     }
   }
+
+  const inputDisabled = loading
+    || closureState === "loading"
+    || closureState === "awaiting_confirm"
+    || closureState === "ended"
+
+  // ── Render ────────────────────────────────────────────────────────────────────
 
   return (
     <div className="flex flex-col h-screen bg-background">
@@ -234,7 +338,8 @@ export default function ChatPage() {
             <button
               key={c}
               onClick={() => resetSession(c)}
-              className={`text-xs px-2.5 py-1.5 rounded-lg transition-colors ${
+              disabled={closureState === "ended"}
+              className={`text-xs px-2.5 py-1.5 rounded-lg transition-colors disabled:opacity-40 ${
                 character === c
                   ? "bg-foreground text-background"
                   : "text-muted-foreground hover:text-foreground hover:bg-muted"
@@ -247,6 +352,7 @@ export default function ChatPage() {
             onClick={() => resetSession()}
             className="ml-1 p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
             title="Neue Session"
+            aria-label="Neue Session starten"
           >
             <Plus className="h-4 w-4" />
           </button>
@@ -254,14 +360,23 @@ export default function ChatPage() {
       </header>
 
       {/* Messages */}
-      <div className="flex-1 overflow-y-auto px-4 py-6">
+      <div
+        className="flex-1 overflow-y-auto px-4 py-6"
+        aria-live="polite"
+        aria-label="Chat-Verlauf"
+      >
         <div className="max-w-2xl mx-auto space-y-4">
           {messages.map(msg => (
-            <div key={msg.id} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
+            <div
+              key={msg.id}
+              className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}
+            >
               <div className={`max-w-lg rounded-2xl px-4 py-3 text-sm leading-relaxed whitespace-pre-wrap ${
                 msg.role === "user"
                   ? "bg-foreground text-background rounded-br-sm"
-                  : "bg-muted text-foreground rounded-bl-sm"
+                  : msg.isClosing
+                    ? "bg-muted/60 text-foreground rounded-bl-sm border border-border"
+                    : "bg-muted text-foreground rounded-bl-sm"
               }`}>
                 {msg.content || (msg.streaming && (
                   <span className="inline-flex gap-1 items-center h-4">
@@ -273,6 +388,44 @@ export default function ChatPage() {
               </div>
             </div>
           ))}
+
+          {/* Closure actions — appear below last message, no modal */}
+          {closureState === "awaiting_confirm" && (
+            <div className="flex flex-col items-start gap-2 pl-0 sm:pl-1 pt-1">
+              {closureExchanges < 2 && (
+                <button
+                  onClick={replyAfterClosure}
+                  className="text-sm px-4 py-2.5 rounded-xl bg-foreground text-background hover:opacity-90 transition-opacity"
+                  aria-label="Auf KAIAs Abschlussfrage antworten"
+                >
+                  Antworten
+                </button>
+              )}
+              <button
+                onClick={() => void endSession()}
+                className="text-sm text-muted-foreground hover:text-foreground transition-colors underline-offset-2 hover:underline"
+                aria-label="Session jetzt beenden"
+              >
+                Jetzt wirklich beenden
+              </button>
+            </div>
+          )}
+
+          {/* Session ended notice */}
+          {closureState === "ended" && (
+            <div
+              className="text-center text-xs text-muted-foreground/60 py-2"
+              aria-live="assertive"
+            >
+              Session beendet.{" "}
+              <button
+                onClick={() => resetSession()}
+                className="underline underline-offset-2 hover:text-foreground transition-colors"
+              >
+                Neue Session starten
+              </button>
+            </div>
+          )}
 
           {error && (
             <div className="rounded-lg border border-red-500/20 bg-red-500/5 px-4 py-3 text-sm text-red-600 dark:text-red-400">
@@ -292,25 +445,41 @@ export default function ChatPage() {
             value={input}
             onChange={e => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder="Antworte KAIA…"
+            placeholder={closureState === "ended" ? "Session beendet" : "Antworte KAIA…"}
             rows={1}
-            disabled={loading}
+            disabled={inputDisabled}
             className="flex-1 resize-none rounded-xl border border-border bg-muted/40 px-4 py-3 text-sm placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-foreground/20 disabled:opacity-50 leading-relaxed overflow-y-auto"
             style={{ maxHeight: "128px" }}
+            aria-label="Nachricht an KAIA"
           />
           <button
             onClick={() => void sendMessage()}
-            disabled={loading || !input.trim()}
+            disabled={inputDisabled || !input.trim()}
             className="shrink-0 p-3 rounded-xl bg-foreground text-background hover:opacity-90 transition-opacity disabled:opacity-40 disabled:cursor-not-allowed"
+            aria-label="Nachricht senden"
           >
             {loading
               ? <Loader2 className="h-4 w-4 animate-spin" />
               : <Send className="h-4 w-4" />}
           </button>
         </div>
-        <p className="text-center text-xs text-muted-foreground/40 mt-2">
-          Enter senden · Shift+Enter neue Zeile
-        </p>
+
+        {/* Bottom bar: hint + end-session link */}
+        <div className="max-w-2xl mx-auto flex items-center justify-between mt-2">
+          <p className="text-xs text-muted-foreground/40">
+            Enter senden · Shift+Enter neue Zeile
+          </p>
+          {closureState === "idle" && sessionId && !loading && messages.length > 1 && (
+            <button
+              onClick={() => void startClosure()}
+              className="flex items-center gap-1 text-xs text-muted-foreground/50 hover:text-muted-foreground transition-colors"
+              aria-label="Session beenden"
+            >
+              <X className="h-3 w-3" />
+              Session beenden
+            </button>
+          )}
+        </div>
       </div>
 
       <LegalFooter />
