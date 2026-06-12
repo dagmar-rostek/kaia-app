@@ -37,3 +37,6 @@ Thumbs.db
 
 # Docker
 *.log
+
+# Lokale Notizen
+*.local.md

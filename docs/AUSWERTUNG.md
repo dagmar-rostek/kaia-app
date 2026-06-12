@@ -367,7 +367,55 @@ docker cp kaia-infra-db-1:/tmp/kaia_export.csv ~/kaia_export.csv
 
 ---
 
-## 9. Qualitätsprüfung vor Studienende
+## 9. Cross-Session-Gedächtnis (session_summary)
+
+### Alle gespeicherten Session-Summaries
+```sql
+SELECT
+  u.username,
+  s.session_number,
+  s.character,
+  s.ended_at,
+  s.session_summary
+FROM chat_sessions s
+JOIN users u ON u.id = s.user_id
+WHERE s.session_summary IS NOT NULL
+  AND u.email NOT LIKE '%@kaia.internal'
+ORDER BY u.username, s.session_number;
+```
+
+### Erster Schritt (first_step) pro Session — für Persistenz-Analyse
+```sql
+SELECT
+  u.username,
+  s.session_number,
+  s.session_summary::json->>'first_step'  AS first_step,
+  s.session_summary::json->>'mood'        AS mood,
+  s.session_summary::json->>'observation' AS observation
+FROM chat_sessions s
+JOIN users u ON u.id = s.user_id
+WHERE s.session_summary IS NOT NULL
+  AND u.email NOT LIKE '%@kaia.internal'
+ORDER BY u.username, s.session_number;
+```
+
+### Insight-Kette — was KAIA über Sessions hinweg mitgenommen hat
+```sql
+SELECT
+  u.username,
+  s.session_number,
+  s.session_summary::json->>'insight_for_next_session' AS insight
+FROM chat_sessions s
+JOIN users u ON u.id = s.user_id
+WHERE s.session_summary IS NOT NULL
+  AND s.session_summary::json->>'insight_for_next_session' != ''
+  AND u.email NOT LIKE '%@kaia.internal'
+ORDER BY u.username, s.session_number;
+```
+
+---
+
+## 10. Qualitätsprüfung vor Studienende
 
 ### Mindestanforderungen erfüllt? (3 Sessions, beide GSE-Messungen)
 ```sql
