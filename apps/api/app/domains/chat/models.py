@@ -8,6 +8,13 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.db.session import Base
 
 
+class FeedbackType(StrEnum):
+    TRANSFER_MARKER = "transfer_marker"  # "Muss ich weiterdenken" — no LLM reaction
+    WOW = "wow"  # "Wow — das trifft was" — no LLM reaction
+    STUCK = "stuck"  # "Ich hänge gerade" — triggers meta question
+    UNCLEAR = "unclear"  # "Das verstehe ich noch nicht" — triggers meta question
+
+
 class InteractionMode(StrEnum):
     SOKRATISCH = "sokratisch"
     SCAFFOLDING = "scaffolding"
@@ -115,3 +122,24 @@ class MemoryChunk(Base):
         # Created separately after table population (requires data for clustering)
         Index("ix_memory_chunks_user", "user_id"),
     )
+
+
+class SessionFeedback(Base):
+    """EMA signal from the user during a session.
+
+    Passive types (transfer_marker, wow) are stored only.
+    Active types (stuck, unclear) additionally trigger a meta question from KAIA.
+    """
+
+    __tablename__ = "session_feedback"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    session_id: Mapped[int] = mapped_column(
+        ForeignKey("chat_sessions.id", ondelete="CASCADE"), index=True
+    )
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), index=True)
+    message_id: Mapped[int | None] = mapped_column(
+        ForeignKey("messages.id", ondelete="SET NULL"), nullable=True
+    )
+    feedback_type: Mapped[FeedbackType] = mapped_column(String(20))
+    created_at: Mapped[datetime] = mapped_column(server_default=func.now())

@@ -60,5 +60,30 @@ class MessageResponse(BaseModel):
     model_config = {"from_attributes": True}
 
 
+# ── Session Feedback ──────────────────────────────────────────────────────────
+
+
+class FeedbackCreate(BaseModel):
+    feedback_type: str
+    message_id: int | None = None
+
+    @field_validator("feedback_type")
+    @classmethod
+    def feedback_type_valid(cls, v: str) -> str:
+        valid = {"transfer_marker", "wow", "stuck", "unclear"}
+        if v not in valid:
+            raise ValueError(f"feedback_type must be one of {valid}")
+        return v
+
+
+class FeedbackResponse(BaseModel):
+    id: int
+    feedback_type: str
+    message_id: int | None
+    created_at: datetime
+
+    model_config = {"from_attributes": True}
+
+
 # Update forward ref
 SessionWithMessages.model_rebuild()

@@ -49,7 +49,7 @@ function getAuthHeader(): Record<string, string> {
 async function readSSEStream(
   response: Response,
   onDelta: (content: string) => void,
-  onDone: () => void,
+  onDone: (messageId?: number) => void,
 ): Promise<void> {
   const reader = response.body?.getReader()
   if (!reader) return
@@ -66,7 +66,7 @@ async function readSSEStream(
       try {
         const evt = JSON.parse(line.slice(6)) as SSEEvent
         if (evt.type === "delta") onDelta(evt.content)
-        else if (evt.type === "done") onDone()
+        else if (evt.type === "done") onDone(evt.message_id)
       } catch { /* ignore malformed lines */ }
     }
   }
@@ -93,8 +93,10 @@ export default function ChatPage() {
   const [error,        setError]        = useState<string | null>(null)
   const [character,    setCharacter]    = useState<Character>("warm")
   const [openTrigger,  setOpenTrigger]  = useState(0)
-  const [closureState,    setClosureState]    = useState<ClosureState>("idle")
+  const [closureState,     setClosureState]     = useState<ClosureState>("idle")
   const [closureExchanges, setClosureExchanges] = useState(0)
+  const [lastKaiaMessageId, setLastKaiaMessageId] = useState<number | null>(null)
+  const [activeFeedback,   setActiveFeedback]   = useState<string | null>(null)
 
   const bottomRef       = useRef<HTMLDivElement>(null)
   const textareaRef     = useRef<HTMLTextAreaElement>(null)
@@ -240,6 +242,55 @@ export default function ChatPage() {
     textareaRef.current?.focus()
   }, [])
 
+  // ── Feedback buttons ──────────────────────────────────────────────────────────
+
+  const sendFeedback = useCallback(async (feedbackType: string) => {
+    if (!sessionId || loading || closureState === "ended") return
+    setActiveFeedback(feedbackType)
+    // Flash visual confirmation — clear after 1.5s regardless of outcome
+    setTimeout(() => setActiveFeedback(null), 1500)
+
+    try {
+      await fetch(`${API_BASE}/api/v1/chat/sessions/${sessionId}/feedback`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", ...getAuthHeader() },
+        body: JSON.stringify({ feedback_type: feedbackType, message_id: lastKaiaMessageId }),
+      })
+    } catch { /* best-effort — EMA signal, not blocking */ }
+
+    // Active types: also stream KAIA's metacognitive reaction
+    if (feedbackType === "stuck" || feedbackType === "unclear") {
+      const streamId = `a-meta-${Date.now()}`
+      setMessages(prev => [...prev, { id: streamId, role: "assistant", content: "", streaming: true }])
+      setLoading(true)
+      try {
+        const res = await fetch(
+          `${API_BASE}/api/v1/chat/sessions/${sessionId}/meta-question?feedback_type=${feedbackType}`,
+          { method: "POST", headers: { ...getAuthHeader() } },
+        )
+        if (!res.ok) throw new Error("Meta-Frage fehlgeschlagen")
+        await readSSEStream(
+          res,
+          (content) => setMessages(prev => prev.map(m =>
+            m.id === streamId ? { ...m, content: m.content + content } : m
+          )),
+          (messageId) => {
+            setMessages(prev => prev.map(m =>
+              m.id === streamId ? { ...m, streaming: false } : m
+            ))
+            if (messageId) setLastKaiaMessageId(messageId)
+          },
+        )
+      } catch (e) {
+        setMessages(prev => prev.filter(m => m.id !== streamId))
+        setError(e instanceof Error ? e.message : "Verbindungsfehler")
+      } finally {
+        setLoading(false)
+        textareaRef.current?.focus()
+      }
+    }
+  }, [sessionId, loading, closureState, lastKaiaMessageId])
+
   // ── Send message ──────────────────────────────────────────────────────────────
 
   const sendMessage = useCallback(async () => {
@@ -289,9 +340,12 @@ export default function ChatPage() {
         (content) => setMessages(prev => prev.map(m =>
           m.id === streamId ? { ...m, content: m.content + content } : m
         )),
-        () => setMessages(prev => prev.map(m =>
-          m.id === streamId ? { ...m, streaming: false } : m
-        )),
+        (messageId) => {
+          setMessages(prev => prev.map(m =>
+            m.id === streamId ? { ...m, streaming: false } : m
+          ))
+          if (messageId) setLastKaiaMessageId(messageId)
+        },
       )
       streamOk = true
     } catch (e) {
@@ -436,6 +490,38 @@ export default function ChatPage() {
           <div ref={bottomRef} />
         </div>
       </div>
+
+      {/* Feedback buttons — EMA signals, sticky above input */}
+      {sessionId && closureState !== "ended" && messages.length > 1 && (
+        <div
+          className="shrink-0 border-t border-border/40 px-4 py-2"
+          role="group"
+          aria-label="Momentan-Feedback"
+        >
+          <div className="max-w-2xl mx-auto flex flex-wrap gap-1.5">
+            {([
+              { type: "transfer_marker", label: "Muss ich weiterdenken" },
+              { type: "wow",             label: "Wow — das trifft was" },
+              { type: "stuck",           label: "Ich hänge gerade" },
+              { type: "unclear",         label: "Das verstehe ich noch nicht" },
+            ] as const).map(btn => (
+              <button
+                key={btn.type}
+                onClick={() => void sendFeedback(btn.type)}
+                disabled={loading || closureState === "loading" || closureState === "awaiting_confirm"}
+                className={`text-xs px-3 py-1.5 rounded-full border transition-all disabled:opacity-40 disabled:cursor-not-allowed ${
+                  activeFeedback === btn.type
+                    ? "bg-foreground text-background border-foreground"
+                    : "border-border text-muted-foreground hover:border-foreground/40 hover:text-foreground"
+                }`}
+                aria-pressed={activeFeedback === btn.type}
+              >
+                {btn.label}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Input */}
       <div className="shrink-0 border-t border-border px-4 py-3">

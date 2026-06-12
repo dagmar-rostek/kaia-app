@@ -495,6 +495,101 @@ async def stream_closing(
     log.info("llm_closing_complete", session_id=session.id)
 
 
+META_TRIGGERS = {
+    "stuck": (
+        "[Metakognitions-Signal — die lernende Person hat signalisiert dass sie gerade feststeckt. "
+        "Stelle jetzt eine kurze klärende Frage was konkret schwierig ist. "
+        "Nicht trösten. Nicht erklären. Nur eine einzige, kurze Frage.]"
+    ),
+    "unclear": (
+        "[Verständnis-Signal — die lernende Person hat signalisiert dass etwas unklar ist. "
+        "Stelle jetzt eine kurze Frage um zu verstehen welcher Teil noch nicht sitzt. "
+        "Nicht erklären. Nur eine einzige, kurze Frage.]"
+    ),
+}
+
+
+async def stream_meta_question(
+    db: AsyncSession,
+    session: ChatSession,
+    feedback_type: str,
+    debug: bool = False,
+) -> AsyncGenerator[str, None]:
+    """SSE stream of KAIA's meta-cognitive reaction to a stuck/unclear signal.
+
+    Appends the appropriate META_TRIGGER to the full conversation history.
+    max_tokens=120 — one short question only.
+    """
+    trigger = META_TRIGGERS.get(feedback_type)
+    if not trigger:
+        yield _error(f"Unbekannter feedback_type: {feedback_type}")
+        return
+
+    repo = ChatRepository(db)
+    user = await repo.get_user(session.user_id)
+    user_name = user.username if user else ""
+
+    is_first = session.session_number == 1
+    ctx = PromptContext(
+        user_name=user_name,
+        is_first_session=is_first,
+        outcome=session.daily_plan or "",
+        daily_plan=session.daily_plan or "",
+    )
+
+    character = CharacterMode(session.character)
+    raw_template = await get_active_template(db, character)
+    system_prompt = render_prompt(raw_template, ctx)
+
+    history = await repo.get_messages(session.id)
+    api_messages = [{"role": str(m.role), "content": m.content} for m in history if m.content]
+    api_messages.append({"role": "user", "content": trigger})
+
+    client = AsyncAnthropic(api_key=settings.anthropic_api_key)
+    raw_chunks: list[str] = []
+    input_tokens = 0
+    output_tokens = 0
+
+    try:
+        async with client.messages.stream(
+            model=MODEL,
+            max_tokens=120,
+            system=system_prompt,
+            messages=api_messages,  # type: ignore[arg-type]
+        ) as stream:
+            async for text in stream.text_stream:
+                raw_chunks.append(text)
+            final_msg = await stream.get_final_message()
+            input_tokens = final_msg.usage.input_tokens
+            output_tokens = final_msg.usage.output_tokens
+
+    except Exception as exc:
+        log.error("llm_meta_error", error=str(exc), session_id=session.id)
+        yield _error("KAIA ist gerade nicht erreichbar.")
+        return
+
+    thinking, final_content = _thinking_strip_generator(raw_chunks)
+
+    if debug and thinking:
+        yield _thinking_event(thinking)
+
+    fallbacks = {
+        "stuck": "Was genau macht es gerade schwierig?",
+        "unclear": "Welcher Teil ist noch nicht klar?",
+    }
+    if not final_content:
+        final_content = fallbacks[feedback_type]
+
+    yield _delta(final_content)
+
+    assistant_msg = await repo.save_message(
+        session.id, MessageRole.ASSISTANT, final_content, thinking_raw=thinking
+    )
+    await _log_usage(db, session, input_tokens, output_tokens)
+    yield _done(assistant_msg.id, input_tokens, output_tokens)
+    log.info("llm_meta_complete", session_id=session.id, feedback_type=feedback_type)
+
+
 async def _log_usage(
     db: AsyncSession,
     session: ChatSession,

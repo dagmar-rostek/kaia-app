@@ -4,8 +4,11 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.deps import CurrentUser
 from app.db.session import get_db
+from app.domains.chat.models import FeedbackType
 from app.domains.chat.repository import ChatRepository
 from app.domains.chat.schemas import (
+    FeedbackCreate,
+    FeedbackResponse,
     MessageCreate,
     SessionCreate,
     SessionResponse,
@@ -14,6 +17,7 @@ from app.domains.chat.schemas import (
 from app.domains.chat.service import (
     extract_session_summary,
     stream_closing,
+    stream_meta_question,
     stream_opening,
     stream_response,
 )
@@ -155,3 +159,61 @@ async def end_session(
         # Extract session summary in background — feeds cross-session memory
         background_tasks.add_task(extract_session_summary, session_id)
     return SessionResponse.model_validate(session)
+
+
+@router.post(
+    "/sessions/{session_id}/feedback",
+    response_model=FeedbackResponse,
+    status_code=status.HTTP_201_CREATED,
+)
+async def save_feedback(
+    session_id: int,
+    body: FeedbackCreate,
+    user: CurrentUser,
+    db: AsyncSession = Depends(get_db),  # noqa: B008
+) -> FeedbackResponse:
+    """Save an EMA feedback signal (passive types: transfer_marker, wow).
+
+    For active types (stuck, unclear) the client additionally calls
+    POST /sessions/{id}/meta-question to stream KAIA's reaction.
+    """
+    repo = ChatRepository(db)
+    session = await repo.get_session(session_id, user.id)
+    if not session:
+        raise HTTPException(status_code=404, detail="Session nicht gefunden.")
+    if session.ended_at is not None:
+        raise HTTPException(status_code=409, detail="Session ist bereits beendet.")
+
+    fb = await repo.save_feedback(
+        session_id=session_id,
+        user_id=user.id,
+        feedback_type=FeedbackType(body.feedback_type),
+        message_id=body.message_id,
+    )
+    return FeedbackResponse.model_validate(fb)
+
+
+@router.post("/sessions/{session_id}/meta-question")
+async def generate_meta_question(
+    session_id: int,
+    user: CurrentUser,
+    feedback_type: str = Query(..., pattern="^(stuck|unclear)$"),
+    db: AsyncSession = Depends(get_db),  # noqa: B008
+    debug: bool = Query(default=False),
+) -> StreamingResponse:
+    """Stream KAIA's metacognitive reaction after a stuck/unclear signal (SSE).
+
+    Called immediately after POST /feedback for active feedback types.
+    """
+    repo = ChatRepository(db)
+    session = await repo.get_session(session_id, user.id)
+    if not session:
+        raise HTTPException(status_code=404, detail="Session nicht gefunden.")
+    if session.ended_at is not None:
+        raise HTTPException(status_code=409, detail="Session ist bereits beendet.")
+
+    return StreamingResponse(
+        stream_meta_question(db, session, feedback_type, debug=debug),
+        media_type="text/event-stream",
+        headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"},
+    )

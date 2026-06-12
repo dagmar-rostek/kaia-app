@@ -4,7 +4,7 @@ from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
-from app.domains.chat.models import ChatSession, Message, MessageRole
+from app.domains.chat.models import ChatSession, FeedbackType, Message, MessageRole, SessionFeedback
 from app.domains.users.models import User
 
 
@@ -105,6 +105,26 @@ class ChatRepository:
             select(Message).where(Message.session_id == session_id).order_by(Message.id)
         )
         return list(result.scalars().all())
+
+    # ── Feedback ──────────────────────────────────────────────────────────────
+
+    async def save_feedback(
+        self,
+        session_id: int,
+        user_id: int,
+        feedback_type: FeedbackType,
+        message_id: int | None = None,
+    ) -> SessionFeedback:
+        fb = SessionFeedback(
+            session_id=session_id,
+            user_id=user_id,
+            feedback_type=feedback_type,
+            message_id=message_id,
+        )
+        self.db.add(fb)
+        await self.db.commit()
+        await self.db.refresh(fb)
+        return fb
 
     # ── User context ──────────────────────────────────────────────────────────
 
