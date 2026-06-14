@@ -3,11 +3,13 @@ from datetime import UTC, datetime
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException
+from sqlalchemy import delete
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.deps import require_admin
 from app.core.security import create_access_token, hash_password
 from app.db.session import get_db
+from app.domains.chat.models import ChatSession, MemoryChunk
 from app.domains.users.models import User, UserStatus
 from app.domains.users.repository import RefreshTokenRepository, UserRepository
 from app.domains.users.schemas import UserAdminRead, UserApprove, UserReject
@@ -92,3 +94,21 @@ async def create_test_token(
         await db.commit()
         await db.refresh(user)
     return {"access_token": create_access_token(user.id)}
+
+
+@router.delete("/reset-test-user", status_code=204)
+async def reset_test_user(
+    db: Annotated[AsyncSession, Depends(get_db)],
+) -> None:
+    """Delete all chat sessions and memory for the admin_test user.
+
+    Resets the test account to session_number 1 without deleting the user itself.
+    Only available to admins. Cascade at DB level removes messages + feedback.
+    """
+    test_email = "admin_test@kaia.internal"
+    user = await UserRepository(db).get_by_email(test_email)
+    if not user:
+        return  # nothing to reset
+    await db.execute(delete(MemoryChunk).where(MemoryChunk.user_id == user.id))
+    await db.execute(delete(ChatSession).where(ChatSession.user_id == user.id))
+    await db.commit()

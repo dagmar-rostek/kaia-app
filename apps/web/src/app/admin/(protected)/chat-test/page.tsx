@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useRef, useState, useCallback, useMemo } from "react"
-import { Send, Plus, Loader2, RefreshCw, Brain, ChevronDown, ChevronRight } from "lucide-react"
+import { Send, Plus, Loader2, RefreshCw, Brain, ChevronDown, ChevronRight, Trash2 } from "lucide-react"
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 
@@ -180,6 +180,9 @@ export default function AdminChatTestPage() {
   const [character,    setCharacter]    = useState<Character>("warm")
   const [chatError,    setChatError]    = useState<string | null>(null)
   const [openTrigger,  setOpenTrigger]  = useState(0)
+  const [confirmReset, setConfirmReset] = useState(false)
+  const [resetting,    setResetting]    = useState(false)
+  const confirmResetTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   const chatBottomRef     = useRef<HTMLDivElement>(null)
   const analysisBottomRef = useRef<HTMLDivElement>(null)
@@ -273,6 +276,30 @@ export default function AdminChatTestPage() {
     void run()
     return () => { cancelled = true }
   }, [token, openTrigger, character, authHeader])
+
+  const handleResetAllData = useCallback(async () => {
+    if (!confirmReset) {
+      setConfirmReset(true)
+      confirmResetTimerRef.current = setTimeout(() => setConfirmReset(false), 4000)
+      return
+    }
+    if (confirmResetTimerRef.current) clearTimeout(confirmResetTimerRef.current)
+    setConfirmReset(false)
+    setResetting(true)
+    try {
+      await fetch("/admin/api/reset-test-user", { method: "DELETE" })
+    } finally {
+      setResetting(false)
+      setToken(null)
+      setTokenError(null)
+      setSessionId(null)
+      setMessages([])
+      setThinkingLog([])
+      thinkCounterRef.current = 0
+      setChatError(null)
+      setFetchTrigger(t => t + 1)
+    }
+  }, [confirmReset])
 
   const resetSession = useCallback((newChar?: Character) => {
     if (newChar) setCharacter(newChar)
@@ -411,6 +438,22 @@ export default function AdminChatTestPage() {
               className="ml-1 p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
               title="Token erneuern"
             ><RefreshCw className="h-4 w-4" /></button>
+            <button
+              onClick={() => void handleResetAllData()}
+              disabled={resetting}
+              className={`ml-2 flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-colors disabled:opacity-50 ${
+                confirmReset
+                  ? "bg-red-500/20 text-red-400 border border-red-500/30 hover:bg-red-500/30"
+                  : "text-muted-foreground hover:text-red-400 hover:bg-red-500/10"
+              }`}
+              title="Alle Chat-Daten löschen — Session 1 neu starten"
+            >
+              {resetting
+                ? <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                : <Trash2 className="h-3.5 w-3.5" />
+              }
+              {confirmReset ? "Sicher löschen?" : "Von vorne"}
+            </button>
           </div>
         </div>
 
