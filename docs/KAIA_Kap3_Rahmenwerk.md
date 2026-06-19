@@ -1,9 +1,9 @@
 # Kapitel 3 — Konzeptionelles Rahmenwerk
 
-> **Stand:** 10. Juni 2026 · **Version:** 1.2-DRAFT  
-> **Reviewer:** Psychologe (3.2, 3.3) ✓ · AI Engineer (3.3–3.6) ✓ · Didaktiker (3.6–3.8) ✓ · Architect  
+> **Stand:** 19. Juni 2026 · **Version:** 1.3-DRAFT  
+> **Reviewer:** Psychologe (3.2, 3.3) ✓ · AI Engineer (3.3–3.6) ✓ · Didaktiker (3.3–3.5) ✓ · Architect  
 > **Geplanter Umfang:** ca. 20–25 Seiten (~5.000–6.000 Wörter)  
-> **Status:** 10-Session-Design, Kolb-Korrektur, Flow-Messung, Sprachregeln, Wissensarten-Routing ergänzt (v1.2)
+> **Status:** v1.3 — Lernziel/Lernschritt/Erfolgskriterium-Trias, Implementation Intentions (Gollwitzer), Learning Intention vs. Task (Hattie & Timperley), SDT-MI-Nexus (Markland et al.), Schimpf et al. 2026 RCT, Literatur alphabetisch sortiert
 
 ---
 
@@ -176,6 +176,8 @@ Unabhängig von der übergreifenden Bloom-Progression folgt jede einzelne Sessio
 **Phase 1 — Aktivierung (erste 60–90 Sekunden):**
 Einstiegsfrage: *"Was möchtest du nach dieser Session verstanden oder weitergedacht haben?"* Diese Frage aktiviert Vorwissen (Ausubel, 1968), erzwingt eine Lernintention (Locke & Latham, 1990) und orientiert das LLM auf den aktuellen Fokus. Ab Session 2 wird die Aktivierungsphase durch den Callback auf den offenen Schritt der Vorwoche ersetzt oder ergänzt.
 
+Die Formulierung der Einstiegsfrage ist konzeptuell präzise zu unterscheiden von einer Task-Frage. Nach Hattie & Timperley (2007) ist die *Learning Intention* — "Was werde ich dadurch können oder verstehen?" — didaktisch wirksamer als die bloße Task-Benennung — "Was werde ich heute tun?" (d=0.54 für Lernintentionen, d=0.50 für Zielsetzung, beide über dem Wirksamkeitsschwellenwert von d=0.40). KAIA fragt daher nicht "Was willst du heute besprechen?" (Task), sondern explizit nach dem intendierten Kompetenz- oder Verständniszustand: "Was möchtest du nach dieser Session verstanden oder weitergedacht haben?" Wenn die Antwort eine reine Aktivität beschreibt ("Ich will das Kapitel durcharbeiten"), fragt KAIA nach der Learning Intention dahinter: *"Was wäre dann anders — nicht was du getan hättest, sondern was du können oder verstehen würdest?"*
+
 **Phase 2 — Arbeitsphase (Kernzeit der Session):**
 KAIA wechselt nach Lazarus-Signal in den jeweils angemessenen Modus (sokratisch / scaffolding / herausfordernd). Maximal eine Frage pro Antwort. Antworten unter 80 Wörtern (Scaffolding-Modus: unter 120 Wörtern). Keine Listen. Keine Bullet Points.
 
@@ -186,7 +188,31 @@ Abschlussfrage: *"Was würdest du jemandem erklären, der nicht dabei war?"* Die
 
 ### 3.3.6 Erster-Schritt-Loop: Der GSE-Aufbau-Mechanismus
 
-Am Ende jeder Session formuliert der Lernende — angestoßen durch die Erste-Schritt-Frage — einen konkreten, machbaren Schritt für die kommenden Tage. Dieser Schritt wird gespeichert und bildet den Einstieg der nächsten Session:
+#### 3.3.6.1 Konzeptuelle Trias: Lernziel — Lernschritt — Erfolgskriterium
+
+Das Session-Design von KAIA operiert auf drei konzeptuell zu trennenden Ebenen, die in der bisherigen Lernzieldiskussion häufig undifferenziert behandelt werden (Anderson & Krathwohl, 2001; Knowles, 1975):
+
+- **Lernziel** (*learning objective*): Der angestrebte Kompetenzzustand, taxonomisch verortbar (Bloom-Stufe 1–6), typischerweise mit einem Zeithorizont von Wochen bis Monaten. Beispiel: "Ich möchte verstehen, warum meine Kommunikation in Konfliktsituationen nicht ankommt." Das Lernziel steht in der Lernroadmap (Abschnitt 3.4).
+
+- **Lernschritt** (*learning action*): Eine konkrete, zeitlich begrenzte Handlung, die auf das Lernziel einzahlt. Zeithorizont: Tage. Beispiel: "Ich beobachte in der nächsten Teamsitzung, wann ich anfange zu unterbrechen." Lernschritte sind das Operationalisierungsergebnis der Erste-Schritt-Frage (Fragetyp 5).
+
+- **Erfolgskriterium** (*evidence of accomplishment*, Knowles, 1975): Eine selbstdefinierte, subjektive Beobachtung, die belegt, dass der Lernschritt Wirkung hatte. Nicht normiert, nicht extern vorgegeben. Beispiel: "Ich würde merken, dass es etwas bewegt hat, wenn ich in der Sitzung zweimal bewusst gezögert habe bevor ich sprach." KAIA fragt explizit: *"Woran würdest du merken, dass dieser Schritt etwas bewegt hat?"*
+
+Die Unterscheidung ist nicht akademisch. Sie schützt vor zwei didaktischen Fehlern: (1) dem Verwechseln von Aktivität mit Lernen — wer drei Kapitel liest, hat einen Task erledigt, nicht notwendigerweise gelernt; (2) dem Einführen externer Messnormen, die Autonomieerleben untergraben (Deci & Ryan, 2000). Der Begriff *Evidenzanker* wird in dieser Arbeit synonym mit *evidence of accomplishment* verwendet: subjektiv, behavioral verankert, unmittelbar nach dem Lernschritt überprüfbar.
+
+**Warum nicht "messbarer Erfolg"?** Der in Lernzieldiskussionen verbreitete Begriff "messbarer Erfolg" ist für informelle Lernkontexte ungeeignet: Er suggeriert eine externe Norm und erzeugt Erwartungsdruck — beides widerspricht dem Autonomieprinzip der SDT (Deci & Ryan, 2000) und dem Grundprinzip des Knowles'schen Learning Contract (Knowles, 1975, 1984). KAIA verwendet den Begriff bewusst nicht.
+
+#### 3.3.6.2 Implementation Intentions: Robustheit der Zielbindung
+
+Die Wirksamkeit von Lernschritten steigt erheblich, wenn sie nicht nur als Absicht ("Ich will X beobachten") formuliert werden, sondern als *Implementation Intention* (Gollwitzer, 1999): eine Wenn-Dann-Verknüpfung, die den Ausführungskontext explizit macht. Gollwitzer & Sheeran (2006) belegen über 94 Studien einen mittleren Effekt von d=.65 für die Steigerung von Zielerreichungsraten durch Implementation Intentions — die robusteste Einzelkomponente in der Motivationsforschung zur Handlungsinitiierung.
+
+Für KAIA bedeutet dies: Die Erste-Schritt-Frage (Fragetyp 5) endet nicht mit der Absichtsformulierung, sondern mit einer Kontextualisierungsfrage: *"Wann genau, in welcher Situation, könntest du das ausprobieren?"* Erst wenn Wann, Wo und Wie benannt sind, ist der Lernschritt im Sinne einer Implementation Intention operationalisiert. Dieser Schritt wird gespeichert und bildet den Einstieg der nächsten Session.
+
+Erkenntnistheoretische Einschränkung: Implementation Intentions sind nicht frei von Kontextbedingungen. Gollwitzer & Sheeran (2006) zeigen, dass die Effekte besonders stark sind, wenn die Zielsituation konkret antizipierbar ist und das Ziel hinreichende persönliche Relevanz hat. Ziele die zu abstrakt oder zu weit in der Zukunft liegen, profitieren weniger. KAIA begegnet dem durch die Kombination von Motiv-Dialog (Abschnitt 3.4.0) und progressiver Lernschritt-Verkleinerung.
+
+#### 3.3.6.3 Der Loop in der Praxis
+
+Am Ende jeder Session formuliert der Lernende — angestoßen durch die Erste-Schritt-Frage und abgeschlossen durch die Implementation-Intention-Frage sowie die Evidenzanker-Frage — einen konkreten, zeitlich und situativ verankerten Lernschritt. Dieser Schritt wird gespeichert und bildet den Einstieg der nächsten Session:
 
 **Session N+1 — Einstieg mit Rückbezug:**
 
@@ -199,11 +225,14 @@ Am Ende jeder Session formuliert der Lernende — angestoßen durch die Erste-Sc
 > *"Wie hat sich das angefühlt?"*
 > → "Was hat gestimmt — was hat nicht gestimmt?"
 > → "Was weißt du jetzt, das du davor nicht wusstest?"
+> → Evidenzanker-Abgleich: "Du hattest gesagt, du würdest X merken — war das so?"
 > → nächster Schritt entsteht organisch
 
 Dieser Loop ist der operative Kern des GSE-Aufbaumechanismus nach Bandura (1997): kleiner Schritt → Mastery-Erfahrung (auch wenn partiell) → Attribution auf eigene Leistung → GSE steigt → nächster Schritt kann größer sein. Bloom-Ebenen: 3 (Anwenden/Ausprobieren) → 4 (Analysieren was lief) → 5 (Bewerten, verbessern). Der Zeigarnik-Effekt (1927) sorgt für die Rückkehr-Motivation: offene Schritte ziehen das Gehirn zurück.
 
-**Designprinzip:** Der Schritt muss immer *kleiner* sein als die Lernende glaubt. KAIA verkleinert wenn nötig, nie vergrößert. Ein nicht gemachter Schritt ist keine Niederlage — er ist ein Diagnoseinstrument.
+Empirische Stützung des Mechanismus: Schimpf, Voigt & Bohné (2026) zeigen in einem RCT (N=517), dass ein KI-gestützter Chatbot, der Lernende bei der Formulierung spezifischerer Ziele unterstützte, nach zwei Wochen signifikant bessere Zielerreichungsraten produzierte als eine Kontrollbedingung. Als Wirkmechanismus identifizieren die Autoren wahrgenommene soziale Verantwortlichkeit — ein Effekt, der sich in KAIA durch das persistierte Session-Gedächtnis (Abschnitt 3.5) analog operationalisieren lässt: Der Lernende weiß, dass KAIA beim nächsten Mal nachfragt.
+
+**Designprinzip:** Der Schritt muss immer *kleiner* sein als die Lernende glaubt. KAIA verkleinert wenn nötig, nie vergrößert. Ein nicht gemachter Schritt ist keine Niederlage — er ist ein Diagnoseinstrument. Cognitive Load Theory (Sweller, 1988) stützt dieses Prinzip: Schritt-Planung und Zielfindung gleichzeitig in einer Session können die verfügbare kognitive Kapazität überschreiten. Es ist daher explizit akzeptiert, dass Session 1 mit einer Lernabsicht, aber ohne vollständig ausformulierten Lernschritt endet — der Schritt kann in Session 2 konkretisiert werden.
 
 ### 3.3.7 Session-Einstieg: Tägliche Variation und KAIAs authentische Stimme
 
@@ -300,7 +329,15 @@ Diese Unterscheidung ist für KAIA als Routing-Grundlage relevant, weil die vier
 
 Bevor die Lernroadmap angelegt wird, durchläuft die lernende Person einen optionalen Motiv-Dialog. Die Grundannahme: Das genannte Lernziel ist häufig das **Mittel**, nicht der eigentliche Zweck. Wer sagt "Ich möchte besser kommunizieren" meint oft: "Ich möchte meine Projekte mit Kolleg:innen durchbringen, und Kommunikation scheint der Engpass zu sein." Das eigentliche Ziel — effektive Zusammenarbeit, Akzeptanz im Team, Wirksamkeit — wird durch den Motiv-Dialog sichtbar.
 
-Dieser Ansatz ist motivationspsychologisch fundiert durch die Self-Determination Theory (Deci & Ryan, 2000): Probing kann helfen, external motivierte Ziele in *identifizierte Regulation* umzuwandeln — die Person erkennt, dass das Lernziel ihr eigenes Bedürfnis bedient, nicht eine externe Erwartung. Didaktisch folgt er der Lernzieltheorie (Anderson & Krathwohl, 2001): Ein Lernziel muss operationalisierbar sein, bevor eine Lernsequenz sinnvoll designt werden kann.
+Dieser Ansatz ist motivationspsychologisch fundiert durch drei komplementäre Theorielinien:
+
+**Self-Determination Theory (Deci & Ryan, 2000):** Probing kann helfen, external motivierte Ziele in *identifizierte Regulation* umzuwandeln — die Person erkennt, dass das Lernziel ihr eigenes Bedürfnis bedient, nicht eine externe Erwartung. Autonomie als Grundbedingung nachhaltiger Lernmotivation ist durch Ryan et al. (2023) in einer Meta-Analyse über 486 Studien (>205.000 Teilnehmende) umfassend belegt.
+
+**Goal Setting Theory (Locke & Latham, 2002):** Spezifische, herausfordernde und commitmentstarke Ziele führen zu besserer Leistung. Partizipativ co-konstruierte Ziele — solche, die der Lernende selbst formuliert hat statt vorgefunden zu haben — erhöhen das Commitment signifikant. Das Motiv-Probing ist die Bedingung dafür, dass die nachfolgend in der Lernroadmap eingetragenen Ziele dieses Kriterium erfüllen.
+
+**Motivational Interviewing (Miller & Rollnick, 2013):** Der evokative Gesprächseinstieg — Ambivalenzen erfragen, nicht auflösen; eigene Aussagen des Gesprächspartners spiegeln — ist die methodische Vorlage für KAIAs Motiv-Dialog. Markland, Ryan, Tobin & Rollnick (2005) belegen den theoretischen Nexus explizit: MI wirkt, weil es autonomieunterstützend ist — nicht durch Überzeugung, sondern durch Ermöglichung eigener Erkenntnis. Damit ist MI kompatibel mit dem Grundprinzip von KAIA (Abschnitt 3.1.1) und keine additive Methode, sondern eine Operationalisierung desselben Kernprinzips auf den Gesprächseinstieg.
+
+Didaktisch folgt der Motiv-Dialog der Lernzieltheorie (Anderson & Krathwohl, 2001): Ein Lernziel muss operationalisierbar sein, bevor eine Lernsequenz sinnvoll designt werden kann.
 
 **Drei Designgrenzen** (psychologisches Review, 06.06.2026):
 
@@ -316,7 +353,7 @@ Der Motiv-Dialog ist Metakognition als Einstieg: Bevor jemand lernt *was*, refle
 
 Die Lernroadmap ist ein nutzerseitig befülltes, strukturiertes Dokument, das für die gesamte Studiendauer angelegt wird. Es erfüllt drei Funktionen:
 
-1. *Zielstruktur* — explizite Lernziele (Goal-Setting, Locke & Latham, 1990) verhindern aimless chatting und geben KAIA pro Session einen konkreten Kontext
+1. *Zielstruktur* — explizite Lernziele (Goal-Setting, Locke & Latham, 1990, 2002) verhindern aimless chatting und geben KAIA pro Session einen konkreten Kontext. Die dreistufige Zielstruktur der Roadmap (Lernziel → Lernschritt → Erfolgskriterium, vgl. Abschnitt 3.3.6.1) entspricht dem Konzept des *Learning Contract* nach Knowles (1975), der fünf Planungsschritte vorsieht — darunter explizit die *evidence of accomplishment*: Was gilt als Beleg, dass Lernen stattgefunden hat?
 2. *Fortschrittserfahrung* — selbst eingeschätzter Fortschritt (0–100%) ist eine direkte Handlungsergebniserfahrung (Bandura, 1997) — Voraussetzung für Selbstwirksamkeitsstärkung
 3. *Metakognitive Aktivierung* — das Befüllen und Aktualisieren der Roadmap fördert Selbstregulation (Zimmermann, 2000)
 
@@ -446,41 +483,21 @@ Diese Architektur adressiert direkt das Spannungsfeld aus Kapitel 2: Sie schütz
 
 ## Literaturverzeichnis (Kapitel 3, ergänzt)
 
-Bandura, A. (1997). *Self-efficacy: The exercise of control*. Freeman.
-
-Cepeda, N. J., Pashler, H., Vul, E., Wixted, J. T., & Rohrer, D. (2006). Distributed practice in verbal recall tasks: A review and quantitative synthesis. *Psychological Bulletin, 132*(3), 354–380.
-
-Csikszentmihalyi, M. (1990). *Flow: The Psychology of Optimal Experience*. Harper & Row.
-
-Decety, J., & Jackson, P. L. (2004). The functional architecture of human empathy. *Behavioral and Cognitive Neuroscience Reviews, 3*(2), 71–100.
-
-Hevner, A. R., March, S. T., Park, J., & Ram, S. (2004). Design science in information systems research. *MIS Quarterly, 28*(1), 75–105.
-
-Kalyuga, S., Ayres, P., Chandler, P., & Sweller, J. (2003). The expertise reversal effect. *Educational Psychologist, 38*(1), 23–31.
-
-Lazarus, R. S. (1993). From psychological stress to the emotions: A history of changing outlooks. *Annual Review of Psychology, 44*(1), 1–21.
-
-Lazarus, R. S., & Folkman, S. (1984). *Stress, Appraisal, and Coping*. Springer.
-
-Locke, E. A., & Latham, G. P. (1990). *A Theory of Goal Setting & Task Performance*. Prentice-Hall.
-
-Teigen, K. H. (1994). Yerkes-Dodson: A law for all seasons. *Theory & Psychology, 4*(4), 525–547.
-
-Vygotsky, L. S. (1978). *Mind in Society: The Development of Higher Psychological Processes*. Harvard University Press.
-
-Wood, D., Bruner, J. S., & Ross, G. (1976). The role of tutoring in problem solving. *Journal of Child Psychology and Psychiatry, 17*(2), 89–100.
-
-Yerkes, R. M., & Dodson, J. D. (1908). The relation of strength of stimulus to rapidity of habit-formation. *Journal of Comparative Neurology and Psychology, 18*(5), 459–482.
-
-Zimmermann, B. J. (2000). Attaining self-regulation: A social cognitive perspective. In M. Boekaerts, P. R. Pintrich, & M. Zeidner (Hrsg.), *Handbook of Self-Regulation* (S. 13–39). Academic Press.
-
 Anderson, L. W., & Krathwohl, D. R. (Hrsg.). (2001). *A Taxonomy for Learning, Teaching, and Assessing*. Longman.
 
 Ausubel, D. P. (1968). *Educational Psychology: A Cognitive View*. Holt.
 
+Bandura, A. (1997). *Self-efficacy: The exercise of control*. Freeman.
+
+Cepeda, N. J., Pashler, H., Vul, E., Wixted, J. T., & Rohrer, D. (2006). Distributed practice in verbal recall tasks: A review and quantitative synthesis. *Psychological Bulletin, 132*(3), 354–380.
+
 Cohen, P. A. (1989). Teaching academic skills through tutoring. *Review of Educational Research, 59*(1), 77–97.
 
 Craik, F. I. M., & Lockhart, R. S. (1972). Levels of processing: A framework for memory research. *Journal of Verbal Learning and Verbal Behavior, 11*(6), 671–684.
+
+Csikszentmihalyi, M. (1990). *Flow: The Psychology of Optimal Experience*. Harper & Row.
+
+Decety, J., & Jackson, P. L. (2004). The functional architecture of human empathy. *Behavioral and Cognitive Neuroscience Reviews, 3*(2), 71–100.
 
 Deci, E. L., & Ryan, R. M. (1985). *Intrinsic Motivation and Self-Determination in Human Behavior*. Plenum.
 
@@ -494,9 +511,35 @@ Engeser, S., & Rheinberg, F. (2008). Flow, performance and moderators of challen
 
 Festinger, L. (1957). *A Theory of Cognitive Dissonance*. Stanford University Press.
 
+Gollwitzer, P. M. (1999). Implementation intentions: Strong effects of simple plans. *American Psychologist, 54*(7), 493–503.
+
+Gollwitzer, P. M., & Sheeran, P. (2006). Implementation intentions and goal achievement: A meta-analysis of effects and processes. *Advances in Experimental Social Psychology, 38*, 69–119.
+
+Hattie, J., & Timperley, H. (2007). The power of feedback. *Review of Educational Research, 77*(1), 81–112.
+
+Hevner, A. R., March, S. T., Park, J., & Ram, S. (2004). Design science in information systems research. *MIS Quarterly, 28*(1), 75–105.
+
 Johnson-Laird, P. N. (1983). *Mental Models*. Cambridge University Press.
 
+Kalyuga, S., Ayres, P., Chandler, P., & Sweller, J. (2003). The expertise reversal effect. *Educational Psychologist, 38*(1), 23–31.
+
+Knowles, M. S. (1975). *Self-Directed Learning: A Guide for Learners and Teachers*. Association Press.
+
+Knowles, M. S. (1984). *Andragogy in Action: Applying Modern Principles of Adult Learning*. Jossey-Bass.
+
 Kolb, D. A. (1984). *Experiential Learning: Experience as the Source of Learning and Development*. Prentice-Hall.
+
+Lazarus, R. S. (1993). From psychological stress to the emotions: A history of changing outlooks. *Annual Review of Psychology, 44*(1), 1–21.
+
+Lazarus, R. S., & Folkman, S. (1984). *Stress, Appraisal, and Coping*. Springer.
+
+Locke, E. A., & Latham, G. P. (1990). *A Theory of Goal Setting & Task Performance*. Prentice-Hall.
+
+Locke, E. A., & Latham, G. P. (2002). Building a practically useful theory of goal setting and task motivation: A 35-year odyssey. *American Psychologist, 57*(9), 705–717.
+
+Markland, D., Ryan, R. M., Tobin, V. J., & Rollnick, S. (2005). Motivational interviewing and self-determination theory. *Journal of Social and Clinical Psychology, 24*(6), 811–831.
+
+Miller, W. R., & Rollnick, S. (2013). *Motivational Interviewing: Helping People Change* (3. Aufl.). Guilford Press.
 
 Nakamura, J., & Csikszentmihalyi, M. (2002). The concept of flow. In C. R. Snyder & S. J. Lopez (Hrsg.), *Handbook of Positive Psychology* (S. 89–105). Oxford University Press.
 
@@ -504,8 +547,24 @@ Rheinberg, F., Vollmeyer, R., & Engeser, S. (2003). Die Erfassung des Flow-Erleb
 
 Ryan, R. M., & Deci, E. L. (2000). Intrinsic and extrinsic motivations: Classic definitions and new directions. *Contemporary Educational Psychology, 25*(1), 54–67.
 
+Ryan, R. M., Legate, N., Weinstein, N., & Hemric, M. (2023). Self-determination theory as a macro-level theory of motivation and well-being: Review and meta-analysis across 486 samples. *Psychological Bulletin, 149*(9–10), 513–545.
+
+Schimpf, C., Voigt, S., & Bohné, T. (2026). AI-assisted goal setting improves goal achievement: A randomized controlled trial. *arXiv preprint arXiv:2603.17887*.
+
 Schwarzer, R., & Jerusalem, M. (1995). Generalized Self-Efficacy scale. In J. Weinman, S. Wright, & M. Johnston (Hrsg.), *Measures in health psychology: A user's portfolio* (S. 35–37). NFER-NELSON.
+
+Sweller, J. (1988). Cognitive load during problem solving: Effects on learning. *Cognitive Science, 12*(2), 257–285.
+
+Teigen, K. H. (1994). Yerkes-Dodson: A law for all seasons. *Theory & Psychology, 4*(4), 525–547.
+
+Vygotsky, L. S. (1978). *Mind in Society: The Development of Higher Psychological Processes*. Harvard University Press.
 
 Weiner, B. (1985). An attributional theory of achievement motivation and emotion. *Psychological Review, 92*(4), 548–573.
 
 Woloshyn, V. E., Pressley, M., & Schneider, W. (1992). Elaborative-interrogation and prior-knowledge effects on learning of facts. *Journal of Educational Psychology, 84*(1), 115–124.
+
+Wood, D., Bruner, J. S., & Ross, G. (1976). The role of tutoring in problem solving. *Journal of Child Psychology and Psychiatry, 17*(2), 89–100.
+
+Yerkes, R. M., & Dodson, J. D. (1908). The relation of strength of stimulus to rapidity of habit-formation. *Journal of Comparative Neurology and Psychology, 18*(5), 459–482.
+
+Zimmermann, B. J. (2000). Attaining self-regulation: A social cognitive perspective. In M. Boekaerts, P. R. Pintrich, & M. Zeidner (Hrsg.), *Handbook of Self-Regulation* (S. 13–39). Academic Press.

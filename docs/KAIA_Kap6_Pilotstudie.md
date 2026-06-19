@@ -1,9 +1,9 @@
 # Kapitel 6 — Pilotstudie und Evaluation
 
-> **Stand:** 10. Juni 2026 · **Version:** 0.4-DRAFT  
-> **Reviewer:** Psychologe · Compliance · Discovery Researcher  
+> **Stand:** 19. Juni 2026 · **Version:** 0.5-DRAFT  
+> **Reviewer:** Psychologe · Compliance · Discovery Researcher · Didaktiker  
 > **Geplanter Umfang:** ca. 20–25 Seiten (~5.000–6.250 Wörter)  
-> **Status:** Methodik vollständig (= Studienprotokoll v1.0); Ergebnisse folgen nach Studie (Aug/Sep 2026)
+> **Status:** Ablaufplan Session 1–2 präzisiert (Implementation Intentions, Evidenzanker, Motiv-Dialog); Literatur ergänzt (Gollwitzer, Hattie & Timperley, Knowles, Miller & Rollnick, Schimpf et al. 2026)
 
 ---
 
@@ -128,9 +128,14 @@ Vor Studie      Ethikvotum SRH | Pre-Registration OSF.io | DPAs
 Woche 0         Registrierung | Einwilligung | KI-Disclosure | GSE Prä
 Woche 1–4       Strukturierte KAIA-Nutzung (Mindest: ≥10 Sessions)
                   Sessions 1–2: Foundation-Sessions (20–30 Min.)
-                    – Motivationsanker, Lerntyp-Routing, Standortbestimmung
+                    – Motiv-Dialog (Probing nach Lernziel hinter dem Lernziel)
+                    – Learning Intention formulieren (nicht Task-Benennung)
+                    – Lernschritt + Implementation Intention (Wann/Wo/Wie)
+                    – Evidenzanker definieren ("Woran würdest du merken...?")
+                    – Lerntyp-Routing, Standortbestimmung
                   Sessions 3–10: Micro-Sessions (10–15 Min.)
                     – Cross-Session-Memory übernimmt Kontextaufbau
+                    – Erster-Schritt-Loop: Lernschritt-Rückbezug + Evidenzanker-Abgleich
                 FKS nach Session 2, 5, 8, 10 (~3 Min. je Erhebung)
 Woche 4–5       GSE Post | FKS MZP 4 (falls nicht bereits nach S10) |
                 optionaler Erfahrungsbericht
@@ -208,8 +213,6 @@ Geplante Abschnitte:
 
 ## Literaturverzeichnis (Kapitel 6)
 
-Hevner, A. R., March, S. T., Park, J., & Ram, S. (2004). Design science in information systems research. *MIS Quarterly, 28*(1), 75–105.
-
 Bandura, A. (1997). *Self-efficacy: The exercise of control*. Freeman.
 
 Cepeda, N. J., Pashler, H., Vul, E., Wixted, J. T., & Rohrer, D. (2006). Distributed practice in verbal recall tasks: A review and quantitative synthesis. *Psychological Bulletin, 132*(3), 354–380. https://doi.org/10.1037/0033-2909.132.3.354
@@ -218,19 +221,41 @@ Csikszentmihalyi, M. (1990). *Flow: The psychology of optimal experience*. Harpe
 
 Csikszentmihalyi, M., & Larson, R. (1987). Validity and reliability of the experience-sampling method. *Journal of Nervous and Mental Disease, 175*(9), 526–536.
 
+Deci, E. L., & Ryan, R. M. (2000). The "what" and "why" of goal pursuits: Human needs and the self-determination of behavior. *Psychological Inquiry, 11*(4), 227–268.
+
 Dunlosky, J., & Metcalfe, J. (2009). *Metacognition*. SAGE.
 
 Engeser, S., & Rheinberg, F. (2008). Flow, performance and moderators of challenge-skill balance. *Motivation and Emotion, 32*(3), 158–172. https://doi.org/10.1007/s11031-008-9102-4
 
 Flavell, J. H. (1979). Metacognition and cognitive monitoring: A new area of cognitive-developmental inquiry. *American Psychologist, 34*(10), 906–911.
 
+Gollwitzer, P. M. (1999). Implementation intentions: Strong effects of simple plans. *American Psychologist, 54*(7), 493–503.
+
+Gollwitzer, P. M., & Sheeran, P. (2006). Implementation intentions and goal achievement: A meta-analysis of effects and processes. *Advances in Experimental Social Psychology, 38*, 69–119.
+
+Hattie, J., & Timperley, H. (2007). The power of feedback. *Review of Educational Research, 77*(1), 81–112.
+
 Hevner, A. R., March, S. T., Park, J., & Ram, S. (2004). Design science in information systems research. *MIS Quarterly, 28*(1), 75–105.
 
 Jackson, S. A., & Marsh, H. W. (1996). Development and validation of a scale to measure optimal experience: The Flow State Scale. *Journal of Sport & Exercise Psychology, 18*(1), 17–35.
 
+Knowles, M. S. (1975). *Self-Directed Learning: A Guide for Learners and Teachers*. Association Press.
+
+Knowles, M. S. (1984). *Andragogy in Action: Applying Modern Principles of Adult Learning*. Jossey-Bass.
+
 Larson, R., & Csikszentmihalyi, M. (1983). The experience sampling method. *New Directions for Methodology of Social and Behavioral Science, 15*, 41–56.
 
+Locke, E. A., & Latham, G. P. (2002). Building a practically useful theory of goal setting and task motivation: A 35-year odyssey. *American Psychologist, 57*(9), 705–717.
+
+Markland, D., Ryan, R. M., Tobin, V. J., & Rollnick, S. (2005). Motivational interviewing and self-determination theory. *Journal of Social and Clinical Psychology, 24*(6), 811–831.
+
+Miller, W. R., & Rollnick, S. (2013). *Motivational Interviewing: Helping People Change* (3. Aufl.). Guilford Press.
+
 Rheinberg, F., Vollmeyer, R., & Engeser, S. (2003). Die Erfassung des Flow-Erlebens [The assessment of flow experience]. In J. Stiensmeier-Pelster & F. Rheinberg (Hrsg.), *Diagnostik von Motivation und Selbstkonzept* (S. 261–279). Hogrefe.
+
+Ryan, R. M., Legate, N., Weinstein, N., & Hemric, M. (2023). Self-determination theory as a macro-level theory of motivation and well-being: Review and meta-analysis across 486 samples. *Psychological Bulletin, 149*(9–10), 513–545.
+
+Schimpf, C., Voigt, S., & Bohné, T. (2026). AI-assisted goal setting improves goal achievement: A randomized controlled trial. *arXiv preprint arXiv:2603.17887*.
 
 Schwarzer, R., & Jerusalem, M. (1995). Generalized Self-Efficacy scale. In J. Weinman, S. Wright, & M. Johnston (Hrsg.), *Measures in health psychology: A user's portfolio* (S. 35–37). NFER-NELSON.
 
