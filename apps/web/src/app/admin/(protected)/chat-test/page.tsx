@@ -172,6 +172,7 @@ export default function AdminChatTestPage() {
   const [tokenError,   setTokenError]   = useState<string | null>(null)
   const [fetchTrigger, setFetchTrigger] = useState(0)
   const [sessionId,    setSessionId]    = useState<number | null>(null)
+  const [sessionNumber, setSessionNumber] = useState<number | null>(null)
   const [messages,     setMessages]     = useState<ChatMessage[]>([])
   const [thinkingLog,  setThinkingLog]  = useState<ThinkingEntry[]>([])
   const thinkCounterRef = useRef(0)
@@ -225,9 +226,10 @@ export default function AdminChatTestPage() {
           body: JSON.stringify({ character }),
         })
         if (!sessRes.ok) throw new Error(`Session-Start fehlgeschlagen (${sessRes.status})`)
-        const { id: sid } = await sessRes.json() as { id: number }
+        const { id: sid, session_number: sessNum } = await sessRes.json() as { id: number; session_number: number }
         if (cancelled) return
         setSessionId(sid)
+        setSessionNumber(sessNum)
         setMessages([{ id: streamId, role: "assistant", content: "", streaming: true }])
 
         const openRes = await fetch(`/api/v1/chat/sessions/${sid}/opening?debug=true`, {
@@ -293,6 +295,7 @@ export default function AdminChatTestPage() {
       setToken(null)
       setTokenError(null)
       setSessionId(null)
+      setSessionNumber(null)
       setMessages([])
       setThinkingLog([])
       thinkCounterRef.current = 0
@@ -304,6 +307,7 @@ export default function AdminChatTestPage() {
   const resetSession = useCallback((newChar?: Character) => {
     if (newChar) setCharacter(newChar)
     setSessionId(null)
+    setSessionNumber(null)
     setMessages([])
     setThinkingLog([])
     thinkCounterRef.current = 0
@@ -328,9 +332,10 @@ export default function AdminChatTestPage() {
           body: JSON.stringify({ character }),
         })
         if (!res.ok) throw new Error(`Session-Start fehlgeschlagen (${res.status})`)
-        const data = await res.json() as { id: number }
+        const data = await res.json() as { id: number; session_number: number }
         sid = data.id
         setSessionId(sid)
+        setSessionNumber(data.session_number)
       } catch (e) {
         setChatError(e instanceof Error ? e.message : "Verbindungsfehler")
         setLoading(false)
@@ -413,7 +418,7 @@ export default function AdminChatTestPage() {
         <div className="shrink-0 flex items-center justify-between px-4 py-3 border-b border-border bg-muted/20">
           <div className="flex items-center gap-3">
             <span className="font-semibold text-sm">Chat-Test</span>
-            {sessionId && <span className="text-xs text-muted-foreground font-mono">Session #{sessionId}</span>}
+            {sessionNumber != null && <span className="text-xs text-muted-foreground font-mono">Session {sessionNumber}</span>}
             <span className="text-xs text-muted-foreground/60 bg-muted px-2 py-0.5 rounded">admin_test@kaia.internal</span>
           </div>
           <div className="flex items-center gap-1">
