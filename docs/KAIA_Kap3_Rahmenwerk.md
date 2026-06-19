@@ -310,6 +310,21 @@ Diese Regeln sind nicht Stilempfehlungen, sondern Prompt-Constraints, die das LL
 
 Die konstruktive Alternative zu bewertender Sprache ist die elaborative Interrogation (Woloshyn et al., 1992): Fragen, die Erklärungen und Begründungen einfordern, ohne das Ergebnis vorwegzunehmen. Typische Formulierungen: "Was hast du dabei bemerkt?", "Wie würdest du das überprüfen?", "Was würde jemand einwenden, der anderer Meinung ist?" Diese Fragen erzeugen tiefen Verarbeitungsgrad (Craik & Lockhart, 1972) ohne Bewertungsimplikation.
 
+#### 3.3.10.4 Affekt-Anerkennung ohne emotionale Vertiefung
+
+Ein methodisch kritischer Sonderfall betrifft den Session-Einstieg mit negativem Affekt: Wenn eine lernende Person mit Erschöpfung, Frustration oder Überforderung beginnt, ohne unmittelbar ein Lernthema zu benennen, stehen zwei unerwünschte Reaktionsmuster gegenüber. Erstens: Der Affekt wird ignoriert und sofort übergangen — das erzeugt Distanz und signalisiert fehlende Wahrnehmung. Zweitens: Der affektive Frame wird durch Nachfragen vertieft ("Was hat zuletzt am meisten Energie gekostet?", "Was belastet dich?") — das überführt das Gespräch in Coaching- oder Therapieterrain und verlässt den Kontext der Lernbegleitung.
+
+D'Mello & Graesser (2012a) belegen in einer Analyse affektiver Zustände im Lernkontext, dass unaufgelöste Frustration in eine Desengagement-Spirale mündet — tutorielle Systeme sollten kurzfristig auf Affekt reagieren, um den Lernenden zurück in den Engagement-Zustand zu führen, nicht um emotionale Verarbeitung einzuleiten. Die Affective AutoTutor-Studie (D'Mello & Graesser, 2012b) operationalisiert dies als zweistufige Strategie: kurze affektive Anerkennung, gefolgt von sofortiger Rückkehr zur Lernaufgabe — mit messbarer Überlegenheit gegenüber beiden Extremen (keine Reaktion vs. vertiefte emotionale Begleitung).
+
+Boekaerts (1993, 2011) liefert den theoretischen Rahmen: Lernende operieren entweder auf dem Mastery/Growth-Pathway (Kompetenzaufbau priorisiert) oder dem Well-Being-Pathway (Selbstschutz priorisiert). Unter Stress tendieren sie zum Well-Being-Pathway. Ein System, das den emotionalen Frame vertieft, riskiert, diesen Wechsel zu stabilisieren — statt den Rückkehrprozess zum Mastery-Pathway zu fördern. Pekrun (2006) ergänzt: Negative deaktivierende Emotionen (Hoffnungslosigkeit, Rückzug) werden durch Vertiefung verstärkt; aktivierende negative Emotionen (kurzzeitige Frustration, Herausforderungserleben) lassen sich nach kurzer Anerkennung direkt in einen Aktivierungsschritt überführen.
+
+**Operative Regel für KAIA:** Bei negativem Affekt als Session-Einstieg gilt folgende Sequenz:
+
+1. Anerkennung — maximal ein Satz, außen-orientiert, nicht bewertend
+2. Sofortiger Pivot zur Lernfrage: *"Was beschäftigt dich gerade, wobei du dir wünschst, es anders zu können?"* (Session 1) oder *"Was möchtest du nach dieser Session verstanden oder weitergedacht haben?"* (Folgesessions)
+
+Ausdrücklich verboten: Fragen, die im affektiven Frame verbleiben — *"Was hat zuletzt am meisten Energie gekostet?"*, *"Was belastet dich?"*. Sie folgen einem Coaching-Muster und sind mit dem Prinzip der Lernbegleitung nicht vereinbar. Woolf et al. (2009) und Baker et al. (2010) bestätigen diesen Befund systemübergreifend: Affect-aware tutorielle Systeme, die kurze zielgerichtete Reaktionen mit unmittelbarer Rückkehr zur Aufgabe verbinden, erhalten messbar besseres Engagement als Systeme, die in die affektive Verarbeitung einsteigen.
+
 ### 3.3.11 Wissensarten als Routing-Grundlage: Anderson & Krathwohl (2001)
 
 Die revidierte Bloom-Taxonomie (Anderson & Krathwohl, 2001) unterscheidet nicht nur zwischen Kognitionsstufen, sondern auch zwischen vier Wissensarten: Faktisches Wissen (deklarative Fakten und Terminologie), Konzeptuelles Wissen (Kategorien, Prinzipien, Theorien), Prozedurales Wissen (Methoden, Algorithmen, Techniken) und Metakognitives Wissen (Wissen über das eigene Denken, Lernstrategien, kognitive Stile).
@@ -485,6 +500,12 @@ Diese Architektur adressiert direkt das Spannungsfeld aus Kapitel 2: Sie schütz
 
 Anderson, L. W., & Krathwohl, D. R. (Hrsg.). (2001). *A Taxonomy for Learning, Teaching, and Assessing*. Longman.
 
+Baker, R. S., D'Mello, S. K., Rodrigo, M. M. T., & Graesser, A. C. (2010). Better to be frustrated than bored: The incidence, persistence, and impact of learners' cognitive–affective states during interactions with three different computer-based learning environments. *International Journal of Human-Computer Studies, 68*(4), 223–241. https://doi.org/10.1016/j.ijhcs.2009.12.003
+
+Boekaerts, M. (1993). Being concerned with well-being and with learning. *Educational Psychologist, 28*(2), 149–167. https://doi.org/10.1207/s15326985ep2802_4
+
+Boekaerts, M. (2011). Emotions, emotion regulation, and self-regulation of learning. In B. J. Zimmerman & D. H. Schunk (Hrsg.), *Handbook of self-regulation of learning and performance* (S. 408–425). Routledge.
+
 Ausubel, D. P. (1968). *Educational Psychology: A Cognitive View*. Holt.
 
 Bandura, A. (1997). *Self-efficacy: The exercise of control*. Freeman.
@@ -496,6 +517,10 @@ Cohen, P. A. (1989). Teaching academic skills through tutoring. *Review of Educa
 Craik, F. I. M., & Lockhart, R. S. (1972). Levels of processing: A framework for memory research. *Journal of Verbal Learning and Verbal Behavior, 11*(6), 671–684.
 
 Csikszentmihalyi, M. (1990). *Flow: The Psychology of Optimal Experience*. Harper & Row.
+
+D'Mello, S. K., & Graesser, A. C. (2012a). Dynamics of affective states during complex learning. *Learning and Instruction, 22*(2), 145–157. https://doi.org/10.1016/j.learninstruc.2011.10.001
+
+D'Mello, S. K., & Graesser, A. C. (2012b). AutoTutor and Affective AutoTutor: Learning by talking with cognitively and emotionally intelligent computers that talk back. *ACM Transactions on Interactive Intelligent Systems, 2*(4), Article 23. https://doi.org/10.1145/2395123.2395128
 
 Decety, J., & Jackson, P. L. (2004). The functional architecture of human empathy. *Behavioral and Cognitive Neuroscience Reviews, 3*(2), 71–100.
 
@@ -541,6 +566,8 @@ Markland, D., Ryan, R. M., Tobin, V. J., & Rollnick, S. (2005). Motivational int
 
 Miller, W. R., & Rollnick, S. (2013). *Motivational Interviewing: Helping People Change* (3. Aufl.). Guilford Press.
 
+Pekrun, R. (2006). The control-value theory of achievement emotions: Assumptions, corollaries, and implications for educational research and practice. *Educational Psychology Review, 18*(4), 315–341. https://doi.org/10.1007/s10648-006-9029-9
+
 Nakamura, J., & Csikszentmihalyi, M. (2002). The concept of flow. In C. R. Snyder & S. J. Lopez (Hrsg.), *Handbook of Positive Psychology* (S. 89–105). Oxford University Press.
 
 Rheinberg, F., Vollmeyer, R., & Engeser, S. (2003). Die Erfassung des Flow-Erlebens. In J. Stiensmeier-Pelster & F. Rheinberg (Hrsg.), *Diagnostik von Motivation und Selbstkonzept* (S. 261–279). Hogrefe.
@@ -558,6 +585,8 @@ Sweller, J. (1988). Cognitive load during problem solving: Effects on learning. 
 Teigen, K. H. (1994). Yerkes-Dodson: A law for all seasons. *Theory & Psychology, 4*(4), 525–547.
 
 Vygotsky, L. S. (1978). *Mind in Society: The Development of Higher Psychological Processes*. Harvard University Press.
+
+Woolf, B. P., Burleson, W., Arroyo, I., Dragon, T., Cooper, D., & Picard, R. W. (2009). Affect-aware tutors: Recognising and responding to student affect. *International Journal of Learning Technology, 4*(3/4), 129–164. https://doi.org/10.1504/IJLT.2009.028804
 
 Weiner, B. (1985). An attributional theory of achievement motivation and emotion. *Psychological Review, 92*(4), 548–573.
 
