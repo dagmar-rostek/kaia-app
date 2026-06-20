@@ -20,6 +20,7 @@ from typing import Any
 import structlog
 from anthropic import AsyncAnthropic
 from anthropic.types import TextBlock
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.config import settings
@@ -388,9 +389,14 @@ async def stream_opening(
 
     yield _delta(final_content)
 
-    assistant_msg = await repo.save_message(
-        session.id, MessageRole.ASSISTANT, final_content, thinking_raw=thinking
-    )
+    try:
+        assistant_msg = await repo.save_message(
+            session.id, MessageRole.ASSISTANT, final_content, thinking_raw=thinking
+        )
+    except IntegrityError:
+        # Session was deleted mid-stream (e.g. admin reset) — discard silently.
+        log.warning("llm_opening_session_gone", session_id=session.id)
+        return
     await _log_usage(db, session, input_tokens, output_tokens)
     yield _done(assistant_msg.id, input_tokens, output_tokens)
     log.info("llm_opening_complete", session_id=session.id)
