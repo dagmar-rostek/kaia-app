@@ -4,7 +4,7 @@ import { useState } from "react"
 import {
   BookOpen, Zap, Brain, Target, ChevronDown, ChevronRight,
   CheckCircle2, Clock, Circle, AlertTriangle, Lightbulb,
-  TrendingUp, MessageSquare, Shield, Sparkles, BarChart3,
+  MessageSquare, Shield, BarChart3,
   ArrowRight, Network
 } from "lucide-react"
 
