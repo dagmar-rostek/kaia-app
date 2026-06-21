@@ -158,10 +158,6 @@ export function ThesisCockpit({ chapters }: Props) {
     contentRef.current?.scrollTo({ top: 0 })
   }
 
-  const activeMeta = CHAPTERS.find(c => c.id === active)!
-  const activeContent = chapters[active]
-  const stand = extractStand(activeContent)
-
   return (
     <div className="flex h-full gap-0 overflow-hidden">
 
@@ -237,33 +233,38 @@ export function ThesisCockpit({ chapters }: Props) {
         </div>
       </aside>
 
-      {/* ── Content area ── */}
+      {/* ── Content area — all chapters stay in DOM, only active is visible ── */}
       <div ref={contentRef} className="flex-1 overflow-y-auto">
-        <div className="max-w-3xl mx-auto px-8 py-6 space-y-1">
-
-          {/* Chapter header */}
-          <div className="flex items-start justify-between gap-4 mb-4 pb-4 border-b border-border">
-            <div>
-              <p className="text-xs font-mono text-muted-foreground mb-1">Kapitel {activeMeta.num}</p>
-              <h1 className="text-xl font-bold tracking-tight">{activeMeta.title}</h1>
-              <p className="text-xs text-muted-foreground mt-1">
-                Stand: <span className="font-medium">{stand}</span>
-                {" · "}Umfang: <span className="font-medium">{activeMeta.pages} Seiten</span>
-              </p>
+        {CHAPTERS.map(ch => {
+          const isActive = ch.id === active
+          const meta = CHAPTERS.find(c => c.id === ch.id)!
+          const stand = extractStand(chapters[ch.id])
+          return (
+            <div key={ch.id} className={isActive ? "block" : "hidden"}>
+              <div className="max-w-3xl mx-auto px-8 py-6 space-y-1">
+                <div className="flex items-start justify-between gap-4 mb-4 pb-4 border-b border-border">
+                  <div>
+                    <p className="text-xs font-mono text-muted-foreground mb-1">Kapitel {meta.num}</p>
+                    <h1 className="text-xl font-bold tracking-tight">{meta.title}</h1>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Stand: <span className="font-medium">{stand}</span>
+                      {" · "}Umfang: <span className="font-medium">{meta.pages} Seiten</span>
+                    </p>
+                  </div>
+                  <span className={`inline-flex items-center gap-1.5 rounded-md border px-2 py-1 text-xs font-medium shrink-0 mt-1 ${
+                    meta.status === "done"  ? "bg-emerald-500/10 text-emerald-600 border-emerald-500/20 dark:text-emerald-400" :
+                    meta.status === "draft" ? "bg-blue-500/10 text-blue-600 border-blue-500/20 dark:text-blue-400" :
+                    "bg-muted text-muted-foreground border-border"
+                  }`}>
+                    <span className={`h-1.5 w-1.5 rounded-full ${STATUS_DOT[meta.status]}`} />
+                    {meta.status === "done" ? "Fertig" : meta.status === "draft" ? "In Arbeit" : "Geplant"}
+                  </span>
+                </div>
+                <ChapterContent nodes={rendered[ch.id]} />
+              </div>
             </div>
-            <span className={`inline-flex items-center gap-1.5 rounded-md border px-2 py-1 text-xs font-medium shrink-0 mt-1 ${
-              activeMeta.status === "done"    ? "bg-emerald-500/10 text-emerald-600 border-emerald-500/20 dark:text-emerald-400" :
-              activeMeta.status === "draft"   ? "bg-blue-500/10 text-blue-600 border-blue-500/20 dark:text-blue-400" :
-              "bg-muted text-muted-foreground border-border"
-            }`}>
-              <span className={`h-1.5 w-1.5 rounded-full ${STATUS_DOT[activeMeta.status]}`} />
-              {activeMeta.status === "done" ? "Fertig" : activeMeta.status === "draft" ? "In Arbeit" : "Geplant"}
-            </span>
-          </div>
-
-          {/* Rendered markdown — memo prevents re-render on countdown ticks */}
-          <ChapterContent nodes={rendered[active]} />
-        </div>
+          )
+        })}
       </div>
     </div>
   )
