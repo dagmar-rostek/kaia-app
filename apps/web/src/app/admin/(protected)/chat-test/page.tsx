@@ -304,8 +304,15 @@ export default function AdminChatTestPage() {
     }
   }, [confirmReset])
 
-  const resetSession = useCallback((newChar?: Character) => {
+  const resetSession = useCallback(async (newChar?: Character) => {
     if (newChar) setCharacter(newChar)
+    // End current session so extract_session_summary runs and cross-session memory is written
+    if (sessionId && token) {
+      await fetch(`/api/v1/chat/sessions/${sessionId}/end`, {
+        method: "POST",
+        headers: { ...authHeader },
+      }).catch(() => { /* ignore — session may already be gone */ })
+    }
     setSessionId(null)
     setSessionNumber(null)
     setMessages([])
@@ -313,7 +320,7 @@ export default function AdminChatTestPage() {
     thinkCounterRef.current = 0
     setChatError(null)
     setOpenTrigger(t => t + 1)
-  }, [])
+  }, [sessionId, token, authHeader])
 
   const sendMessage = useCallback(async () => {
     if (!input.trim() || loading || !token) return
@@ -425,7 +432,7 @@ export default function AdminChatTestPage() {
             {(Object.keys(CHARACTER_LABELS) as Character[]).map(c => (
               <button
                 key={c}
-                onClick={() => resetSession(c)}
+                onClick={() => void resetSession(c)}
                 className={`text-xs px-2.5 py-1.5 rounded-lg transition-colors ${
                   character === c
                     ? "bg-foreground text-background"
@@ -434,7 +441,7 @@ export default function AdminChatTestPage() {
               >{CHARACTER_LABELS[c]}</button>
             ))}
             <button
-              onClick={() => resetSession()}
+              onClick={() => void resetSession()}
               className="ml-1 p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
               title="Neue Session"
             ><Plus className="h-4 w-4" /></button>
