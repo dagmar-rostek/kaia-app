@@ -6,7 +6,13 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.deps import CurrentUser
 from app.db.session import get_db
 from app.domains.users.repository import RefreshTokenRepository, UserRepository
-from app.domains.users.schemas import ConsentUpdate, DeleteRequest, UserExport, UserRead
+from app.domains.users.schemas import (
+    ConsentUpdate,
+    DeleteRequest,
+    TopicUpdate,
+    UserExport,
+    UserRead,
+)
 from app.domains.users.service import UserService
 
 router = APIRouter(prefix="/users", tags=["users"])
@@ -41,6 +47,18 @@ async def delete_my_account(
     """DSGVO Art. 17 — Recht auf Vergessenwerden."""
     await svc.delete(current_user, data.reason)
     response.delete_cookie(key="refresh_token", path="/api/v1/auth/refresh")
+
+
+@router.patch("/me/topic")
+async def update_topic(
+    data: TopicUpdate,
+    current_user: CurrentUser,
+    db: Annotated[AsyncSession, Depends(get_db)],
+) -> UserRead:
+    current_user.learning_topic = data.learning_topic
+    await db.commit()
+    await db.refresh(current_user)
+    return UserRead.model_validate(current_user)
 
 
 @router.patch("/me/consent")

@@ -38,9 +38,14 @@ class UserRead(BaseModel):
     status: UserStatus
     onboarding_complete: bool
     ki_disclosure_seen_at: datetime | None
+    learning_topic: str | None = None
     created_at: datetime
 
     model_config = {"from_attributes": True}
+
+
+class TopicUpdate(BaseModel):
+    learning_topic: str = Field(max_length=500)
 
 
 class UserApprove(BaseModel):

@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useRef, useMemo } from "react"
+import { useState, useEffect, useRef, useMemo, memo } from "react"
 import {
   BookOpen, Brain, Target, Code2, FlaskConical, GraduationCap,
 } from "lucide-react"
@@ -125,6 +125,12 @@ function extractStand(md: string) {
   const m = md.match(/\*\*Stand:\*\*\s*([^\n·*]+)/)
   return m?.[1]?.trim() ?? "—"
 }
+
+// ── Memoized content — skips re-render on countdown ticks ────────────────────
+
+const ChapterContent = memo(function ChapterContent({ nodes }: { nodes: React.ReactNode[] }) {
+  return <>{nodes}</>
+})
 
 // ── Main component ────────────────────────────────────────────────────────────
 
@@ -255,8 +261,8 @@ export function ThesisCockpit({ chapters }: Props) {
             </span>
           </div>
 
-          {/* Rendered markdown */}
-          {rendered[active]}
+          {/* Rendered markdown — memo prevents re-render on countdown ticks */}
+          <ChapterContent nodes={rendered[active]} />
         </div>
       </div>
     </div>

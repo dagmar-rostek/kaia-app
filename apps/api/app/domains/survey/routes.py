@@ -1,8 +1,11 @@
 from fastapi import APIRouter, Depends, HTTPException, status
+from sqlalchemy import delete
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.deps import CurrentUser
 from app.db.session import get_db
+from app.domains.chat.models import ChatSession
+from app.domains.survey.models import GseResult, MslqResult
 from app.domains.survey.repository import SurveyRepository
 from app.domains.survey.schemas import (
     GseRead,
@@ -47,6 +50,18 @@ async def submit_mslq(
         subscale_scores=subscale_scores,
     )
     return MslqRead.model_validate(result)
+
+
+@router.delete("/journey/reset", status_code=204)
+async def reset_journey(
+    user: CurrentUser,
+    db: AsyncSession = Depends(get_db),  # noqa: B008
+) -> None:
+    """Dev/Admin: Reset journey state — deletes all surveys and chat sessions for current user."""
+    await db.execute(delete(MslqResult).where(MslqResult.user_id == user.id))
+    await db.execute(delete(GseResult).where(GseResult.user_id == user.id))
+    await db.execute(delete(ChatSession).where(ChatSession.user_id == user.id))
+    await db.commit()
 
 
 @router.post("/gse", response_model=GseRead, status_code=status.HTTP_201_CREATED)
