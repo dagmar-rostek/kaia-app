@@ -1,9 +1,8 @@
 "use client"
 
-import { useState, useEffect, useRef } from "react"
+import { useState, useEffect, useRef, useMemo } from "react"
 import {
   BookOpen, Brain, Target, Code2, FlaskConical, GraduationCap,
-  ChevronDown,
 } from "lucide-react"
 
 // ── Countdown ─────────────────────────────────────────────────────────────────
@@ -138,6 +137,12 @@ export function ThesisCockpit({ chapters }: Props) {
   const { days, hours, minutes, seconds } = useCountdown()
   const contentRef = useRef<HTMLDivElement>(null)
 
+  // Pre-render all chapters once on mount — avoids blocking the UI thread on each click
+  const rendered = useMemo(
+    () => Object.fromEntries(Object.entries(chapters).map(([k, md]) => [k, renderMd(md)])) as Record<KapId, React.ReactNode[]>,
+    [chapters]
+  )
+
   const totalDays = 89 // June 4 → Sep 1
   const elapsed = totalDays - days
   const progress = Math.max(0, Math.min(100, (elapsed / totalDays) * 100))
@@ -176,7 +181,7 @@ export function ThesisCockpit({ chapters }: Props) {
           {/* Mini progress bar */}
           <div className="space-y-1">
             <div className="h-1.5 rounded-full bg-muted overflow-hidden">
-              <div className="h-full rounded-full bg-gradient-to-r from-blue-500 to-violet-500" style={{ width: `${progress}%` }} />
+              <div className="h-full rounded-full bg-linear-to-r from-blue-500 to-violet-500" style={{ width: `${progress}%` }} />
             </div>
             <p className="text-xs text-muted-foreground text-center">{Math.round(progress)}% der Zeit weg</p>
           </div>
@@ -251,7 +256,7 @@ export function ThesisCockpit({ chapters }: Props) {
           </div>
 
           {/* Rendered markdown */}
-          {renderMd(activeContent)}
+          {rendered[active]}
         </div>
       </div>
     </div>

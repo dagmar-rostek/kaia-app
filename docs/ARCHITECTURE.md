@@ -4,7 +4,7 @@
 > Jede strukturelle Änderung muss hier dokumentiert werden — CI prüft das.
 > Die `/architektur`-Seite im Frontend rendert dieses Dokument direkt.
 
-**Stand:** Juni 2026 · Version 0.6.0
+**Stand:** Juni 2026 · Version 0.8.0
 
 ---
 
@@ -45,13 +45,12 @@ kaia-app/
 │   │       │   └── deps.py     get_current_user, require_admin
 │   │       ├── db/             SQLAlchemy 2.0 async + Alembic
 │   │       ├── domains/        Domain-Driven Design
-│   │       │   └── users/
-│   │       │       ├── models.py      User + RefreshToken ORM
-│   │       │       ├── schemas.py     Pydantic I/O (Register, Login, …)
-│   │       │       ├── repository.py  UserRepo + RefreshTokenRepo
-│   │       │       ├── service.py     AuthService (login, refresh, logout)
-│   │       │       ├── auth.py        POST /auth/* Endpoints
-│   │       │       └── routes.py      GET /users/me
+│   │       │   ├── users/         User, RefreshToken — Auth, Approval, DSGVO-Deletion
+│   │       │   ├── chat/          ChatSession, Message, MemoryChunk, SessionFeedback
+│   │       │   ├── survey/        GseResult, MslqResult, ConsentLog — Pre/Post + Journey State
+│   │       │   ├── roadmap/       RoadmapGoal, UserProfile — Lernziele + Profil
+│   │       │   ├── prompts/       PromptTemplate — DB-Jinja2, versioniert, live editierbar
+│   │       │   └── preregistration/ PreRegistration — Voranmeldungs-Warteliste
 │   │       └── observability/  Sentry, Slack, Structured Logging
 │   │
 │   └── web/                    Next.js 14 App Router (TypeScript)
@@ -66,13 +65,21 @@ kaia-app/
 │           │   │   └── impressum/
 │           │   ├── (auth)/     Login, Registrierung, DSGVO-Consent
 │           │   │   └── ki-disclosure/      KI-Disclosure + Bestätigungs-Button
-│           │   ├── (app)/      Chat, Auswertung, Selbstversuch (stub)
+│           │   ├── (app)/      Chat, Survey Pre/Post (journey-gated)
+│           │   │   ├── chat/           Chat mit KAIA (Session-Handling, SSE, EMA-Buttons)
+│           │   │   ├── survey/pre/     Pre-Messung: MSLQ (30 Items) + GSE (10 Items)
+│           │   │   └── survey/post/    Post-Messung: identisch, measurement_type="post"
 │           │   └── admin/      Passwortgeschützt via Server Component Layout
 │           │       ├── page.tsx               Dashboard + API-Health
 │           │       ├── login/
+│           │       ├── chat-test/             Split-View Prompt-Testing + EMA-Buttons
+│           │       ├── lerndesign/            10-Session-Architektur + Bloom + Sentiment
+│           │       ├── instrumente/           MSLQ + GSE Dokumentation (Thesis-Anhang)
 │           │       ├── users/                 User-Approval (pending/aktiv/gesperrt)
+│           │       ├── thesis/                Live-Thesis-Cockpit (Kapitel 1–6)
 │           │       ├── production-readiness/  Deployment-Checkliste
 │           │       ├── roadmap/               Feature-Roadmap (Filter, Agents, SHA)
+│           │       ├── prompts/               Prompt-Sandbox (Jinja2-Editor, Live-Test)
 │           │       ├── release-notes/         Changelog-Viewer
 │           │       ├── architektur/           Architektur-Viewer
 │           │       ├── kosten/                Kostenübersicht
@@ -121,20 +128,29 @@ kaia-app/
 
 ## Datenspeicher
 
-### PostgreSQL (Relationale Daten)
-- `users` — Profile, Auth, Consent, Status (pending/active/suspended/deleted)
-- `sessions` — Chat-Sessions mit LLM-Metadaten
-- `messages` — Einzelne Chat-Nachrichten
-- `surveys` — GSE Pre/Post Messungen
-- `observations` — Extrahierte Lernbeobachtungen
-- `prompt_versions` — Versionierte Prompts (DB-gespeichert)
-- `llm_usage` — Token-Verbrauch + Kosten pro Call
-- `audit_events` — DSGVO-Audit-Log (append-only)
-- `bug_reports` — Eingehende Bug-Reports
+### PostgreSQL — 13 Tabellen (Stand v0.8.0)
+
+| Tabelle | Domain | Beschreibung |
+|---|---|---|
+| `users` | users | Profile, Auth, Consent, Status (pending/active/suspended/deleted) |
+| `refresh_tokens` | users | JWT Refresh-Token-Rotation + Reuse-Detection |
+| `chat_sessions` | chat | Lernsessions mit Character, Session-Nummer, Modus, Summary |
+| `messages` | chat | Einzelne Nachrichten inkl. detected_state, thinking_raw |
+| `memory_chunks` | chat | Vectorized Insights (pgvector 1536-dim) für Cross-Session-Recall |
+| `session_feedback` | chat | EMA-Signale (transfer_marker, wow, stuck, unclear) |
+| `gse_results` | survey | GSE Pre/Post Messungen (Schwarzer & Jerusalem, 1995, 10 Items, 4-pt) |
+| `mslq_results` | survey | MSLQ Pre/Post Messungen (Pintrich et al., 1991, 30 Items, 7-pt, 4 Subskalen) |
+| `consent_logs` | survey | DSGVO Art. 7 Audit-Log (immutable append-only) |
+| `roadmap_goals` | roadmap | Lernziele mit Status + Deadline |
+| `user_profiles` | roadmap | Versioniertes Nutzerprofil (stable + dynamic + session-aggregated) |
+| `prompt_templates` | prompts | Jinja2-Prompts versioniert, live editierbar, Character-spezifisch |
+| `llm_usage` | (core) | Token-Verbrauch + Kosten pro LLM-Call (Cost-Tracking) |
+
+**Alembic-Migrationen:** 7 versionierte Schritte, vollständig reversibel.
 
 ### pgvector (Semantisches Gedächtnis)
-- User-spezifische Embeddings für Memory-Recall
-- **Pflicht:** jede Query gefiltert nach `user_id` (Row-Level-Security aktiv)
+- `memory_chunks.embedding`: Vector(1536) für Approximate Nearest-Neighbour (IVFFLAT)
+- **Pflicht:** jede Query gefiltert nach `user_id` — keine Cross-User-Leaks
 
 ---
 
@@ -148,6 +164,33 @@ kaia-app/
 - TLS: HSTS enforced via Caddy
 - pgvector: Row-Level-Security für User-Isolation
 - Crisis-Detection: Pre-Filter vor jedem LLM-Call — 20+ deutsche Regex-Muster (Suizidgedanken, Selbstverletzung); bei Treffer statische Eskalations-Antwort (Telefonseelsorge 0800 111 0 111, Notruf 112), kein LLM-Processing
+
+---
+
+## Journey State Machine (Studienablauf)
+
+Jeder Nutzer durchläuft eine definierte Journey. Der State wird on-the-fly aus der DB berechnet:
+
+```
+PRE_PENDING  ──(MSLQ Pre + GSE Pre abgeschlossen)──▶  ACTIVE (Session 1…10)
+                                                           │
+                                                  (session_count >= 10)
+                                                           │
+                                                           ▼
+                                                     POST_PENDING
+                                                           │
+                                                  (MSLQ Post + GSE Post)
+                                                           │
+                                                           ▼
+                                                       COMPLETED
+```
+
+**Gating-Regeln:**
+- `POST /api/v1/chat/sessions` gibt 403 zurück, wenn `state ∈ {PRE_PENDING, POST_PENDING, COMPLETED}`
+- Frontend leitet bei 403 mit `redirect`-Feld automatisch weiter (`/survey/pre` oder `/survey/post`)
+- Pre-Messung: 30 MSLQ-Items (7-pt) + 10 GSE-Items (4-pt) — `GET /api/v1/survey/journey`
+- Post-Messung: identisch, aber `measurement_type = "post"`
+- Scoring server-seitig: Subskalen-Mittelwerte, Reverse-Coding (Items 33, 57)
 
 ---
 
@@ -242,26 +285,34 @@ Prompt-Versionen: `kaia_system_v1_warm` (Regression-Baseline, inaktiv) · `kaia_
 
 ---
 
-## Aktueller Stand (v0.5.0)
+## Aktueller Stand (v0.8.0)
 
 **Live auf kaia.rostek-dagmar.eu:**
-- Landing Page, /wissenschaft, /release-notes, /architektur, /datenschutz (öffentlich)
-- Admin-Bereich: Dashboard, Production Readiness, Changelog, Architektur, Kosten, Tagebuch, Roadmap, User-Approval, Prompt-Sandbox (v2)
-- Bug-Report-Widget → Slack
+- Landing Page, /wissenschaft, /release-notes, /architektur, /datenschutz, /impressum (öffentlich)
+- Admin-Bereich: Dashboard, Chat-Test, Lerndesign, Instrumente, Production Readiness, Changelog, Architektur, Kosten, Tagebuch, Roadmap, User-Approval, Prompt-Sandbox (v2), Thesis-Cockpit
+- Bug-Report-Widget → Slack · Plausible Analytics (datenschutzkonform)
 - Health-Endpoint GET /api/v1/health
 
-**Backend — Auth + Crisis-Detection implementiert:**
-- `POST /api/v1/auth/register` — Registrierung mit DSGVO-Pflichtconsent
-- `POST /api/v1/auth/login` — JWT Access + Refresh-Token (httpOnly Cookie)
-- `POST /api/v1/auth/refresh` — Token-Rotation mit Family-Reuse-Detection
-- `POST /api/v1/auth/logout` — Alle Tokens revoken
-- `POST /api/v1/auth/disclosure-ack` — KI-Disclosure bestätigt (Bearer Auth)
-- `GET /api/v1/users/me` — Eigenes Profil
-- `GET /api/v1/admin/users` — Alle Teilnehmenden (pending/aktiv/gesperrt) — Bearer Admin-Auth
-- `POST /api/v1/admin/users/{id}/approve` — Teilnehmer:in freigeben — Bearer Admin-Auth
-- `POST /api/v1/admin/users/{id}/reject` — Teilnehmer:in ablehnen (optionaler Grund) — Bearer Admin-Auth
-- Crisis-Detection Pre-Filter (`app/core/crisis.py`) — vor allen LLM-Calls
-- DB-Schema: `users` + `refresh_tokens` (Alembic Migration `c5fceead2dd4`)
+**API-Endpunkte (vollständig):**
+- Auth: register, login, refresh, logout, disclosure-ack
+- Users: me, admin CRUD (approve/reject/delete)
+- Chat: sessions CRUD, messages (SSE), opening/closing (SSE), end, feedback, meta-question
+- Survey: `GET /journey`, `POST /mslq`, `POST /gse`
+- Preregistration: submit, list, remove
+- Prompts: list, get, update (Study-Lock-Guard)
+- Crisis-Detection Pre-Filter vor allen LLM-Calls
+
+**DB-Schema:** 13 Tabellen, 7 Alembic-Migrationen (vollständig reversibel)
+
+**Journey State Machine:** PRE_PENDING → ACTIVE (1–10 Sessions) → POST_PENDING → COMPLETED
+- Chat-Gating aktiv: 403 bei PRE_PENDING / POST_PENDING / COMPLETED
+- Frontend-Redirect zu /survey/pre bzw. /survey/post
+
+**Nächste Milestones:**
+- Onboarding-Flow (Consent + KI-Disclosure + Pre-Survey in einem Fluss)
+- Funken-Feature (Session-Reflexion nach Session-Ende)
+- LLM-Evaluation-Framework (Claude vs. GPT-4o vs. Mistral)
+- Studienstart: 15. Juli 2026
 
 **Frontend implementiert:**
 - Login, Registrierung mit DSGVO-Zweifach-Consent, AuthContext, AuthGuard

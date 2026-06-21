@@ -9,8 +9,77 @@
 
 ---
 
-**Stand heute:** Tuesday, 10. June 2026  
-**73 Einträge insgesamt · 10 Release-Tage · ~51 h Gesamt-Aufwand**
+**Stand heute:** Sunday, 21. June 2026  
+**88 Einträge insgesamt · 16 Release-Tage · ~59 h Gesamt-Aufwand**
+
+---
+
+## 2026-06-21 — Admin Lerndesign + Messinfrastruktur (MSLQ/Journey)
+
+**21.06.2026 · `c7af4dd`** — Session-2-Einstieg erinnert jetzt an Session 1. resetSession ruft POST /sessions/{id}/end auf bevor die neue Session startet — extract_session_summary läuft im Hintergrund und befüllt insight_for_next_session, last_first_step und observation für die Folgesession. · `20min`  
+*fix: Session-Ende vor Reset aufrufen — Cross-Session-Gedächtnis aktiviert*
+
+**21.06.2026 · `e7fda9f`** — Neue Admin-Seite /admin/lerndesign zeigt vollständige Session-Architektur (Sessions 1–10, Bloom-Progression, Sentiment-Signale, verbotene Muster, Feature-Status-Matrix, EMA-Referenz). EMA-Feedback-Buttons (Wow, Weiterdenken, Hänge fest, Unklar) im Chat-Test aktiv. SRL-Messung via MSLQ (Pintrich et al., 1991) — Instrumentenwahl auf Basis psychologischer Fachberatung. Relevant für Studien-Testing und Thesis-Messkonzept. · `2h 30min`  
+*feat: Admin Lerndesign-Seite + EMA Feedback-Buttons im Chat-Test*
+
+---
+
+## 2026-06-20 — Prompt-Verbotslisten final + FK-Fix
+
+**20.06.2026 · `e9bdea1`** — FK-Violation nach Von-vorne-Reset behoben (stream_opening verwirft Session-gone-Fehler statt zu crashen). Prompt-Verbotsliste um Affekt-Spiegeln-Muster erweitert + Strukturprinzip für emotionale Einstiege explizit gemacht. · `30min`  
+*fix: IntegrityError bei Reset-Race + Affekt-Strukturprinzip im Prompt*
+
+**20.06.2026 · `5b2608c`** — KAIA darf keine menschliche Gesprächsgeschichte behaupten ("das kenne ich aus vielen Gesprächen", "das höre ich oft") — solche Vergleiche sind fabricated und täuschend. · `5min`  
+*fix: Erfahrungsvergleiche in KAIA-Verbotsliste*
+
+---
+
+## 2026-06-19 — Session-1-Design, Prompt-Verbotslisten, Thesis
+
+**19.06.2026 · `2dda945`** — KAIAs erste Session hat jetzt einen vollständigen Lernziel-Flow: (1) offene Einladung, (2) Thema + Motiv, (3) Bestätigung, (4) Lernintention ("was könntest du in 4 Wochen können/verstehen?"), (5) erster Schritt + Evidenzanker ("woran würdest du merken, dass sich etwas bewegt hat?"). Wissenschaftlich fundiert durch Hattie & Timperley (2007, d=0.54), Knowles' evidence of accomplishment (1975), Gollwitzer & Sheeran (2006, d=.65) und RCT Schimpf et al. (2026) zur KI-gestützten Zielformulierung. · `30min`  
+*feat: Session-1-Flow — Lernintention + Evidenzanker (Knowles/Hattie)*
+
+**19.06.2026 · `0c62cf6`** — KAIAs erste Frage in Session 1 ist jetzt offen — "Was beschäftigt dich gerade — womit möchtest du heute anfangen?" statt der fehlerhaften Variante, die ein Thema voraussetzte das noch gar nicht da war. Im Admin-Chat-Test zeigt die Kopfzeile jetzt Session 1/2/3 (Lernzähler) statt der internen DB-ID. · `30min`  
+*fix: Session-1-Prompt und Session-Nummer-Anzeige im Chat-Test*
+
+**19.06.2026 · `a9f24ed`** — Kapitel 3 (Rahmenwerk) und 6 (Pilotstudie) der Masterthesis aktualisiert. Neue Abschnitte: konzeptuelle Trias Lernziel/Lernschritt/Erfolgskriterium (Knowles, 1975), Task vs. Learning Intention (Hattie & Timperley, 2007, d=0.54), Evidenzanker als Alternative zu "messbarem Erfolg", Implementation Intentions (Gollwitzer & Sheeran, 2006, d=.65). 11 neue Quellen in APA-7, darunter RCT zu KI-gestützter Zielformulierung (Schimpf et al., 2026). · `45min`  
+*docs: Thesis Kap3+6 — Session-1-Design wissenschaftlich fundiert*
+
+**19.06.2026 · `6a9ee28`** — KAIA sagt nicht mehr "Muss nichts Großes sein", "Kein Druck", "Das ist okay so" o.ä. — diese Sätze entlasten statt zu aktivieren und gehören in Therapie, nicht in Lernbegleitung. Bei "weiß nicht" scaffoldet KAIA jetzt mit drei konkreten Orientierungsrichtungen statt emotionaler Beruhigung. · `10min`  
+*fix: Therapiesprache aus KAIA-Prompt verbannt*
+
+**19.06.2026 · `75a8fe5`** — KAIA fragt nicht mehr nach innerer Wahrnehmung — kein "spürbar", kein "was taucht auf", keine Abend-/Morgenritual-Einstiege. Diese Muster sind Therapie-Sprache, keine Lernbegleitung. Bei Orientierungslosigkeit scaffoldet KAIA mit konkreten Beispielbereichen, nicht mit Innenschau-Einladungen. · `5min`  
+*fix: Innenraum-Muster in KAIA-Prompt verboten*
+
+**19.06.2026 · `a5d8bb7`** — KAIA bleibt bei negativem Affekt-Einstieg im Lern-Frame statt in den emotionalen Frame zu folgen. Wissenschaftliche Grundlage: D'Mello & Graesser (2012), Boekaerts (1993/2011), Pekrun (2006) — Thesis-Kapitel 3.3.10.4 mit 6 neuen APA-7-Quellen ergänzt. · `45min`  
+*fix: Affekt-Pivot-Regel im Prompt + Thesis 3.3.10.4*
+
+---
+
+## 2026-06-14 — Admin Chat-Test: Von-vorne-Button
+
+**14.06.2026 · `eb1525b`** — Im Admin-Chat-Test gibt es jetzt den Button "Von vorne" (mit Trash-Icon). Erster Klick: roter Bestätigungsbutton "Sicher löschen?", zweiter Klick: alle Chat-Sessions, Nachrichten und Memory-Chunks des admin_test-Users werden gelöscht. Die nächste Session startet wieder als Session 1 — inklusive frischer Eröffnungsfrage. Relevant für iterative Prompt-Tests ohne Datenbank-Zugriff. · `20min`  
+*feat: Admin Chat-Test — Von-vorne-Button löscht alle Chat-Daten*
+
+---
+
+## 2026-06-12 — Chat Core V2: EMA-Buttons, Coverage-Gate, Docs
+
+**12.06.2026 · `4bddc2b`** — Vier Feedback-Buttons erscheinen während einer Session: "Muss ich weiterdenken", "Wow — das trifft was", "Ich hänge gerade", "Das verstehe ich noch nicht". Passive Buttons speichern das Signal nur (kein LLM-Eingriff). Aktive Buttons ("Ich hänge gerade", "Das verstehe ich noch nicht") triggern zusätzlich eine kurze Metakognitions-Frage von KAIA. Technisch: session_feedback-Tabelle (Alembic-Migration f6a2b4c8d1e9), POST /feedback + POST /meta-question Endpoints, stream_meta_question() Service-Funktion. Wissenschaftlich: EMA/ESM-Paradigma (Csikszentmihalyi & Larson, 1987), Affect Labeling (Lieberman et al., 2007), Selbstregulations-Monitoring (Zimmermann, 2000). · `2h 30min`  
+*feat: STORY-002 In-Session Feedback Buttons (EMA)*
+
+**12.06.2026 · `7e1f83b`** — CI-Coverage-Gate war bei 59% (Schwelle 70%). Neue Testdateien: test_chat.py (45 Tests: Chat-Repository alle Methoden, Schemas-Validatoren, SSE-Helpers, Thinking-Strip, stream_closing und stream_meta_question mit gemocktem Anthropic-Client inkl. Debug-Mode, LLM-Error, malformed JSON, leerer Content) + test_observability.py (6 Tests: configure_logging debug/json-mode, init_sentry mit/ohne DSN). Coverage: 59% → 70%. · `30min`  
+*test: Coverage-Gate auf 70% gebracht*
+
+**12.06.2026 · `06d6a85`** — Dokumentation erweitert: AUSWERTUNG.md mit neuen SQL-Abfragen für Cross-Session-Gedächtnis (session_summary, first_step-Persistenz-Analyse). Neues UX-Designdokument für STORY-FUNKEN (Microcopy-Bewertung, vollständige Zustandsbeschreibung, Accessibility-Anforderungen). kaia_lerndesign_referenz.html bereinigt. .gitignore schließt *.local.md aus. · `30min`  
+*docs: Auswertungs-SQL erweitert, UX-Spec Funken, .gitignore *.local.md*
+
+---
+
+## 2026-06-13 — Wochenbilanz KW24
+
+**13.06.2026 · `138cde8`** — Erste Wochenbilanz des KAIA-Teams — KW24 zusammengefasst: Kernprinzip gerettet, Chat Core deployed, STORY-001 Closure + STORY-002 EMA-Buttons, Coverage-Gate 70%, Funken-Feature-Spec, Data Scientist ongeboardet. Enthält Agent-Konflikte, Entscheidungen, Retrospektive und Thesis-Timeline. · `30min`  
+*docs: Wochenbilanz KW24 (06.06–12.06.2026)*
 
 ---
 

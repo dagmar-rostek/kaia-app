@@ -65,3 +65,29 @@ class ConsentLog(Base):
 
     # Optional metadata (e.g. consent_version, browser fingerprint for audit)
     meta: Mapped[dict[str, Any] | None] = mapped_column(JSONB, nullable=True)
+
+
+class MslqResult(Base):
+    """MSLQ measurement result (Pintrich et al., 1991/1993).
+
+    4 subscales, 30 items, 7-point Likert. Items stored as JSONB
+    {str(item_number): raw_score}. Subscale scores are server-computed means.
+
+    DSGVO: Qualifies as psychological data (Art. 9) — explicit consent required.
+    """
+
+    __tablename__ = "mslq_results"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), index=True)
+    measurement_type: Mapped[MeasurementType] = mapped_column(String(10))
+
+    # {str(item_number): raw_score (1–7)} — 30 items
+    items: Mapped[dict[str, Any]] = mapped_column(JSONB)
+
+    # Server-computed: {subscale_key: mean_score} — 4 subscales
+    subscale_scores: Mapped[dict[str, Any]] = mapped_column(JSONB)
+
+    created_at: Mapped[datetime] = mapped_column(server_default=func.now())
+
+    __table_args__ = (Index("ix_mslq_results_user_type", "user_id", "measurement_type"),)

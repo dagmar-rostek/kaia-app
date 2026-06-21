@@ -1,6 +1,7 @@
 "use client"
 
 import { useCallback, useEffect, useRef, useState } from "react"
+import { useRouter } from "next/navigation"
 import { Loader2, Plus, Send, X } from "lucide-react"
 import { LegalFooter } from "@/components/LegalFooter"
 
@@ -86,6 +87,7 @@ type Character = keyof typeof CHARACTER_LABELS
 const CLOSURE_TIMEOUT_MS = 10 * 60 * 1000
 
 export default function ChatPage() {
+  const router = useRouter()
   const [sessionId,    setSessionId]    = useState<number | null>(null)
   const [messages,     setMessages]     = useState<ChatMessage[]>([])
   const [input,        setInput]        = useState("")
@@ -128,6 +130,15 @@ export default function ChatPage() {
           headers: { "Content-Type": "application/json", ...getAuthHeader() },
           body: JSON.stringify({ character }),
         })
+        if (sessRes.status === 403) {
+          const body = await sessRes.json().catch(() => ({})) as { code?: string; redirect?: string }
+          if (body.redirect) { router.replace(body.redirect); return }
+          if (body.code === "study_completed") {
+            setError("Die Studie ist abgeschlossen. Danke für deine Teilnahme!")
+            setLoading(false)
+            return
+          }
+        }
         if (!sessRes.ok) throw new Error(`Session-Start fehlgeschlagen (${sessRes.status})`)
         const { id: sid } = await sessRes.json() as { id: number }
         if (cancelled) return

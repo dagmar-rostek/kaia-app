@@ -21,6 +21,8 @@ from app.domains.chat.service import (
     stream_opening,
     stream_response,
 )
+from app.domains.survey.schemas import JourneyStateEnum
+from app.domains.survey.service import get_journey_state
 
 router = APIRouter(prefix="/chat", tags=["chat"])
 
@@ -32,6 +34,22 @@ async def create_session(
     db: AsyncSession = Depends(get_db),  # noqa: B008
 ) -> SessionResponse:
     repo = ChatRepository(db)
+    journey = await get_journey_state(user.id, db)
+    if journey.state == JourneyStateEnum.PRE_PENDING:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail={"code": "pre_survey_required", "redirect": "/survey/pre"},
+        )
+    if journey.state == JourneyStateEnum.POST_PENDING:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail={"code": "post_survey_required", "redirect": "/survey/post"},
+        )
+    if journey.state == JourneyStateEnum.COMPLETED:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail={"code": "study_completed"},
+        )
     session = await repo.create_session(
         user_id=user.id,
         character=body.character,
