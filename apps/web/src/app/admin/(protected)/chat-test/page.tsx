@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useRef, useState, useCallback, useMemo } from "react"
-import { Send, Plus, Loader2, RefreshCw, Brain, ChevronDown, ChevronRight, Trash2 } from "lucide-react"
+import { Send, Plus, Loader2, RefreshCw, Brain, ChevronDown, ChevronRight, Trash2, Sparkles, Lightbulb, AlertTriangle, HelpCircle } from "lucide-react"
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 
@@ -184,6 +184,8 @@ export default function AdminChatTestPage() {
   const [confirmReset, setConfirmReset] = useState(false)
   const [resetting,    setResetting]    = useState(false)
   const confirmResetTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const [feedbackSaved, setFeedbackSaved] = useState<string | null>(null)  // feedback_type that was just saved
+  const feedbackTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   const chatBottomRef     = useRef<HTMLDivElement>(null)
   const analysisBottomRef = useRef<HTMLDivElement>(null)
@@ -395,6 +397,69 @@ export default function AdminChatTestPage() {
     }
   }, [input, loading, sessionId, character, token, authHeader])
 
+  const sendFeedback = useCallback(async (feedbackType: "wow" | "transfer_marker" | "stuck" | "unclear") => {
+    if (!sessionId || !token) return
+
+    // Flash confirmation
+    if (feedbackTimerRef.current) clearTimeout(feedbackTimerRef.current)
+    setFeedbackSaved(feedbackType)
+    feedbackTimerRef.current = setTimeout(() => setFeedbackSaved(null), 2000)
+
+    try {
+      await fetch(`/api/v1/chat/sessions/${sessionId}/feedback`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", ...authHeader },
+        body: JSON.stringify({ feedback_type: feedbackType }),
+      })
+    } catch {
+      // feedback is best-effort — ignore errors
+    }
+
+    if (feedbackType !== "stuck" && feedbackType !== "unclear") return
+
+    // Active types: stream a meta-question into messages
+    const streamId = `a-meta-${Date.now()}`
+    const thinkId  = `t-meta-${Date.now()}`
+    setMessages(prev => [...prev, { id: streamId, role: "assistant", content: "", streaming: true }])
+    setLoading(true)
+
+    try {
+      const res = await fetch(
+        `/api/v1/chat/sessions/${sessionId}/meta-question?feedback_type=${feedbackType}&debug=true`,
+        { method: "POST", headers: { ...authHeader } },
+      )
+      if (!res.ok) throw new Error(`Meta-Frage fehlgeschlagen (${res.status})`)
+
+      await readSSEStream(
+        res,
+        (content) => setMessages(prev => prev.map(m =>
+          m.id === streamId ? { ...m, content: m.content + content } : m
+        )),
+        (thinking) => {
+          const idx = ++thinkCounterRef.current
+          setThinkingLog(log => [...log, {
+            id: thinkId, index: idx, content: thinking,
+            phase: getPhase(idx),
+            fragetyp: extractBracket(thinking, "Fragetyp"),
+            lazarus:  extractBracket(thinking, "Lazarus-Signal"),
+          }])
+          setMessages(prev => prev.map(m =>
+            m.id === streamId ? { ...m, thinkingRef: thinkId } : m
+          ))
+        },
+        () => setMessages(prev => prev.map(m =>
+          m.id === streamId ? { ...m, streaming: false } : m
+        )),
+      )
+    } catch (e) {
+      setMessages(prev => prev.filter(m => m.id !== streamId))
+      setChatError(e instanceof Error ? e.message : "Verbindungsfehler")
+    } finally {
+      setLoading(false)
+      textareaRef.current?.focus()
+    }
+  }, [sessionId, token, authHeader, loading])  // eslint-disable-line react-hooks/exhaustive-deps
+
   function handleKeyDown(e: React.KeyboardEvent<HTMLTextAreaElement>) {
     if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); void sendMessage() }
   }
@@ -497,6 +562,29 @@ export default function AdminChatTestPage() {
             <div ref={chatBottomRef} />
           </div>
         </div>
+
+        {/* EMA Feedback Bar */}
+        {sessionId !== null && !loading && (
+          <div className="shrink-0 border-t border-border px-4 py-2 flex items-center justify-center gap-2">
+            {([
+              { type: "wow",             icon: <Sparkles    className="h-3.5 w-3.5" />, label: "Wow",         color: "text-amber-500  hover:bg-amber-500/10  border-amber-500/20"  },
+              { type: "transfer_marker", icon: <Lightbulb   className="h-3.5 w-3.5" />, label: "Weiterdenken",color: "text-sky-500    hover:bg-sky-500/10    border-sky-500/20"    },
+              { type: "stuck",           icon: <AlertTriangle className="h-3.5 w-3.5" />, label: "Hänge fest", color: "text-orange-500 hover:bg-orange-500/10 border-orange-500/20" },
+              { type: "unclear",         icon: <HelpCircle  className="h-3.5 w-3.5" />, label: "Unklar",      color: "text-zinc-400   hover:bg-zinc-500/10   border-zinc-500/20"   },
+            ] as const).map(({ type, icon, label, color }) => (
+              <button
+                key={type}
+                onClick={() => void sendFeedback(type)}
+                className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg border text-xs font-medium transition-colors ${color} ${
+                  feedbackSaved === type ? "opacity-100" : "opacity-60 hover:opacity-100"
+                }`}
+              >
+                {icon}
+                {feedbackSaved === type ? "✓ gespeichert" : label}
+              </button>
+            ))}
+          </div>
+        )}
 
         {/* Input */}
         <div className="shrink-0 border-t border-border px-4 py-3">
