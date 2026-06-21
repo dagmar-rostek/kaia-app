@@ -1,11 +1,8 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useMemo } from "react"
 import Link from "next/link"
-import { authFetch } from "@/lib/auth"
 import { CheckCircle2, Circle, ArrowRight, RotateCcw, Save, AlertTriangle } from "lucide-react"
-
-const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? "/api"
 
 interface JourneyState {
   state: "pre_pending" | "active" | "post_pending" | "completed"
@@ -48,6 +45,8 @@ function Step({ done, label, sub }: { done: boolean; label: string; sub?: string
 }
 
 export function JourneyTestClient() {
+  const [token, setToken] = useState<string | null>(null)
+  const [tokenError, setTokenError] = useState<string | null>(null)
   const [refreshKey, setRefreshKey] = useState(0)
   const [loadedKey, setLoadedKey] = useState(-1)
   const [journey, setJourney] = useState<JourneyState | null>(null)
@@ -58,14 +57,32 @@ export function JourneyTestClient() {
   const [error, setError] = useState<string | null>(null)
   const [resetMsg, setResetMsg] = useState<string | null>(null)
 
-  // loading is derived — no synchronous setState in effect needed
   const loading = loadedKey !== refreshKey
+  const authHeader = useMemo(
+    (): Record<string, string> => token ? { Authorization: `Bearer ${token}` } : {},
+    [token]
+  )
 
+  // Fetch admin test token — same pattern as chat-test
   useEffect(() => {
     let cancelled = false
+    fetch("/admin/api/test-token", { method: "POST" })
+      .then(async res => {
+        if (!res.ok) throw new Error(`Token-Fehler (${res.status})`)
+        return res.json() as Promise<{ access_token: string }>
+      })
+      .then(data => { if (!cancelled) setToken(data.access_token) })
+      .catch(e => { if (!cancelled) setTokenError(e instanceof Error ? e.message : "Token-Fehler") })
+    return () => { cancelled = true }
+  }, [])
+
+  // Load journey state + user topic once token is available
+  useEffect(() => {
+    if (!token) return
+    let cancelled = false
     Promise.all([
-      authFetch(`${API_BASE}/v1/survey/journey`),
-      authFetch(`${API_BASE}/v1/users/me`),
+      fetch("/api/v1/survey/journey", { headers: authHeader }),
+      fetch("/api/v1/users/me", { headers: authHeader }),
     ]).then(async ([jRes, uRes]) => {
       if (cancelled) return
       if (!jRes.ok || !uRes.ok) {
@@ -87,7 +104,7 @@ export function JourneyTestClient() {
       }
     })
     return () => { cancelled = true }
-  }, [refreshKey])
+  }, [token, refreshKey, authHeader])
 
   async function handleReset() {
     if (!confirm("Journey-State zurücksetzen? Alle Fragebögen und Chat-Sessions werden gelöscht.")) return
@@ -95,7 +112,7 @@ export function JourneyTestClient() {
     setResetMsg(null)
     setError(null)
     try {
-      const res = await authFetch(`${process.env.NEXT_PUBLIC_API_URL ?? "/api"}/v1/survey/journey/reset`, { method: "DELETE" })
+      const res = await fetch("/api/v1/survey/journey/reset", { method: "DELETE", headers: authHeader })
       if (!res.ok) throw new Error()
       setResetMsg("Reset erfolgreich.")
       setRefreshKey(k => k + 1)
@@ -111,9 +128,9 @@ export function JourneyTestClient() {
     setSavingTopic(true)
     setError(null)
     try {
-      const res = await authFetch(`${process.env.NEXT_PUBLIC_API_URL ?? "/api"}/v1/users/me/topic`, {
+      const res = await fetch("/api/v1/users/me/topic", {
         method: "PATCH",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", ...authHeader },
         body: JSON.stringify({ learning_topic: topic.trim() }),
       })
       if (!res.ok) throw new Error()
@@ -125,6 +142,12 @@ export function JourneyTestClient() {
     }
   }
 
+  if (tokenError) return (
+    <div className="p-8 flex items-center gap-2 text-sm text-destructive">
+      <AlertTriangle className="h-4 w-4 shrink-0" />
+      {tokenError}
+    </div>
+  )
   if (loading) return <div className="p-8 text-sm text-muted-foreground">Lade Journey-State…</div>
 
   return (
