@@ -3,7 +3,7 @@
 import { useState, useCallback } from "react"
 import { useRouter } from "next/navigation"
 import { CheckCircle2, ChevronRight, AlertTriangle } from "lucide-react"
-import { api } from "@/lib/api"
+import { authFetch } from "@/lib/auth"
 
 // ── GSE items (Schwarzer & Jerusalem, 1995) ───────────────────────────────────
 
@@ -166,17 +166,28 @@ export function SurveyForm({ measurementType, redirectTo }: Props) {
     setSubmitting(true)
     setError(null)
     try {
+      const headers = { "Content-Type": "application/json" }
       // Submit MSLQ
-      await api.post("/v1/survey/mslq", {
-        measurement_type: measurementType,
-        items: mslqAnswers,
+      const mslqRes = await authFetch("/api/v1/survey/mslq", {
+        method: "POST",
+        headers,
+        body: JSON.stringify({ measurement_type: measurementType, items: mslqAnswers }),
       })
+      if (!mslqRes.ok) {
+        const msg = await mslqRes.text().catch(() => mslqRes.statusText)
+        throw new Error(msg)
+      }
       // Submit GSE (items as 1-indexed array)
       const gseItems = GSE_ITEMS.map((_, idx) => gseAnswers[idx])
-      await api.post("/v1/survey/gse", {
-        measurement_type: measurementType,
-        items: gseItems,
+      const gseRes = await authFetch("/api/v1/survey/gse", {
+        method: "POST",
+        headers,
+        body: JSON.stringify({ measurement_type: measurementType, items: gseItems }),
       })
+      if (!gseRes.ok) {
+        const msg = await gseRes.text().catch(() => gseRes.statusText)
+        throw new Error(msg)
+      }
       setStep("done")
     } catch (e) {
       setError(e instanceof Error ? e.message : "Unbekannter Fehler. Bitte nochmal versuchen.")

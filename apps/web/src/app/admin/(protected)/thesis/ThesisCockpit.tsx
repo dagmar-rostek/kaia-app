@@ -143,9 +143,18 @@ export function ThesisCockpit({ chapters }: Props) {
   const { days, hours, minutes, seconds } = useCountdown()
   const contentRef = useRef<HTMLDivElement>(null)
 
-  // Pre-render all chapters once on mount — avoids blocking the UI thread on each click
+  // Pre-compute all chapter nodes as plain JS objects (fast) — DOM commit is deferred by lazy mounting
   const rendered = useMemo(
-    () => Object.fromEntries(Object.entries(chapters).map(([k, md]) => [k, renderMd(md)])) as Record<KapId, React.ReactNode[]>,
+    () => Object.fromEntries(CHAPTERS.map(ch => [ch.id, renderMd(chapters[ch.id])])) as Record<KapId, React.ReactNode[]>,
+    [chapters]
+  )
+
+  // Track which chapters have been mounted in DOM — start with only the active chapter
+  const [mounted, setMounted] = useState<Set<KapId>>(() => new Set(["kap2"]))
+
+  // Pre-compute "Stand:" badges — cheap regex, stable when chapters stable
+  const stands = useMemo(
+    () => Object.fromEntries(CHAPTERS.map(ch => [ch.id, extractStand(chapters[ch.id])])) as Record<KapId, string>,
     [chapters]
   )
 
@@ -154,6 +163,12 @@ export function ThesisCockpit({ chapters }: Props) {
   const progress = Math.max(0, Math.min(100, (elapsed / totalDays) * 100))
 
   function selectChapter(id: KapId) {
+    setMounted(prev => {
+      if (prev.has(id)) return prev
+      const next = new Set(prev)
+      next.add(id)
+      return next
+    })
     startTransition(() => setActive(id))
     contentRef.current?.scrollTo({ top: 0 })
   }
@@ -233,35 +248,36 @@ export function ThesisCockpit({ chapters }: Props) {
         </div>
       </aside>
 
-      {/* ── Content area — all chapters stay in DOM, only active is visible ── */}
+      {/* ── Content area — chapters mounted lazily on first visit, then kept in DOM ── */}
       <div ref={contentRef} className="flex-1 overflow-y-auto">
         {CHAPTERS.map(ch => {
           const isActive = ch.id === active
-          const meta = CHAPTERS.find(c => c.id === ch.id)!
-          const stand = extractStand(chapters[ch.id])
+          const isInDom = mounted.has(ch.id)
           return (
             <div key={ch.id} className={isActive ? "block" : "hidden"}>
-              <div className="max-w-3xl mx-auto px-8 py-6 space-y-1">
-                <div className="flex items-start justify-between gap-4 mb-4 pb-4 border-b border-border">
-                  <div>
-                    <p className="text-xs font-mono text-muted-foreground mb-1">Kapitel {meta.num}</p>
-                    <h1 className="text-xl font-bold tracking-tight">{meta.title}</h1>
-                    <p className="text-xs text-muted-foreground mt-1">
-                      Stand: <span className="font-medium">{stand}</span>
-                      {" · "}Umfang: <span className="font-medium">{meta.pages} Seiten</span>
-                    </p>
+              {isInDom && (
+                <div className="max-w-3xl mx-auto px-8 py-6 space-y-1">
+                  <div className="flex items-start justify-between gap-4 mb-4 pb-4 border-b border-border">
+                    <div>
+                      <p className="text-xs font-mono text-muted-foreground mb-1">Kapitel {ch.num}</p>
+                      <h1 className="text-xl font-bold tracking-tight">{ch.title}</h1>
+                      <p className="text-xs text-muted-foreground mt-1">
+                        Stand: <span className="font-medium">{stands[ch.id]}</span>
+                        {" · "}Umfang: <span className="font-medium">{ch.pages} Seiten</span>
+                      </p>
+                    </div>
+                    <span className={`inline-flex items-center gap-1.5 rounded-md border px-2 py-1 text-xs font-medium shrink-0 mt-1 ${
+                      ch.status === "done"  ? "bg-emerald-500/10 text-emerald-600 border-emerald-500/20 dark:text-emerald-400" :
+                      ch.status === "draft" ? "bg-blue-500/10 text-blue-600 border-blue-500/20 dark:text-blue-400" :
+                      "bg-muted text-muted-foreground border-border"
+                    }`}>
+                      <span className={`h-1.5 w-1.5 rounded-full ${STATUS_DOT[ch.status]}`} />
+                      {ch.status === "done" ? "Fertig" : ch.status === "draft" ? "In Arbeit" : "Geplant"}
+                    </span>
                   </div>
-                  <span className={`inline-flex items-center gap-1.5 rounded-md border px-2 py-1 text-xs font-medium shrink-0 mt-1 ${
-                    meta.status === "done"  ? "bg-emerald-500/10 text-emerald-600 border-emerald-500/20 dark:text-emerald-400" :
-                    meta.status === "draft" ? "bg-blue-500/10 text-blue-600 border-blue-500/20 dark:text-blue-400" :
-                    "bg-muted text-muted-foreground border-border"
-                  }`}>
-                    <span className={`h-1.5 w-1.5 rounded-full ${STATUS_DOT[meta.status]}`} />
-                    {meta.status === "done" ? "Fertig" : meta.status === "draft" ? "In Arbeit" : "Geplant"}
-                  </span>
+                  <ChapterContent nodes={rendered[ch.id]} />
                 </div>
-                <ChapterContent nodes={rendered[ch.id]} />
-              </div>
+              )}
             </div>
           )
         })}
