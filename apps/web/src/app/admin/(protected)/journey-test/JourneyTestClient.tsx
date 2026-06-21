@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import Link from "next/link"
-import { apiFetch } from "@/lib/api"
+import { api, ApiError } from "@/lib/api"
 import { CheckCircle2, Circle, ArrowRight, RotateCcw, Save, AlertTriangle } from "lucide-react"
 
 interface JourneyState {
@@ -62,30 +62,25 @@ export function JourneyTestClient() {
   useEffect(() => {
     let cancelled = false
     Promise.all([
-      apiFetch("/api/v1/survey/journey"),
-      apiFetch("/api/v1/users/me"),
-    ]).then(async ([jRes, uRes]) => {
+      api.get<JourneyState>("/v1/survey/journey"),
+      api.get<{ learning_topic: string | null }>("/v1/users/me"),
+    ]).then(([j, u]) => {
       if (cancelled) return
-      if (!jRes.ok || !uRes.ok) {
-        setError("Ladefehler beim Laden des Journey-States.")
-        setLoadedKey(refreshKey)
-        return
-      }
-      const j = await jRes.json() as JourneyState
-      const u = await uRes.json() as { learning_topic: string | null }
       setJourney(j)
       setSavedTopic(u.learning_topic)
       setTopic(prev => prev || (u.learning_topic ?? ""))
       setError(null)
       setLoadedKey(refreshKey)
-    }).catch(() => {
+    }).catch((err: unknown) => {
       if (!cancelled) {
-        setError("Journey-Daten konnten nicht geladen werden.")
+        setError(err instanceof ApiError ? `Fehler ${err.status}` : "Laden fehlgeschlagen.")
         setLoadedKey(refreshKey)
       }
     })
     return () => { cancelled = true }
   }, [refreshKey])
+
+  const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? "/api"
 
   async function handleReset() {
     if (!confirm("Journey-State zurücksetzen? Alle Fragebögen und Chat-Sessions werden gelöscht.")) return
@@ -93,7 +88,7 @@ export function JourneyTestClient() {
     setResetMsg(null)
     setError(null)
     try {
-      const res = await apiFetch("/api/v1/survey/journey/reset", { method: "DELETE" })
+      const res = await fetch(`${API_BASE}/v1/survey/journey/reset`, { method: "DELETE" })
       if (!res.ok) throw new Error()
       setResetMsg("Reset erfolgreich.")
       setRefreshKey(k => k + 1)
@@ -109,7 +104,7 @@ export function JourneyTestClient() {
     setSavingTopic(true)
     setError(null)
     try {
-      const res = await apiFetch("/api/v1/users/me/topic", {
+      const res = await fetch(`${API_BASE}/v1/users/me/topic`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ learning_topic: topic.trim() }),
