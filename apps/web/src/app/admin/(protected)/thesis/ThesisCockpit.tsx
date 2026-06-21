@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useRef, useMemo, memo } from "react"
+import { useState, useEffect, useRef, useMemo, memo, startTransition } from "react"
 import {
   BookOpen, Brain, Target, Code2, FlaskConical, GraduationCap,
 } from "lucide-react"
@@ -154,7 +154,7 @@ export function ThesisCockpit({ chapters }: Props) {
   const progress = Math.max(0, Math.min(100, (elapsed / totalDays) * 100))
 
   function selectChapter(id: KapId) {
-    setActive(id)
+    startTransition(() => setActive(id))
     contentRef.current?.scrollTo({ top: 0 })
   }
 
