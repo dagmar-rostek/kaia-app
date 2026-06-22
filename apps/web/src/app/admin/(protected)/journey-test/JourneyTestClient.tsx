@@ -1,8 +1,9 @@
 "use client"
 
 import { useState, useEffect, useMemo } from "react"
-import Link from "next/link"
+import { useRouter } from "next/navigation"
 import { CheckCircle2, Circle, ArrowRight, RotateCcw, Save, AlertTriangle } from "lucide-react"
+import { tokenStore } from "@/lib/auth"
 
 interface JourneyState {
   state: "pre_pending" | "active" | "post_pending" | "completed"
@@ -45,6 +46,7 @@ function Step({ done, label, sub }: { done: boolean; label: string; sub?: string
 }
 
 export function JourneyTestClient() {
+  const router = useRouter()
   const [token, setToken] = useState<string | null>(null)
   const [tokenError, setTokenError] = useState<string | null>(null)
   const [refreshKey, setRefreshKey] = useState(0)
@@ -71,7 +73,13 @@ export function JourneyTestClient() {
         if (!res.ok) throw new Error(`Token-Fehler (${res.status})`)
         return res.json() as Promise<{ access_token: string }>
       })
-      .then(data => { if (!cancelled) setToken(data.access_token) })
+      .then(data => {
+        if (!cancelled) {
+          setToken(data.access_token)
+          // Seed tokenStore so (app) routes (survey) accept this token without cookie refresh
+          tokenStore.set(data.access_token)
+        }
+      })
       .catch(e => { if (!cancelled) setTokenError(e instanceof Error ? e.message : "Token-Fehler") })
     return () => { cancelled = true }
   }, [])
@@ -239,9 +247,9 @@ export function JourneyTestClient() {
           <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">Flow-Schritte</h2>
           <div className="space-y-2">
 
-            <Link
-              href="/survey/pre"
-              className={`flex items-center justify-between rounded-lg border px-4 py-3 text-sm transition-colors ${
+            <button
+              onClick={() => { if (token) tokenStore.set(token); router.push("/survey/pre") }}
+              className={`w-full flex items-center justify-between rounded-lg border px-4 py-3 text-sm transition-colors ${
                 journey.state === "pre_pending"
                   ? "border-amber-500/40 bg-amber-500/5 hover:bg-amber-500/10 text-foreground"
                   : "border-border text-muted-foreground hover:text-foreground hover:bg-muted/40"
@@ -249,11 +257,11 @@ export function JourneyTestClient() {
             >
               <span className="font-medium">Pre-Befragung ausfüllen</span>
               <ArrowRight className="h-4 w-4" />
-            </Link>
+            </button>
 
-            <Link
-              href="/chat"
-              className={`flex items-center justify-between rounded-lg border px-4 py-3 text-sm transition-colors ${
+            <button
+              onClick={() => { if (token) tokenStore.set(token); router.push("/chat") }}
+              className={`w-full flex items-center justify-between rounded-lg border px-4 py-3 text-sm transition-colors ${
                 journey.state === "active"
                   ? "border-emerald-500/40 bg-emerald-500/5 hover:bg-emerald-500/10 text-foreground"
                   : "border-border text-muted-foreground hover:text-foreground hover:bg-muted/40"
@@ -262,11 +270,11 @@ export function JourneyTestClient() {
               <span className="font-medium">Chat starten</span>
               <span className="text-xs text-muted-foreground mr-2">{journey.session_count}/10 Sessions</span>
               <ArrowRight className="h-4 w-4" />
-            </Link>
+            </button>
 
-            <Link
-              href="/survey/post"
-              className={`flex items-center justify-between rounded-lg border px-4 py-3 text-sm transition-colors ${
+            <button
+              onClick={() => { if (token) tokenStore.set(token); router.push("/survey/post") }}
+              className={`w-full flex items-center justify-between rounded-lg border px-4 py-3 text-sm transition-colors ${
                 journey.state === "post_pending"
                   ? "border-blue-500/40 bg-blue-500/5 hover:bg-blue-500/10 text-foreground"
                   : "border-border text-muted-foreground hover:text-foreground hover:bg-muted/40"
@@ -274,7 +282,7 @@ export function JourneyTestClient() {
             >
               <span className="font-medium">Post-Befragung ausfüllen</span>
               <ArrowRight className="h-4 w-4" />
-            </Link>
+            </button>
 
           </div>
         </section>

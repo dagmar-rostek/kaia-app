@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useRef, useMemo, memo, startTransition } from "react"
+import { useState, useEffect, useRef, startTransition } from "react"
 import {
   BookOpen, Brain, Target, Code2, FlaskConical, GraduationCap,
 } from "lucide-react"
@@ -55,87 +55,15 @@ const STATUS_DOT: Record<Status, string> = {
   planned: "bg-muted-foreground/40",
 }
 
-// ── Markdown renderer ─────────────────────────────────────────────────────────
-
-function renderInline(text: string): React.ReactNode[] {
-  const parts: React.ReactNode[] = []
-  const re = /(\*\*(.+?)\*\*|\*(.+?)\*|`(.+?)`)/g
-  let last = 0; let m: RegExpExecArray | null
-  while ((m = re.exec(text)) !== null) {
-    if (m.index > last) parts.push(text.slice(last, m.index))
-    if (m[2]) parts.push(<strong key={m.index}>{m[2]}</strong>)
-    else if (m[3]) parts.push(<em key={m.index}>{m[3]}</em>)
-    else if (m[4]) parts.push(<code key={m.index} className="bg-muted px-1 py-0.5 rounded text-xs font-mono">{m[4]}</code>)
-    last = m.index + m[0].length
-  }
-  if (last < text.length) parts.push(text.slice(last))
-  return parts
-}
-
-function renderMd(md: string): React.ReactNode[] {
-  const lines = md.split("\n")
-  const nodes: React.ReactNode[] = []
-  let i = 0
-  while (i < lines.length) {
-    const line = lines[i]
-    if (line.startsWith("# "))  { nodes.push(<h1 key={i} className="text-xl font-bold mt-6 mb-2 text-foreground">{line.slice(2)}</h1>); i++; continue }
-    if (line.startsWith("## ")) { nodes.push(<h2 key={i} className="text-base font-semibold mt-7 mb-3 border-b border-border pb-1.5 text-foreground">{line.slice(3)}</h2>); i++; continue }
-    if (line.startsWith("### ")){ nodes.push(<h3 key={i} className="text-sm font-semibold mt-5 mb-1.5 text-foreground">{line.slice(4)}</h3>); i++; continue }
-    if (line.startsWith("---")) { nodes.push(<hr key={i} className="border-border my-5" />); i++; continue }
-    if (line.startsWith("> "))  {
-      const bq: string[] = []
-      while (i < lines.length && (lines[i].startsWith("> ") || lines[i] === ">")) { bq.push(lines[i].replace(/^>\s?/, "")); i++ }
-      nodes.push(<blockquote key={i} className="border-l-3 border-border pl-4 my-3 space-y-0.5">{bq.map((l, j) => l ? <p key={j} className="text-sm text-muted-foreground italic">{renderInline(l)}</p> : null)}</blockquote>); continue
-    }
-    if (line.startsWith("- "))  {
-      const items: string[] = []
-      while (i < lines.length && lines[i].startsWith("- ")) { items.push(lines[i].slice(2)); i++ }
-      nodes.push(<ul key={i} className="list-disc list-inside space-y-1 my-2 text-sm text-muted-foreground ml-1">{items.map((it, j) => <li key={j}>{renderInline(it)}</li>)}</ul>); continue
-    }
-    if (line.startsWith("|"))   {
-      const rows: string[] = []
-      while (i < lines.length && lines[i].startsWith("|")) { rows.push(lines[i]); i++ }
-      const headers = rows[0].split("|").filter(Boolean).map(s => s.trim())
-      const body = rows.slice(2).map(r => r.split("|").filter(Boolean).map(s => s.trim()))
-      nodes.push(
-        <div key={i} className="overflow-x-auto my-3">
-          <table className="w-full text-xs border-collapse">
-            <thead><tr>{headers.map((h, hi) => <th key={hi} className="text-left border border-border px-2.5 py-1.5 bg-muted/40 font-medium">{h}</th>)}</tr></thead>
-            <tbody>{body.map((row, ri) => <tr key={ri} className="hover:bg-muted/20">{row.map((c, ci) => <td key={ci} className="border border-border px-2.5 py-1.5 text-muted-foreground">{renderInline(c)}</td>)}</tr>)}</tbody>
-          </table>
-        </div>
-      ); continue
-    }
-    if (line.startsWith("```")) {
-      const codeLines: string[] = []
-      i++
-      while (i < lines.length && !lines[i].startsWith("```")) { codeLines.push(lines[i]); i++ }
-      i++
-      nodes.push(<pre key={i} className="bg-muted rounded-lg p-3 text-xs font-mono overflow-x-auto leading-relaxed text-muted-foreground my-3 whitespace-pre">{codeLines.join("\n")}</pre>); continue
-    }
-    if (line.trim() === "") { i++; continue }
-    const paraLines: string[] = []
-    while (i < lines.length && lines[i].trim() !== "" && !/^[#>|\-`]/.test(lines[i]) && !lines[i].startsWith("---")) { paraLines.push(lines[i]); i++ }
-    if (paraLines.length) nodes.push(<p key={i} className="text-sm leading-relaxed text-muted-foreground my-1.5">{renderInline(paraLines.join(" "))}</p>)
-  }
-  return nodes
-}
-
-function extractStand(md: string) {
-  const m = md.match(/\*\*Stand:\*\*\s*([^\n·*]+)/)
-  return m?.[1]?.trim() ?? "—"
-}
-
-// ── Memoized content — skips re-render on countdown ticks ────────────────────
-
-const ChapterContent = memo(function ChapterContent({ nodes }: { nodes: React.ReactNode[] }) {
-  return <>{nodes}</>
-})
-
 // ── Main component ────────────────────────────────────────────────────────────
 
+interface ChapterData {
+  html: string
+  stand: string
+}
+
 interface Props {
-  chapters: Record<KapId, string>
+  chapters: Record<KapId, ChapterData>
 }
 
 export function ThesisCockpit({ chapters }: Props) {
@@ -143,32 +71,11 @@ export function ThesisCockpit({ chapters }: Props) {
   const { days, hours, minutes, seconds } = useCountdown()
   const contentRef = useRef<HTMLDivElement>(null)
 
-  // Pre-compute all chapter nodes as plain JS objects (fast) — DOM commit is deferred by lazy mounting
-  const rendered = useMemo(
-    () => Object.fromEntries(CHAPTERS.map(ch => [ch.id, renderMd(chapters[ch.id])])) as Record<KapId, React.ReactNode[]>,
-    [chapters]
-  )
-
-  // Track which chapters have been mounted in DOM — start with only the active chapter
-  const [mounted, setMounted] = useState<Set<KapId>>(() => new Set(["kap2"]))
-
-  // Pre-compute "Stand:" badges — cheap regex, stable when chapters stable
-  const stands = useMemo(
-    () => Object.fromEntries(CHAPTERS.map(ch => [ch.id, extractStand(chapters[ch.id])])) as Record<KapId, string>,
-    [chapters]
-  )
-
   const totalDays = 89 // June 4 → Sep 1
   const elapsed = totalDays - days
   const progress = Math.max(0, Math.min(100, (elapsed / totalDays) * 100))
 
   function selectChapter(id: KapId) {
-    setMounted(prev => {
-      if (prev.has(id)) return prev
-      const next = new Set(prev)
-      next.add(id)
-      return next
-    })
     startTransition(() => setActive(id))
     contentRef.current?.scrollTo({ top: 0 })
   }
@@ -248,36 +155,35 @@ export function ThesisCockpit({ chapters }: Props) {
         </div>
       </aside>
 
-      {/* ── Content area — chapters mounted lazily on first visit, then kept in DOM ── */}
+      {/* ── Content area — pre-rendered HTML, no React reconciliation ── */}
       <div ref={contentRef} className="flex-1 overflow-y-auto">
         {CHAPTERS.map(ch => {
           const isActive = ch.id === active
-          const isInDom = mounted.has(ch.id)
+          const data = chapters[ch.id]
           return (
             <div key={ch.id} className={isActive ? "block" : "hidden"}>
-              {isInDom && (
-                <div className="max-w-3xl mx-auto px-8 py-6 space-y-1">
-                  <div className="flex items-start justify-between gap-4 mb-4 pb-4 border-b border-border">
-                    <div>
-                      <p className="text-xs font-mono text-muted-foreground mb-1">Kapitel {ch.num}</p>
-                      <h1 className="text-xl font-bold tracking-tight">{ch.title}</h1>
-                      <p className="text-xs text-muted-foreground mt-1">
-                        Stand: <span className="font-medium">{stands[ch.id]}</span>
-                        {" · "}Umfang: <span className="font-medium">{ch.pages} Seiten</span>
-                      </p>
-                    </div>
-                    <span className={`inline-flex items-center gap-1.5 rounded-md border px-2 py-1 text-xs font-medium shrink-0 mt-1 ${
-                      ch.status === "done"  ? "bg-emerald-500/10 text-emerald-600 border-emerald-500/20 dark:text-emerald-400" :
-                      ch.status === "draft" ? "bg-blue-500/10 text-blue-600 border-blue-500/20 dark:text-blue-400" :
-                      "bg-muted text-muted-foreground border-border"
-                    }`}>
-                      <span className={`h-1.5 w-1.5 rounded-full ${STATUS_DOT[ch.status]}`} />
-                      {ch.status === "done" ? "Fertig" : ch.status === "draft" ? "In Arbeit" : "Geplant"}
-                    </span>
+              <div className="max-w-3xl mx-auto px-8 py-6 space-y-1">
+                <div className="flex items-start justify-between gap-4 mb-4 pb-4 border-b border-border">
+                  <div>
+                    <p className="text-xs font-mono text-muted-foreground mb-1">Kapitel {ch.num}</p>
+                    <h1 className="text-xl font-bold tracking-tight">{ch.title}</h1>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Stand: <span className="font-medium">{data.stand}</span>
+                      {" · "}Umfang: <span className="font-medium">{ch.pages} Seiten</span>
+                    </p>
                   </div>
-                  <ChapterContent nodes={rendered[ch.id]} />
+                  <span className={`inline-flex items-center gap-1.5 rounded-md border px-2 py-1 text-xs font-medium shrink-0 mt-1 ${
+                    ch.status === "done"  ? "bg-emerald-500/10 text-emerald-600 border-emerald-500/20 dark:text-emerald-400" :
+                    ch.status === "draft" ? "bg-blue-500/10 text-blue-600 border-blue-500/20 dark:text-blue-400" :
+                    "bg-muted text-muted-foreground border-border"
+                  }`}>
+                    <span className={`h-1.5 w-1.5 rounded-full ${STATUS_DOT[ch.status]}`} />
+                    {ch.status === "done" ? "Fertig" : ch.status === "draft" ? "In Arbeit" : "Geplant"}
+                  </span>
                 </div>
-              )}
+                {/* Pre-rendered HTML from server — no client-side markdown parsing */}
+                <div dangerouslySetInnerHTML={{ __html: data.html }} />
+              </div>
             </div>
           )
         })}

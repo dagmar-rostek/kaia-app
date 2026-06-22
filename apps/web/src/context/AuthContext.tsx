@@ -1,7 +1,7 @@
 'use client'
 
 import { createContext, useContext, useState, useEffect, useCallback, type ReactNode } from 'react'
-import { apiRefresh, apiLogout } from '@/lib/auth'
+import { apiRefresh, apiLogout, tokenStore } from '@/lib/auth'
 
 type AuthState = 'loading' | 'authenticated' | 'unauthenticated'
 
@@ -16,7 +16,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [state, setState] = useState<AuthState>('loading')
 
   useEffect(() => {
-    apiRefresh()
+    // If a token is already in memory (e.g. seeded by admin test flow), skip cookie refresh
+    const init = tokenStore.get() ? Promise.resolve() : apiRefresh()
+    init
       .then(() => setState('authenticated'))
       .catch(() => setState('unauthenticated'))
   }, [])
