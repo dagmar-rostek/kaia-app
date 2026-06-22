@@ -150,86 +150,244 @@ interface GseResult {
   total_score: number
 }
 
-const SUBSCALE_LABELS: Record<string, string> = {
-  self_efficacy:    "Selbstwirksamkeit (lernbezogen)",
-  intrinsic_goal:   "Intrinsische Zielorientierung",
-  elaboration:      "Elaborationsstrategien",
-  metacognitive_sr: "Metakognitive Selbstregulation",
+type ScoreLevel = "niedrig" | "mittel" | "hoch"
+
+function gseLevel(s: number): ScoreLevel {
+  if (s < 2.5) return "niedrig"
+  if (s > 3.4) return "hoch"
+  return "mittel"
+}
+function mslqLevel(s: number): ScoreLevel {
+  if (s < 3.5) return "niedrig"
+  if (s > 5.0) return "hoch"
+  return "mittel"
 }
 
-function ScoreBar({ score, max, label }: { score: number; max: number; label: string }) {
+const LEVEL_STYLE: Record<ScoreLevel, { bar: string; badge: string; label: string }> = {
+  niedrig: { bar: "bg-amber-500",   badge: "bg-amber-500/10 text-amber-700 dark:text-amber-400 border-amber-500/20", label: "Niedrig ausgeprägt"  },
+  mittel:  { bar: "bg-blue-500",    badge: "bg-blue-500/10 text-blue-700 dark:text-blue-400 border-blue-500/20",     label: "Mittel ausgeprägt"   },
+  hoch:    { bar: "bg-emerald-500", badge: "bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-500/20", label: "Hoch ausgeprägt" },
+}
+
+interface SubscaleMeta {
+  label: string
+  description: string
+  meaning: (level: ScoreLevel, isPost: boolean) => string
+  itemCount: number
+}
+
+const SUBSCALE_META: Record<string, SubscaleMeta> = {
+  self_efficacy: {
+    label: "Selbstwirksamkeit (lernbezogen)",
+    itemCount: 8,
+    description: "Wie überzeugt du bist, dass du dein Lernthema wirklich durchdringen kannst — auch bei schwierigen Inhalten. Lernspezifische Selbstwirksamkeit nach Bandura (1997) ist einer der stärksten Prädiktoren für Lernausdauer und Lernerfolg.",
+    meaning: (l, isPost) => ({
+      niedrig: isPost
+        ? "Deine lernbezogene Selbstwirksamkeit ist noch niedrig. Das ist normal bei anspruchsvollen Themen — beobachte, ob KAIA hier eine Verschiebung erzeugt hat."
+        : "Deine lernbezogene Selbstwirksamkeit startet niedrig. KAIA setzt hier gezielt an: sokratische Fragen stärken das Erleben eigener Erkenntnisfähigkeit.",
+      mittel: isPost
+        ? "Deine lernbezogene Selbstwirksamkeit liegt im mittleren Bereich — vergleiche mit deiner Eingangsmessung."
+        : "Deine lernbezogene Selbstwirksamkeit liegt im Durchschnittsbereich. KAIA kann hier durch wiederholte Erfolgserlebnisse im Dialog weiter aufbauen.",
+      hoch: isPost
+        ? "Starke lernbezogene Selbstwirksamkeit — vergleiche mit deinem Ausgangswert für die Effektgröße."
+        : "Gute Ausgangslage: hohe lernbezogene Überzeugung. KAIA kann dieses Fundament für tieferes Explorieren nutzen.",
+    }[l]),
+  },
+  intrinsic_goal: {
+    label: "Intrinsische Zielorientierung",
+    itemCount: 4,
+    description: "Ob du lernst, um das Thema wirklich zu verstehen und zu können — oder primär für externe Ziele (Noten, Anerkennung). Hohe intrinsische Motivation geht empirisch mit tieferer Verarbeitung und nachhaltigerem Lernen einher (Pintrich, 2003).",
+    meaning: (l, isPost) => ({
+      niedrig: isPost
+        ? "Intrinsische Motivation blieb niedrig — prüfe, ob das Lernthema ausreichend persönliche Relevanz hatte."
+        : "Eher extrinsische Orientierung. KAIA arbeitet bewusst sokratisch, um latente Neugier zu aktivieren und das Thema mit eigenen Fragen zu verknüpfen.",
+      mittel: isPost
+        ? "Mittlere intrinsische Motivation — schaue, ob sich etwas gegenüber dem Ausgangswert verschoben hat."
+        : "Gemischte Motivation. KAIAs Fragen zielen darauf ab, den Verstehenswunsch über externe Ziele zu stellen.",
+      hoch: isPost
+        ? "Hohe intrinsische Motivation am Ende — das deutet auf echtes Engagement mit dem Lernthema hin."
+        : "Starker Einstieg: du lernst, weil du verstehen willst. Das ist die ideale Ausgangslage für sokratischen Dialog.",
+    }[l]),
+  },
+  elaboration: {
+    label: "Elaborationsstrategien",
+    itemCount: 6,
+    description: "Wie aktiv du neue Informationen mit bestehendem Wissen verknüpfst und in anderen Kontexten anwendest. Elaboration ist ein Marker für tiefe Verarbeitung — im Gegensatz zu reinem Auswendiglernen (Craik & Lockhart, 1972).",
+    meaning: (l, isPost) => ({
+      niedrig: isPost
+        ? "Elaborationsstrategien blieben niedrig — KAIA-Fragen wie 'Womit würdest du das verknüpfen?' sollen genau das fördern."
+        : "Du nutzt bisher wenig Verknüpfungsstrategien. KAIAs Kerntechnik ist Elaboration durch Fragen: 'Was weißt du schon darüber? Wo hast du das schon gesehen?'",
+      mittel: isPost
+        ? "Mittlere Elaboration — vergleiche mit Eingang, ob KAIA eine Verschiebung zu aktiverer Verknüpfung erzeugt hat."
+        : "Mittelstarke Elaboration. KAIA wird gezielt Verknüpfungsfragen stellen, um diesen Bereich zu stärken.",
+      hoch: isPost
+        ? "Starke Elaboration am Ende — du denkst in Verbindungen, nicht in Inseln."
+        : "Du verknüpfst von Natur aus. KAIA kann darauf aufbauen und noch tiefere Transferfragen stellen.",
+    }[l]),
+  },
+  metacognitive_sr: {
+    label: "Metakognitive Selbstregulation",
+    itemCount: 12,
+    description: "Wie gut du dein eigenes Lernen planst, überwachst und anpasst — also weißt, wann du etwas wirklich verstanden hast und wann nicht. Metakognition ist nach Hattie & Timperley (2007) einer der effektstärksten Lernfaktoren.",
+    meaning: (l, isPost) => ({
+      niedrig: isPost
+        ? "Metakognition blieb niedrig — das Erkennen eigener Lücken ist schwer erlernbar, aber zentral für nachhaltiges Lernen."
+        : "Geringe metakognitive Selbstregulation — ein häufiges Muster. KAIAs Fragen zielen genau darauf: 'Was weißt du schon? Was ist noch unklar?'",
+      mittel: isPost
+        ? "Mittlere Metakognition — vergleiche mit Ausgangswert für Veränderungsrichtung."
+        : "Mittlere Metakognition. KAIA unterstützt explizit durch Rückfragen, die dich zum Überprüfen deines Verständnisses anleiten.",
+      hoch: isPost
+        ? "Starke metakognitive Selbstregulation am Ende — du weißt, was du weißt und was nicht."
+        : "Gute Ausgangslage: hohe Metakognition. KAIA kann anspruchsvollere Selbstreflexionsfragen nutzen.",
+    }[l]),
+  },
+}
+
+function ScoreCard({
+  score, max, level, meta, isPost,
+}: {
+  score: number; max: number; level: ScoreLevel; meta: SubscaleMeta; isPost: boolean
+}) {
   const pct = Math.round((score / max) * 100)
+  const style = LEVEL_STYLE[level]
   return (
-    <div className="space-y-1">
-      <div className="flex justify-between text-xs">
-        <span className="text-muted-foreground">{label}</span>
-        <span className="font-medium tabular-nums">{score.toFixed(2)} / {max}</span>
+    <div className="rounded-lg border border-border p-4 space-y-3">
+      <div className="flex items-start justify-between gap-3">
+        <div>
+          <p className="text-sm font-semibold">{meta.label}</p>
+          <p className="text-xs text-muted-foreground">{meta.itemCount} Items</p>
+        </div>
+        <div className="flex items-center gap-2 shrink-0">
+          <span className="text-sm font-bold tabular-nums">{score.toFixed(2)}<span className="text-xs font-normal text-muted-foreground"> /{max}</span></span>
+          <span className={`inline-flex items-center rounded border px-1.5 py-0.5 text-xs font-medium ${style.badge}`}>
+            {style.label}
+          </span>
+        </div>
       </div>
       <div className="h-1.5 rounded-full bg-muted overflow-hidden">
-        <div className="h-full rounded-full bg-foreground transition-all" style={{ width: `${pct}%` }} />
+        <div className={`h-full rounded-full transition-all ${style.bar}`} style={{ width: `${pct}%` }} />
       </div>
+      <p className="text-xs text-muted-foreground leading-relaxed">{meta.description}</p>
+      <p className="text-xs text-foreground/80 leading-relaxed border-l-2 border-border pl-3">
+        {meta.meaning(level, isPost)}
+      </p>
     </div>
   )
 }
 
-function EvaluationPanel({ mslqResult, gseResult, measurementType, onContinue, redirectTo }: {
+function GseCard({ score, isPost }: { score: number; isPost: boolean }) {
+  const level = gseLevel(score)
+  const pct = Math.round((score / 4) * 100)
+  const style = LEVEL_STYLE[level]
+  const NORM_MEAN = 2.97
+  const diff = score - NORM_MEAN
+  const diffLabel = Math.abs(diff) < 0.1
+    ? "entspricht dem deutschen Normmittelwert"
+    : diff > 0
+      ? `${diff.toFixed(2)} über dem deutschen Normmittelwert`
+      : `${Math.abs(diff).toFixed(2)} unter dem deutschen Normmittelwert`
+
+  const meanings: Record<ScoreLevel, string> = {
+    niedrig: isPost
+      ? "Unterdurchschnittliche allgemeine Selbstwirksamkeit. Vergleiche mit deinem Ausgangswert — eine Verschiebung nach oben durch KAIA wäre das zentrale Studienergebnis."
+      : "Unterdurchschnittliche allgemeine Selbstwirksamkeit als Ausgangspunkt. Das bedeutet nicht, dass du scheitern wirst — aber KAIA hat hier besonders viel Spielraum. Sokratische Begleitung zielt genau darauf: das Erleben 'Ich habe es selbst herausgefunden' stärkt Selbstwirksamkeit durch Handlungsergebniserfahrungen (Bandura, 1977).",
+    mittel: isPost
+      ? "Allgemeine Selbstwirksamkeit im Durchschnittsbereich. Vergleiche mit deiner Eingangsmessung für die Veränderungsrichtung."
+      : "Allgemeine Selbstwirksamkeit im Durchschnitt — eine gesunde Ausgangslage. KAIA arbeitet daran, durch wiederholte eigenständige Erkenntnisse diesen Wert zu festigen und zu erhöhen.",
+    hoch: isPost
+      ? "Überdurchschnittliche allgemeine Selbstwirksamkeit. Prüfe den Unterschied zur Eingangsmessung."
+      : "Überdurchschnittliche Ausgangslage — du bist überzeugt, Schwierigkeiten meistern zu können. Das ist eine starke Basis für sokratischen Dialog.",
+  }
+
+  return (
+    <div className="rounded-lg border border-border p-4 space-y-3">
+      <div className="flex items-start justify-between gap-3">
+        <div>
+          <p className="text-sm font-semibold">Allgemeine Selbstwirksamkeit (GSE)</p>
+          <p className="text-xs text-muted-foreground">10 Items · Schwarzer & Jerusalem, 1995</p>
+        </div>
+        <div className="flex items-center gap-2 shrink-0">
+          <span className="text-sm font-bold tabular-nums">{score.toFixed(2)}<span className="text-xs font-normal text-muted-foreground"> /4</span></span>
+          <span className={`inline-flex items-center rounded border px-1.5 py-0.5 text-xs font-medium ${style.badge}`}>
+            {style.label}
+          </span>
+        </div>
+      </div>
+      <div className="space-y-0.5">
+        <div className="h-1.5 rounded-full bg-muted overflow-hidden">
+          <div className={`h-full rounded-full transition-all ${style.bar}`} style={{ width: `${pct}%` }} />
+        </div>
+        <div className="flex justify-between text-[10px] text-muted-foreground">
+          <span>1 — stimmt nicht</span>
+          <span className="text-xs font-medium text-foreground/60">{diffLabel}</span>
+          <span>4 — stimmt genau</span>
+        </div>
+      </div>
+      <p className="text-xs text-muted-foreground leading-relaxed">
+        Misst die generalisierte Überzeugung, Anforderungen und Schwierigkeiten des Lebens aus eigener Kraft bewältigen zu können — unabhängig vom konkreten Lernthema. Normwert: dt. Erwachsenenstichprobe M=2,97 · SD=0,55 (Schwarzer & Jerusalem, 1995).
+      </p>
+      <p className="text-xs text-foreground/80 leading-relaxed border-l-2 border-border pl-3">
+        {meanings[level]}
+      </p>
+    </div>
+  )
+}
+
+function EvaluationPanel({ mslqResult, gseResult, measurementType, redirectTo }: {
   mslqResult: MslqResult
   gseResult: GseResult
   measurementType: "pre" | "post"
-  onContinue: () => void
   redirectTo: string
 }) {
   const router = useRouter()
   const isPost = measurementType === "post"
 
   return (
-    <div className="max-w-2xl mx-auto px-4 py-12 space-y-8">
-      <div className="flex flex-col items-center text-center space-y-3">
-        <CheckCircle2 className="h-10 w-10 text-emerald-500" />
-        <h1 className="text-2xl font-semibold">Befragung abgeschlossen</h1>
-        <p className="text-muted-foreground text-sm max-w-md">
+    <div className="max-w-2xl mx-auto px-4 py-10 space-y-6">
+      <div className="space-y-2">
+        <div className="flex items-center gap-2">
+          <CheckCircle2 className="h-5 w-5 text-emerald-500 shrink-0" />
+          <h1 className="text-xl font-semibold">
+            {isPost ? "Abschlussbefragung gespeichert" : "Eingangsbefragung gespeichert"}
+          </h1>
+        </div>
+        <p className="text-sm text-muted-foreground">
           {isPost
-            ? "Deine Abschlussbefragung ist gespeichert. Die Studie ist damit abgeschlossen."
-            : "Deine Eingangsbefragung ist gespeichert. Du kannst jetzt mit KAIA starten."}
+            ? "Deine Messwerte wurden gespeichert. Hier ist dein Abschlussprofil — vergleiche es mit deiner Eingangsmessung, sobald die Studie ausgewertet wird."
+            : "Deine Ausgangswerte sind gesichert. Sie bilden die Vergleichsbasis für die Auswertung nach 10 Sessions mit KAIA."}
         </p>
       </div>
 
-      <div className="space-y-6">
-        {/* GSE */}
-        <div className="rounded-lg border border-border p-5 space-y-3">
-          <div className="flex items-center justify-between">
-            <h2 className="text-sm font-semibold">Allgemeine Selbstwirksamkeit (GSE)</h2>
-            <span className="text-xs text-muted-foreground">Schwarzer & Jerusalem, 1995</span>
-          </div>
-          <ScoreBar score={gseResult.total_score} max={4} label="Gesamtscore" />
-          <p className="text-xs text-muted-foreground">
-            Skala 1 (stimmt nicht) bis 4 (stimmt genau) · 10 Items · Mittelwert
-          </p>
-        </div>
+      {/* GSE */}
+      <GseCard score={gseResult.total_score} isPost={isPost} />
 
-        {/* MSLQ */}
-        <div className="rounded-lg border border-border p-5 space-y-4">
-          <div className="flex items-center justify-between">
-            <h2 className="text-sm font-semibold">Lernstrategien & Motivation (MSLQ)</h2>
-            <span className="text-xs text-muted-foreground">Pintrich et al., 1991/1993</span>
-          </div>
-          {Object.entries(mslqResult.subscale_scores).map(([key, score]) => (
-            <ScoreBar
+      {/* MSLQ subscales */}
+      <div className="space-y-3">
+        <div className="flex items-center justify-between">
+          <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+            Lernstrategien & Motivation (MSLQ)
+          </p>
+          <span className="text-xs text-muted-foreground">Pintrich et al., 1991/1993</span>
+        </div>
+        {Object.entries(mslqResult.subscale_scores).map(([key, score]) => {
+          const meta = SUBSCALE_META[key]
+          if (!meta) return null
+          return (
+            <ScoreCard
               key={key}
               score={score}
               max={7}
-              label={SUBSCALE_LABELS[key] ?? key}
+              level={mslqLevel(score)}
+              meta={meta}
+              isPost={isPost}
             />
-          ))}
-          <p className="text-xs text-muted-foreground">
-            Skala 1 (trifft gar nicht zu) bis 7 (trifft vollständig zu) · 30 Items · Subskalen-Mittelwerte
-          </p>
-        </div>
-
-        <p className="text-xs text-muted-foreground text-center">
-          Diese Werte dienen als {isPost ? "Abschluss-" : "Ausgangs-"}messung für die Studie. Sie werden nicht für Diagnosen verwendet.
-        </p>
+          )
+        })}
       </div>
+
+      <p className="text-xs text-muted-foreground text-center px-4">
+        Diese Werte sind Forschungsinstrumente, keine klinischen Diagnosen. Individuelle Werte haben große Messfehlerbandbreiten — für die Studie relevant ist die Prä-Post-Veränderung auf Gruppenebene.
+      </p>
 
       <button
         onClick={() => router.push(redirectTo)}
@@ -327,7 +485,6 @@ export function SurveyForm({ measurementType, redirectTo }: Props) {
         mslqResult={mslqResult}
         gseResult={gseResult}
         measurementType={measurementType}
-        onContinue={() => {}}
         redirectTo={redirectTo}
       />
     )

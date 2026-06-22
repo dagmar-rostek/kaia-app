@@ -16,7 +16,16 @@ export async function POST(): Promise<NextResponse> {
     }
 
     const data = await res.json() as { access_token: string }
-    return NextResponse.json(data)
+    const response = NextResponse.json(data)
+    // Set kaia_session so the Next.js middleware allows /chat navigation
+    response.cookies.set("kaia_session", "1", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+      path: "/",
+      maxAge: 3600,
+    })
+    return response
   } catch (err) {
     const message = err instanceof Error ? err.message : "Verbindung zur API fehlgeschlagen"
     return NextResponse.json({ error: message }, { status: 503 })

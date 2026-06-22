@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react"
 import { useRouter } from "next/navigation"
 import { Loader2, Plus, Send, X } from "lucide-react"
 import { LegalFooter } from "@/components/LegalFooter"
+import { tokenStore } from "@/lib/auth"
 
 const API_BASE = ""  // relative — Caddy proxies /api/* to FastAPI
 
@@ -39,6 +40,7 @@ declare global {
 
 function getAuthHeader(): Record<string, string> {
   const token =
+    tokenStore.get() ??
     (typeof window !== "undefined" ? window.__kaia_access_token : undefined) ??
     (typeof localStorage !== "undefined" ? localStorage.getItem("kaia_access_token") : null) ??
     ""
