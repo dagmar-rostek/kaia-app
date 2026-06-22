@@ -131,6 +131,7 @@ async def stream_response(
     # 3. Build prompt context
     user = await repo.get_user(session.user_id)
     user_name = user.username if user else ""
+    learning_topic = user.learning_topic or "" if user else ""
 
     is_first = session.session_number == 1
     last_step = ""
@@ -154,6 +155,7 @@ async def stream_response(
 
     ctx = PromptContext(
         user_name=user_name,
+        learning_topic=learning_topic,
         is_first_session=is_first,
         last_first_step=last_step,
         last_session_observation=last_observation,
@@ -322,6 +324,7 @@ async def stream_opening(
     repo = ChatRepository(db)
     user = await repo.get_user(session.user_id)
     user_name = user.username if user else ""
+    learning_topic = user.learning_topic or "" if user else ""
 
     is_first = session.session_number == 1
     last_step = ""
@@ -341,6 +344,7 @@ async def stream_opening(
 
     ctx = PromptContext(
         user_name=user_name,
+        learning_topic=learning_topic,
         is_first_session=is_first,
         last_first_step=last_step,
         last_session_observation=last_observation,
@@ -424,6 +428,7 @@ async def stream_closing(
     repo = ChatRepository(db)
     user = await repo.get_user(session.user_id)
     user_name = user.username if user else ""
+    learning_topic = user.learning_topic or "" if user else ""
 
     is_first = session.session_number == 1
     last_step = ""
@@ -443,6 +448,7 @@ async def stream_closing(
 
     ctx = PromptContext(
         user_name=user_name,
+        learning_topic=learning_topic,
         is_first_session=is_first,
         last_first_step=last_step,
         last_session_observation=last_observation,
@@ -534,10 +540,12 @@ async def stream_meta_question(
     repo = ChatRepository(db)
     user = await repo.get_user(session.user_id)
     user_name = user.username if user else ""
+    learning_topic = user.learning_topic or "" if user else ""
 
     is_first = session.session_number == 1
     ctx = PromptContext(
         user_name=user_name,
+        learning_topic=learning_topic,
         is_first_session=is_first,
         outcome=session.daily_plan or "",
         daily_plan=session.daily_plan or "",

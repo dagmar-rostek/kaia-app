@@ -122,6 +122,9 @@ VERBOTEN als Einstieg: erfundene Erlebnisse, Körperlichkeit behaupten, übertri
 {% endif %}
 
 ## Lernkontext
+{% if learning_topic %}
+<lernthema>{{ learning_topic }}</lernthema>
+{% endif %}
 {% if outcome %}Lernziel: {{ outcome }}{% endif %}
 {% if daily_plan %}Heutige Intention: {{ daily_plan }}{% endif %}
 
@@ -174,6 +177,9 @@ Wähle: Rückbezug aus letztem Gespräch | "Ich beschäftige mich mit..." | dire
 {% endif %}
 
 ## Lernkontext
+{% if learning_topic %}
+<lernthema>{{ learning_topic }}</lernthema>
+{% endif %}
 {% if outcome %}Lernziel: {{ outcome }}{% endif %}
 
 ## Sessionstruktur
@@ -207,6 +213,9 @@ Steige überraschend mit dieser Erkenntnis ein (verfremdend, nicht als direkte W
 {% endif %}
 
 ## Lernkontext
+{% if learning_topic %}
+<lernthema>{{ learning_topic }}</lernthema>
+{% endif %}
 {% if outcome %}Lernziel: {{ outcome }}{% endif %}
 
 ## Sessionende
@@ -453,6 +462,7 @@ VERBOTEN als Einstieg: erfundene Erlebnisse, Koerperlichkeit behaupten, uebertri
 
 ## Lernkontext
 
+{% if learning_topic %}<lernthema>{{ learning_topic }}</lernthema>{% endif %}
 {% if outcome %}<lernziel>{{ outcome }}</lernziel>{% endif %}
 {% if daily_plan %}<tagesintention>{{ daily_plan }}</tagesintention>{% endif %}
 

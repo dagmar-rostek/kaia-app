@@ -23,6 +23,7 @@ _env = Environment(loader=BaseLoader(), autoescape=False, undefined=_SilentUndef
 @dataclass
 class PromptContext:
     user_name: str = ""
+    learning_topic: str = ""
     is_first_session: bool = True
     last_first_step: str = ""
     last_session_observation: str = ""
@@ -41,6 +42,7 @@ def render_prompt(template_str: str, ctx: PromptContext) -> str:
         tmpl = _env.from_string(template_str)
         return tmpl.render(
             user_name=ctx.user_name,
+            learning_topic=ctx.learning_topic,
             is_first_session=ctx.is_first_session,
             last_first_step=ctx.last_first_step,
             last_session_observation=ctx.last_session_observation,

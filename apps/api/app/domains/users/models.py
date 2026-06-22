@@ -47,6 +47,10 @@ class User(Base):
     # Learning topic (set at registration, immutable after first session)
     learning_topic: Mapped[str | None] = mapped_column(String(500), nullable=True)
 
+    # Simulation flag — marks test/research users, never real participants
+    is_simulation: Mapped[bool] = mapped_column(Boolean, default=False)
+    simulation_run: Mapped[str | None] = mapped_column(String(100), nullable=True)
+
     # Soft-Delete (DSGVO Art. 17)
     deleted_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     deletion_reason: Mapped[str | None] = mapped_column(String(100), nullable=True)
