@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react"
 import { useRouter } from "next/navigation"
-import { Loader2, Plus, Send, X } from "lucide-react"
+import { DoorOpen, Loader2, Plus, Send } from "lucide-react"
 import { LegalFooter } from "@/components/LegalFooter"
 import { tokenStore } from "@/lib/auth"
 
@@ -400,7 +400,7 @@ export default function ChatPage() {
             <span className="text-xs text-muted-foreground font-mono">#{sessionId}</span>
           )}
         </div>
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-1.5">
           {(Object.keys(CHARACTER_LABELS) as Character[]).map(c => (
             <button
               key={c}
@@ -417,12 +417,24 @@ export default function ChatPage() {
           ))}
           <button
             onClick={() => resetSession()}
-            className="ml-1 p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
-            title="Neue Session"
+            className="p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+            title="Neue Session starten"
             aria-label="Neue Session starten"
           >
             <Plus className="h-4 w-4" />
           </button>
+          {/* Session beenden — prominent, weil Studienteilnehmende das aktiv tun müssen */}
+          {closureState === "idle" && sessionId && messages.length > 1 && (
+            <button
+              onClick={() => void startClosure()}
+              title="Beendet diese Session — KAIA stellt eine Abschlussfrage, danach wird die Session gespeichert"
+              aria-label="Session beenden"
+              className="flex items-center gap-1.5 ml-1 px-3 py-1.5 rounded-lg border border-border text-xs font-medium text-foreground hover:bg-muted transition-colors"
+            >
+              <DoorOpen className="h-3.5 w-3.5" />
+              Session beenden
+            </button>
+          )}
         </div>
       </header>
 
@@ -507,31 +519,53 @@ export default function ChatPage() {
       {/* Feedback buttons — EMA signals, sticky above input */}
       {sessionId && closureState !== "ended" && messages.length > 1 && (
         <div
-          className="shrink-0 border-t border-border/40 px-4 py-2"
+          className="shrink-0 border-t border-border/40 px-4 pt-2 pb-1.5"
           role="group"
           aria-label="Momentan-Feedback"
         >
-          <div className="max-w-2xl mx-auto flex flex-wrap gap-1.5">
-            {([
-              { type: "transfer_marker", label: "Muss ich weiterdenken" },
-              { type: "wow",             label: "Wow — das trifft was" },
-              { type: "stuck",           label: "Ich hänge gerade" },
-              { type: "unclear",         label: "Das verstehe ich noch nicht" },
-            ] as const).map(btn => (
-              <button
-                key={btn.type}
-                onClick={() => void sendFeedback(btn.type)}
-                disabled={loading || closureState === "loading" || closureState === "awaiting_confirm"}
-                className={`text-xs px-3 py-1.5 rounded-full border transition-all disabled:opacity-40 disabled:cursor-not-allowed ${
-                  activeFeedback === btn.type
-                    ? "bg-foreground text-background border-foreground"
-                    : "border-border text-muted-foreground hover:border-foreground/40 hover:text-foreground"
-                }`}
-                aria-pressed={activeFeedback === btn.type}
-              >
-                {btn.label}
-              </button>
-            ))}
+          <div className="max-w-2xl mx-auto space-y-1.5">
+            <p className="text-[10px] text-muted-foreground/50 uppercase tracking-wide">
+              Wie war diese Antwort?
+            </p>
+            <div className="flex flex-wrap gap-1.5">
+              {([
+                {
+                  type: "transfer_marker",
+                  label: "Muss ich weiterdenken",
+                  title: "Markiert diese Einsicht — für deine Reflexion und die Studie",
+                },
+                {
+                  type: "wow",
+                  label: "Wow — das trifft was",
+                  title: "Positives Signal: diese Frage hat etwas ausgelöst",
+                },
+                {
+                  type: "stuck",
+                  label: "Ich hänge gerade",
+                  title: "KAIA stellt eine neue Frage um dich weiterzubringen",
+                },
+                {
+                  type: "unclear",
+                  label: "Das verstehe ich noch nicht",
+                  title: "KAIA formuliert die Frage anders",
+                },
+              ] as const).map(btn => (
+                <button
+                  key={btn.type}
+                  onClick={() => void sendFeedback(btn.type)}
+                  disabled={loading || closureState === "loading" || closureState === "awaiting_confirm"}
+                  title={btn.title}
+                  className={`text-xs px-3 py-1.5 rounded-full border transition-all disabled:opacity-40 disabled:cursor-not-allowed ${
+                    activeFeedback === btn.type
+                      ? "bg-foreground text-background border-foreground"
+                      : "border-border text-muted-foreground hover:border-foreground/40 hover:text-foreground"
+                  }`}
+                  aria-pressed={activeFeedback === btn.type}
+                >
+                  {btn.label}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
       )}
@@ -563,22 +597,9 @@ export default function ChatPage() {
           </button>
         </div>
 
-        {/* Bottom bar: hint + end-session link */}
-        <div className="max-w-2xl mx-auto flex items-center justify-between mt-2">
-          <p className="text-xs text-muted-foreground/40">
-            Enter senden · Shift+Enter neue Zeile
-          </p>
-          {closureState === "idle" && sessionId && !loading && messages.length > 1 && (
-            <button
-              onClick={() => void startClosure()}
-              className="flex items-center gap-1 text-xs text-muted-foreground/50 hover:text-muted-foreground transition-colors"
-              aria-label="Session beenden"
-            >
-              <X className="h-3 w-3" />
-              Session beenden
-            </button>
-          )}
-        </div>
+        <p className="max-w-2xl mx-auto mt-2 text-xs text-muted-foreground/40">
+          Enter senden · Shift+Enter neue Zeile
+        </p>
       </div>
 
       <LegalFooter />
