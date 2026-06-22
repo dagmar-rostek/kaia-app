@@ -19,10 +19,13 @@ class SurveyRepository:
         return r.scalar_one_or_none()
 
     async def create_mslq_result(
-        self, user_id: int, mt: MeasurementType, items: dict, subscale_scores: dict
+        self, user_id: int, measurement_type: MeasurementType, items: dict, subscale_scores: dict
     ) -> MslqResult:
         obj = MslqResult(
-            user_id=user_id, measurement_type=mt, items=items, subscale_scores=subscale_scores
+            user_id=user_id,
+            measurement_type=measurement_type,
+            items=items,
+            subscale_scores=subscale_scores,
         )
         self.db.add(obj)
         await self.db.commit()
@@ -39,10 +42,15 @@ class SurveyRepository:
         return r.scalar_one_or_none()
 
     async def create_gse_result(
-        self, user_id: int, mt: MeasurementType, items: list[int]
+        self, user_id: int, measurement_type: MeasurementType, items: list[int]
     ) -> GseResult:
         total_score = sum(items) / len(items)
-        obj = GseResult(user_id=user_id, measurement_type=mt, items=items, total_score=total_score)
+        obj = GseResult(
+            user_id=user_id,
+            measurement_type=measurement_type,
+            items=items,
+            total_score=total_score,
+        )
         self.db.add(obj)
         await self.db.commit()
         await self.db.refresh(obj)
