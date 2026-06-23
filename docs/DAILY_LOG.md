@@ -2,6 +2,569 @@
 
 ---
 
+## 2026-06-23 — "Der Tag, an dem KAIA sich selbst zerfleischt — 10 Personas, 100 Sessions, 1 Simulation"
+
+*Protokolliert vom Koordinator. Mit zunehmend ungläubigem Blick des QA Testers.*
+
+---
+
+Es gibt Tage, an denen man den Nutzer spielt. Dann gibt es Tage, an denen man den Nutzer automatisiert. Und dann gibt es Tage, an denen man zehn dysfunktionale Persona-Archetypen erschafft, ihnen Namen gibt und sie in einer vollautomatischen Studien-Journey durch KAIA treibt, um zu sehen was kaputt geht.
+
+Heute war der dritte Typ.
+
+**Morgens — "Wir brauchen Crash-Personas"**
+
+Der Plan stand seit Tagen in der Memory-Datei: Crash-Test-Simulation vor Studienstart. Der MLOps Engineer hatte das zuletzt erwähnt. Der QA Tester hatte genickt. Der Security Engineer hatte still auf "Cross-User-Leak" hingewiesen. Heute wurde es ernst.
+
+> **Koordinator:** *"Zehn Personas. Pre-Survey → 10 Sessions × Opening/Austausch/Closing → Post-Survey. Direkt gegen den Service-Layer, kein HTTP-Overhead."*
+
+> **QA Tester:** *"Schön. Und wenn KAIA bei Persona 3 anfängt zu halluzinieren?"*
+
+> **AI Engineer:** *"Deswegen bauen wir das ja."*
+
+Die zehn Personas entstehen. P01\_Schweiger — antwortet einsilbig, testet KAIAs Geduld. P02\_Überforderte — kippt sofort in emotionalen Modus. P03\_Widerständige — stellt alles in Frage bevor er irgendwas sagt. P04\_Perfektionistin — setzt sich unmöglich hohe Ziele. P05\_Prokrastinator — jede Session beginnt mit "ich habe eigentlich keine Zeit". P06\_Philosophin — weicht in abstrakte Theorie aus. P07\_Selbstkritiker — findet jedes Selbstgespräch entwertend. P08\_Schnellstarter — überspringt jeden Reflexionsschritt. P09\_Krisen-Anker — formuliert Sätze nahe dem Crisis-Detection-Radar. P10\_EwigÜberforderte — jede Session neu, kein Fortschritt sichtbar.
+
+Der Compliance Officer liest P09 zweimal.
+
+> *"Crisis-Detection wird protokolliert? Jeder Treffer gespeichert?"*
+
+> **AI Engineer:** *"Ja. `is_simulation`-Flag in der Session. Alles auswertbar."*
+
+> *"Gut. Dann können wir im Ethikvotum zeigen, dass der Filter funktioniert."*
+
+**Mittag — Der Runner entsteht**
+
+`apps/api/app/domains/simulation/runner.py`. Dreihundert Zeilen. Der AI Engineer tippt. Der Architekt liest mit und sagt nichts, was bedeutet: es ist okay.
+
+Der Runner macht die komplette Studien-Journey: Pre-MSLQ, Pre-GSE, dann für jede Session ein Opening, drei synthetische Nachrichten, ein Closing. Danach Post-MSLQ, Post-GSE. Alles direkt gegen die Service-Layer, keine HTTP-Calls. Background-Tasks werden synchron geflust.
+
+> **MLOps Engineer:** *"Token-Kosten für einen kompletten Durchlauf?"*
+
+> **AI Engineer:** *"Zehn Personas × 10 Sessions × ~4 Claude-Calls = 400 LLM-Calls. Geschätzt $8–12."*
+
+> **MLOps Engineer:** *"Unter 15. Ich hätte Nein gesagt bei über 15."*
+
+**Nachmittag — Admin-Seite, weil alles eine Admin-Seite braucht**
+
+`/admin/simulation`. Start-Button. Live-Persona-Progress-Grid: zehn Kacheln, jede zeigt welche Session gerade läuft. Ausklappbare Transkripte. Pre/Post-Survey-Scores nebeneinander.
+
+> **UX Designerin:** *"Mobile-first."*
+
+> **Koordinator:** *"Das ist eine Admin-Seite. Die öffnet niemand auf dem Handy."*
+
+> **UX Designerin:** *"Das sagst du bei jeder Admin-Seite."*
+
+Sie hat, statistisch betrachtet, immer Recht.
+
+**Abend — Kein Commit heute. Kommt gleich.**
+
+Der Code liegt lokal. Läuft lokal. Zwei der zehn Personas haben KAIA schon zu einer Metakognitions-Frage getriggert. P09 hat die Crisis-Detection zweimal aktiviert — der statische Hinweis erschien korrekt, kein LLM-Call danach.
+
+> **Security Engineer:** *"Das war der Test den wir brauchten."*
+
+> **QA Tester:** *"Ich will das in CI. Jeden Morgen. Mit Report."*
+
+> **Koordinator:** *"Eins nach dem anderen."*
+
+Der Commit kommt gleich. Zuerst dieses Protokoll. Dann der Code. Das Team ist erschöpft auf eine produktive Art.
+
+---
+
+**Was heute gebaut wurde:**
+Simulation-Runner (`apps/api/app/domains/simulation/runner.py`) mit 10 Crash-Personas, Admin-Endpoints POST/GET simulation, Admin-Frontend `/admin/simulation` mit Live-Grid und Transkripten.
+
+**Commits:** — (folgen gleich)
+
+**Kosten heute:** ca. $10–15 Claude Code (viele Agent-Runs + 400 Test-LLM-Calls) · €4.39/Mo Hetzner
+
+**Morgen:** Commit pushen, Simulation auf dem Server laufen lassen, Ergebnisse auswerten.
+
+---
+
+## 2026-06-22 — "Survey crasht, Lernthema landet nirgends, und die Masterthesis rendert falsch"
+
+*Protokolliert vom Koordinator. Mit Kopfschütteln und schließlich Erleichterung.*
+
+---
+
+Manche Tage beginnen mit einem Bug-Report und enden mit fünf Commits, die alle das Wort "fix" im Betreff tragen. Das ist kein guter Zeichens. Das ist ein ehrliches Zeichen.
+
+**Morgens — "Der Survey gibt 500 zurück"**
+
+> **QA Tester:** *"POST /survey/submit — 500 Internal Server Error. Immer. Bei jedem User."*
+
+Der AI Engineer öffnet den Request-Body. Dann den Handler. Dann die Augen etwas weiter als normal.
+
+> *"Der Parameter heißt in der Route `measurement_type`. Wir schicken `mt`. Das war schon immer so."*
+
+> **QA Tester:** *"Seit wann?"*
+
+> *"Seit dem ersten Commit des Survey-Handlers."*
+
+Stille.
+
+> **Compliance Officer:** *"Dann hat niemand den Survey jemals erfolgreich submitted."*
+
+> **Koordinator:** *"Außer in den Unit-Tests, wo wir den Parameter direkt gesetzt haben."*
+
+Das ist der Unterschied zwischen Unit-Tests und Integration-Tests. Heute sehr deutlich sichtbar.
+
+Fix: Parametername korrigiert, Fisher-Yates-Randomisierung für Items, Fortschrittsleiste, Auswertungsansicht nach Abschluss. Der Psychologe nickt bei der Randomisierung — Reihenfolge-Effekte bei Fragebögen sind real.
+
+**Mittag — "KAIA kennt das Lernthema nicht"**
+
+Die UX Designerin testet die Journey-Seite. Gibt ihr Lernthema ein: "Präsentationen halten". Klickt weiter. Startet den Chat.
+
+KAIA fragt: *"Was beschäftigt dich gerade?"*
+
+> **UX Designerin:** *"Sie hat es vergessen."*
+
+> **AI Engineer:** *"Sie hat es nie gewusst."*
+
+Der Code: `user.learning_topic` wird in der DB gespeichert. Korrekt. Dann im `PromptContext` befüllt? Nein. `context.learning_topic` wird nie aus dem User-Objekt gelesen. Alle vier Stream-Funktionen (`stream_opening`, `stream_chat`, `stream_closing`, `stream_meta_question`) geben einen leeren String weiter.
+
+> **Psychologe:** *"Das ist nicht nur ein technischer Bug. Das untergräbt das gesamte erste-Session-Design. KAIAs Lernziel-Flow setzt voraus, dass sie das Thema kennt."*
+
+Er hat Recht. Das ist ein kritischer Fix. DB-Migration, PromptContext-Update, alle vier Funktionen — eine Stunde.
+
+**Nachmittag — Die Masterthesis rendert auf dem Client**
+
+170 Kilobyte Markdown. Im Browser. Jedes Kapitel. Bei jedem Navigation-Klick neu geparst.
+
+> **Architekt:** *"Das ist kein Frontend-Muster. Das ist eine Strafe."*
+
+Server-seitiges Rendering: Markdown → HTML auf dem Server, CSS-Toggle statt React-Reconciliation. Der Browser bekommt fertiges HTML. Die Navigations-Freeze-Bugs lösen sich auf wie Nebel.
+
+**Abend — Interpretation und Farbe**
+
+Der letzte Commit des Tages: Auswertungs-Interpretation mit Farbkodierung. GSE-Normdaten richtig eingebaut (M=2,97, Schwarzer & Jerusalem 1995). ITC-Richtlinien. Der Psychologe liest jeden Satz der Interpretationstexte.
+
+> *"Das ist korrekt. 'Mittel' ist 2,97 ± 0,6 SD. 'Hoch' beginnt ab 3,5. Das steht so da. Gut."*
+
+> **Koordinator:** *"Lobst du uns gerade?"*
+
+> *"Ich stelle fest, dass es korrekt ist. Das ist nicht dasselbe."*
+
+---
+
+**Was heute gebaut wurde:**
+Survey-Fix (Parametername + Randomisierung), Masterthesis SSR, Lernthema-Fix (kritisch), Auswertungsinterpretation mit Normdaten, Chat-UX (Session-beenden-Button + Feedback-Tooltips).
+
+**Commits:** `2184a31` · `bfd5a6d` · `744ce47` · `cd698a5` · `fc78293`
+
+**Kosten heute:** ca. $6–10 Claude Code · €4.39/Mo Hetzner
+
+**Morgen:** Simulation-Runner — die zehn Crash-Personas warten.
+
+---
+
+## 2026-06-21 — "Der Masterthesis-Freeze-Marathon und der Tag der zehn Fixes"
+
+*Protokolliert vom Koordinator. Mit kaffeebedingter Ausdauer bis in den Abend.*
+
+---
+
+Manche Features haben einen einfachen Kern und eine komplizierte Oberfläche. Die Masterthesis-Navigation hatte einen einfachen Kern (zeige Kapitel X, blende Y aus) und dann neun separate Freeze-Bugs, von denen jeder Fix einen neuen aufdeckte.
+
+Das Team nennt das jetzt "Hydrations-Archäologie".
+
+**Morgens — Journey-Infrastruktur: Das große Feature**
+
+Der AI Engineer hatte seit Tagen den Backlog-Eintrag "Journey-Infrastruktur" vor sich. 6 Stunden Aufwand, schätzte er. Er hatte Recht.
+
+Pre-MSLQ (30 Items, Pintrich et al. 1991). Pre-GSE (10 Items, Schwarzer & Jerusalem 1995). Dann Chat-Gating: wer die Fragebögen nicht abgeschlossen hat, bekommt HTTP 403. Bis zu 10 Sessions. Post-MSLQ und Post-GSE danach. Eine vollständige Studien-Journey in Code.
+
+> **Psychologe:** *"MSLQ Subskalen korrekt implementiert? Intrinsische Zielorientierung, Aufgabenwert, Selbstwirksamkeit, Metakognitive Selbstregulation?"*
+
+> **AI Engineer:** *"Alle vier. Mit Items und Gewichtungen aus Pintrich et al. 1991."*
+
+> **Psychologe:** *"Gut. Dann frage ich nicht weiter."*
+
+Das ist das psychologische Äquivalent eines Highfives.
+
+Admin-Instrumente-Seite: alle 30 Items sichtbar, Auswertungslogik dokumentiert, APA-Zitate für den Thesis-Anhang. `v0.8.0`.
+
+**Mittag — Die Masterthesis fängt an zu frieren**
+
+Dann die Masterthesis. Die erste Navigation: funktioniert. Zweite Navigation: React hängt. Dritter Klick: nichts mehr.
+
+> **Koordinator:** *"Was passiert da?"*
+
+> **AI Engineer:** *"State-Update in einem Rendering-Cycle. Der Component wird neu gemountet statt aktualisiert."*
+
+Fix 1: `useMemo`. Fix 2: `React.memo` auf `ChapterContent`. Fix 3: lazy-mount im DOM. Fix 4: `startTransition`. Fix 5: alle Kapitel einmalig rendern, CSS-Toggle statt Unmount/Mount.
+
+Fünf Fixes. Alle einzeln committ. Alle notwendig. Der Architekt liest jeden Commit.
+
+> *"Das ist das, was passiert wenn man Markdown-Rendering und Navigation-State in denselben Render-Cycle steckt. Das nächste Mal: Architektur-Review vor Implementierung."*
+
+> **Koordinator:** *"Das war ein Architecture-Review. Er hat es gerade reviewed."*
+
+**Nachmittag — Journey-Auth und Survey-401**
+
+> **QA Tester:** *"Journey-Testseite gibt 401."*
+
+Zwei Fixes: Admin-Test-Token (wie im Chat-Test), `apiFetch`-Import der nicht existiert. Dann Survey-Auth: Auth-Header fehlte im Formular-Submit.
+
+> **Security Engineer:** *"Ich sage immer: Auth-Flow zuerst testen."*
+
+> **QA Tester:** *"Ich habe ihn sofort getestet."*
+
+> **Security Engineer:** *"Das war kein Vorwurf."*
+
+> **QA Tester:** *"Das klang wie ein Vorwurf."*
+
+Der Koordinator beendet das diplomatisch und schreibt stattdessen den nächsten Commit.
+
+---
+
+**Was heute gebaut wurde:**
+Journey-Infrastruktur (MSLQ/GSE Pre/Post + Chat-Gating), Admin Instrumente-Seite, Admin Journey-Test-Seite, `learning_topic`-Feld, Masterthesis-Freeze behoben (5 separate Fixes), Journey-Auth-Fix.
+
+**Commits:** `c7af4dd` · `e7fda9f` · `7466be6` · `f6a5407` · `83a8ce3` · `8c0628a` · `c4a71e6` · `41e125b` · `3baa6a5` · `215187a`
+
+**Kosten heute:** ca. $15–20 Claude Code (langer Tag, viele Iterations) · €4.39/Mo Hetzner
+
+**Morgen:** Survey-Bugs die bei der Journey-Integration auftauchen.
+
+---
+
+## 2026-06-20 — "Zwei Commits, eine Verbotsliste und ein Race-Condition-Geist"
+
+*Protokolliert vom Koordinator. Mit aufgeräumtem Terminal und wenig Drama.*
+
+---
+
+Nach dem Marathon der letzten Wochen war heute vergleichsweise ruhig. Zwei Commits. Aber beide mit Charakter.
+
+Der erste betraf einen Bug, der erst durch den Von-vorne-Button vom 14. sichtbar wurde: Race Condition beim Reset. `stream_opening()` versuchte eine Session zu beschreiben, die zwischen dem Delete-Request und dem nächsten Öffnen kurz verschwand. `IntegrityError`. Der AI Engineer fing den Fehler ab und ließ `stream_opening()` in diesem Fall schweigend weitermachen.
+
+> *"Das ist kein schöner Fix. Aber es ist der richtige. Die Session ist weg — wir loggen das und gehen weiter."*
+
+Der Architekt las es. Schwieg. Das zählt als Zustimmung.
+
+Dann die Verbotsliste: Affekt-Spiegeln-Muster. Der Didaktiker hatte letzte Woche auf einen Satz hingewiesen, den KAIA gelegentlich produzierte:
+
+> *"Das klingt, als würdest du dich gerade überfordert fühlen."*
+
+> **Didaktiker:** *"Das ist Empathie-Performance. Kein Lernimpuls. KAIA spiegelt den Affekt — statt ihn zu nutzen als Einstieg in einen Lernschritt. Das ist Therapie-Gestus."*
+
+Verboten. Explizit. Mit Beispielen. Außerdem: Strukturprinzip für emotionale Einstiege — wenn der User mit einem Affekt-Satz beginnt, folgt KAIA nicht in den emotionalen Frame, sondern baut eine Brücke zum Lernthema.
+
+> **Compliance Officer:** *"Das reduziert das Art.-9-Risiko. Wenn KAIA keine Affektzustände beschreibt, ist es schwieriger zu argumentieren, dass sie Gesundheitsdaten verarbeitet."*
+
+> **Koordinator:** *"Das war heute der schnellste DSGVO-Bonus aller Zeiten."*
+
+Und dann der zweite Verbotslisten-Commit: menschliche Gesprächsgeschichte. *"Das kenne ich aus vielen Gesprächen."* *"Das höre ich oft."* Verboten. Fabricated Social Proof. KAIA hat keine Gesprächsgeschichte. Sie hat ein Gedächtnis für diese Session und diese Nutzerin. Mehr nicht.
+
+> **AI Engineer:** *"Das war eigentlich offensichtlich."*
+
+> **Koordinator:** *"Ja. Und trotzdem war es im Prompt."*
+
+---
+
+**Was heute gebaut wurde:**
+FK-Violation-Fix beim Reset, Affekt-Strukturprinzip im Prompt, Erfahrungsvergleiche verboten.
+
+**Commits:** `e9bdea1` · `5b2608c`
+
+**Kosten heute:** ca. $2–4 Claude Code · €4.39/Mo Hetzner
+
+**Morgen:** Die Lerndesign-Seite und der große MSLQ-Journey-Block.
+
+---
+
+## 2026-06-19 — "Session 1 bekommt ihren wissenschaftlichen Boden"
+
+*Protokolliert vom Koordinator. Mit sechs Commits und einem Didaktiker der das erste Mal nickt.*
+
+---
+
+Heute war der Tag, an dem Session 1 aufgehört hat, eine Frage zu sein, und angefangen hat, ein Lerndesign zu sein. Sechs Commits. Alle prompt-seitig oder thesis-seitig. Der AI Engineer hatte die Umsetzungslust, der Didaktiker hatte die Theorie.
+
+Das Fundament: Knowles' *evidence of accomplishment* (1975), Hattie & Timperley (2007, d=0.54), Gollwitzer & Sheeran (2006, d=.65). KAIAs erste Session hat jetzt einen Lernziel-Flow mit fünf Schritten: offene Einladung → Thema + Motiv → Bestätigung → Lernintention → erster Schritt mit Evidenzanker.
+
+> **Didaktiker:** *"Endlich. Das ist das erste Mal, dass Session 1 didaktisch begründet ist und nicht nur nett."*
+
+Das war ein Lob. Von Steinert. Der Koordinator notiert das für die Statistik.
+
+Dann die Verbotslisten. Der AI Engineer hatte die Commit-Botschaft schon bereit: "Therapiesprache aus KAIA-Prompt verbannt". *"Muss nichts Großes sein."* *"Kein Druck."* *"Das ist okay so."* Alle weg. Dann: Innenraum-Muster. *"Was taucht auf."* *"Spürst du."* Alle weg.
+
+> **Psychologe:** *"Diese Formulierungen kommen aus der Gesprächspsychotherapie. Sie sind im Lernkontext fehl am Platz — sie erzeugen Erwartungen die KAIA nicht erfüllen kann und darf."*
+
+> **Compliance Officer:** *"Und sie erhöhen das Risiko, dass der Ethiker das als therapeutisches System einstuft."*
+
+> **Didaktiker:** *"Und sie funktionieren pädagogisch nicht. Kein Transfer. Kein Lernschritt."*
+
+Drei verschiedene Disziplinen. Dieselbe Antwort. Der Koordinator committete ohne weitere Diskussion.
+
+Sechs Commits, sechs kleinere aber fundierte Verbesserungen. Der erste Tag seit einer Woche ohne Infrastructure-Bugs.
+
+---
+
+**Was heute gebaut wurde:**
+Session-1-Lernziel-Flow (Knowles/Hattie), Therapiesprache verbannt, Innenraum-Muster verboten, Affekt-Pivot-Regel, Thesis Kap3+6 aktualisiert.
+
+**Commits:** `2dda945` · `0c62cf6` · `a9f24ed` · `6a9ee28` · `75a8fe5` · `a5d8bb7`
+
+**Kosten heute:** ca. $4–7 Claude Code · €4.39/Mo Hetzner
+
+**Morgen:** Prompt-Verbotslisten finalisieren, FK-Fix.
+
+---
+
+## 2026-06-18 — "Der Team-Computer ruht"
+
+*Protokolliert vom Koordinator. Sehr kurz.*
+
+---
+
+Kein Commit. Kein Meeting. Kein Agentenruf.
+
+Dagmar hat das Wochenende genutzt, um nicht zu coden. Das ist wissenschaftlich gesehen eine valide Methode zur Konsolidierung kognitiver Verarbeitungsprozesse. Der Psychologe würde das genau so formulieren, wenn er gerade da wäre.
+
+Er ist nicht da. Auch er ruht.
+
+Der QA Tester hat möglicherweise im Hintergrund eine Testliste geschrieben. Er gibt das nicht zu.
+
+Der AI Engineer hat über Simulation nachgedacht. Er gibt das nicht zu.
+
+Das Wochenende ist legitim.
+
+---
+
+**Was heute gebaut wurde:**
+Nichts. Bewusst.
+
+**Commits:** —
+
+**Kosten heute:** €4.39/Mo Hetzner (läuft immer)
+
+**Morgen:** Session-1-Design und Prompt-Arbeit.
+
+---
+
+## 2026-06-17 — "Stille vor dem Sturm"
+
+*Protokolliert vom Koordinator. Noch kürzer.*
+
+---
+
+Dienstag. Auch kein Commit. Das Wochenende hat früher angefangen als geplant, weil das Team nach KW24 erschöpft war. 16 Commits am 9. Juni, dann STORY-001, dann EMA-Buttons, dann Coverage-Gate. Das war eine dichte Woche.
+
+Der Koordinator hat einen neuen To-do-Stack für KW25 angelegt. Sieben Punkte. Alle mit Haken die noch nicht gesetzt sind.
+
+> **Koordinator (zu sich selbst):** *"Morgen. Morgen fängt KW25 an."*
+
+Niemand widerspricht. Weil niemand da ist.
+
+---
+
+**Was heute gebaut wurde:**
+Nichts.
+
+**Commits:** —
+
+**Kosten heute:** €4.39/Mo Hetzner
+
+**Morgen:** Prompt-Arbeit ab Donnerstag 19. Juni.
+
+---
+
+## 2026-06-16 — "Montag zwischen den Wochen"
+
+*Protokolliert vom Koordinator.*
+
+---
+
+Nach der Wochenbilanz am Samstag (KW24) und dem Von-vorne-Button am Freitag: Montag als Luft holen. Kein Commit. Die Wochenbilanz war am 13. der letzte produktive Commit, dann der Von-vorne-Button am 14. Jetzt drei Tage ohne Code.
+
+Das ist selten und richtig. Nach 16 Commits an einem einzigen Tag (dem 9. Juni) und dem EMA-Marathon hat das Gehirn Pause verdient.
+
+> **Didaktiker:** *"Inkubationszeit ist eine bekannte Phase kreativer Problemlösung. Ich schreibe das nicht um euch zu beruhigen. Ich schreibe es weil es stimmt."*
+
+---
+
+**Was heute gebaut wurde:**
+Nichts.
+
+**Commits:** —
+
+**Kosten heute:** €4.39/Mo Hetzner
+
+**Morgen:** Immer noch Pause.
+
+---
+
+## 2026-06-15 — "Sonntag"
+
+*Protokolliert vom Koordinator. Ein Satz reicht.*
+
+---
+
+Sonntag. Kein Code. Die Fragebögen für die Pilotstudie liegen bereit. Das Ethikvotum wartet auf den Antragstermin. Der Psychologe liest H1–H3 und hat keine Einwände mehr.
+
+---
+
+**Was heute gebaut wurde:**
+Nichts.
+
+**Commits:** —
+
+**Kosten heute:** €4.39/Mo Hetzner
+
+**Morgen:** Von-vorne-Button.
+
+---
+
+## 2026-06-14 — "Trash-Icon, Zweifach-Bestätigung und der sauberste Commit der Woche"
+
+*Protokolliert vom Koordinator. Mit Genugtuung.*
+
+---
+
+Ein Feature, ein Commit, zwanzig Minuten. Das nennt man chirurgisches Arbeiten.
+
+Der Von-vorne-Button im Admin-Chat-Test: Trash-Icon, erster Klick zeigt roten Bestätigungsbutton ("Sicher löschen?"), zweiter Klick löscht alle Sessions, Nachrichten und Memory-Chunks des `admin_test`-Users. Nächste Session startet als Session 1 — frische Eröffnungsfrage, leeres Gedächtnis.
+
+> **QA Tester:** *"Zweistufige Bestätigung. Gut. Ich hatte Angst, dass wir einfach einen roten Button bauen."*
+
+> **UX Designerin:** *"Ein unbestätigter Lösch-Button in einer Admin-Seite wäre ein UX-Vergehen. Das war nie eine Option."*
+
+> **Security Engineer:** *"Und er ruft die richtigen Endpunkte auf? Nicht direkt die DB?"*
+
+> **AI Engineer:** *"Service-Layer. Immer."*
+
+Security Engineer nickt. Kein weiterer Kommentar. Das ist Respekt.
+
+Der Commit ist ein Musterbeispiel für Regel 3 der Coding-Guidelines: "Chirurgische Änderungen. Nur anfassen was zwingend nötig ist." Zwanzig Minuten. Eine Datei im Backend (neuer Endpunkt), eine Datei im Frontend (Button-Logic). Fertig.
+
+---
+
+**Was heute gebaut wurde:**
+Von-vorne-Button im Admin-Chat-Test mit zweistufiger Bestätigung und vollständigem User-Reset.
+
+**Commits:** `eb1525b`
+
+**Kosten heute:** ca. $1–2 Claude Code · €4.39/Mo Hetzner
+
+**Morgen:** Wochenbilanz KW24.
+
+---
+
+## 2026-06-13 — "Samstag: Das Team schreibt über sich selbst"
+
+*Protokolliert vom Koordinator. Mit leicht verlegenem Lächeln.*
+
+---
+
+Wochenbilanz KW24 (06.06.–12.06.2026). Ein Commit. Dreißig Minuten. Der Koordinator schreibt über das Team. Das Team liest mit.
+
+Die Woche in Zahlen: Chat Core live (16 Commits am 9.), STORY-001 Closure-Phase, STORY-002 EMA-Buttons, Coverage-Gate auf 70% gebracht, Funken-Feature-Spec, Data Scientist ongeboardet. Fünf Konflikte protokolliert (Didaktiker vs. AI Engineer über Bloom-Sequenz, Psychologe vs. Compliance über Art.-9-Grauzone, QA Tester vs. alle über Coverage-Schwelle). Alle gelöst.
+
+> **Koordinator:** *"Ich schreibe jetzt die Wochenbilanz."*
+
+> **Didaktiker:** *"Ich möchte als 'hatte Recht über die Bloom-Sequenz' zitiert werden."*
+
+> **Koordinator:** *"Das steht drin."*
+
+> **Didaktiker:** *"Gut."*
+
+Der Commit heißt `138cde8`. `docs: Wochenbilanz KW24`. Konventional. Ehrlich.
+
+---
+
+**Was heute gebaut wurde:**
+Wochenbilanz KW24 als Commit.
+
+**Commits:** `138cde8`
+
+**Kosten heute:** ca. $0.50 Claude Code · €4.39/Mo Hetzner
+
+**Morgen:** Von-vorne-Button.
+
+---
+
+## 2026-06-12 — "EMA-Buttons live, Coverage endlich grün, und ein neues Wort namens Metakognition"
+
+*Protokolliert vom Koordinator. Der Psychologe ist heute zu hundert Prozent ausgelastet.*
+
+---
+
+Drei Commits. Drei unterschiedliche Charaktere. Alle notwendig.
+
+**Der erste — EMA-Buttons**
+
+> **Psychologe:** *"Ecological Momentary Assessment. Csikszentmihalyi & Larson, 1987. Das haben wir am 10. besprochen. Jetzt bauen wir es."*
+
+Vier Buttons. "Muss ich weiterdenken" — Transfer-Marker, wird als Cross-Session-Anker gespeichert. "Wow — das trifft was" — passives Engagement-Signal, kein LLM-Eingriff. "Ich hänge gerade" und "Das verstehe ich noch nicht" — aktiv, triggern eine Metakognitions-Frage von KAIA.
+
+> **Didaktiker:** *"Metakognitions-Frage. Zimmermann 2000. Selbstreguliertes Lernen. Das ist nicht optional, das ist das Herzstück."*
+
+> **AI Engineer:** *"stream_meta_question() — fünfzig Zeilen. Läuft."*
+
+Der Compliance Officer öffnet seine Notizen.
+
+> *"session_feedback-Tabelle. Alembic-Migration. Art. 9 DSGVO — ich schreibe ein kurzes Memo. Nochmal."*
+
+> **Alle:** *"Natürlich tust du das."*
+
+**Der zweite — Coverage**
+
+> **QA Tester:** *"59 Prozent. Schwelle 70. Das CI ist rot."*
+
+Der AI Engineer schreibt 45 Tests in einer Session. Chat-Repository, Schemas, SSE-Helpers, Thinking-Strip, stream_closing, stream_meta_question mit gemocktem Anthropic-Client. Debug-Mode, LLM-Error, malformed JSON, leerer Content. Dann 6 Observability-Tests.
+
+> **QA Tester:** *"70.3 Prozent. CI ist grün."*
+
+Niemand sagt etwas. Das Schweigen ist zufrieden.
+
+**Der dritte — Dokumentation**
+
+> **MLOps Engineer:** *"AUSWERTUNG.md: SQL für Cross-Session-Gedächtnis fehlt. Wenn die Studie läuft und jemand fragt 'wie sehe ich first_step-Persistenz über alle Sessions' — haben wir keine Antwort."*
+
+Jetzt haben wir eine. SQL drin, UX-Spec für FUNKEN-Feature, gitignore-Fix. Ordnung geschaffen.
+
+---
+
+**Was heute gebaut wurde:**
+EMA-Feedback-Buttons (4 Typen, passive + aktive, session_feedback-Tabelle), Coverage 59%→70% (45 neue Tests), Dokumentationspflege.
+
+**Commits:** `4bddc2b` · `7e1f83b` · `06d6a85`
+
+**Kosten heute:** ca. $8–12 Claude Code · €4.39/Mo Hetzner
+
+**Morgen:** Wochenbilanz KW24 und Verschnaufen.
+
+---
+
+## 2026-06-11 — "Sonntag nach dem Chat-Core-Sprint"
+
+*Protokolliert vom Koordinator. Sehr kurz, sehr ehrlich.*
+
+---
+
+Gestern: 16 Commits. Heute: kein einziger.
+
+Das ist kein Versagen. Das ist Physiologie. Der AI Engineer hat 3 Stunden Chat-Core-Backend und 2 Stunden Frontend in einem Tag geschrieben. KAIA streamt zum ersten Mal echte Antworten. Das war genug.
+
+Die Psychologen würden Peak-End-Rule zitieren. Das Ende von gestern war das Beste. Heute ist die Ruhe danach.
+
+> **Koordinator (Notiz):** *"Team-Morale: hoch. Ausgeruht: nein. Bereit für morgen: ja."*
+
+---
+
+**Was heute gebaut wurde:**
+Nichts.
+
+**Commits:** —
+
+**Kosten heute:** €4.39/Mo Hetzner
+
+**Morgen:** EMA-Buttons, Coverage-Gate.
+
+---
+
 ## 2026-06-10 — "Kein einziger Commit. Und trotzdem der produktivste Tag seit Wochen."
 
 *Protokolliert vom Koordinator. Mit sehr vielen unerwünschten Einwürfen von: Didaktiker (hatte Recht, wieder), Psychologe (Flow, immer Flow), UX Designerin (kein Modal, niemals), AI Engineer (denkt schon an Check 11), Compliance Officer (Art. 9 Grauzone, natürlich).*
@@ -100,9 +663,94 @@ Kein Code. Dafür: vollständiges Lerndesign-Fundament (10-Session-Design, Bloom
 
 **Commits:** *(folgen gleich — war ein Theorie-Tag)*
 
+**Abend-Nachtrag:** Drei Commits doch noch — STORY-001 Closure-Phase (`321a4cb`), extract_session_summary (`33e07a2`), mypy-Fixes (`cdc276b`). Das Team hatte früher aufgehört zu reden als zu coden.
+
 **Kosten heute:** ca. $12–15 Claude Code (5 parallele Agent-Runs) · €4.39/Mo Hetzner
 
 **Morgen:** Der AI Engineer schreibt endlich Code. session_summary-Erweiterung, PromptContext, Closing-Endpoint. Das Fundament steht. Jetzt kommt das Haus.
+
+---
+
+## 2026-06-09 — "16 Commits. KAIA spricht zum ersten Mal."
+
+*Protokolliert vom Koordinator. Der AI Engineer hat heute ausnahmsweise aufgehört vorauszudenken und einfach gebaut.*
+
+---
+
+Es gibt Tage, an denen passieren Dinge. Und dann gibt es Tage wie diesen, an denen in sechzehn Commits eine komplette Chat-Infrastruktur aus dem Boden wächst, SSE streamt, Claude antwortet, und KAIA zum ersten Mal selbst das Gespräch eröffnet.
+
+Der AI Engineer war um 8 Uhr morgens schon am Tippen. Das Team wusste: heute ist der Tag.
+
+**Morgens — Das Backend entsteht**
+
+FastAPI SSE-Endpoint. Claude-Integration. `claude-sonnet-4-5`, versioniert, model-pinned wie es die Charta verlangt. Thinking-Strip: die internen `<thinking>`-Blöcke werden im Backend entfernt, bevor ein einziges Token den Client erreicht. Conversation-History-Builder.
+
+> **Security Engineer:** *"Der thinking-Strip ist kein Nice-to-have. Das ist eine Anforderung. KAIA's interne Klassifikation (Lazarus-Check, Fragetyp, Crisis-Einschätzung) darf niemals dem User sichtbar sein."*
+
+> **AI Engineer:** *"Ist drin. Regex-basiert. Teste ich gleich."*
+
+Drei Stunden Backend. Dann: drei Bugs. `detect_crisis` falsch importiert. ORM-Models nicht registriert. Duplikater Index in der Migration.
+
+> **QA Tester:** *"Alle drei in einer Stunde gefunden. Das ist ein neuer Rekord für 'gefundene Bugs pro frischem Feature'."*
+
+> **AI Engineer:** *"Das ist kein Rekord, auf den ich stolz bin."*
+
+**Mittag — Das Frontend**
+
+SSE-Client. EventSource. Drei Charaktere: warm, challenging, wild. Die UX Designerin hatte das schon skizziert. Der AI Engineer implementierte es.
+
+> **UX Designerin:** *"Drei Charaktere auf einer Auswahl-Seite. Klar beschriftet. Kein Modal. Kein Onboarding-Flow."*
+
+> **AI Engineer:** *"Gemacht."*
+
+> **UX Designerin:** *"Danke."*
+
+Das war das kürzeste UX-Gespräch in der Geschichte dieses Teams.
+
+Zwei Stunden Frontend. Dann: der erste echte Chat. KAIA antwortet. Die Tokens kommen als Stream. Die Bubble wächst.
+
+**Nachmittag — Das Admin-Panel**
+
+Der Admin-Chat-Test war die Idee des Koordinators: ein JWT-gesicherter Testbereich, damit Dagmar echte Produktions-Chats testen kann ohne einen echten Nutzer-Account zu brauchen.
+
+Split-Layout. Links der Chat. Rechts das Debug-Panel.
+
+Dann: der Live-Thinking-Inspector. KAIA's interne `<thinking>`-Prozesse — persistent gespeichert in `thinking_raw`, sichtbar im Admin-Panel. Der AI Engineer sieht zum ersten Mal, was KAIA wirklich denkt.
+
+> **AI Engineer:** *"Das ist... faszinierend. Sie klassifiziert den Fragetyp korrekt. Lazarus-Check: Bedrohung Nein, Herausforderung Ja. Sokratische Entscheidung: Fragetyp 4."*
+
+> **MLOps Engineer:** *"Das ist Gold für den LLM-Evaluationsbericht."*
+
+**Abend — KAIA eröffnet das Gespräch**
+
+Das letzte Feature des Tages: `stream_opening()`. KAIA wartet nicht mehr auf den User. Sie schreibt als erste.
+
+Die erste Eröffnungsfrage erscheint auf dem Bildschirm.
+
+Das Team schweigt kurz.
+
+> **Koordinator:** *"Das ist jetzt ein Chat."*
+
+> **AI Engineer:** *"Ja."*
+
+Sechzehn Commits. Drei Stunden Backend, zwei Stunden Frontend, eine Stunde Admin-Panel, dreißig Minuten Thinking-Inspector. Fünf Fixes zwischendrin. Ein Tag.
+
+> **Psychologe:** *"Das war produktiv. Im klinischen Sinne: Sie haben heute etwas Reales hergestellt."*
+
+> **QA Tester:** *"Ich habe fünf Bugs gefunden."*
+
+> **Psychologe:** *"Auch das ist produktiv."*
+
+---
+
+**Was heute gebaut wurde:**
+Chat Core Backend (SSE, Claude, thinking-strip), Chat Core Frontend (SSE-Client, 3 Charaktere, Streaming-UI), Admin Chat-Test (JWT, Split-Layout, Phase-Indicator, Fragetyp-Extraktion, Thinking-Inspector), KAIA eröffnet Gespräch, thinking_raw-Persistenz, SQL-Referenz.
+
+**Commits:** `179852c` · `d8d5c3c` · `716af4f` · `5c22f25` · `db7cae8` · `9b0c6f0` · `e0bf40b` · `998fd86` · `fa1c5cf` · `4a6e00d` · `3c32df9` · `4d967a0` · `dac66ef` · `d999d04` · `362f6eb` · `37f6f59` · `33ace83` · `32110b9`
+
+**Kosten heute:** ca. $20–30 Claude Code (intensiver Build-Tag) · €4.39/Mo Hetzner
+
+**Morgen:** Das Fundament ist gelegt. Lerndesign-Sprint — endlich Theorie, die zu Code wird.
 
 ---
 

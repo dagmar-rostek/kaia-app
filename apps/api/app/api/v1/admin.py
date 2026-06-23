@@ -1,6 +1,7 @@
+import asyncio
 import secrets
 from datetime import UTC, datetime
-from typing import Annotated
+from typing import Annotated, Any
 
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy import delete
@@ -10,6 +11,7 @@ from app.core.deps import require_admin
 from app.core.security import create_access_token, hash_password
 from app.db.session import get_db
 from app.domains.chat.models import ChatSession, MemoryChunk
+from app.domains.simulation.runner import get_run_status, list_run_ids, run_simulation
 from app.domains.users.models import User, UserStatus
 from app.domains.users.repository import RefreshTokenRepository, UserRepository
 from app.domains.users.schemas import UserAdminRead, UserApprove, UserReject
@@ -94,6 +96,58 @@ async def create_test_token(
         await db.commit()
         await db.refresh(user)
     return {"access_token": create_access_token(user.id)}
+
+
+@router.post("/simulation/run")
+async def start_simulation() -> dict[str, str]:
+    """Start a crash-persona simulation run in the background.
+
+    Returns a run_id that can be polled with /simulation/status/{run_id}.
+    Only one run per invocation; re-invoke to start another.
+    """
+    run_id = f"crash_test_{datetime.now(UTC).strftime('%Y%m%d_%H%M%S')}"
+    asyncio.create_task(run_simulation(run_id))
+    return {"run_id": run_id, "status": "started"}
+
+
+@router.get("/simulation/runs")
+async def list_simulation_runs() -> list[str]:
+    """List all run IDs (in-memory, lost on server restart)."""
+    return list_run_ids()
+
+
+@router.get("/simulation/status/{run_id}")
+async def get_simulation_status(run_id: str) -> dict[str, Any]:
+    """Return current status and progress for a simulation run."""
+    run = get_run_status(run_id)
+    if run is None:
+        raise HTTPException(404, f"Run '{run_id}' nicht gefunden.")
+    summary = {
+        "run_id": run["run_id"],
+        "status": run["status"],
+        "started_at": run["started_at"],
+        "finished_at": run["finished_at"],
+        "error": run["error"],
+        "personas": [
+            {
+                "codename": p["codename"],
+                "status": p["status"],
+                "sessions_done": sum(1 for s in p["sessions"] if s["status"] == "done"),
+                "error": p["error"],
+            }
+            for p in run["personas"]
+        ],
+    }
+    return summary
+
+
+@router.get("/simulation/results/{run_id}")
+async def get_simulation_results(run_id: str) -> dict[str, Any]:
+    """Return full persona transcripts and survey scores for a run."""
+    run = get_run_status(run_id)
+    if run is None:
+        raise HTTPException(404, f"Run '{run_id}' nicht gefunden.")
+    return run
 
 
 @router.delete("/reset-test-user", status_code=204)

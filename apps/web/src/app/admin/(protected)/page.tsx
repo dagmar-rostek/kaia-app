@@ -1,7 +1,7 @@
 export const dynamic = "force-dynamic"
 
 import Link from "next/link"
-import { CheckSquare, ScrollText, Network, Activity, Database, ShieldCheck, Euro } from "lucide-react"
+import { CheckSquare, ScrollText, Network, Activity, Database, ShieldCheck, Euro, FlaskConical } from "lucide-react"
 
 async function fetchHealth() {
   try {
@@ -44,6 +44,12 @@ const QUICK_LINKS = [
     icon: Euro,
     label: "Kosten",
     desc: "Infrastruktur, Claude Code Entwicklung, LLM-Inferenz",
+  },
+  {
+    href: "/admin/simulation",
+    icon: FlaskConical,
+    label: "Crash-Simulation",
+    desc: "10 adversarielle Personas · echte LLM-Calls · Transkriptauswertung",
   },
 ]
 

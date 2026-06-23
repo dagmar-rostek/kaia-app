@@ -9,8 +9,27 @@
 
 ---
 
-**Stand heute:** Sunday, 21. June 2026  
-**88 Einträge insgesamt · 16 Release-Tage · ~59 h Gesamt-Aufwand**
+**Stand heute:** Monday, 23. June 2026  
+**131 Einträge insgesamt · 20 Release-Tage · ~79 h Gesamt-Aufwand**
+
+---
+
+## 2026-06-22 — Survey-Fix, Masterthesis SSR, Auswertungsinterpretation, Lernthema-Fix
+
+**22.06.2026 · `2184a31`** — Survey 500-Fehler behoben: Parametername-Mismatch (`mt` vs. `measurement_type`). MSLQ- und GSE-Items werden jetzt Fisher-Yates randomisiert. Fortschrittsleiste. Auswertungsansicht nach Abschluss des Fragebogens. · `30min`  
+*fix: Survey 500-Fehler + Randomisierung + Auswertungsanzeige*
+
+**22.06.2026 · `bfd5a6d`** — Masterthesis server-seitig gerendert: Markdown wird serverseitig zu HTML konvertiert — kein Client-JS für 170 KB Thesis-Text mehr nötig. CSS-Toggle ohne React-Reconciliation. Survey-Auth-Flow: Admin-Token in tokenStore. · `45min`  
+*fix: Masterthesis server-side rendering + Survey-Auth-Flow*
+
+**22.06.2026 · `744ce47`** — Fragebogen-Auswertung mit Interpretationstext und Farbkodierung (niedrig/mittel/hoch). GSE-Normdaten: M=2,97 dt. Stichprobe (Schwarzer & Jerusalem, 1995). ITC-Richtlinien / Psychometrik-Gate G11. Admin-Journey-Test kann Chat starten: `kaia_session`-Cookie-Middleware-Fix. · `1h 20min`  
+*feat: Auswertungs-Interpretation + Chat-Auth-Fix für Admin-Journey-Test*
+
+**22.06.2026 · `cd698a5`** — Kritischer Fix: `user.learning_topic` wurde gespeichert aber nie an den Prompt weitergegeben. PromptContext + alle vier Stream-Funktionen + DB-Migration aktualisiert. KAIA kennt das Lernthema jetzt von Anfang an. `is_simulation` + `simulation_run`-Felder für Crash-Test-Simulation ergänzt. · `1h`  
+*fix: Lernthema wird jetzt in jeden KAIA-Prompt übergeben*
+
+**22.06.2026 · `fc78293`** — "Session beenden" als sichtbarer Header-Button (DoorOpen-Icon, Border-Stil). Feedback-Buttons mit Kategoriezeile und Tooltips für bessere Erkennbarkeit. · `20min`  
+*feat: Chat-UX — Session-beenden-Button in Header + Feedback-Erklärungen*
 
 ---
 
@@ -21,6 +40,30 @@
 
 **21.06.2026 · `e7fda9f`** — Neue Admin-Seite /admin/lerndesign zeigt vollständige Session-Architektur (Sessions 1–10, Bloom-Progression, Sentiment-Signale, verbotene Muster, Feature-Status-Matrix, EMA-Referenz). EMA-Feedback-Buttons (Wow, Weiterdenken, Hänge fest, Unklar) im Chat-Test aktiv. SRL-Messung via MSLQ (Pintrich et al., 1991) — Instrumentenwahl auf Basis psychologischer Fachberatung. Relevant für Studien-Testing und Thesis-Messkonzept. · `2h 30min`  
 *feat: Admin Lerndesign-Seite + EMA Feedback-Buttons im Chat-Test*
+
+**21.06.2026 · `7466be6`** — Vollständige Studien-Journey implementiert: Pre-Befragung (MSLQ + GSE) vor erstem Chat, bis zu 10 Sitzungen, Post-Befragung danach — mit Chat-Gating (HTTP 403 wenn Fragebögen fehlen). Admin Instrumente-Seite: alle 30 MSLQ-Items, Auswertungslogik, APA-Zitate für Thesis-Anhang. Masterthesis-Navigation fix (useMemo). v0.8.0. · `6h`  
+*feat: Journey-Infrastruktur (MSLQ/GSE Pre/Post) + Admin Instrumente + Masterthesis-Fix*
+
+**21.06.2026 · `f6a5407`** — Admin "Journey testen"-Seite: kompletten Studienflow in einem Schritt, Reset-Button. `learning_topic` als DB-Feld (neue Migration). Masterthesis-Freeze: `React.memo` auf `ChapterContent`. · `1h 30min`  
+*feat: Journey-Test-Seite (Admin) + learning_topic + Masterthesis-Freeze-Fix v2*
+
+**21.06.2026 · `83a8ce3`** — JourneyTestClient nutzt Admin-Test-Token (wie chat-test): 401-Fehler auf Journey-Testseite behoben. · `15min`  
+*fix: JourneyTestClient nutzt admin test-token (wie chat-test)*
+
+**21.06.2026 · `8c0628a`** — JourneyTestClient korrekter api-Import: `apiFetch` existiert nicht — auf `api.get` + nativen `fetch` umgestellt. Build-Fehler behoben. · `10min`  
+*fix: JourneyTestClient — korrekter api-Import (apiFetch → api.get + fetch)*
+
+**21.06.2026 · `c4a71e6`** — Masterthesis lazy-mount in DOM. Survey-Formular sendet Auth-Header korrekt. · `40min`  
+*fix: Masterthesis lazy-mount + Survey-Auth*
+
+**21.06.2026 · `41e125b`** — Masterthesis-Navigation mit `startTransition` unterbrechbar. Journey-Auth-Fix (401). · `20min`  
+*fix: Masterthesis startTransition + Journey authFetch (401)*
+
+**21.06.2026 · `3baa6a5`** — Masterthesis-Navigation: alle sechs Kapitel werden einmalig gerendert, per CSS ein-/ausgeblendet. Kein Reconciliation-Overhead mehr. · `20min`  
+*fix: Masterthesis-Navigation — alle Kapitel im DOM*
+
+**21.06.2026 · `215187a`** — Ungenutzte Imports aus Lerndesign-Seite entfernt. Keine funktionale Änderung. · `2min`  
+*chore: unused imports aus Lerndesign-Seite entfernen*
 
 ---
 
@@ -83,6 +126,64 @@
 
 ---
 
+## 2026-06-09 — Chat Core live: SSE-Streaming, Claude-Integration, Admin-Test
+
+**09.06.2026 · `179852c`** — Chat Core Backend: FastAPI SSE-Endpoint `/chat/stream`, Claude-Integration mit `claude-sonnet-4-5`, thinking-Strip (interne `<thinking>`-Blöcke nie an den Client), Conversation-History-Builder, PromptContext-Befüllung. KAIA erzeugt echten Gesprächsoutput. · `3h`  
+*feat: Chat Core Backend — SSE-Streaming, Claude-Integration, thinking-strip*
+
+**09.06.2026 · `d8d5c3c`** — Chat Core Frontend: SSE-Client mit EventSource, drei Charakter-Auswahl (warm/challenging/wild), Streaming-UI mit Tipp-Indikator, Nachrichtenhistorie. Erste vollständige Konversation zwischen User und KAIA möglich. · `2h`  
+*feat: Chat Core Frontend — SSE-Client, 3-Charakter-Auswahl, Streaming-UI*
+
+**09.06.2026 · `716af4f`** — KAIA eröffnet das Gespräch: `stream_opening()` Service-Funktion erzeugt die erste Nachricht der Session, bevor der User tippt. `character`-Feld in Session-Model ergänzt. · `30min`  
+*feat: KAIA eröffnet das Gespräch + character-Feld im Model ergänzt*
+
+**09.06.2026 · `5c22f25`** — Admin Chat-Test: JWT-gesicherter Testbereich für echten Produktions-Chat. POST `/admin/test-token` generiert kurzlebige Admin-Tokens. Split-Layout: links Chat, rechts Debug-Panel. · `1h`  
+*feat: Admin Chat-Test — JWT-gesicherter Testbereich für echten Produktions-Chat*
+
+**09.06.2026 · `db7cae8`** — Admin Chat-Test Split-Layout: Phase-Indicator zeigt aktuelle Session-Phase (Opening/Active/Closing), Fragetyp-Extraktion aus KAIA-Responses (Typen 1–6 sichtbar). · `30min`  
+*feat: chat-test split layout fix + phase indicator + Fragetyp extraction*
+
+**09.06.2026 · `9b0c6f0`** — Admin Analysis Panel: Live-Thinking-Block-Inspector zeigt KAIAs interne `<thinking>`-Prozesse in einem aufklappbaren Debug-Panel neben dem Chat. Nur im Admin sichtbar. · `1h`  
+*feat: admin analysis panel — live thinking-block inspector*
+
+**09.06.2026 · `e0bf40b`** — Thinking-Raw-Persistenz: jede KAIA-Antwort speichert `thinking_raw` in der DB. Ermöglicht retrospektive Analyse von KAIAs internen Entscheidungsprozessen für den LLM-Evaluationsbericht. · `20min`  
+*feat: persist thinking_raw on every KAIA assistant message*
+
+**09.06.2026 · `998fd86`** — Web wartet auf API-Healthcheck: Next.js-Startskript prüft `/api/v1/health` bevor die App hochkommt — kein 502 mehr bei zeitversetztem Container-Start. `test-token`-Route mit try-catch abgesichert. · `15min`  
+*feat: Web wartet auf API-Healthcheck + test-token Route mit try-catch*
+
+**09.06.2026 · `fa1c5cf`** — MAX_TOKENS erhöht und Schutz gegen unclosed thinking-Blöcke eingebaut — verhindert abgeschnittene Antworten bei langen KAIA-Turns. · `10min`  
+*fix: increase MAX_TOKENS and guard against unclosed thinking blocks*
+
+**09.06.2026 · `4a6e00d`** — thinkCounter-State durch Ref ersetzt: vermeidet Side-Effects im SSE-Updater, der bei State-Änderungen neu evaluiert würde. · `10min`  
+*fix: replace thinkCounter state with ref to avoid side effects in updater*
+
+**09.06.2026 · `3c32df9`** — `str()` für MessageRole in Conversation-History-Builder: Enum-Vergleich schlug fehl bei SQLAlchemy-Deserialisierung. · `5min`  
+*fix: use str() for MessageRole in conversation history builder*
+
+**09.06.2026 · `4d967a0`** — Roadmap- und Survey-ORM-Models beim App-Start registriert: verhindert `NoInspectionAvailable`-Fehler bei Alembic-Autogenerate. · `5min`  
+*fix: register roadmap and survey ORM models at startup*
+
+**09.06.2026 · `dac66ef`** — `detect_crisis` im Chat-Service korrekt importiert: falsche Import-Pfad führte zu `ImportError` beim ersten Chat-Request. · `5min`  
+*fix: Crisis-Import — detect_crisis korrekt importiert in chat service*
+
+**09.06.2026 · `d999d04`** — Migration c8f2e4b6d1a3: doppelter Index auf `prompt_templates.name` entfernt — verhinderte Alembic-Migrations-Fehler nach vorherigem partiellem Rollout. · `5min`  
+*fix: Migration c8f2e4b6d1a3 — remove duplicate index on prompt_templates.name*
+
+**09.06.2026 · `362f6eb`** — Admin Chat-Test: TypeScript-Fehler bei `authHeader`-Konstruktion behoben — `undefined`-Check fehlte im Header-Builder. · `5min`  
+*fix: Admin Chat-Test — authHeader TypeScript-Fehler behoben*
+
+**09.06.2026 · `37f6f59`** — Admin `test-token`-Route: doppeltes `/api`-Präfix in `INTERNAL_API_URL`-Konstruktion entfernt — führte zu 404 bei Token-Anfragen. · `5min`  
+*fix: Admin test-token — INTERNAL_API_URL Pfad-Duplikat behoben*
+
+**09.06.2026 · `33ace83`** — Admin-Layout `h-screen` gesetzt: Chat-Test Split-Panel füllt jetzt den gesamten Viewport — kein Scrollen mehr im Outer-Container. · `10min`  
+*fix: admin layout h-screen so chat-test split panel fills viewport*
+
+**09.06.2026 · `32110b9`** — `docs/AUSWERTUNG.md`: vollständige SQL-Referenz für die Studienauswertung — alle relevanten Queries für Session-Analyse, Feedback-Auswertung und LLM-Usage-Tracking. · `30min`  
+*docs: Auswertung.md — vollständige SQL-Referenz für Studienauswertung*
+
+---
+
 ## 2026-06-10 — Lerndesign-Fundament vollständig (Theorie-Sprint)
 
 **Was sich verändert hat:** Das didaktische und psychologische Fundament von KAIA wurde heute in einem intensiven Theorie-Sprint vollständig überarbeitet und dokumentiert. Kein Code-Commit — aber die Grundlage für alles was als nächstes implementiert wird.
@@ -103,6 +204,15 @@
 
 **Aufwand:** ~6h Theorie-Sprint (Teamdiskussion 5 Agenten)
 **Kategorie:** Docs · Design
+
+**10.06.2026 · `321a4cb`** — Session-Abschluss mit Closure-Phase: KAIA generiert eine Abschluss-Bubble wenn der User "Session beenden" klickt. 4-State-Machine (idle → loading → awaiting_confirm → ended), `stream_closing()` Service-Funktion, POST `/sessions/{id}/end` Endpoint. Max. 2 Exchanges, kein Paternalismus. Gagné's 9. Unterrichtsereignis (Transfer-Vorbereitung), Peak-End-Rule (Kahneman). · `1h 30min`  
+*feat: STORY-001 Session-Abschluss mit Closure-Phase*
+
+**10.06.2026 · `33e07a2`** — Session-Summary als BackgroundTask: Nach jeder Session analysiert KAIA mit `claude-haiku-4-5` das Transkript und extrahiert `first_step`, `observation`, `insight_for_next_session`, `mood`, `topics`, `strengths_observed`, `friction_points` als JSON in `session_summary`. KAIA erinnert sich in Session 2+ an Session 1. · `45min`  
+*feat: extract_session_summary als BackgroundTask + insight_for_next_session*
+
+**10.06.2026 · `cdc276b`** — mypy strict-mode Fehler in `main.py`, `prompts/repository` und `chat/service` behoben. · `10min`  
+*fix: mypy-Fehler in main.py, prompts/repository, chat/service*
 
 ---
 
