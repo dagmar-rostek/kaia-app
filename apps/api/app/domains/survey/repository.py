@@ -1,3 +1,5 @@
+from typing import Any
+
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -19,7 +21,11 @@ class SurveyRepository:
         return r.scalar_one_or_none()
 
     async def create_mslq_result(
-        self, user_id: int, measurement_type: MeasurementType, items: dict, subscale_scores: dict
+        self,
+        user_id: int,
+        measurement_type: MeasurementType,
+        items: dict[str, Any],
+        subscale_scores: dict[str, Any],
     ) -> MslqResult:
         obj = MslqResult(
             user_id=user_id,

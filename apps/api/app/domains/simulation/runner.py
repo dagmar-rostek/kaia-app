@@ -1497,8 +1497,8 @@ async def _run_persona(run_id: str, persona: Persona, result: dict[str, Any]) ->
 
         try:
             async with AsyncSessionLocal() as db:
-                repo = ChatRepository(db)
-                session: ChatSession = await repo.create_session(
+                chat_repo = ChatRepository(db)
+                session: ChatSession = await chat_repo.create_session(
                     user_id=result["user_id"],
                     character=persona.character,
                 )
