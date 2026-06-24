@@ -95,7 +95,7 @@ export default function MitmachenPage() {
         <div className="flex justify-center gap-2 flex-wrap">
           <Badge>Masterthesis · SRH Fernhochschule</Badge>
           <Badge>Start: 16. Juli 2026</Badge>
-          <Badge>~32 Teilnehmende gesucht</Badge>
+          <Badge>~20 Teilnehmende gesucht</Badge>
         </div>
 
         <h1 className="text-4xl font-bold tracking-tight leading-tight">
@@ -184,8 +184,8 @@ export default function MitmachenPage() {
         <div className="space-y-2">
           <h2 className="text-2xl font-bold tracking-tight">Wie läuft die Teilnahme ab?</h2>
           <p className="text-muted-foreground text-sm">
-            Fünf Schritte — insgesamt ca. <strong className="text-foreground">2–4 Stunden über 4 Wochen</strong>.
-            Du entscheidest wann, wie oft und wie lange.
+            Fünf Schritte — insgesamt ca. <strong className="text-foreground">2–3 Stunden über 4 Wochen</strong>.
+            Du entscheidest wann und wie lange — mindestens 10 Sessions à mind. 5 Minuten.
           </p>
         </div>
 
@@ -249,13 +249,13 @@ export default function MitmachenPage() {
           <StepCard
             number="3"
             icon={MessageSquare}
-            title="Mindestens 3 Sessions mit KAIA"
-            duration="je 5–15 Minuten · über 4 Wochen verteilt"
+            title="Mindestens 10 Sessions mit KAIA"
+            duration="je mind. 5 Minuten · über 4 Wochen verteilt"
           >
             <p>
               Du chatterst mit KAIA über dein Lernthema — kurz, fokussiert, wann du willst.
-              Mindestens drei Sessions über vier Wochen sind für die Auswertung nötig,
-              aber du kannst jederzeit mehr machen.
+              Mindestens zehn Sessions über vier Wochen sind für die Auswertung nötig —
+              das sind im Schnitt zweieinhalb pro Woche, also alle 2–3 Tage eine.
             </p>
 
             <div className="rounded-lg bg-muted/40 border border-border p-3 text-xs space-y-2">
@@ -377,7 +377,7 @@ export default function MitmachenPage() {
             { ok: true,  text: "Deutschsprachig" },
             { ok: true,  text: "Gerade am Lernen — Studium, Job, Hobby" },
             { ok: true,  text: "Zugang zu Computer oder Tablet" },
-            { ok: true,  text: "~2–4 Stunden Kapazität über 4 Wochen" },
+            { ok: true,  text: "~2–3 Stunden Kapazität über 4 Wochen" },
             { ok: false, text: "Aktuell in psychiatrischer Behandlung wegen einer Krise" },
           ].map(({ ok, text }) => (
             <div key={text} className={`flex items-center gap-2.5 rounded-lg border p-3 ${ok ? "border-border" : "border-border/40 opacity-60"}`}>
@@ -406,7 +406,7 @@ export default function MitmachenPage() {
             {[
               { phase: "Vor Start",     dur: "~10 Min",    desc: "Registrierung, Einwilligung, KI-Disclosure, Kurzfragebogen (10 Fragen)" },
               { phase: "Tag 1",         dur: "~10 Min",    desc: "Persönliche Lernroadmap anlegen — Thema, Ziel, persönliche Motivation" },
-              { phase: "Woche 1–4",     dur: "3× 5–15 Min", desc: "Mindestens 3 Sessions mit KAIA — flexibel, wann du willst" },
+              { phase: "Woche 1–4",     dur: "10× mind. 5 Min", desc: "Mindestens 10 Sessions mit KAIA — flexibel, wann du willst" },
               { phase: "Nach Woche 4",  dur: "~5 Min",     desc: "Abschluss-Fragebogen (dieselben 10 Fragen + Roadmap-Update)" },
               { phase: "Optional",      dur: "~45 Min",    desc: "Abschlussinterview mit der Forscherin (Video oder persönlich, aufgezeichnet)" },
             ].map(({ phase, dur, desc }) => (
