@@ -6,6 +6,10 @@ omit =
     app/db/session.py
     # App entrypoint
     app/main.py
+    # Integration-only: makes real LLM API calls, not unit-testable
+    app/domains/simulation/runner.py
+    # Integration-only: requires real SMTP connection
+    app/observability/email.py
 
 [report]
 exclude_lines =
