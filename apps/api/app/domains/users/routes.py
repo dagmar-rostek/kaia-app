@@ -56,6 +56,7 @@ async def update_topic(
     db: Annotated[AsyncSession, Depends(get_db)],
 ) -> UserRead:
     current_user.learning_topic = data.learning_topic
+    current_user.onboarding_complete = True
     await db.commit()
     await db.refresh(current_user)
     return UserRead.model_validate(current_user)
