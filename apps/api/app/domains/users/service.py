@@ -51,6 +51,7 @@ class AuthService:
             password_hash=hash_password(data.password),
             status=UserStatus.PENDING,
             consent_data=True,
+            consent_research_data=True,
             consent_analytics=data.consent_analytics,
             consent_version=data.consent_version,
             consent_at=now,

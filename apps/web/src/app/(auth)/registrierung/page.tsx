@@ -1,51 +1,392 @@
-import Link from "next/link"
-import { Lock } from "lucide-react"
-import { StudyCountdown } from "@/components/StudyCountdown"
+"use client"
 
-export const metadata = {
-  title: "Registrierung — KAIA",
-  description: "Die Registrierung für die KAIA-Pilotstudie öffnet am 16. Juli 2026.",
+import { useState, useRef } from "react"
+import Link from "next/link"
+import { Eye, EyeOff, Check, Loader2 } from "lucide-react"
+
+const API = process.env.NEXT_PUBLIC_API_URL ?? "/api"
+
+type Field = "email" | "username" | "password" | "confirm"
+type Errors = Partial<Record<Field, string>>
+
+function validateFields(
+  email: string,
+  username: string,
+  password: string,
+  confirm: string,
+): Errors {
+  const errs: Errors = {}
+  if (!email || !email.includes("@") || !email.includes("."))
+    errs.email = "Keine gültige E-Mail-Adresse."
+  if (username.length < 3)
+    errs.username = "Mindestens 3 Zeichen."
+  else if (!/^[a-zA-Z0-9_-]+$/.test(username))
+    errs.username = "Nur Buchstaben, Zahlen, _ und - erlaubt."
+  if (password.length < 8)
+    errs.password = "Mindestens 8 Zeichen."
+  if (password && confirm && confirm !== password)
+    errs.confirm = "Die Passwörter stimmen nicht überein."
+  return errs
 }
 
 export default function RegistrierungPage() {
-  return (
-    <div className="w-full max-w-md space-y-8 text-center">
+  const [email, setEmail] = useState("")
+  const [username, setUsername] = useState("")
+  const [password, setPassword] = useState("")
+  const [confirm, setConfirm] = useState("")
+  const [showPw, setShowPw] = useState(false)
+  const [showConfirm, setShowConfirm] = useState(false)
+  const [consentData, setConsentData] = useState(false)
+  const [consentResearch, setConsentResearch] = useState(false)
+  const [consentAnalytics, setConsentAnalytics] = useState(false)
+  const [touched, setTouched] = useState<Partial<Record<Field, boolean>>>({})
+  const [generalError, setGeneralError] = useState<string | null>(null)
+  const [loading, setLoading] = useState(false)
+  const [done, setDone] = useState(false)
 
-      {/* KAIA zurück zur Startseite */}
-      <Link href="/" className="inline-block text-sm font-semibold tracking-tight hover:opacity-70 transition-opacity">
-        KAIA
-      </Link>
+  const consentDataRef = useRef<HTMLInputElement>(null)
+  const consentResearchRef = useRef<HTMLInputElement>(null)
 
-      <div className="space-y-3">
+  const fieldErrors = validateFields(email, username, password, confirm)
+
+  function touch(field: Field) {
+    setTouched(t => ({ ...t, [field]: true }))
+  }
+
+  function err(field: Field) {
+    return touched[field] ? fieldErrors[field] : undefined
+  }
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault()
+    setTouched({ email: true, username: true, password: true, confirm: true })
+    if (Object.keys(fieldErrors).length > 0) return
+    if (!consentData) { consentDataRef.current?.focus(); return }
+    if (!consentResearch) { consentResearchRef.current?.focus(); return }
+
+    setLoading(true)
+    setGeneralError(null)
+    try {
+      const res = await fetch(`${API}/v1/auth/register`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email,
+          username,
+          password,
+          consent_data: true,
+          consent_research_data: true,
+          consent_analytics: consentAnalytics,
+        }),
+      })
+      if (res.ok) { setDone(true); return }
+      const data = await res.json().catch(() => ({})) as { detail?: string }
+      if (res.status === 409 && data.detail?.includes("E-Mail")) {
+        setGeneralError("Diese E-Mail-Adresse ist bereits registriert.")
+      } else if (res.status === 409) {
+        setGeneralError("Dieser Benutzername ist bereits vergeben.")
+      } else {
+        setGeneralError(data.detail ?? `Fehler ${res.status}. Bitte versuche es erneut.`)
+      }
+    } catch {
+      setGeneralError("Verbindungsfehler. Bitte prüfe deine Internetverbindung.")
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  if (done) {
+    return (
+      <div className="w-full max-w-md space-y-8 text-center">
         <div className="flex justify-center">
-          <div className="p-3 rounded-full border border-border bg-muted/40">
-            <Lock className="h-6 w-6 text-muted-foreground" />
+          <div className="p-4 rounded-full bg-muted">
+            <Check className="h-8 w-8" />
           </div>
         </div>
-        <h1 className="text-2xl font-bold tracking-tight">Registrierung noch nicht geöffnet</h1>
-        <p className="text-sm text-muted-foreground max-w-sm mx-auto">
-          Die KAIA-Pilotstudie startet am <strong className="text-foreground">16. Juli 2026</strong>.
-          Ab dann kannst du dich hier registrieren und mitmachen.
+        <div className="space-y-3">
+          <h1 className="text-2xl font-bold tracking-tight">Anmeldung eingegangen</h1>
+          <p className="text-sm text-muted-foreground leading-relaxed max-w-sm mx-auto">
+            Danke, <span className="text-foreground font-medium">{username}</span>. Dagmar prüft
+            deine Anmeldung und schreibt dir eine E-Mail, sobald du loslegen kannst.
+            Das dauert meistens nicht lange.
+          </p>
+        </div>
+
+        <div className="rounded-xl border border-border bg-muted/20 p-5 text-left space-y-3">
+          <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+            Was jetzt passiert
+          </p>
+          <div className="space-y-2">
+            {[
+              { num: "1.", text: "Dagmar bekommt eine Benachrichtigung über deine Anmeldung." },
+              { num: "2.", text: `Du bekommst eine E-Mail an ${email}.` },
+              { num: "3.", text: "Du meldest dich an und startest mit KAIA." },
+            ].map(({ num, text }) => (
+              <div key={num} className="flex items-start gap-3">
+                <span className="text-xs font-mono text-muted-foreground/60 shrink-0 pt-0.5 w-4">
+                  {num}
+                </span>
+                <span className="text-xs text-muted-foreground">{text}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <p className="text-xs text-muted-foreground">
+          Fragen?{" "}
+          <a
+            href="mailto:Dagmar.Rostek@stud.mobile-university.de"
+            className="underline hover:text-foreground transition-colors"
+          >
+            Dagmar.Rostek@stud.mobile-university.de
+          </a>
+        </p>
+      </div>
+    )
+  }
+
+  return (
+    <div className="w-full max-w-md space-y-8">
+      <div className="space-y-1">
+        <h1 className="text-2xl font-bold tracking-tight">Registrierung</h1>
+        <p className="text-sm text-muted-foreground">
+          Schön, dass du dabei bist. Gleich kannst du loslegen.
         </p>
       </div>
 
-      <div className="rounded-xl border border-border bg-background p-6">
-        <StudyCountdown label="Registrierung öffnet in" />
-      </div>
+      <form noValidate onSubmit={handleSubmit} className="space-y-7">
 
-      <div className="rounded-lg border border-border bg-muted/20 p-4 text-sm text-muted-foreground leading-relaxed">
-        Neugierig was dich erwartet?{" "}
-        <Link href="/mitmachen" className="text-foreground underline hover:no-underline">
-          Lies wie die Teilnahme abläuft →
-        </Link>
-      </div>
+        {/* E-Mail */}
+        <div className="space-y-1.5">
+          <label htmlFor="email" className="text-sm font-medium">
+            Deine E-Mail-Adresse
+          </label>
+          <p className="text-xs text-muted-foreground">
+            An diese Adresse bekommst du eine Nachricht, sobald dein Account freigeschaltet ist.
+          </p>
+          <input
+            id="email"
+            type="email"
+            autoComplete="email"
+            value={email}
+            onChange={e => setEmail(e.target.value)}
+            onBlur={() => touch("email")}
+            aria-describedby={err("email") ? "email-err" : undefined}
+            aria-invalid={!!err("email")}
+            placeholder="du@beispiel.de"
+            disabled={loading}
+            className="w-full rounded-lg border border-border bg-background px-4 py-3 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring disabled:opacity-60"
+          />
+          {err("email") && (
+            <p id="email-err" role="alert" className="text-xs text-red-600 dark:text-red-400">
+              {err("email")}
+            </p>
+          )}
+        </div>
 
-      <p className="text-xs text-muted-foreground">
-        Fragen?{" "}
-        <a href="mailto:Dagmar.Rostek@stud.mobile-university.de" className="underline hover:text-foreground transition-colors">
-          Dagmar.Rostek@stud.mobile-university.de
-        </a>
-      </p>
+        {/* Benutzername */}
+        <div className="space-y-1.5">
+          <label htmlFor="username" className="text-sm font-medium">
+            Wie soll KAIA dich ansprechen?
+          </label>
+          <p className="text-xs text-muted-foreground">
+            Nur für dich sichtbar — KAIA verwendet diesen Namen in jedem Gespräch.
+            Buchstaben, Zahlen, _ und - sind erlaubt.
+          </p>
+          <input
+            id="username"
+            type="text"
+            autoComplete="username"
+            value={username}
+            onChange={e => setUsername(e.target.value)}
+            onBlur={() => touch("username")}
+            aria-describedby={err("username") ? "username-err" : undefined}
+            aria-invalid={!!err("username")}
+            placeholder="z. B. Dagmar oder dein Spitzname"
+            disabled={loading}
+            className="w-full rounded-lg border border-border bg-background px-4 py-3 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring disabled:opacity-60"
+          />
+          {err("username") && (
+            <p id="username-err" role="alert" className="text-xs text-red-600 dark:text-red-400">
+              {err("username")}
+            </p>
+          )}
+        </div>
+
+        {/* Passwort */}
+        <div className="space-y-1.5">
+          <label htmlFor="password" className="text-sm font-medium">
+            Dein Passwort
+          </label>
+          <p className="text-xs text-muted-foreground">
+            Mindestens 8 Zeichen. Du musst es dir nicht merken — ein Passwort-Manager reicht.
+          </p>
+          <div className="relative">
+            <input
+              id="password"
+              type={showPw ? "text" : "password"}
+              autoComplete="new-password"
+              value={password}
+              onChange={e => setPassword(e.target.value)}
+              onBlur={() => touch("password")}
+              aria-describedby={err("password") ? "password-err" : undefined}
+              aria-invalid={!!err("password")}
+              disabled={loading}
+              className="w-full rounded-lg border border-border bg-background px-4 py-3 pr-12 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring disabled:opacity-60"
+            />
+            <button
+              type="button"
+              onClick={() => setShowPw(v => !v)}
+              aria-label={showPw ? "Passwort verbergen" : "Passwort anzeigen"}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+            >
+              {showPw ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+            </button>
+          </div>
+          {err("password") && (
+            <p id="password-err" role="alert" className="text-xs text-red-600 dark:text-red-400">
+              {err("password")}
+            </p>
+          )}
+        </div>
+
+        {/* Passwort bestätigen */}
+        <div className="space-y-1.5">
+          <label htmlFor="confirm" className="text-sm font-medium">
+            Passwort bestätigen
+          </label>
+          <div className="relative">
+            <input
+              id="confirm"
+              type={showConfirm ? "text" : "password"}
+              autoComplete="new-password"
+              value={confirm}
+              onChange={e => setConfirm(e.target.value)}
+              onBlur={() => touch("confirm")}
+              aria-describedby={
+                err("confirm") ? "confirm-err" :
+                touched.confirm && confirm && !fieldErrors.confirm ? "confirm-ok" :
+                undefined
+              }
+              aria-invalid={!!err("confirm")}
+              disabled={loading}
+              className="w-full rounded-lg border border-border bg-background px-4 py-3 pr-12 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring disabled:opacity-60"
+            />
+            <button
+              type="button"
+              onClick={() => setShowConfirm(v => !v)}
+              aria-label={showConfirm ? "Passwort verbergen" : "Passwort anzeigen"}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+            >
+              {showConfirm ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+            </button>
+          </div>
+          {err("confirm") && (
+            <p id="confirm-err" role="alert" className="text-xs text-red-600 dark:text-red-400">
+              {err("confirm")}
+            </p>
+          )}
+          {touched.confirm && confirm && !fieldErrors.confirm && (
+            <p id="confirm-ok" className="text-xs text-green-600 dark:text-green-400">
+              Stimmt überein.
+            </p>
+          )}
+        </div>
+
+        {/* Einwilligungen */}
+        <fieldset className="space-y-4 rounded-xl border border-border p-5">
+          <legend className="px-1 text-sm font-medium">Einwilligungen</legend>
+
+          <label className="flex items-start gap-3 cursor-pointer group">
+            <input
+              ref={consentDataRef}
+              type="checkbox"
+              checked={consentData}
+              onChange={e => setConsentData(e.target.checked)}
+              className="mt-0.5 h-4 w-4 shrink-0 accent-foreground"
+            />
+            <span className="text-xs text-muted-foreground leading-relaxed group-hover:text-foreground/80 transition-colors">
+              Ich habe die{" "}
+              <Link
+                href="/datenschutz"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline text-foreground hover:no-underline"
+              >
+                Datenschutzerklärung ↗
+              </Link>{" "}
+              gelesen und willige in die Verarbeitung meiner personenbezogenen Daten
+              (E-Mail-Adresse, Benutzername, Chat-Gespräche) für die Durchführung der
+              KAIA-Pilotstudie ein. Diese Einwilligung kann jederzeit widerrufen werden.{" "}
+              <span className="font-medium text-foreground">(Pflicht)</span>
+            </span>
+          </label>
+
+          <label className="flex items-start gap-3 cursor-pointer group">
+            <input
+              ref={consentResearchRef}
+              type="checkbox"
+              checked={consentResearch}
+              onChange={e => setConsentResearch(e.target.checked)}
+              className="mt-0.5 h-4 w-4 shrink-0 accent-foreground"
+            />
+            <span className="text-xs text-muted-foreground leading-relaxed group-hover:text-foreground/80 transition-colors">
+              Ich willige ausdrücklich in die Verarbeitung meiner psychologischen
+              Selbsteinschätzungsdaten (Antworten auf den Selbstwirksamkeits-Fragebogen) zu
+              wissenschaftlichen Forschungszwecken ein (Art.&nbsp;9 Abs.&nbsp;2
+              lit.&nbsp;a DSGVO). Diese Daten fließen anonymisiert in die Masterthesis ein.{" "}
+              <span className="font-medium text-foreground">(Pflicht)</span>
+            </span>
+          </label>
+
+          <label className="flex items-start gap-3 cursor-pointer group">
+            <input
+              type="checkbox"
+              checked={consentAnalytics}
+              onChange={e => setConsentAnalytics(e.target.checked)}
+              className="mt-0.5 h-4 w-4 shrink-0 accent-foreground"
+            />
+            <span className="text-xs text-muted-foreground leading-relaxed group-hover:text-foreground/80 transition-colors">
+              Ich stimme zu, dass Login-Zeitpunkte, Session-Dauer und Nutzungsverhalten
+              für die Studienauswertung erfasst werden.{" "}
+              <span className="text-muted-foreground/60">(optional)</span>
+            </span>
+          </label>
+        </fieldset>
+
+        <p className="text-xs text-muted-foreground leading-relaxed">
+          Deine Anmeldung wird von Dagmar manuell geprüft. Du bekommst eine E-Mail,
+          sobald dein Account freigeschaltet ist — dann kannst du direkt loslegen.
+        </p>
+
+        {generalError && (
+          <p role="alert" className="text-sm text-red-600 dark:text-red-400">
+            {generalError}
+          </p>
+        )}
+
+        <button
+          type="submit"
+          disabled={!consentData || !consentResearch || loading}
+          className="w-full flex items-center justify-center gap-2 rounded-lg bg-foreground text-background px-4 py-3 text-sm font-medium hover:opacity-90 transition-opacity disabled:opacity-40 disabled:cursor-not-allowed"
+        >
+          {loading ? (
+            <>
+              <Loader2 className="h-4 w-4 animate-spin motion-reduce:animate-none" />
+              Wird gesendet…
+            </>
+          ) : (
+            "Mitmachen"
+          )}
+        </button>
+
+        <p className="text-center text-xs text-muted-foreground">
+          Bereits registriert?{" "}
+          <Link href="/login" className="underline text-foreground hover:no-underline">
+            Anmelden
+          </Link>
+        </p>
+      </form>
     </div>
   )
 }

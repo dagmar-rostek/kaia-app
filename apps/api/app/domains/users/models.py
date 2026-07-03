@@ -25,6 +25,7 @@ class User(Base):
 
     # Consent (DSGVO — Zeitpunkt ist Pflicht, nicht nur Boolean)
     consent_data: Mapped[bool] = mapped_column(Boolean, default=False)
+    consent_research_data: Mapped[bool] = mapped_column(Boolean, default=False)
     consent_analytics: Mapped[bool] = mapped_column(Boolean, default=False)
     consent_version: Mapped[str] = mapped_column(String(20), default="1.0")
     consent_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)

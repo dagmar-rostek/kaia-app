@@ -17,6 +17,7 @@ class RegisterRequest(BaseModel):
     password: _Password
     # Pflicht-Checkboxen (Literal[True] — False wird abgelehnt)
     consent_data: Literal[True]
+    consent_research_data: Literal[True]  # Art. 9 DSGVO — psychologische Selbsteinschätzungsdaten
     consent_analytics: bool = False
     consent_version: str = Field(default="1.0", max_length=20)
 
@@ -79,6 +80,7 @@ class UserExport(BaseModel):
     username: str
     status: UserStatus
     consent_data: bool
+    consent_research_data: bool
     consent_analytics: bool
     consent_version: str
     consent_at: datetime | None
