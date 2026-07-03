@@ -26,6 +26,7 @@ export default function VorregistrierungPage() {
   const [email,    setEmail]    = useState("")
   const [reason,   setReason]   = useState("")
   const [remaining, setRemaining] = useState<number | null>(null)
+  const [total, setTotal] = useState<number>(25)
   const [loading,  setLoading]  = useState(false)
   const [error,    setError]    = useState<string | null>(null)
   const [hint,     setHint]     = useState<string | null>(null)
@@ -33,7 +34,7 @@ export default function VorregistrierungPage() {
   useEffect(() => {
     fetch(`${API}/api/v1/preregister/stats`)
       .then(r => r.json())
-      .then(d => setRemaining(d.remaining))
+      .then(d => { setRemaining(d.remaining); if (d.max) setTotal(d.max) })
       .catch(() => {})
   }, [])
 
@@ -61,7 +62,7 @@ export default function VorregistrierungPage() {
         const data = await res.json()
         if (res.status === 409) {
           if (data.detail?.includes("Plätze")) {
-            setError("Alle 50 Plätze sind leider belegt. Schreib mir direkt: dagmar@ecoaching-rostek.de")
+            setError(`Alle ${total} Plätze sind leider belegt. Schreib mir direkt: dagmar@ecoaching-rostek.de`)
           } else {
             setError("Mit dieser E-Mail bist du bereits registriert.")
           }
@@ -88,7 +89,7 @@ export default function VorregistrierungPage() {
                 ? "border-red-500/30 bg-red-500/10 text-red-600 dark:text-red-400"
                 : "border-emerald-500/30 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
             }`}>
-              {remaining === 0 ? "Ausgebucht" : `Noch ${remaining} von 50 Plätzen frei`}
+              {remaining === 0 ? "Ausgebucht" : `Noch ${remaining} von ${total} Plätzen frei`}
             </span>
           )}
         </div>
