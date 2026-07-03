@@ -1,7 +1,9 @@
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Query, status
 from fastapi.responses import StreamingResponse
+from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.core.config import settings
 from app.core.deps import CurrentUser
 from app.db.session import get_db
 from app.domains.chat.models import FeedbackType
@@ -50,6 +52,22 @@ async def create_session(
             status_code=status.HTTP_403_FORBIDDEN,
             detail={"code": "study_completed"},
         )
+    # Cost guard — skip for simulation users (is_simulation flag set by runner)
+    if not getattr(user, "is_simulation", False):
+        row = await db.execute(
+            text("SELECT COALESCE(SUM(cost_eur), 0) FROM llm_usage WHERE user_id = :uid"),
+            {"uid": user.id},
+        )
+        total_cost: float = row.scalar() or 0.0
+        if total_cost >= settings.max_cost_per_user_eur:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail={
+                    "code": "cost_limit_reached",
+                    "spent_eur": round(total_cost, 4),
+                    "limit_eur": settings.max_cost_per_user_eur,
+                },
+            )
     session = await repo.create_session(
         user_id=user.id,
         character=body.character,
