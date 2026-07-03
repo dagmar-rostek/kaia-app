@@ -57,13 +57,17 @@ class ChatRepository:
         return list(result.scalars().all())
 
     async def get_previous_session(self, user_id: int, before_id: int) -> ChatSession | None:
-        """Return the most recent completed session before the given id."""
+        """Return the most recent session before the given id (ended or not).
+
+        Ended_at is NOT required — if the user closed the tab without clicking
+        "Session beenden" the session still exists and should contribute context.
+        The caller is responsible for ensuring a summary is extracted if missing.
+        """
         result = await self.db.execute(
             select(ChatSession)
             .where(
                 ChatSession.user_id == user_id,
                 ChatSession.id < before_id,
-                ChatSession.ended_at.is_not(None),
             )
             .order_by(ChatSession.id.desc())
             .limit(1)

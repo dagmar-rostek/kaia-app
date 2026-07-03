@@ -11,6 +11,7 @@ Architecture:
     → Log to llm_usage
 """
 
+import asyncio
 import json
 import re
 from collections.abc import AsyncGenerator
@@ -20,6 +21,7 @@ from typing import Any
 import structlog
 from anthropic import AsyncAnthropic
 from anthropic.types import TextBlock
+from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -103,6 +105,53 @@ def _thinking_strip_generator(raw_chunks: list[str]) -> tuple[str | None, str]:
     return thinking, full.replace("<final_answer>", "").replace("</final_answer>", "").strip()
 
 
+# ── Cross-session context helper ─────────────────────────────────────────────
+
+
+async def _load_cross_session_context(
+    db: AsyncSession,
+    repo: "ChatRepository",
+    user_id: int,
+    current_session_id: int,
+) -> tuple[str, str, str]:
+    """Return (last_first_step, last_observation, insight) from the previous session.
+
+    Handles two failure modes:
+    - Session not ended (user closed tab): auto-ends it and extracts summary.
+    - Summary missing despite ended session (race condition): re-extracts inline.
+    Both with a 12-second timeout so the opening message is never blocked forever.
+    """
+    prev = await repo.get_previous_session(user_id, current_session_id)
+    if not prev:
+        return "", "", ""
+
+    if prev.session_summary is None:
+        # Auto-end if not ended yet
+        if prev.ended_at is None:
+            await repo.end_session(prev)
+        # Extract summary inline with timeout
+        try:
+            await asyncio.wait_for(extract_session_summary(prev.id), timeout=12.0)
+        except Exception:
+            log.warning("cross_session_summary_extraction_failed", prev_session_id=prev.id)
+            return "", "", ""
+        # Re-fetch from DB to pick up the committed summary
+        result = await db.execute(select(ChatSession).where(ChatSession.id == prev.id))
+        prev = result.scalar_one_or_none()
+        if not prev or not prev.session_summary:
+            return "", "", ""
+
+    try:
+        summary = json.loads(prev.session_summary)
+        return (
+            summary.get("first_step", ""),
+            summary.get("observation", ""),
+            summary.get("insight_for_next_session", ""),
+        )
+    except (json.JSONDecodeError, AttributeError):
+        return "", "", ""
+
+
 # ── Main streaming generator ───────────────────────────────────────────────────
 
 
@@ -134,22 +183,11 @@ async def stream_response(
     learning_topic = user.learning_topic or "" if user else ""
 
     is_first = session.session_number == 1
-    last_step = ""
-    last_observation = ""
-    outcome = ""
-
-    insight = ""
-
+    last_step, last_observation, insight = ("", "", "")
     if not is_first:
-        prev = await repo.get_previous_session(session.user_id, session.id)
-        if prev and prev.session_summary:
-            try:
-                summary = json.loads(prev.session_summary)
-                last_step = summary.get("first_step", "")
-                last_observation = summary.get("observation", "")
-                insight = summary.get("insight_for_next_session", "")
-            except (json.JSONDecodeError, AttributeError):
-                pass
+        last_step, last_observation, insight = await _load_cross_session_context(
+            db, repo, session.user_id, session.id
+        )
 
     outcome = session.daily_plan or ""
 
@@ -327,20 +365,11 @@ async def stream_opening(
     learning_topic = user.learning_topic or "" if user else ""
 
     is_first = session.session_number == 1
-    last_step = ""
-    last_observation = ""
-    insight = ""
-
+    last_step, last_observation, insight = ("", "", "")
     if not is_first:
-        prev = await repo.get_previous_session(session.user_id, session.id)
-        if prev and prev.session_summary:
-            try:
-                summary = json.loads(prev.session_summary)
-                last_step = summary.get("first_step", "")
-                last_observation = summary.get("observation", "")
-                insight = summary.get("insight_for_next_session", "")
-            except (json.JSONDecodeError, AttributeError):
-                pass
+        last_step, last_observation, insight = await _load_cross_session_context(
+            db, repo, session.user_id, session.id
+        )
 
     ctx = PromptContext(
         user_name=user_name,
@@ -431,20 +460,11 @@ async def stream_closing(
     learning_topic = user.learning_topic or "" if user else ""
 
     is_first = session.session_number == 1
-    last_step = ""
-    last_observation = ""
-    insight = ""
-
+    last_step, last_observation, insight = ("", "", "")
     if not is_first:
-        prev = await repo.get_previous_session(session.user_id, session.id)
-        if prev and prev.session_summary:
-            try:
-                summary = json.loads(prev.session_summary)
-                last_step = summary.get("first_step", "")
-                last_observation = summary.get("observation", "")
-                insight = summary.get("insight_for_next_session", "")
-            except (json.JSONDecodeError, AttributeError):
-                pass
+        last_step, last_observation, insight = await _load_cross_session_context(
+            db, repo, session.user_id, session.id
+        )
 
     ctx = PromptContext(
         user_name=user_name,
