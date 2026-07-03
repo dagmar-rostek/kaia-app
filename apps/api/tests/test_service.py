@@ -44,6 +44,7 @@ def register_data():
         username="testuser",
         password="securepassword123",
         consent_data=True,
+        consent_research_data=True,
         consent_analytics=False,
     )
 
