@@ -148,6 +148,44 @@ async def get_simulation_results(run_id: str) -> dict[str, Any]:
     return run
 
 
+@router.get("/costs")
+async def get_costs(db: Annotated[AsyncSession, Depends(get_db)]) -> dict[str, Any]:
+    """Return aggregated LLM inference costs from llm_usage table."""
+    from sqlalchemy import text
+
+    rows = await db.execute(
+        text(
+            "SELECT model, provider, "
+            "SUM(input_tokens) AS input_tokens, "
+            "SUM(output_tokens) AS output_tokens, "
+            "SUM(cost_eur) AS cost_eur, "
+            "COUNT(DISTINCT session_id) AS sessions "
+            "FROM llm_usage GROUP BY model, provider ORDER BY cost_eur DESC"
+        )
+    )
+    by_model = [dict(r._mapping) for r in rows]
+
+    total = await db.execute(text("SELECT COALESCE(SUM(cost_eur), 0) FROM llm_usage"))
+    total_eur = float(total.scalar() or 0)
+
+    per_session = await db.execute(
+        text(
+            "SELECT s.session_number, u.username, "
+            "SUM(l.cost_eur) AS cost_eur, "
+            "SUM(l.input_tokens) AS input_tokens, "
+            "SUM(l.output_tokens) AS output_tokens "
+            "FROM llm_usage l "
+            "JOIN chat_sessions s ON s.id = l.session_id "
+            "JOIN users u ON u.id = l.user_id "
+            "GROUP BY s.id, s.session_number, u.username "
+            "ORDER BY s.id DESC LIMIT 50"
+        )
+    )
+    sessions = [dict(r._mapping) for r in per_session]
+
+    return {"total_eur": total_eur, "by_model": by_model, "recent_sessions": sessions}
+
+
 @router.delete("/reset-test-user", status_code=204)
 async def reset_test_user(
     db: Annotated[AsyncSession, Depends(get_db)],
