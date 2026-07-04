@@ -121,8 +121,8 @@ class UserLearningProfile(Base):
 
     # Raw baseline data — preserved for thesis reproducibility
     gse_baseline: Mapped[float]
-    gse_items: Mapped[dict] = mapped_column(JSONB)  # all 10 GSE item scores
-    subscale_scores: Mapped[dict] = mapped_column(JSONB)  # MSLQ 4 subscales + raw items
+    gse_items: Mapped[dict[str, float]] = mapped_column(JSONB)  # all 10 GSE item scores
+    subscale_scores: Mapped[dict[str, float]] = mapped_column(JSONB)  # MSLQ 4 subscales + raw items
 
     # LLM-generated interpretation — created once, stored, never regenerated
     profile_interpretation: Mapped[str] = mapped_column(Text)

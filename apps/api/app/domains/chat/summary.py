@@ -135,7 +135,7 @@ async def load_all_session_contexts(
     lines: list[str] = []
     for s in sessions:
         try:
-            data = json.loads(s.session_summary)
+            data = json.loads(s.session_summary or "")
         except (json.JSONDecodeError, TypeError):
             continue
 
@@ -181,7 +181,7 @@ async def load_historical_quotes(
     quotes: list[tuple[int, str]] = []
     for s in sessions:
         try:
-            data = json.loads(s.session_summary)
+            data = json.loads(s.session_summary or "")
             quote = data.get("strongest_quote", "")
             if quote:
                 quotes.append((s.session_number, quote))

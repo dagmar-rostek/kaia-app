@@ -100,7 +100,8 @@ async def maybe_create_learning_profile(user_id: int) -> None:
 
         prompt_hash = hashlib.sha256(_PROFILE_SYSTEM.encode()).hexdigest()[:16]
 
-        gse_items_raw = pre_gse.items or {}
+        raw_items = pre_gse.items
+        gse_items_raw: dict[str, float] = raw_items if isinstance(raw_items, dict) else {}
         profile = UserLearningProfile(
             user_id=user_id,
             gse_baseline=gse_score,
