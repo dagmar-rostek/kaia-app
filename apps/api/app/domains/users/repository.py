@@ -3,7 +3,7 @@ from datetime import UTC, datetime
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.domains.users.models import RefreshToken, User, UserStatus
+from app.domains.users.models import RefreshToken, User, UserLearningProfile, UserStatus
 
 
 class UserRepository:
@@ -85,3 +85,20 @@ class RefreshTokenRepository:
             token.revoked_at = now
             token.revoke_reason = reason
         await self._db.commit()
+
+
+class UserProfileRepository:
+    def __init__(self, db: AsyncSession) -> None:
+        self._db = db
+
+    async def get_profile(self, user_id: int) -> UserLearningProfile | None:
+        result = await self._db.execute(
+            select(UserLearningProfile).where(UserLearningProfile.user_id == user_id)
+        )
+        return result.scalar_one_or_none()
+
+    async def create_profile(self, profile: UserLearningProfile) -> UserLearningProfile:
+        self._db.add(profile)
+        await self._db.commit()
+        await self._db.refresh(profile)
+        return profile

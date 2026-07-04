@@ -70,8 +70,13 @@ export default async function ProductionReadinessPage() {
         },
         {
           label: "Datenbank-Migrationen",
-          detail: "Alembic-Migrations müssen vor Studienstart laufen (alembic upgrade head)",
+          detail: "Alembic upgrade head — inkl. Migration l2g8h3i4b5c6 (user_learning_profiles) und m3h9i4j5k6l7 (KAIA Prompt v3)",
           status: "manual",
+        },
+        {
+          label: "KAIA Prompt v3 aktiv",
+          detail: "kaia_system_v3_warm muss in prompt_templates aktiv sein (is_active=TRUE). V2 als Eval-Regression-Baseline erhalten (is_active=FALSE).",
+          status: "ok",
         },
       ],
     },
@@ -117,8 +122,8 @@ export default async function ProductionReadinessPage() {
         },
         {
           label: "Passwort-Hashing",
-          detail: "bcrypt via passlib — bcrypt-Factor 12 empfohlen für Produktion",
-          status: "manual",
+          detail: "bcrypt direkt (ohne passlib) — 12 Runden + SHA-256-Pre-Hash. passlib entfernt (unmaintained, inkompatibel mit bcrypt ≥4.0).",
+          status: "ok",
         },
       ],
     },
@@ -153,9 +158,19 @@ export default async function ProductionReadinessPage() {
           status: "manual",
         },
         {
-          label: "GSE-Fragebogen integriert",
-          detail: "Allgemeine Selbstwirksamkeitserwartung muss vor/nach Studie erfasst werden",
-          status: "manual",
+          label: "GSE + MSLQ Pre-Fragebogen integriert",
+          detail: "Journey-Gating aktiv: Chat-Zugang nur nach vollständigem Pre-Survey (30 MSLQ-Items + 10 GSE-Items). BackgroundTask erstellt user_learning_profiles nach Abschluss.",
+          status: "ok",
+        },
+        {
+          label: "Persistentes Lernenden-Profil",
+          detail: "user_learning_profiles-Tabelle muss in DB existieren (Migration l2g8h3i4b5c6). Profil wird automatisch via BackgroundTask nach Pre-Survey erstellt — keine manuelle Aktion nötig.",
+          status: "ok",
+        },
+        {
+          label: "Session-Architektur v3",
+          detail: "KAIA kennt session_number, session_phase, is_final_session. Session-5-Trigger, Session-10-Abschluss-Logik, kumulatives Gedächtnis (load_all_session_contexts) aktiv.",
+          status: "ok",
         },
         {
           label: "Datenschutzerklärung",

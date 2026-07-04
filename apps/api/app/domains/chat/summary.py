@@ -3,11 +3,13 @@
 extract_session_summary — called as a background task after session end,
   writes structured JSON to chat_sessions.session_summary via its own DB connection.
 
-_load_cross_session_context — called inline at session start, returns the three
-  fields that feed the Jinja2 prompt template for follow-up sessions.
+load_all_session_contexts — called at session start, returns a compact multi-line
+  string summarising all previous sessions for the current user.
+
+load_previous_session_fields — returns the three scalar fields (first_step,
+  observation, insight) from the immediately preceding session only.
 """
 
-import asyncio
 import json
 import re
 
@@ -45,7 +47,11 @@ _EXTRACTION_SYSTEM = (
     "- strengths_observed: Beobachtete Staerken oder positive Muster"
     " (string, leer wenn keine erkennbar)\n"
     "- friction_points: Beobachtete Reibungspunkte oder Blockaden"
-    " (string, leer wenn keine erkennbar)"
+    " (string, leer wenn keine erkennbar)\n"
+    "- strongest_quote: Der starkste eigene Satz des Users — die klarste oder"
+    " bedeutsamste Formulierung die er/sie selbst gefunden hat."
+    " Woertlich zitiert, nicht paraphrasiert. Leer wenn nichts Treffendes."
+    " (string)"
 )
 
 
@@ -78,7 +84,7 @@ async def extract_session_summary(session_id: int) -> None:
         try:
             response = await client.messages.create(
                 model=_EXTRACTION_MODEL,
-                max_tokens=512,
+                max_tokens=600,
                 system=_EXTRACTION_SYSTEM,
                 messages=[{"role": "user", "content": f"Transkript:\n\n{transcript}"}],
             )
@@ -98,35 +104,106 @@ async def extract_session_summary(session_id: int) -> None:
             log.error("session_summary_extraction_failed", session_id=session_id, error=str(exc))
 
 
-async def load_cross_session_context(
+async def load_all_session_contexts(
+    db: AsyncSession,
+    user_id: int,
+    current_session_id: int,
+    max_sessions: int = 9,
+) -> str:
+    """Return a compact multi-line summary of all previous sessions.
+
+    Loads up to max_sessions previous sessions with a session_summary,
+    oldest first. Sessions without a summary are silently skipped.
+    Never re-extracts inline — missing summaries are gaps, not blockers.
+    """
+    result = await db.execute(
+        select(ChatSession)
+        .where(
+            ChatSession.user_id == user_id,
+            ChatSession.id < current_session_id,
+            ChatSession.session_summary.is_not(None),
+        )
+        .order_by(ChatSession.id.desc())
+        .limit(max_sessions)
+    )
+    sessions = list(result.scalars().all())
+    if not sessions:
+        return ""
+
+    sessions.reverse()  # chronological order
+
+    lines: list[str] = []
+    for s in sessions:
+        try:
+            data = json.loads(s.session_summary)
+        except (json.JSONDecodeError, TypeError):
+            continue
+
+        parts = [f"Session {s.session_number}:"]
+        if data.get("mood"):
+            parts.append(f"Stimmung={data['mood']}")
+        if data.get("topics"):
+            parts.append(f"Themen={', '.join(data['topics'][:3])}")
+        if data.get("observation"):
+            parts.append(f"Beobachtung: {data['observation']}")
+        if data.get("first_step"):
+            parts.append(f"Vereinbarter Schritt: {data['first_step']}")
+        if data.get("friction_points"):
+            parts.append(f"Reibungspunkte: {data['friction_points']}")
+        lines.append(" | ".join(parts))
+
+    return "\n".join(lines)
+
+
+async def load_historical_quotes(
+    db: AsyncSession,
+    user_id: int,
+    current_session_id: int,
+    max_sessions: int = 9,
+) -> list[tuple[int, str]]:
+    """Return (session_number, strongest_quote) pairs from all previous sessions.
+
+    Used for contradiction work in Sessions 6-8 and the final reflection in Session 10.
+    Only returns sessions that have a non-empty strongest_quote.
+    """
+    result = await db.execute(
+        select(ChatSession)
+        .where(
+            ChatSession.user_id == user_id,
+            ChatSession.id < current_session_id,
+            ChatSession.session_summary.is_not(None),
+        )
+        .order_by(ChatSession.id.asc())
+        .limit(max_sessions)
+    )
+    sessions = list(result.scalars().all())
+
+    quotes: list[tuple[int, str]] = []
+    for s in sessions:
+        try:
+            data = json.loads(s.session_summary)
+            quote = data.get("strongest_quote", "")
+            if quote:
+                quotes.append((s.session_number, quote))
+        except (json.JSONDecodeError, TypeError):
+            continue
+    return quotes
+
+
+async def load_previous_session_fields(
     db: AsyncSession,
     repo: ChatRepository,
     user_id: int,
     current_session_id: int,
 ) -> tuple[str, str, str]:
-    """Return (last_first_step, last_observation, insight) from the previous session.
+    """Return (last_first_step, last_observation, insight) from the directly previous session.
 
-    Handles two failure modes:
-    - Session not ended (user closed tab): auto-ends and extracts inline.
-    - Summary missing despite ended session: re-extracts inline.
-    Both paths have a 12-second timeout so the opening message is never blocked.
+    Returns empty strings if no previous session exists or summary is missing.
+    Never re-extracts inline — avoids latency on the opening path.
     """
     prev = await repo.get_previous_session(user_id, current_session_id)
-    if not prev:
+    if not prev or not prev.session_summary:
         return "", "", ""
-
-    if prev.session_summary is None:
-        if prev.ended_at is None:
-            await repo.end_session(prev)
-        try:
-            await asyncio.wait_for(extract_session_summary(prev.id), timeout=12.0)
-        except Exception:
-            log.warning("cross_session_summary_extraction_failed", prev_session_id=prev.id)
-            return "", "", ""
-        db.expire(prev)
-        await db.refresh(prev)
-        if not prev.session_summary:
-            return "", "", ""
 
     try:
         summary = json.loads(prev.session_summary)
@@ -144,3 +221,7 @@ async def load_cross_session_context(
     except (json.JSONDecodeError, AttributeError):
         log.warning("cross_session_context_parse_failed", prev_session_id=prev.id)
         return "", "", ""
+
+
+# Keep old name as alias so existing background-task callers don't break
+load_cross_session_context = load_previous_session_fields

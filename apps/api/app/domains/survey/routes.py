@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, status
 from sqlalchemy import delete
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -14,7 +14,11 @@ from app.domains.survey.schemas import (
     MslqRead,
     MslqSubmit,
 )
-from app.domains.survey.service import compute_subscale_scores, get_journey_state
+from app.domains.survey.service import (
+    compute_subscale_scores,
+    get_journey_state,
+    maybe_create_learning_profile,
+)
 
 router = APIRouter(prefix="/survey", tags=["survey"])
 
@@ -30,6 +34,7 @@ async def get_journey(
 @router.post("/mslq", response_model=MslqRead, status_code=status.HTTP_201_CREATED)
 async def submit_mslq(
     body: MslqSubmit,
+    background_tasks: BackgroundTasks,
     user: CurrentUser,
     db: AsyncSession = Depends(get_db),  # noqa: B008
 ) -> MslqRead:
@@ -49,6 +54,9 @@ async def submit_mslq(
         items=body.items,
         subscale_scores=subscale_scores,
     )
+    # Trigger profile creation if both pre-surveys are now complete
+    if body.measurement_type.value == "pre":
+        background_tasks.add_task(maybe_create_learning_profile, user.id)
     return MslqRead.model_validate(result)
 
 
@@ -67,6 +75,7 @@ async def reset_journey(
 @router.post("/gse", response_model=GseRead, status_code=status.HTTP_201_CREATED)
 async def submit_gse(
     body: GseSubmit,
+    background_tasks: BackgroundTasks,
     user: CurrentUser,
     db: AsyncSession = Depends(get_db),  # noqa: B008
 ) -> GseRead:
@@ -84,4 +93,7 @@ async def submit_gse(
         measurement_type=body.measurement_type,
         items=body.items,
     )
+    # Trigger profile creation if both pre-surveys are now complete
+    if body.measurement_type.value == "pre":
+        background_tasks.add_task(maybe_create_learning_profile, user.id)
     return GseRead.model_validate(result)

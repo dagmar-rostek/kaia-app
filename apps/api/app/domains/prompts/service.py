@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 from jinja2 import BaseLoader, Environment, TemplateError, Undefined
 
@@ -22,14 +22,44 @@ _env = Environment(loader=BaseLoader(), autoescape=False, undefined=_SilentUndef
 
 @dataclass
 class PromptContext:
+    # Basic user context
     user_name: str = ""
     learning_topic: str = ""
+
+    # Session position
     is_first_session: bool = True
+    is_final_session: bool = False  # session_number == 10
+    session_number: int = 1
+    session_phase: str = "early"  # "early" (1-3) | "mid" (4-7) | "late" (8-10)
+    user_turns: int = 0  # user messages sent in current session so far
+
+    # Cross-session context — previous session
     last_first_step: str = ""
     last_session_observation: str = ""
     insight_for_next_session: str = ""
+
+    # Cumulative history — compact summary of all previous sessions
+    session_history_summary: str = ""
+
+    # Persistent learner profile (from pre-survey, rule-based translation)
+    learner_profile: str = ""  # LLM-generated interpretation, stored in DB
+    gse_baseline: float | None = None
+
+    # Session-specific planning
     outcome: str = ""
     daily_plan: str = ""
+
+    # Historical quotes for contradiction work (Sessions 6-8)
+    # List of (session_number, strongest_quote) pairs
+    historical_quotes: list[tuple[int, str]] = field(default_factory=list)
+
+
+def _session_phase(session_number: int) -> str:
+    if session_number <= 3:
+        return "early"
+    if session_number <= 7:
+        return "mid"
+    return "late"
 
 
 def render_prompt(template_str: str, ctx: PromptContext) -> str:
@@ -44,11 +74,19 @@ def render_prompt(template_str: str, ctx: PromptContext) -> str:
             user_name=ctx.user_name,
             learning_topic=ctx.learning_topic,
             is_first_session=ctx.is_first_session,
+            is_final_session=ctx.is_final_session,
+            session_number=ctx.session_number,
+            session_phase=ctx.session_phase,
+            user_turns=ctx.user_turns,
             last_first_step=ctx.last_first_step,
             last_session_observation=ctx.last_session_observation,
             insight_for_next_session=ctx.insight_for_next_session,
+            session_history_summary=ctx.session_history_summary,
+            learner_profile=ctx.learner_profile,
+            gse_baseline=ctx.gse_baseline,
             outcome=ctx.outcome,
             daily_plan=ctx.daily_plan,
+            historical_quotes=ctx.historical_quotes,
         )
     except TemplateError:
         # If Jinja2 rendering fails, return the raw template — better than crashing

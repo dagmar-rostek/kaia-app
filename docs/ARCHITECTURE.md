@@ -128,13 +128,14 @@ kaia-app/
 
 ## Datenspeicher
 
-### PostgreSQL — 13 Tabellen (Stand v0.8.0)
+### PostgreSQL — 14 Tabellen (Stand v0.9.0)
 
 | Tabelle | Domain | Beschreibung |
 |---|---|---|
 | `users` | users | Profile, Auth, Consent, Status (pending/active/suspended/deleted) |
 | `refresh_tokens` | users | JWT Refresh-Token-Rotation + Reuse-Detection |
-| `chat_sessions` | chat | Lernsessions mit Character, Session-Nummer, Modus, Summary |
+| `user_learning_profiles` | users | **Neu (v0.9.0)** Persistenter Layer-1-Snapshot: gse_baseline, gse_items, subscale_scores (MSLQ), LLM-generierte profile_interpretation (Haiku, max. 120 Wörter). UNIQUE(user_id) — unveränderlich nach Erstellung. |
+| `chat_sessions` | chat | Lernsessions: Character, session_number, Modus, session_summary (Layer 2 kumulative Daten inkl. strongest_quote) |
 | `messages` | chat | Einzelne Nachrichten inkl. detected_state, thinking_raw |
 | `memory_chunks` | chat | Vectorized Insights (pgvector 1536-dim) für Cross-Session-Recall |
 | `session_feedback` | chat | EMA-Signale (transfer_marker, wow, stuck, unclear) |
@@ -146,7 +147,29 @@ kaia-app/
 | `prompt_templates` | prompts | Jinja2-Prompts versioniert, live editierbar, Character-spezifisch |
 | `llm_usage` | (core) | Token-Verbrauch + Kosten pro LLM-Call (Cost-Tracking) |
 
-**Alembic-Migrationen:** 7 versionierte Schritte, vollständig reversibel.
+**Alembic-Migrationen:** 9 versionierte Schritte, vollständig reversibel.
+
+### Zwei-Schichten-Profil-Modell (v0.9.0)
+
+```
+Layer 1 — Immutable Baseline (user_learning_profiles)
+    │   Erstellt einmalig als BackgroundTask nach Abschluss beider Pre-Surveys
+    │   Inhalt: gse_baseline (float), gse_items (JSONB), subscale_scores (JSONB),
+    │           profile_interpretation (Text, Haiku-generiert, max. 120 Wörter),
+    │           interpretation_prompt_hash (SHA-256, für Reproduzierbarkeit)
+    │   Race-Condition-Guard: UNIQUE(user_id) + IntegrityError-Catch
+    │
+Layer 2 — Kumulative Session-Daten (chat_sessions.session_summary JSONB)
+    │   Aktualisiert nach jeder Session via extract_session_summary (Haiku)
+    │   Felder: last_first_step, last_session_observation, insight_for_next_session,
+    │           strongest_quote (neu: stärkster eigener Satz des Lernenden)
+    │
+    ▼
+PromptContext — zusammengeführt in _build_system_prompt():
+    session_number, session_phase, is_final_session, user_turns,
+    learner_profile, gse_baseline, session_history_summary (alle Vorsessions),
+    historical_quotes (strongest_quote je Session, für Sessions 6–10)
+```
 
 ### pgvector (Semantisches Gedächtnis)
 - `memory_chunks.embedding`: Vector(1536) für Approximate Nearest-Neighbour (IVFFLAT)
@@ -249,7 +272,7 @@ In der lokalen Entwicklung liest `readDoc()` aus `../../docs` relativ zum `apps/
 
 ---
 
-## Prompt-Architektur (v2)
+## Prompt-Architektur (v3)
 
 Alle Prompt-Templates sind versioniert in der DB gespeichert und über `/admin/prompts` live editierbar.
 
@@ -263,9 +286,25 @@ User-Input
     │   └── Längenbegrenzung
     │
     ▼
-KAIA_PROMPT_V2_WARM (Jinja2-Template in DB)
+_build_system_prompt() — PromptContext befüllen:
+    │   ├── user_name, learning_topic (DB: users)
+    │   ├── session_number, session_phase (early/mid/late), is_final_session (DB: chat_sessions)
+    │   ├── user_turns (aus Message-History gezählt)
+    │   ├── learner_profile (DB: user_learning_profiles.profile_interpretation)
+    │   ├── gse_baseline (DB: user_learning_profiles.gse_baseline)
+    │   ├── session_history_summary (load_all_session_contexts: alle Vorsessions, max. 9)
+    │   ├── historical_quotes (load_historical_quotes: strongest_quote je Session, ab Session 6)
+    │   └── last_first_step, last_session_observation, insight_for_next_session (Vorsession)
+    │
+    ▼
+KAIA_PROMPT_V3_WARM (Jinja2-Template in DB — aktiv seit v0.9.0)
+    │   ├── Session-Kontext-Header (session_number > 1: Vorsessions-Zusammenfassung)
+    │   ├── Persistenter Lernenden-Profil-Block (learner_profile, nie explizit zitieren)
     │   ├── 8 interne Klassifikationsschritte im <thinking>-Block
     │   │   (Lazarus, Fragetyp, Crisis, Grenz, Grounded, Phase, Rupture, Erwünschtheit)
+    │   ├── Session-5-Meilenstein-Trigger (obligatorisch, nicht optional)
+    │   ├── Historical-Quotes-Block (Sessions 6–10: Widerspruchsarbeit Typ 3)
+    │   ├── Session-10-Abschluss-Logik (3 simultane Aufgaben)
     │   └── <final_answer> — max. 80 Wörter, ein Impuls
     │
 Claude API (claude-sonnet-4-6)
@@ -277,19 +316,27 @@ Claude API (claude-sonnet-4-6)
     │   ├── Kontext-Referenz-Check (Regex)
     │   └── Direkte-Lösung-Check (LLM-as-Judge)
     │
+    ├── extract_session_summary (Haiku, BackgroundTask nach Session-Ende)
+    │   ├── last_first_step, last_session_observation, insight_for_next_session
+    │   └── strongest_quote (neu: stärkster eigener Satz des Lernenden)
+    │
     ▼
 User-Output (SSE-Stream)
 ```
 
-Prompt-Versionen: `kaia_system_v1_warm` (Regression-Baseline, inaktiv) · `kaia_system_v2_warm` (aktiv) · `kaia_system_v1_challenging` · `kaia_system_v1_wild`
+**Prompt-Versionen:**
+- `kaia_system_v1_warm` — Regression-Baseline, inaktiv
+- `kaia_system_v2_warm` — Eval-Regression-Baseline (v2), inaktiv, erhalten für A/B-Vergleich
+- `kaia_system_v3_warm` — **aktiv (seit v0.9.0)** — session-aware, Profil-integriert, Session-5-Trigger, Session-10-Logik
+- `kaia_system_v1_challenging` · `kaia_system_v1_wild` — Eval-Charaktere, inaktiv
 
 ---
 
-## Aktueller Stand (v0.8.0)
+## Aktueller Stand (v0.9.0)
 
 **Live auf kaia.rostek-dagmar.eu:**
 - Landing Page, /wissenschaft, /release-notes, /architektur, /datenschutz, /impressum (öffentlich)
-- Admin-Bereich: Dashboard, Chat-Test, Lerndesign, Instrumente, Production Readiness, Changelog, Architektur, Kosten, Tagebuch, Roadmap, User-Approval, Prompt-Sandbox (v2), Thesis-Cockpit
+- Admin-Bereich: Dashboard, Chat-Test, Lerndesign (inkl. Nutzerprofil-Tab), Instrumente, Production Readiness, Changelog, Architektur, Kosten, Tagebuch, Roadmap, User-Approval, Prompt-Sandbox (v3), Thesis-Cockpit
 - Bug-Report-Widget → Slack · Plausible Analytics (datenschutzkonform)
 - Health-Endpoint GET /api/v1/health
 
@@ -297,43 +344,49 @@ Prompt-Versionen: `kaia_system_v1_warm` (Regression-Baseline, inaktiv) · `kaia_
 - Auth: register, login, refresh, logout, disclosure-ack
 - Users: me, admin CRUD (approve/reject/delete)
 - Chat: sessions CRUD, messages (SSE), opening/closing (SSE), end, feedback, meta-question
-- Survey: `GET /journey`, `POST /mslq`, `POST /gse`
+- Survey: `GET /journey`, `POST /mslq`, `POST /gse` (triggern BackgroundTask für Lernenden-Profil)
 - Preregistration: submit, list, remove
 - Prompts: list, get, update (Study-Lock-Guard)
 - Crisis-Detection Pre-Filter vor allen LLM-Calls
 
-**DB-Schema:** 13 Tabellen, 7 Alembic-Migrationen (vollständig reversibel)
+**DB-Schema:** 14 Tabellen, 9 Alembic-Migrationen (vollständig reversibel)
 
 **Journey State Machine:** PRE_PENDING → ACTIVE (1–10 Sessions) → POST_PENDING → COMPLETED
 - Chat-Gating aktiv: 403 bei PRE_PENDING / POST_PENDING / COMPLETED
 - Frontend-Redirect zu /survey/pre bzw. /survey/post
+- Nach Pre-Survey: BackgroundTask erstellt `user_learning_profiles` (idempotent)
+
+**Session-Architektur (v0.9.0 — vollständig implementiert):**
+- `session_number`, `session_phase` (early/mid/late), `is_final_session`, `user_turns` im PromptContext
+- Kumulatives Session-Gedächtnis: alle Vorsessions aggregiert (`load_all_session_contexts`)
+- `strongest_quote` Extraktion pro Session (Basis für Widerspruchsarbeit und Session-10-Gegenüberstellung)
+- Persistentes Lernenden-Profil (Layer 1): MSLQ + GSE → LLM-Interpretation einmalig erstellt
+- Session-5 Meilenstein-Trigger (obligatorischer Halbzeit-Spiegel, hard-coded im Prompt)
+- Session-10 Drei-Aufgaben-Abschluss (Gegenüberstellung + Autonomisierung + kein GSE-Priming)
+- UI: "Session N von 10" im Header, stiller Kontext-Satz für Sessions 9+10
 
 **Nächste Milestones:**
-- Onboarding-Flow (Consent + KI-Disclosure + Pre-Survey in einem Fluss)
-- Funken-Feature (Session-Reflexion nach Session-Ende)
+- MSLQ regelbasiertes Profil-Routing (4 Kombinationen → deterministischer Code-Pfad)
+- Profil-Briefing-Panel vor Session 1 (einmaliges Transparenz-Panel)
 - LLM-Evaluation-Framework (Claude vs. GPT-4o vs. Mistral)
-- Studienstart: 15. Juli 2026
+- Studienstart: geplant Q3 2026
 
 **Frontend implementiert:**
 - Login, Registrierung mit DSGVO-Zweifach-Consent, AuthContext, AuthGuard
 - /ki-disclosure mit Bestätigungs-Button
 - /datenschutz (DSGVO Art. 15–21, Schrems-II)
 - /admin/users (User-Approval UI, Server Actions)
-- /admin/roadmap (Filter-Bar, Agents, SHA)
+- /admin/lerndesign (Sessions 1–10 + Nutzerprofil-MSLQ-Tab + Sentiment + Features)
 
 **Prompt-System implementiert:**
-- `KAIA_PROMPT_V2_WARM` — 29 Prompt-Engineering-Erkenntnisse, `<thinking>`-Split, Few-Shot Kontrast-Paare, Guardrails-Constraints
+- `KAIA_PROMPT_V3_WARM` — session-aware, Profil-integriert, Session-5-Trigger, Session-10-Logik
+- `KAIA_PROMPT_V2_WARM` — erhalten als Eval-Regression-Baseline (inaktiv)
 - Sandbox `/admin/prompts` — 3-Charakter-Vergleich, thinking-stripping, localStorage-Persistenz
-- Prompt-Versionierung in DB (`kaia_system_v2_warm` aktiv, v1 als Regression-Baseline)
 - Forschungsgrundlage: `docs/PROMPT_ENGINEERING_RESEARCH.md` (6 Quellen, APA-7)
-
-**DB-Schema vollständig (v0.6.0):**
-Alle 11 Tabellen live: `users` · `refresh_tokens` · `chat_sessions` · `messages` · `memory_chunks` · `gse_results` · `consent_logs` · `user_profiles` · `roadmap_goals` · `prompt_templates` · `llm_usage` · `audit_events` · `preregistrations`
 
 **Voranmeldungs-System:**
 - `/vorregistrierung` — max. 50 Plätze, Live-Counter, Bestätigungsmail (Brevo), Slack-Notification
 - `/admin/vorregistrierung` — Server Component, Entfernen mit E-Mail-Benachrichtigung
-- Abmelde-Link mit Token in jeder Bestätigungsmail
 
 **Analytics:**
 - Plausible Analytics (EU-Cloud) — datenschutzkonform, kein Cookie-Banner, DSGVO-konform

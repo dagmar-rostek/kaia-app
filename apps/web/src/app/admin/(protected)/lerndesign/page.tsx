@@ -5,7 +5,7 @@ import {
   BookOpen, Zap, Brain, Target, ChevronDown, ChevronRight,
   CheckCircle2, Clock, Circle, AlertTriangle, Lightbulb,
   MessageSquare, Shield, BarChart3,
-  ArrowRight, Network
+  ArrowRight, Network, Users
 } from "lucide-react"
 
 // ── Session data ───────────────────────────────────────────────────────────────
@@ -232,26 +232,102 @@ const FORBIDDEN_PATTERNS = [
 
 const FEATURES = [
   { name: "Sokratischer Modus", status: "done", detail: "Sechs Fragetypen, max. 80 Wörter, ein Impuls pro Antwort" },
-  { name: "Cross-Session-Gedächtnis", status: "done", detail: "session_summary via Haiku nach Session-Ende" },
+  { name: "Cross-Session-Gedächtnis (kumulativ)", status: "done", detail: "load_all_session_contexts(): alle Vorsessions kompakt aggregiert. Inline-Re-Extraktion (12s-Timeout) entfernt — kein Latenz-Risiko mehr beim Session-Start." },
   { name: "Session-1 Onboarding-Flow", status: "done", detail: "5 Schritte: Einladung → Thema → Bestätigung → Lernintention → Evidenzanker" },
   { name: "EMA Feedback-Buttons", status: "done", detail: "wow · transfer_marker (passiv) · stuck · unclear (aktiv → Meta-Frage)" },
   { name: "Closure-Phase (STORY-001)", status: "done", detail: "Session-Abschluss mit stärksten eigenen Formulierungen + offener Frage" },
   { name: "Sentiment-Erkennung (Lazarus)", status: "done", detail: "8 Textindikatoren im Thinking-Block klassifiziert" },
   { name: "Thinking-Block Debug", status: "done", detail: "Admin Chat-Test zeigt interne Klassifizierung" },
+  { name: "session_number im Prompt-Kontext", status: "done", detail: "session_number, session_phase (early/mid/late), is_final_session, user_turns — alle im PromptContext und im Jinja2-Template verfügbar." },
+  { name: "Persistentes Nutzerprofil (Layer 1)", status: "done", detail: "UserLearningProfile-Tabelle: gse_baseline, gse_items, subscale_scores (MSLQ), LLM-generierte profile_interpretation. Einmalig nach Pre-Survey erstellt, nie überschrieben." },
+  { name: "Session X von 10 UI", status: "done", detail: "Header zeigt 'Session N von 10' (text-xs muted). Sessions 9+10: stiller Kontext-Satz vor KAIAs erster Nachricht." },
+  { name: "strongest_quote Extraktion", status: "done", detail: "Neues Pflichtfeld im Session-Extractor: stärkster eigener Satz des Lernenden pro Session — Basis für Session-10-Gegenüberstellung." },
+  { name: "Session-5 Meilenstein-Trigger", status: "done", detail: "Obligatorischer Halbzeit-Spiegel in Prompt v3: 'Was weißt du jetzt, das du vor fünf Sessions noch nicht wusstest?' — kein optionales Element." },
+  { name: "Session-10 Abschluss-Logik", status: "done", detail: "Drei simultane Aufgaben: (1) Gegenüberstellung Session-1 vs. jetzt via historical_quotes, (2) Autonomisierungsfrage, (3) kein GSE-Priming." },
+  { name: "Historische Zitate (historical_quotes)", status: "done", detail: "strongest_quote aller Vorsessions im PromptContext ab Session 6 — für Widerspruchsarbeit (Typ 3) und Session-10-Gegenüberstellung." },
+  { name: "Profil-Trigger nach Pre-Survey", status: "done", detail: "maybe_create_learning_profile() als BackgroundTask nach /survey/mslq und /survey/gse — idempotent, UNIQUE-Constraint als Race-Condition-Guard." },
+  { name: "KAIA_PROMPT_V3_WARM (aktiv)", status: "done", detail: "Warm-Charakter v3 — alle neuen Kontext-Variablen, Session-5-Trigger, Session-10-Logik, Profil-Integration, historische Zitate. V2 als Eval-Regression-Baseline erhalten." },
   { name: "Scaffolding-Modus", status: "partial", detail: "Im Prompt spezifiziert, aber kein expliziter Modus-Schalter im Service-Layer" },
   { name: "Wertschätzend-bestärkender Modus", status: "partial", detail: "Im Prompt spezifiziert — Modus-Auflösung im Service-Layer noch nicht deterministisch" },
-  { name: "Kritisch-herausfordernder Modus", status: "partial", detail: "Character 'challenging' implementiert — aber kein automatisches Switching" },
+  { name: "Kritisch-herausfordernder Modus", status: "partial", detail: "Character 'challenging' implementiert — aber kein automatisches Switching basierend auf MSLQ-Profil" },
+  { name: "MSLQ-Profil-Routing (4 Kombinationen)", status: "partial", detail: "Profil-Interpretation durch LLM generiert. Regelbasierte Übersetzung MSLQ-Subskalen → konkrete Prompt-Hinweise (Enthusiast/Kompetente/Gewissenhafte/Lernstarke) noch nicht implementiert." },
   { name: "Lernroadmap", status: "planned", detail: "Datenbankfelder existieren — kein UI, keine Prompt-Integration" },
   { name: "Domänenwissen-Modus", status: "planned", detail: "Ressourcen-Agent: explizit nicht sokratisch, gibt konkrete Lernwege. Trigger: nutzergesteuert" },
-  { name: "Themen-Clustering", status: "planned", detail: "Taxonomische Einordnung des Lernthemas (Bloom + Wissensart) für Routing" },
   { name: "Funken-Feature (STORY-003)", status: "planned", detail: "Kurze Reflexions-Impulse zwischen Sessions (Push-Mechanismus)" },
-  { name: "FKS-Messung (nach Sessions 2/5/8/10)", status: "planned", detail: "Flow-Kurzskala in-App nach definierten Sessions" },
+  { name: "FKS-Messung (nach Sessions 5/8/10)", status: "planned", detail: "Flow-Kurzskala in-App nach definierten Sessions" },
   { name: "GSE Pre/Post-Messung", status: "planned", detail: "Selbstwirksamkeitserleben (Schwarzer & Jerusalem, 1995, 10 Items) — Pre: im Onboarding vor Session 1, Post: nach Session 10 (min. 28 Tage). Pflicht für Studienstart." },
-  { name: "SRL-Messung Pre/Post (LIST-K)", status: "planned", detail: "Selbstreguliertes Lernen via LIST-K (Wild & Schiefele, 1994), ~20–28 Items — Pre: Onboarding, Post: nach Session 10. Konstrukt: kognitive Strategien, metakognitive Regulation, Ressourcenmanagement. Lizenzfrei." },
-  { name: "user_mode_override", status: "planned", detail: "Nutzer kann aktiven Modus überschreiben ('Kannst du mich mehr unterstützen?')" },
+  { name: "SRL-Messung Pre/Post (LIST-K)", status: "planned", detail: "Selbstreguliertes Lernen via LIST-K (Wild & Schiefele, 1994), ~20–28 Items — Pre: Onboarding, Post: nach Session 10." },
+  { name: "Profil-Briefing-Panel", status: "planned", detail: "Einmaliges Briefing vor Session 1: 'Aus deinen Antworten im Fragebogen hat KAIA ein Bild...' — kein Modal, keine Checkbox (Consent bereits erteilt)." },
   { name: "Lernfaden (Chronik)", status: "planned", detail: "Eigene Formulierungen akkumulieren — exportierbar (DSGVO Art. 20)" },
+  { name: "user_mode_override", status: "planned", detail: "Nutzer kann aktiven Modus überschreiben ('Kannst du mich mehr unterstützen?')" },
   { name: "Token-Limit-Warnung", status: "planned", detail: "Automatischer CLOSING_TRIGGER wenn ~70% Token-Budget verbraucht" },
-  { name: "Session-Intro/Teaser-UI", status: "planned", detail: "Sichtbarer Kontext-Anker am Session-Start + Preview für nächste Session" },
+]
+
+const MSLQ_PROFILES = [
+  {
+    name: "Enthusiast",
+    color: "emerald",
+    gse: "hoch",
+    motivation: "hoch",
+    selfReg: "hoch",
+    trigger: "GSE ≥ 3.0 UND Motivations-Subskalen ≥ 4.0 UND SRL-Subskalen ≥ 4.0",
+    desc: "Hohe Selbstwirksamkeit, hohe Motivation, hohe Selbstregulation. Kein Scaffolding nötig.",
+    promptHints: [
+      "Widersprüche früh zulassen — diese Person verträgt kognitive Dissonanz",
+      "Hypothetische Fragen (Typ 2) und Widerspruchsfragen (Typ 3) bevorzugen",
+      "Keine übertriebene Bestätigung — wirkt patronisierend",
+      "Bloom-Eskalation auf Stufe 5–6 ab Session 3 möglich",
+    ],
+    example: "Lernende, die strukturiert vorgehen, Rückschläge gut verarbeiten und von sich aus Lernstrategien wählen.",
+  },
+  {
+    name: "Kompetente-ohne-Antrieb",
+    color: "sky",
+    gse: "hoch",
+    motivation: "niedrig",
+    selfReg: "mittel",
+    trigger: "GSE ≥ 3.0 UND Motivations-Subskalen < 3.5",
+    desc: "Hohe Selbstwirksamkeit, aber niedrige intrinsische Motivation. Häufig: Prokrastination trotz Können.",
+    promptHints: [
+      "Lernintention und Relevanzfragen stark betonen (Typ 5)",
+      "Verbindung zwischen Thema und persönlichem Wert herstellen",
+      "Nicht zu schnell in Analyse-Ebene eskalieren — erst Motivation aktivieren",
+      "Systemische Fragen (Typ 4): 'Was würde sich für dich ändern, wenn du das wirklich verstehen würdest?'",
+    ],
+    example: "Erfahrene Fachleute, die wissen wie, aber 'warum nochmal' verloren haben.",
+  },
+  {
+    name: "Gewissenhafte",
+    color: "violet",
+    gse: "niedrig",
+    motivation: "mittel",
+    selfReg: "hoch",
+    trigger: "GSE < 3.0 UND SRL-Subskalen ≥ 4.0",
+    desc: "Gute Selbstregulation, aber niedrige Selbstwirksamkeit. Häufig: Selbstzweifel trotz guter Lernstrategie.",
+    promptHints: [
+      "Scaffolding-Modus in Sessions 1–3",
+      "Mastery-Experience-Fragen bevorzugen: 'Was hast du bereits geschafft, das ähnlich schwierig war?'",
+      "Wertschätzend-bestärkender Modus nach Durchbrüchen",
+      "Keine Widerspruchsfragen in frühen Sessions — GSE-Basis erst aufbauen",
+    ],
+    example: "Lernende mit hoher Sorgfalt und guter Planung, aber systematischer Selbstunterschätzung.",
+  },
+  {
+    name: "Lernstarke-ohne-Struktur",
+    color: "rose",
+    gse: "niedrig",
+    motivation: "hoch",
+    selfReg: "niedrig",
+    trigger: "GSE < 3.0 UND Motivations-Subskalen ≥ 4.0 UND SRL-Subskalen < 3.5",
+    desc: "Hohe Motivation, aber niedrige Selbstregulation und niedrige GSE. Häufig: Enthusiasm ohne Strategie.",
+    promptHints: [
+      "Scaffolding-Modus dauerhaft in Sessions 1–5",
+      "Erste-Schritt-Fragen (Typ 5) intensiv nutzen — kleine, verifizierbare Schritte",
+      "Implementation Intentions (Wenn-Dann) explizit formulieren lassen",
+      "Keine Bloom-Eskalation über Stufe 3 hinaus bis SRL-Signale positiv",
+    ],
+    example: "Motivierte Einsteiger, die viel wollen aber wenig strukturieren — klassisches Onboarding-Profil.",
+  },
 ]
 
 const EMA_BUTTONS = [
@@ -341,13 +417,14 @@ function SessionCard({ s }: { s: typeof SESSIONS[0] }) {
 
 // ── Main page ──────────────────────────────────────────────────────────────────
 
-type Tab = "sessions" | "sentiment" | "verboten" | "features" | "ema"
+type Tab = "sessions" | "sentiment" | "verboten" | "features" | "ema" | "profil"
 
 export default function LerndesignPage() {
   const [tab, setTab] = useState<Tab>("sessions")
 
   const TABS: { id: Tab; label: string; icon: React.ElementType }[] = [
     { id: "sessions",  label: "Sessions 1–10",       icon: BookOpen },
+    { id: "profil",    label: "Nutzerprofil (MSLQ)", icon: Users },
     { id: "sentiment", label: "Sentiment-Erkennung", icon: Brain },
     { id: "verboten",  label: "Verbotene Muster",    icon: Shield },
     { id: "features",  label: "Feature-Status",      icon: BarChart3 },
@@ -579,6 +656,131 @@ export default function LerndesignPage() {
                 </div>
               )
             })}
+          </div>
+        )}
+
+        {/* Nutzerprofil Tab */}
+        {tab === "profil" && (
+          <div className="space-y-6">
+            <div className="rounded-lg border border-sky-500/20 bg-sky-500/5 px-4 py-3 text-sm text-sky-400">
+              <strong>Zwei-Schichten-Profil-Modell:</strong>{" "}
+              Layer 1 = unveränderlicher MSLQ/GSE-Baseline-Snapshot (<code>user_learning_profiles</code>).{" "}
+              Layer 2 = kumulative Session-Daten (<code>session_summary</code> in <code>chat_sessions</code>).{" "}
+              LLM-generierte <code>profile_interpretation</code> wird einmalig nach dem Pre-Survey erstellt — kein LLM-Call pro Session.
+            </div>
+
+            <div>
+              <h3 className="text-sm font-semibold mb-1">MSLQ-Subskalen (Pre-Survey)</h3>
+              <p className="text-xs text-muted-foreground mb-3">
+                Motivated Strategies for Learning Questionnaire (Pintrich et al., 1991/1993). 4 Subskalen, 30 Items, Likert 1–7.
+                Routing-Logik basiert auf Subskalen-Mittelwerten.
+              </p>
+              <div className="grid grid-cols-2 gap-2">
+                {[
+                  { label: "Intrinsische Zielorientierung", sub: "Motivation", items: "4 Items", thres: "≥ 4.0 = hoch" },
+                  { label: "Extrinsische Zielorientierung", sub: "Motivation", items: "4 Items", thres: "< 3.5 = niedrig" },
+                  { label: "Task Value", sub: "Motivation", items: "6 Items", thres: "≥ 4.0 = relevant" },
+                  { label: "Selbstreguliertes Lernen (SRL)", sub: "SRL", items: "9 Items", thres: "≥ 4.0 = hoch" },
+                  { label: "Self-Efficacy (MSLQ)", sub: "Motivation", items: "8 Items", thres: "< 3.5 = niedrig GSE-Korrelat" },
+                  { label: "GSE Baseline (Schwarzer & Jerusalem)", sub: "GSE", items: "10 Items", thres: "≥ 3.0 = hoch" },
+                ].map(s => (
+                  <div key={s.label} className="rounded-lg border border-zinc-700 bg-zinc-800/40 px-3 py-2.5">
+                    <p className="text-xs font-medium">{s.label}</p>
+                    <div className="flex items-center gap-2 mt-0.5">
+                      <span className="text-xs text-muted-foreground">{s.items}</span>
+                      <span className="text-zinc-600 text-xs">·</span>
+                      <span className="text-xs text-zinc-500 font-mono">{s.thres}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div>
+              <h3 className="text-sm font-semibold mb-3">4 Profil-Kombinationen → Routing-Logik</h3>
+              <p className="text-xs text-muted-foreground mb-4">
+                Regelbasierte Übersetzung (Phase 3 — noch geplant). Derzeit: LLM-generierte <code>profile_interpretation</code> im Prompt als Freitext.
+              </p>
+              <div className="space-y-4">
+                {MSLQ_PROFILES.map(p => {
+                  const colors: Record<string, { border: string; badge: string; text: string }> = {
+                    emerald: { border: "border-emerald-500/30 bg-emerald-500/5", badge: "bg-emerald-500/15 text-emerald-400 border-emerald-500/30", text: "text-emerald-400" },
+                    sky:     { border: "border-sky-500/30 bg-sky-500/5",         badge: "bg-sky-500/15 text-sky-400 border-sky-500/30",         text: "text-sky-400" },
+                    violet:  { border: "border-violet-500/30 bg-violet-500/5",   badge: "bg-violet-500/15 text-violet-400 border-violet-500/30", text: "text-violet-400" },
+                    rose:    { border: "border-rose-500/30 bg-rose-500/5",       badge: "bg-rose-500/15 text-rose-400 border-rose-500/30",       text: "text-rose-400" },
+                  }
+                  const c = colors[p.color]
+                  return (
+                    <div key={p.name} className={`rounded-xl border p-5 ${c.border}`}>
+                      <div className="flex items-start gap-3 mb-3">
+                        <div className={`shrink-0 px-2.5 py-1 rounded border text-xs font-semibold ${c.badge}`}>
+                          {p.name}
+                        </div>
+                        <div className="flex gap-2 flex-wrap">
+                          {[
+                            { label: "GSE", val: p.gse },
+                            { label: "Motivation", val: p.motivation },
+                            { label: "SRL", val: p.selfReg },
+                          ].map(tag => (
+                            <span key={tag.label} className="text-xs px-2 py-0.5 rounded bg-zinc-800 border border-zinc-700 text-zinc-400">
+                              {tag.label}: <span className={`font-medium ${
+                                tag.val === "hoch" ? "text-emerald-400" :
+                                tag.val === "niedrig" ? "text-rose-400" : "text-amber-400"
+                              }`}>{tag.val}</span>
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                      <p className="text-sm text-zinc-300 mb-2">{p.desc}</p>
+                      <p className="text-xs text-zinc-500 font-mono mb-3">Trigger: {p.trigger}</p>
+                      <div className="mb-3">
+                        <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-1.5">Prompt-Hinweise</p>
+                        <ul className="space-y-1">
+                          {p.promptHints.map((h, i) => (
+                            <li key={i} className="flex items-start gap-2 text-xs text-zinc-400">
+                              <ArrowRight className="shrink-0 h-3 w-3 text-zinc-600 mt-0.5" />
+                              <span>{h}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                      <div className="rounded-lg bg-zinc-900 border border-zinc-800 px-3 py-2">
+                        <p className="text-xs text-zinc-500"><span className="text-zinc-400 font-medium">Beispiel:</span> {p.example}</p>
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
+            </div>
+
+            <div className="rounded-xl border border-amber-500/20 bg-amber-500/5 p-5">
+              <h3 className="text-sm font-semibold mb-2 text-amber-400 flex items-center gap-2">
+                <AlertTriangle className="h-4 w-4" />
+                Implementierungsstatus
+              </h3>
+              <div className="space-y-2 text-xs text-zinc-400">
+                <div className="flex items-start gap-2">
+                  <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400 shrink-0 mt-0.5" />
+                  <span><strong className="text-zinc-300">Layer 1 Datenbankschema</strong> — <code>user_learning_profiles</code> Tabelle existiert. Migration <code>l2g8h3i4b5c6</code> deployed.</span>
+                </div>
+                <div className="flex items-start gap-2">
+                  <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400 shrink-0 mt-0.5" />
+                  <span><strong className="text-zinc-300">Profil-Trigger nach Pre-Survey</strong> — <code>maybe_create_learning_profile()</code> als BackgroundTask. Idempotent + Race-Condition-Guard.</span>
+                </div>
+                <div className="flex items-start gap-2">
+                  <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400 shrink-0 mt-0.5" />
+                  <span><strong className="text-zinc-300">LLM-Interpretation im Prompt</strong> — <code>profile_interpretation</code> im PromptContext v3 (Freitext, max. 120 Wörter, Haiku generiert).</span>
+                </div>
+                <div className="flex items-start gap-2">
+                  <Clock className="h-3.5 w-3.5 text-amber-400 shrink-0 mt-0.5" />
+                  <span><strong className="text-zinc-300">Regelbasiertes Routing (Phase 3)</strong> — Die 4 Profil-Kombinationen hier sind das Zieldesign. Noch nicht als deterministischer Code-Pfad implementiert.</span>
+                </div>
+                <div className="flex items-start gap-2">
+                  <Clock className="h-3.5 w-3.5 text-amber-400 shrink-0 mt-0.5" />
+                  <span><strong className="text-zinc-300">Profil-Briefing-Panel (Phase 2)</strong> — Einmaliges Transparenz-Panel vor Session 1. Refactoring SSE-Auto-Start nötig.</span>
+                </div>
+              </div>
+            </div>
           </div>
         )}
 

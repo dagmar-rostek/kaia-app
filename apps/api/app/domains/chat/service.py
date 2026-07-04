@@ -37,7 +37,11 @@ from app.domains.chat.sse import (
     thinking_event,
     thinking_strip,
 )
-from app.domains.chat.summary import load_cross_session_context
+from app.domains.chat.summary import (
+    load_all_session_contexts,
+    load_historical_quotes,
+    load_previous_session_fields,
+)
 from app.domains.prompts.models import CharacterMode
 from app.domains.prompts.repository import get_active_template
 from app.domains.prompts.service import PromptContext, render_prompt
@@ -69,33 +73,69 @@ META_TRIGGERS = {
 # ── Shared prompt builder ─────────────────────────────────────────────────────
 
 
+def _compute_session_phase(session_number: int) -> str:
+    if session_number <= 3:
+        return "early"
+    if session_number <= 7:
+        return "mid"
+    return "late"
+
+
 async def _build_system_prompt(
     db: AsyncSession,
     repo: ChatRepository,
     session: ChatSession,
     include_cross_session: bool = True,
+    user_turns: int = 0,
 ) -> str:
-    """Load user, optionally fetch cross-session context, render system prompt."""
+    """Load user + learner profile, fetch cumulative session context, render system prompt."""
+    from app.domains.users.repository import UserProfileRepository
+
     user = await repo.get_user(session.user_id)
     user_name = user.username if user else ""
     learning_topic = user.learning_topic or "" if user else ""
 
     is_first = session.session_number == 1
-    last_step, last_observation, insight = ("", "", "")
+    is_final = session.session_number >= 10
+
+    # Load persistent learner profile (DB read, no LLM call)
+    learner_profile = ""
+    gse_baseline: float | None = None
+    profile = await UserProfileRepository(db).get_profile(session.user_id)
+    if profile:
+        learner_profile = profile.profile_interpretation
+        gse_baseline = profile.gse_baseline
+
+    last_step, last_observation, insight = "", "", ""
+    session_history_summary = ""
+    historical_quotes: list[tuple[int, str]] = []
+
     if include_cross_session and not is_first:
-        last_step, last_observation, insight = await load_cross_session_context(
+        last_step, last_observation, insight = await load_previous_session_fields(
             db, repo, session.user_id, session.id
         )
+        session_history_summary = await load_all_session_contexts(db, session.user_id, session.id)
+        # Load historical quotes for contradiction work (Sessions 6-8) and closing (Session 10)
+        if session.session_number >= 6:
+            historical_quotes = await load_historical_quotes(db, session.user_id, session.id)
 
     ctx = PromptContext(
         user_name=user_name,
         learning_topic=learning_topic,
         is_first_session=is_first,
+        is_final_session=is_final,
+        session_number=session.session_number,
+        session_phase=_compute_session_phase(session.session_number),
+        user_turns=user_turns,
         last_first_step=last_step,
         last_session_observation=last_observation,
         insight_for_next_session=insight,
+        session_history_summary=session_history_summary,
+        learner_profile=learner_profile,
+        gse_baseline=gse_baseline,
         outcome=session.daily_plan or "",
         daily_plan=session.daily_plan or "",
+        historical_quotes=historical_quotes,
     )
     character = CharacterMode(session.character)
     raw_template = await get_active_template(db, character)
@@ -122,9 +162,11 @@ async def stream_response(
         return
 
     await repo.save_message(session.id, MessageRole.USER, user_content)
-    system_prompt = await _build_system_prompt(db, repo, session)
-
+    # Count user turns before this message for session-phase awareness
     history = await repo.get_messages(session.id)
+    user_turn_count = sum(1 for m in history if str(m.role) == "user")
+    system_prompt = await _build_system_prompt(db, repo, session, user_turns=user_turn_count)
+
     api_messages = [{"role": str(m.role), "content": m.content} for m in history if m.content]
 
     client = AsyncAnthropic(

@@ -91,6 +91,7 @@ const CLOSURE_TIMEOUT_MS = 10 * 60 * 1000
 export default function ChatPage() {
   const router = useRouter()
   const [sessionId,    setSessionId]    = useState<number | null>(null)
+  const [sessionNumber, setSessionNumber] = useState<number | null>(null)
   const [messages,     setMessages]     = useState<ChatMessage[]>([])
   const [input,        setInput]        = useState("")
   const [loading,      setLoading]      = useState(false)
@@ -142,9 +143,11 @@ export default function ChatPage() {
           }
         }
         if (!sessRes.ok) throw new Error(`Session-Start fehlgeschlagen (${sessRes.status})`)
-        const { id: sid } = await sessRes.json() as { id: number }
+        const sessData = await sessRes.json() as { id: number; session_number: number }
         if (cancelled) return
+        const sid = sessData.id
         setSessionId(sid)
+        setSessionNumber(sessData.session_number)
         setMessages([{ id: streamId, role: "assistant", content: "", streaming: true }])
 
         const openRes = await fetch(`${API_BASE}/api/v1/chat/sessions/${sid}/opening`, {
@@ -183,6 +186,7 @@ export default function ChatPage() {
     if (closureTimerRef.current) clearTimeout(closureTimerRef.current)
     if (newChar) setCharacter(newChar)
     setSessionId(null)
+    setSessionNumber(null)
     setMessages([])
     setError(null)
     setClosureState("idle")
@@ -396,8 +400,10 @@ export default function ChatPage() {
       <header className="shrink-0 flex items-center justify-between px-4 py-3 border-b border-border">
         <div className="flex items-center gap-3">
           <span className="font-semibold tracking-tight">KAIA</span>
-          {sessionId && (
-            <span className="text-xs text-muted-foreground font-mono">#{sessionId}</span>
+          {sessionNumber !== null && (
+            <span className="text-xs text-muted-foreground">
+              Session {sessionNumber} von 10
+            </span>
           )}
         </div>
         <div className="flex items-center gap-1.5">
@@ -445,6 +451,14 @@ export default function ChatPage() {
         aria-label="Chat-Verlauf"
       >
         <div className="max-w-2xl mx-auto space-y-4">
+          {/* Silent context sentence for Sessions 9 and 10 */}
+          {sessionNumber !== null && sessionNumber >= 9 && messages.length > 0 && (
+            <p className="text-center text-xs text-muted-foreground/50 pt-2 pb-1">
+              {sessionNumber === 10
+                ? "Das ist deine letzte Session."
+                : "Das ist deine vorletzte Session."}
+            </p>
+          )}
           {messages.map(msg => (
             <div
               key={msg.id}

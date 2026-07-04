@@ -1,7 +1,18 @@
 from datetime import datetime
 from enum import StrEnum
 
-from sqlalchemy import Boolean, DateTime, ForeignKey, Index, SmallInteger, String, func
+from sqlalchemy import (
+    Boolean,
+    DateTime,
+    ForeignKey,
+    Index,
+    SmallInteger,
+    String,
+    Text,
+    UniqueConstraint,
+    func,
+)
+from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.session import Base
@@ -89,3 +100,35 @@ class RefreshToken(Base):
         # Häufigste Query: aktive Tokens eines Users
         Index("ix_refresh_tokens_user_active", "user_id", "revoked_at"),
     )
+
+
+class UserLearningProfile(Base):
+    """Persistent learner profile derived from pre-survey (MSLQ + GSE).
+
+    Created exactly once per user after both pre-surveys are complete.
+    NEVER updated automatically — it is an immutable baseline snapshot.
+    Layer 1 of the two-layer profile model (immutable baseline).
+    Layer 2 is the cumulative session_summary data in ChatSession.
+    """
+
+    __tablename__ = "user_learning_profiles"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    user_id: Mapped[int] = mapped_column(
+        ForeignKey("users.id", ondelete="CASCADE"),
+        index=True,
+    )
+
+    # Raw baseline data — preserved for thesis reproducibility
+    gse_baseline: Mapped[float]
+    gse_items: Mapped[dict] = mapped_column(JSONB)  # all 10 GSE item scores
+    subscale_scores: Mapped[dict] = mapped_column(JSONB)  # MSLQ 4 subscales + raw items
+
+    # LLM-generated interpretation — created once, stored, never regenerated
+    profile_interpretation: Mapped[str] = mapped_column(Text)
+    # Hash of the prompt template used — for reproducibility audit
+    interpretation_prompt_hash: Mapped[str] = mapped_column(String(64), default="")
+
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+
+    __table_args__ = (UniqueConstraint("user_id", name="uq_user_learning_profiles_user_id"),)

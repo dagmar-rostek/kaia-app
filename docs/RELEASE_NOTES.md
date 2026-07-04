@@ -14,6 +14,41 @@
 
 ---
 
+## 2026-07-04 — Session-Architektur v3: Persistentes Nutzerprofil, kumulatives Gedächtnis, session-aware Prompt
+
+**04.07.2026 · Session-Architektur-Redesign v0.9.0**
+
+Vollständige Neugestaltung der KAIA-Session-Architektur auf Basis eines interdisziplinären Team-Reviews (Psychologe, Didaktiker, AI Engineer, UX Designer). KAIA war bisher session-blind — kein Zugriff auf Sitzungsnummer, kein kumulatives Gedächtnis, kein persistentes Lernenden-Profil. Das ist jetzt grundlegend behoben.
+
+**Was sich für Nutzer:innen ändert:**
+
+KAIA weiß ab jetzt in welcher Session sie sich befindet und verhält sich entsprechend. Die Gesprächsführung eskaliert systematisch von explorativem Erkunden (Sessions 1–2) über Transferarbeit und Analyse (Sessions 3–8) bis zur Synthese (Sessions 9–10). Session 5 enthält immer einen obligatorischen Halbzeit-Spiegel. Session 10 endet mit drei simultanen Aufgaben: Gegenüberstellung der eigenen Aussagen von Session 1 mit heute, Autonomisierungsfrage ("Wie lernst du ohne mich weiter?") und — bewusst — kein GSE-Priming vor der Post-Messung.
+
+Im Chat-Header wird jetzt "Session N von 10" angezeigt. Ab Session 9 erscheint ein stiller Kontext-Satz ("Das ist deine vorletzte Session." / "Das ist deine letzte Session.") — ohne Fanfare, ohne UI-Element, als einfacher Hinweis.
+
+**Technische Umsetzung (vollständig):**
+
+*Zwei-Schichten-Profil-Modell:*
+- Layer 1: Neue Tabelle `user_learning_profiles` — unveränderlicher Snapshot nach Pre-Survey (MSLQ + GSE). Speichert `gse_baseline`, `subscale_scores` (JSONB), `gse_items` (JSONB) und eine LLM-generierte `profile_interpretation` (Haiku, max. 120 Wörter). UNIQUE-Constraint verhindert Doppelanlagen auch unter paralleler BackgroundTask-Ausführung.
+- Layer 2: `session_summary` in `chat_sessions` — kumulative Verhaltensdaten inkl. neu hinzugefügtem Feld `strongest_quote` (stärkster eigener Satz des Lernenden pro Session).
+
+*PromptContext v3 — 7 neue Felder:*
+`session_number`, `session_phase` (early/mid/late), `is_final_session`, `user_turns`, `learner_profile`, `gse_baseline`, `session_history_summary`, `historical_quotes`.
+
+*Kumulatives Session-Gedächtnis:*
+`load_all_session_contexts()` aggregiert alle Vorsessions kompakt (älteste zuerst). Inline-Re-Extraktion mit 12-Sekunden-Timeout entfernt — das war das größte Latenz-Risiko beim Session-Start.
+
+*KAIA_PROMPT_V3_WARM (aktiv):*
+Jinja2-Template mit session-aware Logik: Session-Kontext-Header, Lernenden-Profil-Block (Hintergrund, nie explizit zitieren), obligatorischer Session-5-Trigger, Historical-Quotes-Block (ab Session 6 für Widerspruchsarbeit Typ 3), Session-10-Drei-Aufgaben-Abschluss. V2 als Eval-Regression-Baseline erhalten.
+
+*Profil-Trigger nach Pre-Survey:*
+`maybe_create_learning_profile()` als `BackgroundTasks`-Task nach `/survey/mslq` und `/survey/gse` — idempotent, kein LLM-Call pro Session.
+
+**Thesis-Relevanz:**
+Das persistente Nutzerprofil ist ein Kernbaustein der neuroadaptiven Personalisierung (Forschungsfrage 2). Die regelbasierte MSLQ-Profil-Übersetzung (4 Kombinationen: Enthusiast / Kompetente-ohne-Antrieb / Gewissenhafte / Lernstarke) ist als Phase-3-Feature geplant — die Architektur ist vorbereitet. Wichtig für die LLM-Evaluation: V2 bleibt als Eval-Regression-Baseline für kontrollierte Vergleiche in der Pilotstudie erhalten. · `~12h Teamarbeit + Implementierung`
+
+---
+
 ## 2026-06-22 — Survey-Fix, Masterthesis SSR, Auswertungsinterpretation, Lernthema-Fix
 
 **22.06.2026 · `2184a31`** — Survey 500-Fehler behoben: Parametername-Mismatch (`mt` vs. `measurement_type`). MSLQ- und GSE-Items werden jetzt Fisher-Yates randomisiert. Fortschrittsleiste. Auswertungsansicht nach Abschluss des Fragebogens. · `30min`  
