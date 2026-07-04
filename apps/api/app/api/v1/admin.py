@@ -93,7 +93,7 @@ async def create_test_token(
                 approved_by="system",
             )
         )
-    return {"access_token": create_access_token(user.id)}
+    return {"access_token": create_access_token(user.id, expire_minutes=120)}
 
 
 @router.post("/simulation/run")
