@@ -34,6 +34,15 @@ if git diff --cached --name-only | grep -q "^apps/api/.*\.py$"; then
     echo -e "${YELLOW}  Fix: cd apps/api && source .venv/bin/activate && ruff format .${NC}"
     exit 1
   fi
+
+  echo -n "  → mypy ... "
+  if (cd "$REPO_ROOT/apps/api" && source .venv/bin/activate && mypy app/ 2>&1); then
+    echo -e "${GREEN}✓${NC}"
+  else
+    echo -e "${RED}✗${NC}"
+    echo -e "${YELLOW}  Fix: cd apps/api && source .venv/bin/activate && mypy app/${NC}"
+    exit 1
+  fi
 fi
 
 # ── 2. TypeScript: ESLint ────────────────────────────────────────────────────
