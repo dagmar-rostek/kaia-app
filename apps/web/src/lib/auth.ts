@@ -46,10 +46,21 @@ export async function apiLogout(): Promise<void> {
   tokenStore.clear()
 }
 
+function redirectToLogin(): never {
+  window.location.replace('/login')
+  throw new Error('Sitzung abgelaufen')
+}
+
 // Authenticated fetch — refresht automatisch bei 401
 export async function authFetch(url: string, init: RequestInit = {}): Promise<Response> {
   let token = tokenStore.get()
-  if (!token) token = await apiRefresh()
+  if (!token) {
+    try {
+      token = await apiRefresh()
+    } catch {
+      redirectToLogin()
+    }
+  }
 
   const doFetch = (t: string) =>
     fetch(url, {
@@ -61,6 +72,10 @@ export async function authFetch(url: string, init: RequestInit = {}): Promise<Re
   const res = await doFetch(token)
   if (res.status !== 401) return res
 
-  const newToken = await apiRefresh()
-  return doFetch(newToken)
+  try {
+    const newToken = await apiRefresh()
+    return doFetch(newToken)
+  } catch {
+    redirectToLogin()
+  }
 }
