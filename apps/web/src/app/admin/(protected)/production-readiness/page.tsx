@@ -5,7 +5,7 @@ import { CheckCircle2, XCircle, AlertCircle, Activity, Shield, Database, Globe, 
 async function fetchHealth() {
   try {
     const apiUrl = process.env.INTERNAL_API_URL ?? "http://localhost:8000"
-    const res = await fetch(`${apiUrl}/api/v1/health`, { cache: "no-store" })
+    const res = await fetch(`${apiUrl}/v1/health`, { cache: "no-store" })
     if (!res.ok) return null
     return res.json() as Promise<{ status: string; study_mode: string; version: string }>
   } catch {
