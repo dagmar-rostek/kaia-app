@@ -14,6 +14,7 @@ from app.core.config import settings
 # Ensure all ORM models are in the SQLAlchemy mapper before FK resolution.
 # Domains covered by their routes (chat, users, preregistration, prompts) are
 # already registered; the remaining domains need an explicit import here.
+from app.domains.eval import models as _eval_models  # noqa: F401
 from app.domains.roadmap import models as _roadmap_models  # noqa: F401
 from app.domains.survey import models as _survey_models  # noqa: F401
 from app.observability.logging import configure_logging

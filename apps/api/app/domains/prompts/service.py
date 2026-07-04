@@ -53,6 +53,12 @@ class PromptContext:
     # List of (session_number, strongest_quote) pairs
     historical_quotes: list[tuple[int, str]] = field(default_factory=list)
 
+    # Didactic mission for this specific session (computed from lookup table)
+    session_mission: str = ""
+    dominant_question_type: str = ""
+    forbidden_question_types: str = ""
+    session_few_shots: str = ""
+
 
 def _session_phase(session_number: int) -> str:
     if session_number <= 3:
@@ -62,7 +68,7 @@ def _session_phase(session_number: int) -> str:
     return "late"
 
 
-def render_prompt(template_str: str, ctx: PromptContext) -> str:
+def render_prompt(template_str: str, ctx: PromptContext) -> str:  # noqa: PLR0913
     """Render a Jinja2 system prompt template with session context.
 
     Unknown variables are silently replaced with empty string — keeps the system
@@ -87,6 +93,10 @@ def render_prompt(template_str: str, ctx: PromptContext) -> str:
             outcome=ctx.outcome,
             daily_plan=ctx.daily_plan,
             historical_quotes=ctx.historical_quotes,
+            session_mission=ctx.session_mission,
+            dominant_question_type=ctx.dominant_question_type,
+            forbidden_question_types=ctx.forbidden_question_types,
+            session_few_shots=ctx.session_few_shots,
         )
     except TemplateError:
         # If Jinja2 rendering fails, return the raw template — better than crashing

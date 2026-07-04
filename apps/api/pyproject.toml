@@ -50,6 +50,11 @@ mccabe.max-complexity = 10
 "tests/**" = ["S101"]
 "app/domains/prompts/templates.py" = ["E501"]  # prompt strings are intentionally long
 "app/domains/simulation/runner.py" = ["E501"]  # persona message strings are intentionally long natural language
+"app/domains/chat/service.py" = ["E501"]       # few-shot examples are intentionally long German prose
+"app/domains/simulation/eval_personas.py" = ["E501"]  # persona simulator prompts are intentionally long
+"app/domains/eval/evaluator.py" = ["E501", "C901"]  # judge orchestration is inherently complex
+"app/domains/eval/models.py" = ["E501"]
+"app/domains/eval/repository.py" = ["E501"]
 "alembic/versions/**" = ["E501"]  # migration column definitions are intentionally long
 
 [tool.mypy]

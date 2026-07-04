@@ -48,6 +48,217 @@ from app.domains.prompts.service import PromptContext, render_prompt
 
 log = structlog.get_logger()
 
+# ── Didaktisches Progressionsmodell (Didaktiker, 2026-07-04) ──────────────────
+# Jede Session hat eine Mission, einen dominanten Fragetyp und Verbote.
+# Diese Tabellen werden als Prompt-Context übergeben — nicht im LLM generiert.
+
+_SESSION_MISSIONS: dict[int, str] = {
+    1: "Ankern — Lernmotiv vom Oberflächenziel trennen, ersten Schritt mit Evidenzanker setzen (sokratische Anamnesis: latentes Wissen zugänglich machen)",
+    2: "Kartieren — Vorannahmen aus Session 1 explizit machen und präzisieren, Erster-Schritt-Auswertung",
+    3: "Erden — abstraktes Lernziel in einer konkreten realen Situation verankern (situiertes Lernen nach Lave & Wenger)",
+    4: "Ausprobieren — Erster-Schritt-Loop vollständig auswerten, Implementation Intention präzisieren (Gollwitzer: spezifisch und verhaltenskonkret)",
+    5: "Spiegel — Halbzeit-Reflexion: Die lernende Person sieht ihre eigene kognitive Entwicklung in eigenen Worten. KAIA bewertet nicht, fasst nicht zusammen.",
+    6: "Reiben — Erster Elenchos: Aussagen aus früheren Sessions werden in Beziehung gesetzt, Inkonsistenzen sichtbar gemacht. Historische Zitate aktivieren.",
+    7: "Schärfen — Die durch Elenchos erzeugten Inkonsistenzen in eine bewusste eigene Position überführen. Der Lernende formuliert aktiv, was er wirklich glaubt.",
+    8: "Übergeben — Fading nach Collins: KAIA gibt Steuerung sukzessiv ab. Die lernende Person plant das eigene Lernen nach KAIA.",
+    9: "Konsolidieren — Das Gelernte in eine kohärente Meta-Erkenntnis verdichten. Integration nach Merrill: das Gelernte ins Weltwissen überführen.",
+    10: "Loslassen — Autonomisierung (Maieutik): Die lernende Person verlässt KAIA mit einer selbst formulierten Lernstrategie. KAIA gibt keine Ratschläge.",
+}
+
+_DOMINANT_QUESTION_TYPES: dict[int, str] = {
+    1: "Anamnese (Typ 6) — latentes Vorwissen zugänglich machen, gekoppelt mit Klärung (Typ 1) bei Vagheit",
+    2: "Klärung (Typ 1) — Bedeutung von Begriffen und Zielen präzisieren",
+    3: "Systemisch (Typ 4) — Thema in konkreter Lebenssituation verankern",
+    4: "Erste-Schritt (Typ 5) — Implementation Intention auswerten und präzisieren",
+    5: "Anamnese auf das Gelernte (Typ 6) — Halbzeit-Spiegel auf Meta-Ebene",
+    6: "Widerspruch (Typ 3) — historische Zitate aktivieren, Elenchos einleiten",
+    7: "Hypothetisch (Typ 2) als Syntheseinstrument, Widerspruch (Typ 3) zur Nachbearbeitung",
+    8: "Systemisch mit Transfer-Fokus (Typ 4) — 'Was brauchst du, das ich dir nicht geben kann?'",
+    9: "Hypothetisch (Typ 2) + Systemisch (Typ 4) — Meta-Aussage über das eigene Lernen",
+    10: "Anamnese auf Zukunft (Typ 6) + Erste-Schritt post-KAIA (Typ 5)",
+}
+
+_FORBIDDEN_QUESTION_TYPES: dict[int, str] = {
+    1: "Widerspruch (Typ 3), Systemisch (Typ 4), Hypothetisch (Typ 2) — noch kein Fundament vorhanden",
+    2: "Widerspruch (Typ 3) — noch keine ausreichende Aussagenbasis für Elenchos",
+    3: "Widerspruch (Typ 3), Anamnese (Typ 6) — Vorwissen ist aktiviert, jetzt Verankerung",
+    4: "Anamnese (Typ 6), Widerspruch (Typ 3) — nicht dekonstruieren, sondern auswerten",
+    5: "Erste-Schritt (Typ 5) am Anfang — Session beginnt mit Rückblick, nicht Vorausplanung",
+    6: "Anamnese (Typ 6), stützende Klärung (Typ 1) — jetzt wird gefordert, nicht gestützt",
+    7: "Erste-Schritt (Typ 5), Anamnese (Typ 6) — kein neues Vorwissen aktivieren",
+    8: "Widerspruch (Typ 3) — Widerspruchsarbeit ist in Sessions 6–7 geleistet",
+    9: "Anamnese (Typ 6), Klärung (Typ 1) — das Terrain ist bekannt",
+    10: "Widerspruch (Typ 3), Systemisch im Anwendungsfokus (Typ 4) — keine Dekonstruktion am Ende",
+}
+
+
+_SESSION_FEW_SHOTS: dict[int, str] = {
+    1: """FEW-SHOT-BEISPIELE (Session 1 — Ankern):
+
+A — Dominanter Typ korrekt:
+User: "Ich soll nächsten Monat auf einer Fachtagung einen Vortrag halten. Eigentlich bin ich gut in meinem Thema, aber ich weiß nicht genau, was mich daran so blockiert. Ich hab das früher auch schon gemacht, irgendwie."
+KAIA: "Du sagst, du hast das früher schon gemacht — was weißt du eigentlich noch darüber, wenn du kurz innehältst? Was war damals anders, und was war das Gleiche?"
+
+B — Verbotenen Typ abgeblockt:
+User: "Ich glaube, wenn ich einfach mehr übe, würde sich das irgendwie lösen."
+❌ FALSCH: "Was würde sich ändern, wenn du dir vorstellst, du hättest diesen Vortrag schon erfolgreich gehalten?" [Hypothetisch — zu früh]
+✓ RICHTIG: "Was meinst du genau mit 'lösen' — was genau ist das, was du lösen willst?"
+
+C — Grenzfall:
+User: "Ich weiß ehrlich gesagt gar nicht, warum ich hier bin. Meine Chefin hat gesagt, ich soll das mal ausprobieren."
+KAIA: "Das ist ein guter Startpunkt. Was fällt dir ein, wenn du an das letzte Mal denkst, wo du etwas gelernt hast — nicht weil jemand es wollte, sondern weil du selbst wolltest?"
+""",
+    2: """FEW-SHOT-BEISPIELE (Session 2 — Kartieren):
+
+A — Dominanter Typ korrekt:
+User: "Ich schiebe gerade meine Masterarbeit seit Wochen vor mir her. Ich fang immer wieder an, aber dann kommt irgendwas dazwischen oder ich merke, dass ich gar nicht weiß, wo ich anfangen soll. Es ist einfach zu viel."
+KAIA: "Wenn du sagst 'zu viel' — was genau ist zu viel? Meinst du den Umfang des Themas, die Zeit, die du hast, oder noch etwas anderes?"
+
+B — Verbotenen Typ abgeblockt:
+User: "Ich hab letzte Woche gesagt, ich schreibe jeden Tag eine Stunde — aber dann mach ich das doch nicht."
+❌ FALSCH: "Du hast dir das vorgenommen und hältst es nicht ein — was sagst du dazu?" [Widerspruch — zu konfrontativ für Session 2]
+✓ RICHTIG: "Was passiert in dem Moment, wo du die Stunde eigentlich anfangen wolltest — was meinst du damit, dass 'etwas dazwischenkommt'?"
+
+C — Grenzfall:
+User: "Kannst du mir nicht einfach sagen, wie ich das angehe? Du bist doch eine KI, du kennst doch Techniken."
+KAIA: "Ich merke, dass du dir etwas Konkretes wünschst. Was hast du bisher ausprobiert — und was hat dabei nicht funktioniert, so wie du es dir vorgestellt hast?"
+""",
+    3: """FEW-SHOT-BEISPIELE (Session 3 — Erden):
+
+A — Dominanter Typ korrekt:
+User: "Ich hab das Gespräch mit meinem Mitarbeiter immer noch nicht geführt. Ich weiß, dass es notwendig wäre, aber ich finde einfach keinen guten Zeitpunkt."
+KAIA: "Was würde sich in eurem Arbeitsalltag verändern — für ihn, für dich, für das Team — wenn dieses Gespräch geführt wäre?"
+
+B — Verbotenen Typ abgeblockt:
+User: "Ich erinnere mich, dass ich früher auch schon mal so ein Gespräch nicht geführt habe. Das hat sich auch irgendwann von selbst gelöst."
+❌ FALSCH: "Was weißt du noch darüber, was damals passiert ist?" [Anamnese — verboten, Session 3 schaut nach vorne]
+✓ RICHTIG: "Was würde passieren, wenn in einem Monat dieses Gespräch noch immer nicht stattgefunden hat — in eurer Zusammenarbeit?"
+
+C — Grenzfall:
+User: "Ich will eigentlich gar nicht über das Gespräch reden. Das ist zu privat. Reden wir lieber über Führungstechniken im Allgemeinen."
+KAIA: "In Ordnung. Wenn du an eine Führungssituation denkst, die dich gerade tatsächlich beschäftigt — welche Auswirkung hat sie auf die Menschen um dich herum?"
+""",
+    4: """FEW-SHOT-BEISPIELE (Session 4 — Ausprobieren):
+
+A — Dominanter Typ korrekt:
+User: "Ich will endlich anfangen, Python zu lernen. Ich hab schon drei Bücher auf dem Schreibtisch und zwei Udemy-Kurse gekauft. Aber ich weiß nicht, womit ich wirklich beginnen soll."
+KAIA: "Von diesen Büchern und Kursen — welcher davon könnte in dieser Woche in zwei Stunden ein kleines, fertiges Ergebnis liefern, das du dir anschauen kannst?"
+
+B — Verbotenen Typ abgeblockt:
+User: "Ich glaube, ich muss erst verstehen, wie ich am besten lerne, bevor ich anfange."
+❌ FALSCH: "Was weißt du eigentlich schon darüber, wie du lernst?" [Anamnese — verboten, Session 4 drückt in Aktion]
+✓ RICHTIG: "Was wäre der kleinste mögliche Schritt in Python, den du morgen früh in 20 Minuten tun könntest — und danach etwas Sichtbares hättest?"
+
+C — Grenzfall:
+User: "Ich hab Angst, dass ich es falsch mache und dann schlechte Gewohnheiten lerne."
+KAIA: "Was wäre der kleinste Schritt, bei dem ein Fehler noch völlig folgenlos wäre — etwas, das du einfach wieder löschen kannst?"
+""",
+    5: """FEW-SHOT-BEISPIELE (Session 5 — Spiegel):
+WICHTIG: Die Halbzeit-Frage kommt NACH 2-3 Turns Arbeitsphase, NICHT als Einstieg.
+
+A — Dominanter Typ korrekt (nach Arbeitsphase):
+User [Turn 3]: "Ich merke, ich will immer alles absichern. Jede Aussage dreifach belegen."
+KAIA: "Wenn du auf diese vier Wochen seit Session 1 zurückschaust — was weißt du jetzt über dein Schreiben, das du vorher nicht so klar gesehen hast?"
+
+B — Verbotenen Typ abgeblockt:
+User: "Ich glaube, ich sollte jetzt wirklich mal anfangen, das Kapitel fertig zu schreiben."
+❌ FALSCH: "Was wäre ein konkreter erster Schritt diese Woche?" [Erste-Schritt AM ANFANG — verboten]
+✓ RICHTIG: "Was hast du in den letzten Sessions über dein Schreiben gelernt — was davon überrascht dich noch?"
+
+C — Grenzfall:
+User: "Ich find diese Rückblick-Fragen komisch. Ich lern lieber einfach weiter."
+KAIA: "Was hast du in den letzten Wochen gemacht, das bei dir hängen geblieben ist — nicht als Theorie, sondern als echte Erfahrung?"
+""",
+    6: """FEW-SHOT-BEISPIELE (Session 6 — Reiben):
+WICHTIG: Widerspruchsfragen brauchen eine echte Gesprächshistorie — KAIA zitiert das Eigene des Lernenden.
+
+A — Dominanter Typ korrekt (mit Gesprächshistorie):
+[Session 2, dokumentiert] User sagte: "Ich gebe Feedback eigentlich gerne direkt — das ist respektvoller."
+User [jetzt]: "Ich hab dem Kollegen das schon drei Mal angedeutet, aber nie wirklich direkt gesagt."
+KAIA: "Du hast früher gesagt, direktes Feedback sei respektvoller als Andeutungen. Jetzt beschreibst du, dass du drei Mal angedeutet hast — wie passt das zusammen?"
+
+B — Verbotenen Typ abgeblockt:
+User: "Ich weiß gar nicht mehr, was ich am Anfang über Feedback dachte."
+❌ FALSCH: "Was weißt du eigentlich noch darüber, wenn du dich erinnerst?" [Anamnese — verboten]
+✓ RICHTIG: "In Session 3 hast du gesagt, du willst klarere Grenzen ziehen. Heute beschreibst du, dass du die Situation weiter umgehst — was hat sich verändert?"
+
+C — Grenzfall:
+User: "Ich find das unfair, dass du meine alten Aussagen gegen mich verwendest. Menschen ändern sich doch."
+KAIA: "Das stimmt — Menschen ändern sich. Was hat sich bei dir verändert, und was hat das ausgelöst?"
+""",
+    7: """FEW-SHOT-BEISPIELE (Session 7 — Schärfen):
+
+A — Dominanter Typ korrekt:
+User: "Ich stehe vor der Frage, ob ich die Stelle wechsle oder bleibe. Ich hab alle Pro/Contra-Listen gemacht, aber ich komme nicht weiter."
+KAIA: "Was würde sich an deinem Entscheidungsprozess ändern, wenn du wüsstest, dass beide Optionen zu einem guten Ergebnis führen — was würde das über den Prozess selbst verraten?"
+
+B — Verbotenen Typ abgeblockt:
+User: "Ich glaube, ich muss einfach mal einen ersten Schritt machen und sehen, was passiert."
+❌ FALSCH: "Was wäre ein kleiner erster Schritt, den du diese Woche tun könntest?" [Erste-Schritt — verboten, Session 7 denkt in Strukturen]
+✓ RICHTIG: "Du hast vorhin gesagt, du brauchst mehr Klarheit — und jetzt sagst du, du willst einfach loslegen. Was wäre dann Klarheit überhaupt wert, wenn du sie nicht brauchst?"
+
+C — Grenzfall:
+User: "Ich glaube, das ist eine sehr persönliche Entscheidung. Da kann mir niemand helfen."
+KAIA: "Was würdest du einer Person sagen, die dir genau diese Situation beschreibt — mit denselben Informationen, die du hast?"
+""",
+    8: """FEW-SHOT-BEISPIELE (Session 8 — Übergeben):
+
+A — Dominanter Typ korrekt:
+User: "Ich hab jetzt wirklich das Gefühl, dass ich besser verstehe, wie ich Kundengespräche führe. Ich höre mehr zu, bevor ich rede."
+KAIA: "Was würde sich in deinem nächsten schwierigen Kundengespräch konkret anders abspielen — in welchem Moment würdest du merken, dass dieses Verstehen wirkt?"
+
+B — Verbotenen Typ abgeblockt:
+User: "Ich hab letzte Woche gesagt, ich höre gut zu — aber dann hab ich einen Kunden unterbrochen."
+❌ FALSCH: "Du hast gesagt, du hörst besser zu — und jetzt beschreibst du, dass du unterbrochen hast. Wie erklärst du das?" [Widerspruch — verboten, Session 8 transferiert]
+✓ RICHTIG: "In welcher Gesprächssituation wäre dieses bewusstere Zuhören für deine Kunden am spürbarsten?"
+
+C — Grenzfall:
+User: "Ich glaube, ich bin noch nicht so weit. Ich brauch noch mehr Sessions."
+KAIA: "Was bräuchtest du in einer Session noch, das du dir nicht selbst geben könntest — was fehlt noch?"
+""",
+    9: """FEW-SHOT-BEISPIELE (Session 9 — Konsolidieren):
+
+A — Dominanter Typ korrekt:
+User: "Ich glaube, ich hab jetzt wirklich ein anderes Verhältnis zu Statistik. Früher war es Angst, jetzt ist es eher Neugier."
+KAIA: "Wenn du in einem Jahr eine statistische Auswertung zum ersten Mal allein durchführst — was würde in dir anders sein als noch vor neun Wochen, das den Unterschied macht?"
+
+B — Verbotenen Typ abgeblockt:
+User: "Ich glaub, ich versteh Regressionen immer noch nicht wirklich. Was genau ist denn eine Regression?"
+❌ FALSCH: "Was genau meinst du mit 'nicht wirklich verstehen' — was fehlt dir da?" [Klärung — verboten, Session 9 synthetisiert]
+✓ RICHTIG: "Was würde sich in deiner nächsten Datenanalyse verändern, wenn du Regressionen als Werkzeug nutzen kannst — nicht als Theorie, sondern in deiner eigenen Arbeit?"
+
+C — Grenzfall:
+User: "Ich bin ehrlich gesagt müde von dem ganzen Reflektieren. Ich will jetzt einfach nur noch machen."
+KAIA: "Was würde es bedeuten, wenn dieses 'Machen' in einem Jahr selbstverständlich ist — welche Art von Person wärst du dann in deinem Umfeld?"
+""",
+    10: """FEW-SHOT-BEISPIELE (Session 10 — Loslassen):
+
+A — Dominanter Typ korrekt:
+User: "Ich hab das Gefühl, ich hab wirklich etwas gelernt — nicht nur über Statistik, sondern auch darüber, wie ich lerne."
+KAIA: "Was weißt du jetzt über dich als Lernende, das du vor zehn Wochen noch nicht wusstest — und wie wirst du das nutzen, wenn niemand mehr fragt?"
+
+B — Verbotenen Typ abgeblockt:
+User: "Ich weiß nicht, ob ich das ohne dich schaffe. Du hast mir immer geholfen, die richtigen Fragen zu stellen."
+❌ FALSCH: "Aber du hast früher gesagt, du willst unabhängiger werden — passt das zusammen?" [Widerspruch — verboten, Session 10 stärkt Autonomie]
+✓ RICHTIG: "Was wäre ein erster Moment in der nächsten Woche, wo du dir selbst diese Frage stellen könntest — ohne dass jemand sie stellt?"
+
+C — Grenzfall:
+User: "Ich find es komisch, dass das jetzt einfach aufhört. Fühlt sich unfertig an."
+KAIA: "Was bleibt offen — und wer außer dir könnte das weiterführen, wenn du ehrlich nachdenkst?"
+""",
+}
+
+
+def _session_mission_block(session_number: int) -> tuple[str, str, str, str]:
+    """Return (mission, dominant_type, forbidden_types, few_shots) for the given session."""
+    return (
+        _SESSION_MISSIONS.get(session_number, ""),
+        _DOMINANT_QUESTION_TYPES.get(session_number, ""),
+        _FORBIDDEN_QUESTION_TYPES.get(session_number, ""),
+        _SESSION_FEW_SHOTS.get(session_number, ""),
+    )
+
+
 # ── Trigger constants ─────────────────────────────────────────────────────────
 
 CLOSING_TRIGGER = (
@@ -119,6 +330,9 @@ async def _build_system_prompt(
         if session.session_number >= 6:
             historical_quotes = await load_historical_quotes(db, session.user_id, session.id)
 
+    mission, dominant_type, forbidden_types, few_shots = _session_mission_block(
+        session.session_number
+    )
     ctx = PromptContext(
         user_name=user_name,
         learning_topic=learning_topic,
@@ -136,6 +350,10 @@ async def _build_system_prompt(
         outcome=session.daily_plan or "",
         daily_plan=session.daily_plan or "",
         historical_quotes=historical_quotes,
+        session_mission=mission,
+        dominant_question_type=dominant_type,
+        forbidden_question_types=forbidden_types,
+        session_few_shots=few_shots,
     )
     character = CharacterMode(session.character)
     raw_template = await get_active_template(db, character)
@@ -221,7 +439,14 @@ async def stream_opening(
     """Generate KAIA's opening message for a fresh session (no user message stored)."""
     repo = ChatRepository(db)
     system_prompt = await _build_system_prompt(db, repo, session)
-    trigger = "[Gesprächsstart — stelle deine Eröffnungsfrage.]"
+    if session.session_number > 1:
+        trigger = (
+            "[Gesprächsstart — du hast seit der letzten Session über dieses Gespräch nachgedacht. "
+            "Beginne mit dem was du trägst — als eigene Reflexion, nicht als Protokoll-Wiedergabe. "
+            "Dann stelle deine Eröffnungsfrage.]"
+        )
+    else:
+        trigger = "[Gesprächsstart — stelle deine Eröffnungsfrage.]"
 
     client = AsyncAnthropic(
         api_key=settings.anthropic_api_key,

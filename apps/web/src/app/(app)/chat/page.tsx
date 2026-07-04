@@ -103,13 +103,22 @@ export default function ChatPage() {
   const [lastKaiaMessageId, setLastKaiaMessageId] = useState<number | null>(null)
   const [activeFeedback,   setActiveFeedback]   = useState<string | null>(null)
 
-  const bottomRef       = useRef<HTMLDivElement>(null)
-  const textareaRef     = useRef<HTMLTextAreaElement>(null)
-  const closureTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const bottomRef        = useRef<HTMLDivElement>(null)
+  const textareaRef      = useRef<HTMLTextAreaElement>(null)
+  const closureTimerRef  = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const userTurnCountRef = useRef(0)
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" })
   }, [messages])
+
+  // Auto-resize textarea to fit content
+  useEffect(() => {
+    const el = textareaRef.current
+    if (!el) return
+    el.style.height = "auto"
+    el.style.height = `${Math.min(el.scrollHeight, 200)}px`
+  }, [input])
 
   // Clear inactivity timer on unmount
   useEffect(() => {
@@ -337,6 +346,7 @@ export default function ChatPage() {
       }
     }
 
+    userTurnCountRef.current += 1
     setMessages(prev => [...prev, { id: `u-${Date.now()}`, role: "user", content: userContent }])
     const streamId = `a-${Date.now()}`
     setMessages(prev => [...prev, { id: streamId, role: "assistant", content: "", streaming: true }])
@@ -376,8 +386,13 @@ export default function ChatPage() {
     // After 2 post-closure exchanges, re-trigger the closure bubble
     if (streamOk && closureExchanges >= 2) {
       void startClosure()
+      return
     }
-  }, [input, loading, sessionId, character, closureExchanges, startClosure])
+    // Auto-trigger closure after 10 user turns (safety net for endless sessions)
+    if (streamOk && closureState === "idle" && userTurnCountRef.current >= 10) {
+      void startClosure()
+    }
+  }, [input, loading, sessionId, character, closureExchanges, closureState, startClosure])
 
   function handleKeyDown(e: React.KeyboardEvent<HTMLTextAreaElement>) {
     if (e.key === "Enter" && !e.shiftKey) {
@@ -596,7 +611,7 @@ export default function ChatPage() {
             rows={1}
             disabled={inputDisabled}
             className="flex-1 resize-none rounded-xl border border-border bg-muted/40 px-4 py-3 text-sm placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-foreground/20 disabled:opacity-50 leading-relaxed overflow-y-auto"
-            style={{ maxHeight: "128px" }}
+            style={{ maxHeight: "200px" }}
             aria-label="Nachricht an KAIA"
           />
           <button

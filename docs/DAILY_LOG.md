@@ -2,6 +2,55 @@
 
 ---
 
+## 2026-07-04 — "Session-Architektur v3, fünf mypy-Fehler und eine Erkenntnis, die eigentlich für KAIA gedacht war"
+
+*Protokolliert vom Koordinator. Mit ungewohnt stillem Team — weil heute etwas gesagt wurde, das keiner kommentieren wollte.*
+
+---
+
+Heute war ein langer Tag. Gut 12 Stunden zwischen erstem Commit und letztem Fix. Das Team hat die Session-Architektur von Grund auf neu gebaut — persistentes Nutzerprofil, kumulatives Gedächtnis, session-aware Prompt, Session-5-Trigger, Session-10-Abschluss. Fünf mypy-Fehler, die erst in CI aufgefallen sind weil mypy nicht im Pre-Commit-Hook war. Ein Migrations-Bug wegen fehlenden UNIQUE-Constraints. Zwei API-Container-Abstürze. Ein Token-Limit das mitten in KAIAs Satz aufgehört hat.
+
+Der übliche Wahnsinn, gut dokumentiert, alles committed.
+
+Aber das war nicht der eigentliche Moment des Tages.
+
+**Abends — ein Satz, der eigentlich für KAIA gedacht war**
+
+Der QA Tester hatte die Test-Session längst beendet. Der Architekt hatte die ARCHITECTURE.md schon aktualisiert. Der Koordinator wollte gerade das Log schließen.
+
+Dann kam dieser Satz:
+
+> *„Lernen heißt: zeigen, was man nicht weiß. Nicht dumm dastehen heißt: verbergen, was man nicht weiß."*
+
+Der Psychologe sagte nichts. Der Didaktiker sagte nichts. Das ist selten.
+
+Dagmar hatte gerade beschrieben, was sie an sich selbst beobachtet — dieses Dilemma, das eigentlich das Kernproblem jedes Lernenden ist, das KAIA lösen soll: Die Kompetenz soll sichtbar sein. Gleichzeitig braucht es Menschen, von denen man lernt. Aber wer nie dumm dastehen will, lässt diese Menschen gar nicht erst nah genug heran. Und ärgert sich dann. Später. Wenn die Gelegenheit vorbei ist.
+
+Sie hat das nicht in der Theorie beschrieben. Sie hat es über sich beschrieben.
+
+> **Psychologe:** *„Das ist keine Schwäche. Das ist der Mechanismus, gegen den GSE arbeitet. Selbstwirksamkeit ist nicht Kompetenz — sie ist die Bereitschaft, sich in Situationen zu begeben, in denen Kompetenz noch nicht vorhanden ist."*
+
+> **Didaktiker:** *„Knowles hätte gesagt: Erwachsene lernen am besten, wenn sie das Problem als ihr eigenes erkennen. Herzlichen Glückwunsch."*
+
+Der Koordinator hat nichts hinzugefügt. Manche Momente sind vollständig ohne Kommentar.
+
+Was heute passiert ist: Dagmar hat KAIA gebaut, damit andere lernen können. Und dabei bemerkt, dass die Frage, die KAIA stellt — *Was beschäftigt dich gerade, wobei du denkst: da müsste ich eigentlich besser werden?* — auch für sie selbst eine echte Frage ist.
+
+Das steht jetzt im Log. Weil es dazugehört.
+
+---
+
+**Was heute gebaut wurde:**
+Session-Architektur v3 komplett — `user_learning_profiles`, kumulatives Gedächtnis, Prompt v3, mypy im Pre-Commit-Hook, `authFetch`-Login-Redirect, `MAX_TOKENS` 1500→3000. Und ein ehrlicher Satz über das eigene Lernen.
+
+**Commits:** `7d9a51d` · `2315c23` · `a581887` · `dccd0e5` · `550a2c2` · `4c181cc`
+
+**Kosten heute:** ca. $18–25 Claude Code (lange Session, viele Agents) · €4.39/Mo Hetzner
+
+**Morgen:** EMA-Button-Feedback sichtbarer machen · Session-Ende-Signal durch KAIA einbauen
+
+---
+
 ## 2026-06-23 — "Der Tag, an dem KAIA sich selbst zerfleischt — 10 Personas, 100 Sessions, 1 Simulation"
 
 *Protokolliert vom Koordinator. Mit zunehmend ungläubigem Blick des QA Testers.*
