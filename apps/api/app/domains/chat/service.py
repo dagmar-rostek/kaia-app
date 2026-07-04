@@ -15,6 +15,7 @@ Session summary extraction and cross-session memory live in summary.py.
 from collections.abc import AsyncGenerator
 from decimal import Decimal
 
+import httpx
 import structlog
 from anthropic import AsyncAnthropic
 from sqlalchemy.exc import IntegrityError
@@ -126,7 +127,10 @@ async def stream_response(
     history = await repo.get_messages(session.id)
     api_messages = [{"role": str(m.role), "content": m.content} for m in history if m.content]
 
-    client = AsyncAnthropic(api_key=settings.anthropic_api_key)
+    client = AsyncAnthropic(
+        api_key=settings.anthropic_api_key,
+        timeout=httpx.Timeout(connect=10.0, read=120.0, write=10.0, pool=5.0),
+    )
     raw_chunks: list[str] = []
     input_tokens = output_tokens = 0
 
@@ -177,7 +181,10 @@ async def stream_opening(
     system_prompt = await _build_system_prompt(db, repo, session)
     trigger = "[Gesprächsstart — stelle deine Eröffnungsfrage.]"
 
-    client = AsyncAnthropic(api_key=settings.anthropic_api_key)
+    client = AsyncAnthropic(
+        api_key=settings.anthropic_api_key,
+        timeout=httpx.Timeout(connect=10.0, read=120.0, write=10.0, pool=5.0),
+    )
     raw_chunks: list[str] = []
     input_tokens = output_tokens = 0
 
@@ -230,7 +237,10 @@ async def stream_closing(
     api_messages = [{"role": str(m.role), "content": m.content} for m in history if m.content]
     api_messages.append({"role": "user", "content": CLOSING_TRIGGER})
 
-    client = AsyncAnthropic(api_key=settings.anthropic_api_key)
+    client = AsyncAnthropic(
+        api_key=settings.anthropic_api_key,
+        timeout=httpx.Timeout(connect=10.0, read=120.0, write=10.0, pool=5.0),
+    )
     raw_chunks: list[str] = []
     input_tokens = output_tokens = 0
 
@@ -285,7 +295,10 @@ async def stream_meta_question(
     api_messages = [{"role": str(m.role), "content": m.content} for m in history if m.content]
     api_messages.append({"role": "user", "content": trigger})
 
-    client = AsyncAnthropic(api_key=settings.anthropic_api_key)
+    client = AsyncAnthropic(
+        api_key=settings.anthropic_api_key,
+        timeout=httpx.Timeout(connect=10.0, read=120.0, write=10.0, pool=5.0),
+    )
     raw_chunks: list[str] = []
     input_tokens = output_tokens = 0
 

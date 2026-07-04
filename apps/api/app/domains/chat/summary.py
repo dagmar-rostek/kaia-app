@@ -11,6 +11,7 @@ import asyncio
 import json
 import re
 
+import httpx
 import structlog
 from anthropic import AsyncAnthropic
 from anthropic.types import TextBlock
@@ -70,7 +71,10 @@ async def extract_session_summary(session_id: int) -> None:
         lines = [f"{'User' if str(m.role) == 'user' else 'KAIA'}: {m.content}" for m in messages]
         transcript = "\n".join(lines)
 
-        client = AsyncAnthropic(api_key=settings.anthropic_api_key)
+        client = AsyncAnthropic(
+            api_key=settings.anthropic_api_key,
+            timeout=httpx.Timeout(connect=10.0, read=60.0, write=10.0, pool=5.0),
+        )
         try:
             response = await client.messages.create(
                 model=_EXTRACTION_MODEL,
