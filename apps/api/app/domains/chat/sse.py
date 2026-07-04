@@ -12,7 +12,7 @@ from typing import Any
 # ── Model & cost constants ────────────────────────────────────────────────────
 
 MODEL = "claude-sonnet-4-6"
-MAX_TOKENS = 1500  # thinking (~600) + final_answer (~300) + buffer
+MAX_TOKENS = 3000  # thinking (~800–1200, v3 prompt is richer) + final_answer (~300) + buffer
 
 # Cost per token in EUR (approximate, claude-sonnet-4-6)
 COST_INPUT_PER_TOKEN = Decimal("0.0000027")  # ~$3/MTok → ~€2.8/MTok
