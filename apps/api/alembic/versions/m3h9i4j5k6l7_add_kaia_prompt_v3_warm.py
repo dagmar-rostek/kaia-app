@@ -17,6 +17,8 @@ Deactivates warm v2 — kept in DB for eval regression baseline.
 
 from collections.abc import Sequence
 
+import sqlalchemy as sa
+
 from alembic import op
 from app.domains.prompts.templates import KAIA_PROMPT_V3_WARM
 
@@ -39,22 +41,19 @@ def upgrade() -> None:
 
     # Deactivate v2
     conn.execute(
-        __import__("sqlalchemy").text(
+        sa.text(
             "UPDATE prompt_templates SET is_active = FALSE "
             "WHERE name = 'kaia_system_v2_warm' AND character = 'warm'"
         )
     )
 
-    # Insert v3 (upsert — idempotent)
+    # Insert v3 — delete-then-insert (idempotent, no UNIQUE constraint needed)
+
+    conn.execute(sa.text("DELETE FROM prompt_templates WHERE name = 'kaia_system_v3_warm'"))
     conn.execute(
-        __import__("sqlalchemy").text(
+        sa.text(
             "INSERT INTO prompt_templates (name, character, template, is_active, version, notes) "
-            "VALUES (:name, :character, :template, TRUE, 3, :notes) "
-            "ON CONFLICT (name) DO UPDATE SET "
-            "template = EXCLUDED.template, "
-            "is_active = EXCLUDED.is_active, "
-            "version = EXCLUDED.version, "
-            "notes = EXCLUDED.notes"
+            "VALUES (:name, :character, :template, TRUE, 3, :notes)"
         ),
         {
             "name": "kaia_system_v3_warm",
@@ -67,15 +66,11 @@ def upgrade() -> None:
 
 def downgrade() -> None:
     conn = op.get_bind()
-    # Deactivate v3
     conn.execute(
-        __import__("sqlalchemy").text(
-            "UPDATE prompt_templates SET is_active = FALSE WHERE name = 'kaia_system_v3_warm'"
-        )
+        sa.text("UPDATE prompt_templates SET is_active = FALSE WHERE name = 'kaia_system_v3_warm'")
     )
-    # Re-activate v2
     conn.execute(
-        __import__("sqlalchemy").text(
+        sa.text(
             "UPDATE prompt_templates SET is_active = TRUE "
             "WHERE name = 'kaia_system_v2_warm' AND character = 'warm'"
         )
