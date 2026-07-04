@@ -30,11 +30,11 @@ from app.db.session import AsyncSessionLocal
 from app.domains.chat.models import ChatSession
 from app.domains.chat.repository import ChatRepository
 from app.domains.chat.service import (
-    extract_session_summary,
     stream_closing,
     stream_opening,
     stream_response,
 )
+from app.domains.chat.summary import extract_session_summary
 from app.domains.survey.models import MeasurementType
 from app.domains.survey.repository import SurveyRepository
 from app.domains.survey.service import compute_subscale_scores

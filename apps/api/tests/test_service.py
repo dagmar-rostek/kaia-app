@@ -7,6 +7,12 @@ from app.domains.users.models import User, UserStatus
 from app.domains.users.schemas import RegisterRequest
 from app.domains.users.service import AuthError, AuthService, UserService
 
+# Test credentials — not real secrets; ruff S10x requires named constants over literals
+_TEST_PW = "securepassword123"  # noqa: S105
+_CORRECT_PW = "correctpassword"  # noqa: S105
+_WRONG_PW = "wrongpassword"  # noqa: S105
+_ANY_PW = "anypassword"  # noqa: S105
+
 
 @pytest.fixture
 def user_repo():
@@ -42,14 +48,14 @@ def register_data():
     return RegisterRequest(
         email="test@example.com",
         username="testuser",
-        password="securepassword123",
+        password=_TEST_PW,
         consent_data=True,
         consent_research_data=True,
         consent_analytics=False,
     )
 
 
-def _make_user(status: UserStatus = UserStatus.ACTIVE, password: str = "correctpassword") -> User:
+def _make_user(status: UserStatus = UserStatus.ACTIVE, password: str = _CORRECT_PW) -> User:
     from app.core.security import hash_password
 
     user = MagicMock()
@@ -101,7 +107,7 @@ async def test_register_duplicate_username(auth_service, user_repo, register_dat
 async def test_login_success(auth_service, user_repo, token_repo):
     user_repo.get_by_email = AsyncMock(return_value=_make_user())
     with patch("app.domains.users.service.verify_password", return_value=True):
-        access, refresh = await auth_service.login("test@example.com", "correctpassword")
+        access, refresh = await auth_service.login("test@example.com", _CORRECT_PW)
     assert isinstance(access, str)
     assert isinstance(refresh, str)
     token_repo.create.assert_called_once()
@@ -120,7 +126,7 @@ async def test_login_wrong_password(auth_service, user_repo):
     user_repo.get_by_email = AsyncMock(return_value=_make_user())
     with patch("app.domains.users.service.verify_password", return_value=False):
         with pytest.raises(AuthError) as exc:
-            await auth_service.login("test@example.com", "wrongpassword")
+            await auth_service.login("test@example.com", _WRONG_PW)
     assert exc.value.status_code == 401
 
 
@@ -130,7 +136,7 @@ async def test_login_locked_account(auth_service, user_repo):
     user.locked_until = datetime.now(UTC) + timedelta(minutes=10)
     user_repo.get_by_email = AsyncMock(return_value=user)
     with pytest.raises(AuthError) as exc:
-        await auth_service.login("test@example.com", "anypassword")
+        await auth_service.login("test@example.com", _ANY_PW)
     assert exc.value.status_code == 403
 
 
@@ -139,7 +145,7 @@ async def test_login_pending_user(auth_service, user_repo):
     user_repo.get_by_email = AsyncMock(return_value=_make_user(status=UserStatus.PENDING))
     with patch("app.domains.users.service.verify_password", return_value=True):
         with pytest.raises(AuthError) as exc:
-            await auth_service.login("test@example.com", "correctpassword")
+            await auth_service.login("test@example.com", _CORRECT_PW)
     assert exc.value.status_code == 403
     assert "Freigabe" in exc.value.message
 
@@ -149,7 +155,7 @@ async def test_login_suspended_user(auth_service, user_repo):
     user_repo.get_by_email = AsyncMock(return_value=_make_user(status=UserStatus.SUSPENDED))
     with patch("app.domains.users.service.verify_password", return_value=True):
         with pytest.raises(AuthError) as exc:
-            await auth_service.login("test@example.com", "correctpassword")
+            await auth_service.login("test@example.com", _CORRECT_PW)
     assert exc.value.status_code == 403
 
 

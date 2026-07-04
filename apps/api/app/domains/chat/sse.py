@@ -1,0 +1,75 @@
+"""SSE infrastructure for KAIA's streaming responses.
+
+Provides helpers, constants, and the thinking-strip parser used by all
+streaming functions in service.py.
+"""
+
+import json
+import re
+from decimal import Decimal
+from typing import Any
+
+# ── Model & cost constants ────────────────────────────────────────────────────
+
+MODEL = "claude-sonnet-4-6"
+MAX_TOKENS = 1500  # thinking (~600) + final_answer (~300) + buffer
+
+# Cost per token in EUR (approximate, claude-sonnet-4-6)
+COST_INPUT_PER_TOKEN = Decimal("0.0000027")  # ~$3/MTok → ~€2.8/MTok
+COST_OUTPUT_PER_TOKEN = Decimal("0.000013")  # ~$15/MTok → ~€13.8/MTok
+
+# ── SSE event helpers ─────────────────────────────────────────────────────────
+
+
+def sse(data: dict[str, Any]) -> str:
+    return f"data: {json.dumps(data, ensure_ascii=False)}\n\n"
+
+
+def delta(content: str) -> str:
+    return sse({"type": "delta", "content": content})
+
+
+def error(message: str) -> str:
+    return sse({"type": "error", "message": message})
+
+
+def done(message_id: int, input_tokens: int, output_tokens: int) -> str:
+    return sse(
+        {
+            "type": "done",
+            "message_id": message_id,
+            "input_tokens": input_tokens,
+            "output_tokens": output_tokens,
+        }
+    )
+
+
+def thinking_event(content: str) -> str:
+    return sse({"type": "thinking", "content": content})
+
+
+# ── Thinking-strip ────────────────────────────────────────────────────────────
+
+
+def thinking_strip(raw_chunks: list[str]) -> tuple[str | None, str]:
+    """Extract thinking block and final answer from collected raw chunks.
+
+    Returns: (thinking_content | None, final_answer)
+    The thinking block is preserved for the debug/research audit trail.
+    """
+    full = "".join(raw_chunks)
+
+    thinking: str | None = None
+    t_match = re.search(r"<thinking>([\s\S]*?)(?:</thinking>|$)", full, re.DOTALL)
+    if t_match:
+        t_text = t_match.group(1).strip()
+        if t_text:
+            thinking = t_text
+
+    full = re.sub(r"<thinking>[\s\S]*?</thinking>", "", full, flags=re.DOTALL)
+    full = re.sub(r"<thinking>[\s\S]*$", "", full, flags=re.DOTALL)
+
+    m = re.search(r"<final_answer>([\s\S]*?)</final_answer>", full, re.DOTALL)
+    if m:
+        return thinking, m.group(1).strip()
+    return thinking, full.replace("<final_answer>", "").replace("</final_answer>", "").strip()

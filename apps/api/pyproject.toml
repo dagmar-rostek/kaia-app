@@ -42,11 +42,12 @@ target-version = "py312"
 line-length = 100
 
 [tool.ruff.lint]
-select = ["E", "F", "I", "N", "UP", "S", "B", "A"]
+select = ["E", "F", "I", "N", "UP", "S", "B", "A", "C901"]
 ignore = ["S101", "A003"]
+mccabe.max-complexity = 10
 
 [tool.ruff.lint.per-file-ignores]
-"tests/**" = ["S105", "S106", "S107"]
+"tests/**" = ["S101"]
 "app/domains/prompts/templates.py" = ["E501"]  # prompt strings are intentionally long
 "app/domains/simulation/runner.py" = ["E501"]  # persona message strings are intentionally long natural language
 "alembic/versions/**" = ["E501"]  # migration column definitions are intentionally long

@@ -1,10 +1,10 @@
 """Tests for chat domain — repository, schemas, and service helpers.
 
 Coverage targets:
-  - chat/repository.py  (was 36% — all methods with mocked DB)
-  - chat/schemas.py     (was 77% — validator edge cases)
-  - chat/service.py     (was 13% — SSE helpers, thinking-strip,
-    stream_closing, stream_meta_question)
+  - chat/repository.py   all methods with mocked DB
+  - chat/schemas.py      validator edge cases
+  - chat/sse.py          SSE helpers and thinking-strip
+  - chat/service.py      stream_closing, stream_meta_question
 """
 
 from unittest.mock import AsyncMock, MagicMock, patch
@@ -15,17 +15,10 @@ from pydantic import ValidationError
 from app.domains.chat.models import FeedbackType, MessageRole
 from app.domains.chat.repository import ChatRepository
 from app.domains.chat.schemas import FeedbackCreate, MessageCreate, SessionCreate
-from app.domains.chat.service import (
-    _delta,
-    _done,
-    _error,
-    _thinking_event,
-    _thinking_strip_generator,
-    stream_closing,
-    stream_meta_question,
-)
+from app.domains.chat.service import stream_closing, stream_meta_question
+from app.domains.chat.sse import delta, done, error, thinking_event, thinking_strip
 
-# Shorter prefix for patch() calls
+# Shorter prefix for patch() calls inside service.py
 _SVC = "app.domains.chat.service"
 
 # ── Helpers ───────────────────────────────────────────────────────────────────
@@ -159,11 +152,11 @@ def test_feedback_type_values():
     assert FeedbackType.UNCLEAR == "unclear"
 
 
-# ── chat/service.py — SSE helpers ─────────────────────────────────────────────
+# ── chat/sse.py — SSE helpers ─────────────────────────────────────────────────
 
 
 def test_delta_format():
-    result = _delta("Hallo")
+    result = delta("Hallo")
     assert '"type": "delta"' in result
     assert '"content": "Hallo"' in result
     assert result.startswith("data: ")
@@ -171,13 +164,13 @@ def test_delta_format():
 
 
 def test_error_format():
-    result = _error("Verbindungsfehler")
+    result = error("Verbindungsfehler")
     assert '"type": "error"' in result
     assert "Verbindungsfehler" in result
 
 
 def test_done_format():
-    result = _done(message_id=7, input_tokens=100, output_tokens=50)
+    result = done(message_id=7, input_tokens=100, output_tokens=50)
     assert '"type": "done"' in result
     assert '"message_id": 7' in result
     assert '"input_tokens": 100' in result
@@ -185,48 +178,46 @@ def test_done_format():
 
 
 def test_thinking_event_format():
-    result = _thinking_event("some thought")
+    result = thinking_event("some thought")
     assert '"type": "thinking"' in result
     assert "some thought" in result
 
 
-# ── chat/service.py — _thinking_strip_generator ───────────────────────────────
+# ── chat/sse.py — thinking_strip ──────────────────────────────────────────────
 
 
 def test_thinking_strip_clean_content():
-    thinking, content = _thinking_strip_generator(["Hello world"])
+    t, content = thinking_strip(["Hello world"])
     assert content == "Hello world"
-    assert thinking is None
+    assert t is None
 
 
 def test_thinking_strip_removes_thinking_block():
-    thinking, content = _thinking_strip_generator(
-        ["<thinking>internal thought</thinking>Final answer"]
-    )
+    t, content = thinking_strip(["<thinking>internal thought</thinking>Final answer"])
     assert content == "Final answer"
-    assert thinking == "internal thought"
+    assert t == "internal thought"
 
 
 def test_thinking_strip_extracts_final_answer_tag():
-    thinking, content = _thinking_strip_generator(["<final_answer>The real answer</final_answer>"])
+    t, content = thinking_strip(["<final_answer>The real answer</final_answer>"])
     assert content == "The real answer"
 
 
 def test_thinking_strip_unclosed_thinking():
-    thinking, content = _thinking_strip_generator(["<thinking>starts but never closes"])
+    t, content = thinking_strip(["<thinking>starts but never closes"])
     assert content == ""
 
 
 def test_thinking_strip_multi_chunk():
-    thinking, content = _thinking_strip_generator(["Hello ", "world"])
+    t, content = thinking_strip(["Hello ", "world"])
     assert content == "Hello world"
-    assert thinking is None
+    assert t is None
 
 
 def test_thinking_strip_thinking_with_final_answer():
-    chunks = ["<thinking>internal</thinking><final_answer>clean answer</final_answer>"]
-    thinking, content = _thinking_strip_generator(chunks)
-    assert thinking == "internal"
+    chunk = "<thinking>internal</thinking><final_answer>clean answer</final_answer>"
+    t, content = thinking_strip([chunk])
+    assert t == "internal"
     assert content == "clean answer"
 
 

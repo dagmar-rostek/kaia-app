@@ -25,6 +25,25 @@ repos:
     hooks:
       - id: gitleaks
 
+  # Architecture: no unpinned LLM model strings
+  - repo: local
+    hooks:
+      - id: no-unpinned-model-strings
+        name: No unpinned LLM model strings
+        language: pygrep
+        entry: '(model\s*=\s*["\']claude["\']|model\s*=\s*["\']claude-3["\']|model\s*=\s*["\']gpt-4["\']|model\s*=\s*["\']mistral["\'])'
+        files: ^apps/api/app/
+        types: [python]
+
+  # Architecture: no files over 500 lines (prevents monoliths)
+  - repo: local
+    hooks:
+      - id: file-size-limit
+        name: File size limit (500 lines)
+        language: script
+        entry: scripts/check_file_size.sh
+        files: ^apps/api/app/(?!domains/simulation/runner|domains/prompts/templates).*\.py$
+
   # Conventional commits
   - repo: https://github.com/alessandrojcm/commitlint-pre-commit-hook
     rev: v9.18.0

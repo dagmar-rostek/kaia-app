@@ -17,12 +17,12 @@ from app.domains.chat.schemas import (
     SessionWithMessages,
 )
 from app.domains.chat.service import (
-    extract_session_summary,
     stream_closing,
     stream_meta_question,
     stream_opening,
     stream_response,
 )
+from app.domains.chat.summary import extract_session_summary
 from app.domains.survey.schemas import JourneyStateEnum
 from app.domains.survey.service import get_journey_state
 
