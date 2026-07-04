@@ -4,13 +4,12 @@ from datetime import UTC, datetime
 from typing import Annotated, Any
 
 from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy import delete
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.deps import require_admin
 from app.core.security import create_access_token, hash_password
 from app.db.session import get_db
-from app.domains.chat.models import ChatSession, MemoryChunk
+from app.domains.chat.repository import ChatRepository
 from app.domains.simulation.runner import get_run_status, list_run_ids, run_simulation
 from app.domains.users.models import User, UserStatus
 from app.domains.users.repository import RefreshTokenRepository, UserRepository
@@ -79,22 +78,21 @@ async def create_test_token(
     test_email = "admin_test@kaia.internal"
     user = await repo.get_by_email(test_email)
     if not user:
-        user = User(
-            email=test_email,
-            username="admin_test",
-            password_hash=hash_password(secrets.token_urlsafe(32)),
-            status=UserStatus.ACTIVE,
-            consent_data=True,
-            consent_analytics=True,
-            consent_version="1.0",
-            consent_at=datetime.now(UTC),
-            onboarding_complete=True,
-            approved_at=datetime.now(UTC),
-            approved_by="system",
+        user = await repo.create(
+            User(
+                email=test_email,
+                username="admin_test",
+                password_hash=hash_password(secrets.token_urlsafe(32)),
+                status=UserStatus.ACTIVE,
+                consent_data=True,
+                consent_analytics=True,
+                consent_version="1.0",
+                consent_at=datetime.now(UTC),
+                onboarding_complete=True,
+                approved_at=datetime.now(UTC),
+                approved_by="system",
+            )
         )
-        db.add(user)
-        await db.commit()
-        await db.refresh(user)
     return {"access_token": create_access_token(user.id)}
 
 
@@ -163,6 +161,4 @@ async def reset_test_user(
     user = await UserRepository(db).get_by_email(test_email)
     if not user:
         return  # nothing to reset
-    await db.execute(delete(MemoryChunk).where(MemoryChunk.user_id == user.id))
-    await db.execute(delete(ChatSession).where(ChatSession.user_id == user.id))
-    await db.commit()
+    await ChatRepository(db).delete_user_data(user.id)

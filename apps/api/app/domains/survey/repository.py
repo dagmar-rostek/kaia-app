@@ -1,9 +1,8 @@
 from typing import Any
 
-from sqlalchemy import func, select
+from sqlalchemy import select, text
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.domains.chat.models import ChatSession
 from app.domains.survey.models import GseResult, MeasurementType, MslqResult
 
 
@@ -63,7 +62,9 @@ class SurveyRepository:
         return obj
 
     async def get_session_count(self, user_id: int) -> int:
+        # Uses raw table name to avoid cross-domain model import
         r = await self.db.execute(
-            select(func.count()).select_from(ChatSession).where(ChatSession.user_id == user_id)
+            text("SELECT COUNT(*) FROM chat_sessions WHERE user_id = :uid"),
+            {"uid": user_id},
         )
         return r.scalar() or 0

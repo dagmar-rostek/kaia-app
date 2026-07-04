@@ -1,0 +1,61 @@
+[importlinter]
+root_package = app
+contract_types =
+
+[importlinter:contract:no-cross-domain-imports]
+name = Domains must not import from other domains directly
+type = forbidden
+source_modules =
+    app.domains.chat
+    app.domains.users
+    app.domains.survey
+    app.domains.prompts
+    app.domains.roadmap
+    app.domains.preregistration
+    app.domains.simulation
+forbidden_modules =
+    app.domains.chat
+    app.domains.users
+    app.domains.survey
+    app.domains.prompts
+    app.domains.roadmap
+    app.domains.preregistration
+    app.domains.simulation
+ignore_imports =
+    # chat reads prompts (prompt templates are a shared service, not a peer domain)
+    app.domains.chat.service -> app.domains.prompts.models
+    app.domains.chat.service -> app.domains.prompts.repository
+    app.domains.chat.service -> app.domains.prompts.service
+    # chat reads survey state to determine session opening type
+    app.domains.chat.routes -> app.domains.survey.schemas
+    app.domains.chat.routes -> app.domains.survey.service
+    # chat.repository needs User model for a join (same DB schema, no service call)
+    app.domains.chat.repository -> app.domains.users.models
+    # survey calls ChatRepository.delete_user_data() for the reset endpoint
+    app.domains.survey.routes -> app.domains.chat.repository
+    # simulation imports chat to run end-to-end persona sessions
+    app.domains.simulation.runner -> app.domains.chat.models
+    app.domains.simulation.runner -> app.domains.chat.repository
+    app.domains.simulation.runner -> app.domains.chat.service
+    app.domains.simulation.runner -> app.domains.chat.summary
+    # simulation imports survey to record measurement results
+    app.domains.simulation.runner -> app.domains.survey.models
+    app.domains.simulation.runner -> app.domains.survey.repository
+    app.domains.simulation.runner -> app.domains.survey.service
+    # simulation imports users to create test personas
+    app.domains.simulation.runner -> app.domains.users.models
+    # Transitive: domain routes -> app.core.deps -> users.models
+    # core.deps is the intentional DI bridge; domains importing CurrentUser is correct
+    app.domains.chat.routes -> app.core.deps
+    app.domains.preregistration.routes -> app.core.deps
+    app.domains.survey.routes -> app.core.deps
+
+[importlinter:contract:no-domain-in-core]
+name = core must not import from domains (except deps.py which is the DI bridge)
+type = forbidden
+source_modules =
+    app.core.config
+    app.core.security
+    app.core.crisis
+forbidden_modules =
+    app.domains

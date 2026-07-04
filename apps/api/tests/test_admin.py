@@ -1,11 +1,12 @@
 """Tests for the admin user-approval API."""
 
-from unittest.mock import AsyncMock, MagicMock, patch
+from unittest.mock import AsyncMock, patch
 
 import pytest
 
-from app.domains.users.models import UserStatus
+from app.domains.users.models import User, UserStatus
 from app.domains.users.service import UserService
+from tests.factories import make_user
 
 
 @pytest.fixture
@@ -27,16 +28,8 @@ def svc(user_repo: AsyncMock, token_repo: AsyncMock) -> UserService:
     return UserService(user_repo, token_repo)
 
 
-def _pending_user() -> MagicMock:
-    user = MagicMock()
-    user.id = 42
-    user.email = "test@example.com"
-    user.username = "testuser"
-    user.status = UserStatus.PENDING
-    user.approved_at = None
-    user.approved_by = None
-    user.deletion_reason = None
-    return user
+def _pending_user() -> User:
+    return make_user(pk=42, status=UserStatus.PENDING)
 
 
 @pytest.mark.asyncio

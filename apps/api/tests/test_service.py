@@ -6,6 +6,7 @@ import pytest
 from app.domains.users.models import User, UserStatus
 from app.domains.users.schemas import RegisterRequest
 from app.domains.users.service import AuthError, AuthService, UserService
+from tests.factories import make_user
 
 # Test credentials — not real secrets; ruff S10x requires named constants over literals
 _TEST_PW = "securepassword123"  # noqa: S105
@@ -56,18 +57,7 @@ def register_data():
 
 
 def _make_user(status: UserStatus = UserStatus.ACTIVE, password: str = _CORRECT_PW) -> User:
-    from app.core.security import hash_password
-
-    user = MagicMock()
-    user.id = 1
-    user.email = "test@example.com"
-    user.username = "testuser"
-    user.password_hash = hash_password(password)
-    user.status = status
-    user.failed_login_count = 0
-    user.locked_until = None
-    user.last_login_at = None
-    return user
+    return make_user(status=status, password=password)
 
 
 # ── AuthService.register ──────────────────────────────────────────────────────

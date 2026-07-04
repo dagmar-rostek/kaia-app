@@ -35,6 +35,16 @@ repos:
         files: ^apps/api/app/
         types: [python]
 
+  # Architecture: import boundary enforcement (DDD domain isolation)
+  - repo: local
+    hooks:
+      - id: import-linter
+        name: Import boundary check (DDD)
+        language: system
+        entry: bash -c 'cd apps/api && lint-imports'
+        pass_filenames: false
+        files: ^apps/api/
+
   # Architecture: no files over 500 lines (prevents monoliths)
   - repo: local
     hooks:

@@ -130,6 +130,16 @@ class ChatRepository:
         await self.db.refresh(fb)
         return fb
 
+    async def delete_user_data(self, user_id: int) -> None:
+        """Delete all sessions and memory for a user (admin reset only)."""
+        from sqlalchemy import delete as sql_delete
+
+        from app.domains.chat.models import MemoryChunk
+
+        await self.db.execute(sql_delete(MemoryChunk).where(MemoryChunk.user_id == user_id))
+        await self.db.execute(sql_delete(ChatSession).where(ChatSession.user_id == user_id))
+        await self.db.commit()
+
     # ── User context ──────────────────────────────────────────────────────────
 
     async def get_user(self, user_id: int) -> User | None:
