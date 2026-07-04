@@ -135,20 +135,27 @@ async def _load_cross_session_context(
         except Exception:
             log.warning("cross_session_summary_extraction_failed", prev_session_id=prev.id)
             return "", "", ""
-        # Re-fetch from DB to pick up the committed summary
-        result = await db.execute(select(ChatSession).where(ChatSession.id == prev.id))
-        prev = result.scalar_one_or_none()
-        if not prev or not prev.session_summary:
+        # Expire and refresh to bypass identity-map cache and pick up the newly committed summary
+        db.expire(prev)
+        await db.refresh(prev)
+        if not prev.session_summary:
             return "", "", ""
 
     try:
         summary = json.loads(prev.session_summary)
-        return (
-            summary.get("first_step", ""),
-            summary.get("observation", ""),
-            summary.get("insight_for_next_session", ""),
+        first_step = summary.get("first_step", "")
+        observation = summary.get("observation", "")
+        insight = summary.get("insight_for_next_session", "")
+        log.info(
+            "cross_session_context_loaded",
+            prev_session_id=prev.id,
+            has_first_step=bool(first_step),
+            has_observation=bool(observation),
+            has_insight=bool(insight),
         )
+        return first_step, observation, insight
     except (json.JSONDecodeError, AttributeError):
+        log.warning("cross_session_context_parse_failed", prev_session_id=prev.id)
         return "", "", ""
 
 
@@ -308,8 +315,6 @@ async def extract_session_summary(session_id: int) -> None:
         " (string, leer wenn keine erkennbar)"
     )
 
-    from sqlalchemy import select
-
     async with AsyncSessionLocal() as db:
         repo = ChatRepository(db)
         result = await db.execute(select(ChatSession).where(ChatSession.id == session_id))
@@ -340,6 +345,10 @@ async def extract_session_summary(session_id: int) -> None:
             if not isinstance(block, TextBlock):
                 raise ValueError(f"unexpected block type: {type(block).__name__}")
             raw_json = block.text.strip()
+            # Strip markdown fences Haiku sometimes adds despite instructions
+            if raw_json.startswith("```"):
+                raw_json = re.sub(r"^```(?:json)?\s*\n?", "", raw_json)
+                raw_json = re.sub(r"\n?```\s*$", "", raw_json).strip()
             # Validate by parsing — store raw JSON string
             json.loads(raw_json)
             session.session_summary = raw_json
