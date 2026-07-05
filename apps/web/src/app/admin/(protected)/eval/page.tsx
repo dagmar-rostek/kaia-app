@@ -148,19 +148,24 @@ const ALL_PERSONAS = [
   { id: "P10", name: "Michael — Experten-Verweigerer" },
 ]
 
-const MODEL_COST_FACTOR: Record<string, number> = {
-  "claude-haiku-4-5-20251001": 1.0,
-  "claude-sonnet-4-6": 5.0,
-  "gpt-4o": 4.5,
-  "gpt-4o-mini": 0.3,
-  "mistral-large-latest": 5.5,
-  "mistral-small-latest": 1.2,
+// Kosten in EUR pro Turn, kalibriert auf Messwerte (Stand Juli 2026, inkl. KAIA + Simulator + Judge):
+// Haiku: €0.52 / (1P × 3S × 5T) = €0.035/Turn (gemessen)
+// Sonnet: €1.30 / (1P × 3S × 5T) = €0.087/Turn (gemessen)
+// GPT-4o, Mistral: Hochrechnung aus API-Preisseiten, noch nicht empirisch validiert
+const MODEL_COST_PER_TURN: Record<string, number> = {
+  "claude-haiku-4-5-20251001": 0.035,
+  "claude-sonnet-4-6": 0.087,
+  "gpt-4o": 0.21,
+  "gpt-4o-mini": 0.012,
+  "mistral-large-latest": 0.19,
+  "mistral-small-latest": 0.038,
 }
 
 function estimateCost(personas: number, sessions: number, turns: number, model: string): string {
-  const factor = MODEL_COST_FACTOR[model] ?? 1.0
-  const base = personas * sessions * turns * 0.018 * factor
-  return `€${base.toFixed(2)}–${(base * 1.4).toFixed(2)}`
+  const costPerTurn = MODEL_COST_PER_TURN[model] ?? MODEL_COST_PER_TURN["claude-haiku-4-5-20251001"]
+  const base = personas * sessions * turns * costPerTurn
+  const note = model && !["claude-haiku-4-5-20251001", "claude-sonnet-4-6"].includes(model) ? " *" : ""
+  return `€${base.toFixed(2)}–${(base * 1.3).toFixed(2)}${note}`
 }
 
 // ── Hilfsfunktionen ────────────────────────────────────────────────────────────
@@ -644,6 +649,10 @@ export default function EvalPage() {
                     {Math.ceil(selectedPersonas.length * maxSessions * 1.5)} min
                   </span>
                 </div>
+                {kaiaModel && !["claude-haiku-4-5-20251001", "claude-sonnet-4-6"].includes(kaiaModel) && (
+                  <p className="text-zinc-500 mt-2">* GPT-4o/Mistral: Hochrechnung, noch nicht empirisch validiert.</p>
+                )}
+                <p className="text-zinc-600 mt-1">Kalibriert: Haiku €0.035/Turn, Sonnet €0.087/Turn (gemessen).</p>
               </div>
 
               <button
