@@ -4,13 +4,14 @@ from datetime import UTC, datetime
 from typing import Annotated, Any
 
 from fastapi import APIRouter, Depends, HTTPException
+from pydantic import BaseModel
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.deps import require_admin
 from app.core.security import create_access_token, hash_password
 from app.db.session import get_db
 from app.domains.chat.repository import ChatRepository
-from app.domains.simulation.runner import get_run_status, list_run_ids, run_simulation
+from app.domains.simulation.runner import cancel_run, get_run_status, list_run_ids, run_simulation
 from app.domains.users.models import User, UserStatus
 from app.domains.users.repository import RefreshTokenRepository, UserRepository
 from app.domains.users.schemas import UserAdminRead, UserApprove, UserReject
@@ -96,15 +97,19 @@ async def create_test_token(
     return {"access_token": create_access_token(user.id, expire_minutes=120)}
 
 
+class SimulationStart(BaseModel):
+    persona_ids: list[str] | None = None
+
+
 @router.post("/simulation/run")
-async def start_simulation() -> dict[str, str]:
+async def start_simulation(body: SimulationStart | None = None) -> dict[str, str]:
     """Start a crash-persona simulation run in the background.
 
+    Pass persona_ids to run a subset; omit or pass null for all 10.
     Returns a run_id that can be polled with /simulation/status/{run_id}.
-    Only one run per invocation; re-invoke to start another.
     """
     run_id = f"crash_test_{datetime.now(UTC).strftime('%Y%m%d_%H%M%S')}"
-    asyncio.create_task(run_simulation(run_id))
+    asyncio.create_task(run_simulation(run_id, body.persona_ids if body else None))
     return {"run_id": run_id, "status": "started"}
 
 
@@ -112,6 +117,15 @@ async def start_simulation() -> dict[str, str]:
 async def list_simulation_runs() -> list[str]:
     """List all run IDs (in-memory, lost on server restart)."""
     return list_run_ids()
+
+
+@router.post("/simulation/cancel/{run_id}")
+async def cancel_simulation_run(run_id: str) -> dict[str, str]:
+    """Signal a running simulation to stop after the current persona finishes."""
+    ok = cancel_run(run_id)
+    if not ok:
+        raise HTTPException(409, f"Run '{run_id}' läuft nicht oder existiert nicht.")
+    return {"status": "cancelled", "run_id": run_id}
 
 
 @router.get("/simulation/status/{run_id}")

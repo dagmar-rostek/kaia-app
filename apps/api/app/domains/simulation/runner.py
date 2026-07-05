@@ -55,6 +55,19 @@ def list_run_ids() -> list[str]:
     return list(_runs.keys())
 
 
+def cancel_run(run_id: str) -> bool:
+    """Signal a running simulation to stop after the current persona finishes.
+
+    Returns True if the run existed and was cancellable, False otherwise.
+    """
+    run = _runs.get(run_id)
+    if not run or run["status"] != "running":
+        return False
+    run["cancelled"] = True
+    run["status"] = "cancelled"
+    return True
+
+
 # ── Persona data ──────────────────────────────────────────────────────────────
 
 
@@ -1392,8 +1405,12 @@ async def _drain(gen: AsyncGenerator[str, None]) -> str:
 # ── Simulation entry point ────────────────────────────────────────────────────
 
 
-async def run_simulation(run_id: str) -> None:
-    """Run all personas sequentially. Updates _runs[run_id] with progress."""
+async def run_simulation(run_id: str, persona_ids: list[str] | None = None) -> None:
+    """Run personas sequentially. Pass persona_ids to run a subset; None = all.
+
+    Updates _runs[run_id] with progress.
+    """
+    selected = [p for p in PERSONAS if p.codename in persona_ids] if persona_ids else PERSONAS
     _runs[run_id] = {
         "run_id": run_id,
         "started_at": datetime.now(UTC).isoformat(),
@@ -1403,9 +1420,13 @@ async def run_simulation(run_id: str) -> None:
         "error": None,
     }
 
-    log.info("simulation_start", run_id=run_id, persona_count=len(PERSONAS))
+    log.info("simulation_start", run_id=run_id, persona_count=len(selected))
 
-    for persona in PERSONAS:
+    for persona in selected:
+        if _runs[run_id].get("cancelled"):
+            log.info("simulation_cancelled", run_id=run_id, stopped_before=persona.codename)
+            break
+
         persona_result: dict[str, Any] = {
             "codename": persona.codename,
             "learning_topic": persona.learning_topic,
@@ -1432,8 +1453,9 @@ async def run_simulation(run_id: str) -> None:
         log.info("simulation_persona_done", run_id=run_id, codename=persona.codename)
 
     _runs[run_id]["finished_at"] = datetime.now(UTC).isoformat()
-    _runs[run_id]["status"] = "done"
-    log.info("simulation_complete", run_id=run_id)
+    if not _runs[run_id].get("cancelled"):
+        _runs[run_id]["status"] = "done"
+    log.info("simulation_complete", run_id=run_id, status=_runs[run_id]["status"])
 
 
 async def _run_persona(run_id: str, persona: Persona, result: dict[str, Any]) -> None:

@@ -1,17 +1,24 @@
-import { NextResponse } from "next/server"
+import { NextRequest, NextResponse } from "next/server"
 
-export async function POST(): Promise<NextResponse> {
-  const internalUrl = process.env.INTERNAL_API_URL ?? "http://localhost:8000/api"
-  const adminPassword = process.env.ADMIN_PASSWORD ?? ""
+const API = process.env.INTERNAL_API_URL ?? "http://localhost:8000/api"
+const adminHeaders = () => ({
+  "Content-Type": "application/json",
+  Authorization: `Bearer ${process.env.ADMIN_PASSWORD ?? ""}`,
+})
 
+export async function POST(req: NextRequest): Promise<NextResponse> {
   try {
-    const res = await fetch(`${internalUrl}/v1/admin/simulation/run`, {
+    let body: unknown = null
+    try { body = await req.json() } catch { /* no body is fine */ }
+
+    const res = await fetch(`${API}/v1/admin/simulation/run`, {
       method: "POST",
-      headers: { Authorization: `Bearer ${adminPassword}` },
+      headers: adminHeaders(),
+      body: body ? JSON.stringify(body) : undefined,
     })
     if (!res.ok) {
-      const body = await res.text()
-      return NextResponse.json({ error: body }, { status: res.status })
+      const text = await res.text()
+      return NextResponse.json({ error: text }, { status: res.status })
     }
     return NextResponse.json(await res.json())
   } catch (err) {
