@@ -42,12 +42,12 @@ async def build_heatmap(
 
     # Gruppiere nach persona_id
     personas_map: dict[str, list[HeatmapCellRead]] = {}
-    for persona_id, session_number, avg_score, has_flags, has_error in rows:
+    for persona_id, session_number, avg_score, flagged_metrics, has_error in rows:
         cell = HeatmapCellRead(
             persona_id=persona_id,
             session_number=session_number,
             score_pct=_score_to_pct(float(avg_score) if avg_score is not None else None),
-            has_flags=has_flags,
+            flagged_metrics=flagged_metrics,
             has_error=has_error,
         )
         personas_map.setdefault(persona_id, []).append(cell)

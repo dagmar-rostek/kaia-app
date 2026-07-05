@@ -82,14 +82,14 @@ class EvalResultRepository:
 
     async def get_aggregated_for_heatmap(
         self, run_id: str
-    ) -> list[tuple[str, int, float | None, bool, bool]]:
-        """Aggregiert Scores für die Heatmap: (persona_id, session_number, avg_score, has_flags, has_error).
+    ) -> list[tuple[str, int, float | None, list[str], bool]]:
+        """Aggregiert Scores für die Heatmap: (persona_id, session_number, avg_score, flagged_metrics, has_error).
 
         Eine einzige Query — kein N+1 für 100 Zellen.
 
         avg_score ist auf der DB-Seite berechnet (AVG über effective_score, d.h.
-        COALESCE(override_score, score)). has_error wird über ein Flag in EvalResult
-        gesetzt, das der Evaluator schreibt wenn die Simulation für diese Zelle abgebrochen ist.
+        COALESCE(override_score, score)). flagged_metrics enthält alle MetricKeys
+        dieser Zelle bei denen flagged=True gesetzt ist (als String-Liste, leer wenn keine).
 
         Rückgabe: sortiert nach persona_id, session_number.
         """
@@ -101,8 +101,11 @@ class EvalResultRepository:
                 EvalResult.persona_id,
                 EvalResult.session_number,
                 func.avg(effective_score).label("avg_score"),
-                func.bool_or(EvalResult.flagged).label("has_flags"),
-                # has_error: score IS NULL AND override_score IS NULL bedeutet kein Score vorhanden
+                # Alle geflaggten MetricKeys dieser Zelle (FILTER WHERE flagged = true)
+                func.array_agg(EvalResult.metric_key)
+                .filter(EvalResult.flagged.is_(True))
+                .label("flagged_metrics"),
+                # has_error: alle Scores NULL bedeutet Evaluator-Fehler für diese Zelle
                 func.bool_and(EvalResult.score.is_(None)).label("has_error"),
             )
             .where(EvalResult.run_id == run_id)
@@ -111,7 +114,15 @@ class EvalResultRepository:
         )
         rows = await self._db.execute(stmt)
         return [
-            (r.persona_id, r.session_number, r.avg_score, r.has_flags, r.has_error) for r in rows
+            (
+                r.persona_id,
+                r.session_number,
+                r.avg_score,
+                # array_agg mit FILTER gibt NULL zurück wenn keine Zeile matcht → leere Liste
+                [str(m) for m in r.flagged_metrics] if r.flagged_metrics else [],
+                r.has_error,
+            )
+            for r in rows
         ]
 
     async def update_override(

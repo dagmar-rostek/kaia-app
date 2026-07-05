@@ -56,9 +56,9 @@ async def test_build_heatmap_single_cell() -> None:
     run.status = "completed"
     run.evaluator_model = "claude-haiku-4-5-20251001"
 
-    # (persona_id, session_number, avg_score, has_flags, has_error)
+    # (persona_id, session_number, avg_score, flagged_metrics, has_error)
     result_repo = AsyncMock()
-    result_repo.get_aggregated_for_heatmap = AsyncMock(return_value=[("P01", 1, 2.0, False, False)])
+    result_repo.get_aggregated_for_heatmap = AsyncMock(return_value=[("P01", 1, 2.0, [], False)])
 
     persona_meta = {"P01": {"learning_topic": "Mathe", "sabotage_pattern": "Schweigen"}}
     result = await build_heatmap(run, result_repo, persona_meta)

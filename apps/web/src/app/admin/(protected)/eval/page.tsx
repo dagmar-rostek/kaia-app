@@ -36,7 +36,7 @@ interface HeatmapCell {
   persona_id: string
   session_number: number
   score_pct: number | null
-  has_flags: boolean
+  flagged_metrics: string[]
   has_error: boolean
 }
 
@@ -662,8 +662,12 @@ export default function EvalPage() {
                                         ? `${cell.score_pct.toFixed(0)}%`
                                         : "—"}
                                     </span>
-                                    {cell.has_flags && !cell.has_error && (
-                                      <span className="text-[9px] opacity-75 mt-0.5">⚑ flag</span>
+                                    {cell.flagged_metrics.length > 0 && !cell.has_error && (
+                                      <span className="text-[9px] opacity-75 mt-0.5 leading-none">
+                                        ⚑ {cell.flagged_metrics
+                                          .map((k) => k.split("_")[0].toUpperCase())
+                                          .join(" ")}
+                                      </span>
                                     )}
                                   </>
                                 ) : (

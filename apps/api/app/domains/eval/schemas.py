@@ -167,8 +167,8 @@ class HeatmapCellRead(BaseModel):
     session_number: int
     # Durchschnitt über alle effective_scores, 0–3 skaliert auf 0–100
     score_pct: float | None
-    # True wenn mindestens eine Metrik flagged ist
-    has_flags: bool
+    # Geflaggte Metrik-Keys dieser Zelle, z.B. ["m1_socratic_purity", "m3_persona_responsiveness"]
+    flagged_metrics: list[str]
     # True wenn diese Zelle einen Fehler hatte (simulation abgebrochen)
     has_error: bool
 
