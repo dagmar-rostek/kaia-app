@@ -32,6 +32,9 @@ services:
       SMTP_PASSWORD: ${SMTP_PASSWORD:-}
       SMTP_FROM: ${SMTP_FROM:-noreply@kaia.rostek-dagmar.eu}
       ADMIN_EMAIL: ${ADMIN_EMAIL:-dagmar@ecoaching-rostek.de}
+      KAIA_EVAL_PROMPTS_DIR: /app/prompts/eval
+    volumes:
+      - ../prompts:/app/prompts:ro
     depends_on:
       db:
         condition: service_healthy

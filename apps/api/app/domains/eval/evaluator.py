@@ -17,6 +17,7 @@ from __future__ import annotations
 
 import asyncio
 import json
+import os
 import re
 import secrets
 import string
@@ -62,6 +63,37 @@ JUDGE_COST_INPUT_PER_TOKEN = Decimal("0.00000074")
 JUDGE_COST_OUTPUT_PER_TOKEN = Decimal("0.0000037")
 JUDGE_COST_CACHE_CREATION_PER_TOKEN = JUDGE_COST_INPUT_PER_TOKEN * Decimal("1.25")
 JUDGE_COST_CACHE_READ_PER_TOKEN = JUDGE_COST_INPUT_PER_TOKEN * Decimal("0.10")
+
+# ── In-Memory State ───────────────────────────────────────────────────────────
+# Läuft im FastAPI-Prozess; bei Restart leer. Reicht für Admin-Only-UI.
+_eval_tasks: dict[str, asyncio.Task[None]] = {}
+_eval_logs: dict[str, list[dict[str, str]]] = {}
+
+
+def _eval_log(run_id: str, msg: str, level: str = "info") -> None:
+    entry = {"ts": datetime.now(UTC).isoformat()[:19] + "Z", "level": level, "msg": msg}
+    logs = _eval_logs.setdefault(run_id, [])
+    logs.append(entry)
+    if len(logs) > 500:
+        _eval_logs[run_id] = logs[-500:]
+
+
+def get_eval_log(run_id: str) -> list[dict[str, str]]:
+    return list(_eval_logs.get(run_id, []))
+
+
+def cancel_eval_task(run_id: str) -> bool:
+    """Hard-cancel eines laufenden Eval-Tasks über asyncio.Task.cancel().
+
+    Wirft CancelledError im Task beim nächsten await — stoppt API-Calls sofort.
+    Der Cancel-Route setzt außerdem DB-Status auf FAILED (Belt + Suspenders).
+    """
+    task = _eval_tasks.pop(run_id, None)
+    if task and not task.done():
+        task.cancel()
+        return True
+    return False
+
 
 # M7 wird nur ab dieser Session für P04 ausgeführt (Krisensignal-Erwartung)
 _M7_CRISIS_EXPECTED_FROM_SESSION = 5  # S5: "Manchmal stelle ich mir vor wie es wäre..."
@@ -123,11 +155,23 @@ _P04_CRISIS_SIGNALS: dict[int, str | None] = {
 
 # ── Prompt-Template-Loader ────────────────────────────────────────────────────
 
-_PROMPT_DIR = Path(__file__).parent.parent.parent.parent.parent.parent / "prompts" / "eval"
 
-# Fallback: relativ zum Repo-Root
-if not _PROMPT_DIR.exists():
-    _PROMPT_DIR = Path("/Users/dagmarrostek/Documents/GitHub/kaia-app/prompts/eval")
+def _resolve_prompt_dir() -> Path:
+    # 1. Explizites Env-Var (z.B. Docker-Volume-Mount via docker-compose)
+    env_dir = os.environ.get("KAIA_EVAL_PROMPTS_DIR", "")
+    if env_dir:
+        p = Path(env_dir)
+        if p.exists():
+            return p
+    # 2. Docker-Standard-Pfad (Volume mount: ../prompts:/app/prompts)
+    docker_path = Path("/app/prompts/eval")
+    if docker_path.exists():
+        return docker_path
+    # 3. Lokale Entwicklung: 6 Ebenen über dieser Datei = Repo-Root
+    return Path(__file__).parents[5] / "prompts" / "eval"
+
+
+_PROMPT_DIR = _resolve_prompt_dir()
 
 _METRIC_TO_PROMPT_FILE: dict[MetricKey, str] = {
     MetricKey.M1_SOCRATIC_PURITY: "m1_socratic_purity.md",
@@ -608,13 +652,19 @@ async def _run_llm_eval(
 
     try:
         for persona in personas:
-            # Abbruch-Check: wenn Admin den Run canceled hat, sofort beenden
+            # DB-Abbruch-Check (Belt): wenn Admin canceled hat, sofort beenden
+            # (asyncio.Task.cancel() ist die primäre Stop-Methode — dieser Check ist Fallback)
             async with AsyncSessionLocal() as _db:
                 _current = await EvalRunRepository(_db).get(run_id)
                 if _current is None or _current.status == EvalRunStatus.FAILED:
+                    _eval_log(run_id, f"Abbruch erkannt vor {persona.persona_id}", level="warning")
                     log.info("llm_eval_cancelled", run_id=run_id, persona=persona.persona_id)
                     return
 
+            _eval_log(
+                run_id,
+                f"▶ {persona.persona_id} ({persona.learning_topic}) — {len(session_numbers)} Sessions",
+            )
             log.info("llm_eval_persona_start", run_id=run_id, persona=persona.persona_id)
 
             suffix = "".join(secrets.choice(string.ascii_lowercase) for _ in range(6))
@@ -653,12 +703,25 @@ async def _run_llm_eval(
             crash_persona = _EvalPersonaAdapter(persona)
 
             for session_number in session_numbers:
+                # DB-Abbruch-Check zwischen Sessions (Suspenders)
+                async with AsyncSessionLocal() as _db:
+                    _cur = await EvalRunRepository(_db).get(run_id)
+                    if _cur is None or _cur.status == EvalRunStatus.FAILED:
+                        _eval_log(run_id, f"Abbruch vor S{session_number}", level="warning")
+                        return
+
+                _eval_log(run_id, f"  S{session_number}: Simulation läuft…")
                 session_data, sim_cost = await _simulate_persona_session(
                     client, persona, user_id, session_number, turns
                 )
                 total_cost += sim_cost
 
                 if session_data.get("status") == "error" or not session_data.get("exchanges"):
+                    _eval_log(
+                        run_id,
+                        f"  S{session_number}: übersprungen (Simulation-Fehler oder leer)",
+                        level="warning",
+                    )
                     log.warning(
                         "llm_eval_session_skipped",
                         persona=persona.persona_id,
@@ -667,6 +730,10 @@ async def _run_llm_eval(
                     await asyncio.sleep(1)
                     continue
 
+                n_turns = len(session_data.get("exchanges", []))
+                _eval_log(
+                    run_id, f"  S{session_number}: {n_turns} Turns simuliert → Judge startet…"
+                )
                 try:
                     eval_results, transcript, judge_cost = await _evaluate_persona_session(
                         client=client,
@@ -681,7 +748,14 @@ async def _run_llm_eval(
                         await EvalResultRepository(db).bulk_create(eval_results)
                         await EvalTranscriptRepository(db).create(transcript)
 
+                    scores = [r.score for r in eval_results if r.score is not None]
+                    avg = sum(scores) / len(scores) if scores else None
+                    avg_str = f"{avg:.1f}/3" if avg is not None else "—"
+                    _eval_log(
+                        run_id, f"  S{session_number}: ✓ {len(eval_results)} Metriken (Ø {avg_str})"
+                    )
                 except Exception as exc:
+                    _eval_log(run_id, f"  S{session_number}: Judge-Fehler: {exc}", level="error")
                     log.error(
                         "llm_eval_judge_error",
                         run_id=run_id,
@@ -703,6 +777,7 @@ async def _run_llm_eval(
 
                 await asyncio.sleep(2)
 
+            _eval_log(run_id, f"✓ {persona.persona_id} abgeschlossen")
             log.info("llm_eval_persona_done", run_id=run_id, persona=persona.persona_id)
 
     except Exception as exc:
@@ -724,6 +799,11 @@ async def _run_llm_eval(
             total_cost_eur=float(total_cost),
         )
 
+    _eval_log(
+        run_id,
+        f"LLM-Eval {'fehlgeschlagen' if error_msg else 'abgeschlossen'} — €{float(total_cost):.4f}",
+        level="error" if error_msg else "info",
+    )
     log.info("llm_eval_run_complete", run_id=run_id, total_cost_eur=float(total_cost))
 
 
@@ -746,7 +826,19 @@ async def run_eval(run_id: str, config: EvalRunCreate) -> None:
     Zwei Modi:
     - config.simulation_run_id is None  → LLM-Simulation mit eval_personas.py (Standard)
     - config.simulation_run_id is set   → Crash-Test-Eval (Transkripte aus In-Memory-Runner)
+
+    Task-Cancellation: routes.py ruft cancel_eval_task(run_id) auf, das asyncio.Task.cancel()
+    auslöst. CancelledError wird beim nächsten await im Task injiziert → sofortiger Stop.
     """
+    # Task-Registrierung für Hard-Cancel via cancel_eval_task()
+    current_task = asyncio.current_task()
+    if current_task is not None:
+        _eval_tasks[run_id] = current_task
+
+    _eval_log(
+        run_id,
+        f"Eval gestartet (Modus: {'LLM-Sim' if config.simulation_run_id is None else 'Crash-Eval'})",
+    )
     log.info(
         "eval_run_start",
         run_id=run_id,
@@ -760,7 +852,13 @@ async def run_eval(run_id: str, config: EvalRunCreate) -> None:
 
     # ── Modus 1: LLM-Simulation (Standard) ────────────────────────────────────
     if config.simulation_run_id is None:
-        await _run_llm_eval(run_id, config, client)
+        try:
+            await _run_llm_eval(run_id, config, client)
+        except asyncio.CancelledError:
+            _eval_log(run_id, "Abgebrochen (Task gestoppt)", level="warning")
+            raise
+        finally:
+            _eval_tasks.pop(run_id, None)
         return
 
     # ── Modus 2: Crash-Test-Eval (Legacy) ─────────────────────────────────────
@@ -903,6 +1001,12 @@ async def run_eval(run_id: str, config: EvalRunCreate) -> None:
             total_cost_eur=float(total_run_cost),
         )
 
+    _eval_tasks.pop(run_id, None)
+    _eval_log(
+        run_id,
+        f"Crash-Eval {'fehlgeschlagen' if error_msg else 'abgeschlossen'} — €{float(total_run_cost):.4f}",
+        level="error" if error_msg else "info",
+    )
     log.info(
         "eval_run_complete",
         run_id=run_id,

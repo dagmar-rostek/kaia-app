@@ -166,6 +166,9 @@ export default function EvalPage() {
   const [stopping, setStopping] = useState(false)
   const [retesting, setRetesting] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [evalLog, setEvalLog] = useState<Array<{ ts: string; level: string; msg: string }>>([])
+  const [showLog, setShowLog] = useState(true)
+  const logEndRef = useRef<HTMLDivElement | null>(null)
   const pollRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   // ── Start-Modal State ──
@@ -196,6 +199,15 @@ export default function EvalPage() {
     }
   }, [])
 
+  const loadLog = useCallback(async (runId: string) => {
+    try {
+      const res = await fetch(`/admin/api/eval/runs/${runId}/log`)
+      if (res.ok) setEvalLog(await res.json())
+    } catch {
+      // silent — log is best-effort
+    }
+  }, [])
+
   const loadDetail = useCallback(async (runId: string, personaId: string, session: number) => {
     setDetailLoading(true)
     setDetail(null)
@@ -209,24 +221,35 @@ export default function EvalPage() {
     }
   }, [])
 
+  // Scroll log to bottom when new entries arrive
+  useEffect(() => {
+    if (showLog) logEndRef.current?.scrollIntoView({ behavior: "smooth" })
+  }, [evalLog, showLog])
+
   // Poll while a run is active
   useEffect(() => {
     const activeRun = runs.find((r) => r.status === "running" || r.status === "pending")
     if (!activeRun || !selectedRun) return
     pollRef.current = setTimeout(async () => {
       await loadRuns()
-      if (selectedRun) await loadHeatmap(selectedRun)
-    }, 8000)
+      if (selectedRun) {
+        await loadHeatmap(selectedRun)
+        await loadLog(selectedRun)
+      }
+    }, 3000)
     return () => { if (pollRef.current) clearTimeout(pollRef.current) }
-  }, [runs, selectedRun, loadRuns, loadHeatmap])
+  }, [runs, selectedRun, loadRuns, loadHeatmap, loadLog])
 
   useEffect(() => {
     void loadRuns() // eslint-disable-line react-hooks/set-state-in-effect
   }, [loadRuns])
 
   useEffect(() => {
-    if (selectedRun) void loadHeatmap(selectedRun) // eslint-disable-line react-hooks/set-state-in-effect
-  }, [selectedRun, loadHeatmap])
+    if (selectedRun) {
+      void loadHeatmap(selectedRun) // eslint-disable-line react-hooks/set-state-in-effect
+      void loadLog(selectedRun) // eslint-disable-line react-hooks/set-state-in-effect
+    }
+  }, [selectedRun, loadHeatmap, loadLog])
 
   useEffect(() => {
     if (selectedCell && selectedRun) {
@@ -528,14 +551,54 @@ export default function EvalPage() {
               </span>
             </div>
           ) : isRunning ? (
-            <div className="flex flex-col items-center justify-center h-64 gap-3 text-zinc-400">
-              <Loader2 className="w-8 h-8 animate-spin text-violet-500" />
-              <p className="text-sm">Eval läuft — aktualisiert alle 8 Sekunden…</p>
-              {heatmap && heatmap.personas.length > 0 && (
-                <p className="text-xs text-zinc-600">
-                  {heatmap.personas.filter(p => p.sessions.some(s => s.score_pct !== null)).length}/10 Personas evaluiert
-                </p>
-              )}
+            <div className="space-y-4">
+              <div className="flex items-center gap-3 text-zinc-400 p-4 bg-zinc-900 rounded-lg border border-zinc-800">
+                <Loader2 className="w-5 h-5 animate-spin text-violet-500 shrink-0" />
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm">Eval läuft — aktualisiert alle 3 Sekunden</p>
+                  {heatmap && heatmap.personas.length > 0 && (
+                    <p className="text-xs text-zinc-500 mt-0.5">
+                      {heatmap.personas.filter(p => p.sessions.some(s => s.score_pct !== null)).length} Personas mit Ergebnissen
+                    </p>
+                  )}
+                </div>
+              </div>
+              {/* Live Log */}
+              <div className="bg-zinc-900 border border-zinc-800 rounded-lg overflow-hidden">
+                <div className="flex items-center justify-between px-3 py-2 border-b border-zinc-800">
+                  <p className="text-xs font-medium text-zinc-400">Live-Log</p>
+                  <button
+                    onClick={() => setShowLog((v) => !v)}
+                    className="text-xs text-zinc-600 hover:text-zinc-400"
+                  >
+                    {showLog ? "▲ einklappen" : "▼ aufklappen"}
+                  </button>
+                </div>
+                {showLog && (
+                  <div className="h-72 overflow-y-auto p-3 font-mono text-xs space-y-0.5">
+                    {evalLog.length === 0 ? (
+                      <p className="text-zinc-600">Warte auf ersten Log-Eintrag…</p>
+                    ) : (
+                      evalLog.map((entry, i) => (
+                        <div
+                          key={i}
+                          className={`leading-snug ${
+                            entry.level === "error"
+                              ? "text-red-400"
+                              : entry.level === "warning"
+                              ? "text-yellow-400"
+                              : "text-zinc-400"
+                          }`}
+                        >
+                          <span className="text-zinc-600">{entry.ts.slice(11, 19)}</span>{" "}
+                          {entry.msg}
+                        </div>
+                      ))
+                    )}
+                    <div ref={logEndRef} />
+                  </div>
+                )}
+              </div>
             </div>
           ) : !heatmap || heatmap.personas.length === 0 ? (
             <div className="flex items-center justify-center h-64 text-zinc-600 text-sm">
@@ -741,6 +804,40 @@ export default function EvalPage() {
                   </div>
                 ))}
               </div>
+
+              {/* Run-Log (collapsed by default after completion) */}
+              {evalLog.length > 0 && (
+                <div className="bg-zinc-900 border border-zinc-800 rounded-lg overflow-hidden">
+                  <button
+                    onClick={() => setShowLog((v) => !v)}
+                    className="w-full flex items-center justify-between px-3 py-2 border-b border-zinc-800 hover:bg-zinc-800/50 transition-colors"
+                  >
+                    <p className="text-xs font-medium text-zinc-400">
+                      Run-Log ({evalLog.length} Einträge)
+                    </p>
+                    <span className="text-xs text-zinc-600">{showLog ? "▲" : "▼"}</span>
+                  </button>
+                  {showLog && (
+                    <div className="h-48 overflow-y-auto p-3 font-mono text-xs space-y-0.5">
+                      {evalLog.map((entry, i) => (
+                        <div
+                          key={i}
+                          className={`leading-snug ${
+                            entry.level === "error"
+                              ? "text-red-400"
+                              : entry.level === "warning"
+                              ? "text-yellow-400"
+                              : "text-zinc-400"
+                          }`}
+                        >
+                          <span className="text-zinc-600">{entry.ts.slice(11, 19)}</span>{" "}
+                          {entry.msg}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
           )}
         </div>

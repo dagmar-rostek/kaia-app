@@ -18,6 +18,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.deps import require_admin
 from app.db.session import get_db
+from app.domains.eval.evaluator import cancel_eval_task, get_eval_log
 from app.domains.eval.models import EvalRun, EvalRunStatus
 from app.domains.eval.repository import (
     EvalResultRepository,
@@ -335,6 +336,9 @@ async def cancel_run(
     if run.status not in (EvalRunStatus.RUNNING, EvalRunStatus.PENDING):
         raise HTTPException(409, f"Run ist bereits '{run.status}' — kein Abbruch möglich.")
 
+    # Hard-Cancel: CancelledError in den asyncio-Task injizieren → sofortiger Stop
+    cancel_eval_task(run_id)
+    # DB-Status-Update (Belt + Suspenders: auch wenn Task schon fertig war)
     await repo.update_status(
         run_id,
         EvalRunStatus.FAILED,
@@ -342,6 +346,21 @@ async def cancel_run(
     )
     log.info("eval_run_cancelled", run_id=run_id, by=getattr(admin, "username", "admin"))
     return {"status": "cancelled", "run_id": run_id}
+
+
+# ── GET /admin/eval/runs/{run_id}/log ─────────────────────────────────────────
+
+
+@router.get("/runs/{run_id}/log", response_model=list[dict[str, str]])
+async def get_run_log(
+    run_id: str,
+) -> list[dict[str, str]]:
+    """Live-Log eines Eval-Runs (in-memory, verloren bei Restart).
+
+    Gibt bis zu 500 Einträge zurück. Frontend pollt alle 3s während status=running.
+    Format: [{ts: "2026-07-01T12:00:00Z", level: "info"|"warning"|"error", msg: "..."}]
+    """
+    return get_eval_log(run_id)
 
 
 # ── PATCH /admin/eval/runs/{run_id}/results/{result_id} ───────────────────────
