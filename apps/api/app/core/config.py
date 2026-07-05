@@ -29,6 +29,7 @@ class Settings(BaseSettings):
     anthropic_api_key: str = ""
     openai_api_key: str = ""
     mistral_api_key: str = ""
+    kaia_chat_model: str = "claude-sonnet-4-6"
 
     # Observability
     sentry_kaia_api: str = ""

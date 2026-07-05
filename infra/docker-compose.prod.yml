@@ -33,6 +33,7 @@ services:
       SMTP_FROM: ${SMTP_FROM:-noreply@kaia.rostek-dagmar.eu}
       ADMIN_EMAIL: ${ADMIN_EMAIL:-dagmar@ecoaching-rostek.de}
       KAIA_EVAL_PROMPTS_DIR: /app/prompts/eval
+      # KAIA_CHAT_MODEL: claude-haiku-4-5-20251001  # Auskommentieren für Haiku-Eval-Run
     volumes:
       - ../prompts:/app/prompts:ro
     depends_on:

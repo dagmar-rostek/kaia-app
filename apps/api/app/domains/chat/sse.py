@@ -9,14 +9,21 @@ import re
 from decimal import Decimal
 from typing import Any
 
+from app.core.config import settings
+
 # ── Model & cost constants ────────────────────────────────────────────────────
 
-MODEL = "claude-sonnet-4-6"
-MAX_TOKENS = 3000  # thinking (~800–1200, v3 prompt is richer) + final_answer (~300) + buffer
+MODEL = settings.kaia_chat_model
+MAX_TOKENS = 3000  # final_answer (~300) + reasoning buffer; valid for Sonnet and Haiku
 
-# Cost per token in EUR (approximate, claude-sonnet-4-6)
-COST_INPUT_PER_TOKEN = Decimal("0.0000027")  # ~$3/MTok → ~€2.8/MTok
-COST_OUTPUT_PER_TOKEN = Decimal("0.000013")  # ~$15/MTok → ~€13.8/MTok
+_COST_TABLE: dict[str, tuple[Decimal, Decimal]] = {
+    # (input_per_token_eur, output_per_token_eur)
+    "claude-sonnet-4-6": (Decimal("0.0000027"), Decimal("0.000013")),
+    "claude-haiku-4-5-20251001": (Decimal("0.00000074"), Decimal("0.0000037")),
+}
+_costs = _COST_TABLE.get(MODEL, _COST_TABLE["claude-sonnet-4-6"])
+COST_INPUT_PER_TOKEN = _costs[0]
+COST_OUTPUT_PER_TOKEN = _costs[1]
 
 # ── SSE event helpers ─────────────────────────────────────────────────────────
 
