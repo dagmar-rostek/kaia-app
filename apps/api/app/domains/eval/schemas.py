@@ -49,6 +49,13 @@ class EvalRunCreate(BaseModel):
         le=10,
         description="Anzahl Nutzer-Turns pro Session in der LLM-Simulation.",
     )
+    kaia_model: str = Field(
+        default="",
+        description=(
+            "Welches LLM als KAIA antwortet. Leer = kaia_chat_model aus system_settings. "
+            "Für Multi-Model-Eval: 'gpt-4o', 'mistral-large-latest', etc."
+        ),
+    )
 
 
 class RetestCreate(BaseModel):

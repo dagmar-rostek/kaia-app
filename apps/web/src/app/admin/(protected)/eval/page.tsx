@@ -148,19 +148,49 @@ const ALL_PERSONAS = [
   { id: "P10", name: "Michael — Experten-Verweigerer" },
 ]
 
-function estimateCost(personas: number, sessions: number, turns: number): string {
-  // ~€0.09 per session (haiku simulator + judge, 5 turns)
-  const base = personas * sessions * turns * 0.018
+const MODEL_COST_FACTOR: Record<string, number> = {
+  "claude-haiku-4-5-20251001": 1.0,
+  "claude-sonnet-4-6": 5.0,
+  "gpt-4o": 4.5,
+  "gpt-4o-mini": 0.3,
+  "mistral-large-latest": 5.5,
+  "mistral-small-latest": 1.2,
+}
+
+function estimateCost(personas: number, sessions: number, turns: number, model: string): string {
+  const factor = MODEL_COST_FACTOR[model] ?? 1.0
+  const base = personas * sessions * turns * 0.018 * factor
   return `€${base.toFixed(2)}–${(base * 1.4).toFixed(2)}`
 }
 
 // ── Hilfsfunktionen ────────────────────────────────────────────────────────────
 
+interface AvailableModel {
+  id: string
+  label: string
+  provider: string
+}
+
+function modelShortLabel(modelId: string): string {
+  if (modelId.includes("haiku")) return "Haiku"
+  if (modelId.includes("sonnet")) return "Sonnet"
+  if (modelId.includes("gpt-4o-mini")) return "GPT-4o mini"
+  if (modelId.includes("gpt-4o")) return "GPT-4o"
+  if (modelId.includes("mistral-large")) return "Mistral L"
+  if (modelId.includes("mistral-small")) return "Mistral S"
+  return modelId
+}
+
+function modelBadgeClass(modelId: string): string {
+  if (modelId.includes("haiku")) return "bg-orange-600/20 text-orange-300 border border-orange-600/30"
+  if (modelId.includes("sonnet")) return "bg-blue-600/20 text-blue-300 border border-blue-600/30"
+  if (modelId.includes("gpt")) return "bg-green-600/20 text-green-300 border border-green-600/30"
+  if (modelId.includes("mistral")) return "bg-purple-600/20 text-purple-300 border border-purple-600/30"
+  return "bg-zinc-600/20 text-zinc-300 border border-zinc-600/30"
+}
+
 function kaiaChatModelLabel(run: EvalRun): string {
-  const m = (run.config?.kaia_chat_model as string | undefined) ?? ""
-  if (m.includes("haiku")) return "Haiku"
-  if (m.includes("sonnet")) return "Sonnet"
-  return "Sonnet" // Default vor erstem Deploy mit kaia_chat_model
+  return modelShortLabel((run.config?.kaia_chat_model as string | undefined) ?? "claude-sonnet-4-6")
 }
 
 // ── Main Component ─────────────────────────────────────────────────────────────
@@ -186,8 +216,14 @@ export default function EvalPage() {
   const [selectedPersonas, setSelectedPersonas] = useState<string[]>(["P01"])
   const [turnsPerSession, setTurnsPerSession] = useState(5)
   const [maxSessions, setMaxSessions] = useState(10)
+  const [kaiaModel, setKaiaModel] = useState("")  // "" = aktuelles System-Modell
   const [compareRunId, setCompareRunId] = useState<string | null>(null)
   const [compareHeatmap, setCompareHeatmap] = useState<HeatmapData | null>(null)
+
+  // ── Settings State (live model switcher) ──
+  const [availableModels, setAvailableModels] = useState<AvailableModel[]>([])
+  const [liveModel, setLiveModel] = useState<string>("")
+  const [switchingModel, setSwitchingModel] = useState(false)
 
   const loadRuns = useCallback(async () => {
     try {
@@ -230,6 +266,38 @@ export default function EvalPage() {
     }
   }, [])
 
+  const loadSettings = useCallback(async () => {
+    try {
+      const res = await fetch("/admin/api/settings")
+      if (res.ok) {
+        const data = await res.json()
+        setLiveModel(data.kaia_chat_model ?? "")
+        setAvailableModels(data.available_models ?? [])
+      }
+    } catch {
+      // silent
+    }
+  }, [])
+
+  const switchLiveModel = async (modelId: string) => {
+    setSwitchingModel(true)
+    try {
+      const res = await fetch("/admin/api/settings", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ kaia_chat_model: modelId }),
+      })
+      if (res.ok) {
+        const data = await res.json()
+        setLiveModel(data.kaia_chat_model ?? modelId)
+      }
+    } catch {
+      // silent
+    } finally {
+      setSwitchingModel(false)
+    }
+  }
+
   const loadDetail = useCallback(async (runId: string, personaId: string, session: number) => {
     setDetailLoading(true)
     setDetail(null)
@@ -264,7 +332,8 @@ export default function EvalPage() {
 
   useEffect(() => {
     void loadRuns() // eslint-disable-line react-hooks/set-state-in-effect
-  }, [loadRuns])
+    void loadSettings() // eslint-disable-line react-hooks/set-state-in-effect
+  }, [loadRuns, loadSettings])
 
   useEffect(() => {
     if (selectedRun) {
@@ -295,6 +364,7 @@ export default function EvalPage() {
       const body: Record<string, unknown> = {
         evaluator_model: "claude-haiku-4-5-20251001",
         turns_per_session: turnsPerSession,
+        kaia_model: kaiaModel,
       }
       if (selectedPersonas.length < 10) body.persona_ids = selectedPersonas
       if (maxSessions < 10) body.session_numbers = Array.from({ length: maxSessions }, (_, i) => i + 1)
@@ -404,6 +474,38 @@ export default function EvalPage() {
         </div>
       </div>
 
+      {/* Live-Model-Switcher */}
+      {availableModels.length > 0 && (
+        <div className="mb-5 flex items-center gap-3 bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3">
+          <div className="flex-1">
+            <p className="text-xs text-zinc-400 mb-0.5">KAIA Live-Modell (Chat + Eval-Standard)</p>
+            <div className="flex items-center gap-2 flex-wrap">
+              {availableModels.map((m) => (
+                <button
+                  key={m.id}
+                  onClick={() => switchLiveModel(m.id)}
+                  disabled={switchingModel}
+                  className={`px-2.5 py-1 rounded text-xs font-medium transition-all ${
+                    liveModel === m.id
+                      ? modelBadgeClass(m.id) + " opacity-100"
+                      : "bg-zinc-800 text-zinc-400 hover:bg-zinc-700 border border-zinc-700"
+                  } disabled:opacity-50`}
+                >
+                  {m.label}
+                  {liveModel === m.id && " ✓"}
+                </button>
+              ))}
+            </div>
+          </div>
+          {switchingModel && <Loader2 className="w-4 h-4 animate-spin text-zinc-500" />}
+          {liveModel && (
+            <div className={`text-xs px-2 py-1 rounded font-mono ${modelBadgeClass(liveModel)}`}>
+              {modelShortLabel(liveModel)}
+            </div>
+          )}
+        </div>
+      )}
+
       {/* Start-Modal */}
       {showStartModal && (
         <div className="fixed inset-0 bg-black/70 z-50 flex items-center justify-center">
@@ -498,13 +600,35 @@ export default function EvalPage() {
                 </div>
               </div>
 
+              {/* KAIA Model selection */}
+              <div>
+                <label className="text-xs font-medium text-zinc-400 block mb-2">
+                  KAIA-Modell (wird evaluiert)
+                </label>
+                <select
+                  value={kaiaModel}
+                  onChange={(e) => setKaiaModel(e.target.value)}
+                  className="w-full bg-zinc-800 border border-zinc-700 rounded px-3 py-2 text-sm text-zinc-200 focus:outline-none focus:border-violet-500"
+                >
+                  <option value="">System-Modell ({liveModel ? modelShortLabel(liveModel) : "Sonnet"})</option>
+                  {availableModels.map((m) => (
+                    <option key={m.id} value={m.id}>{m.label}</option>
+                  ))}
+                </select>
+                {kaiaModel && (
+                  <p className="text-[10px] text-zinc-500 mt-1">
+                    Verwendet {modelShortLabel(kaiaModel)} als KAIA — vergleichbar via Compare-Button nach Run.
+                  </p>
+                )}
+              </div>
+
               {/* Cost estimate */}
               <div className="bg-zinc-800 rounded-lg p-3 text-xs">
                 <div className="flex justify-between">
                   <span className="text-zinc-400">Geschätzte Kosten:</span>
                   <span className="font-medium text-zinc-200">
                     {selectedPersonas.length > 0
-                      ? estimateCost(selectedPersonas.length, maxSessions, turnsPerSession)
+                      ? estimateCost(selectedPersonas.length, maxSessions, turnsPerSession, kaiaModel || liveModel || "claude-haiku-4-5-20251001")
                       : "—"}
                   </span>
                 </div>

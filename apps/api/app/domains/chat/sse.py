@@ -13,17 +13,43 @@ from app.core.config import settings
 
 # ── Model & cost constants ────────────────────────────────────────────────────
 
-MODEL = settings.kaia_chat_model
 MAX_TOKENS = 3000  # final_answer (~300) + reasoning buffer; valid for Sonnet and Haiku
 
 _COST_TABLE: dict[str, tuple[Decimal, Decimal]] = {
     # (input_per_token_eur, output_per_token_eur)
     "claude-sonnet-4-6": (Decimal("0.0000027"), Decimal("0.000013")),
     "claude-haiku-4-5-20251001": (Decimal("0.00000074"), Decimal("0.0000037")),
+    "gpt-4o": (Decimal("0.0000022"), Decimal("0.0000088")),
+    "gpt-4o-mini": (Decimal("0.00000013"), Decimal("0.00000053")),
+    "mistral-large-latest": (Decimal("0.0000026"), Decimal("0.0000078")),
+    "mistral-small-latest": (Decimal("0.00000074"), Decimal("0.0000022")),
 }
-_costs = _COST_TABLE.get(MODEL, _COST_TABLE["claude-sonnet-4-6"])
-COST_INPUT_PER_TOKEN = _costs[0]
-COST_OUTPUT_PER_TOKEN = _costs[1]
+
+# ── Dynamisches Modell (Admin-switcher ohne Neustart) ─────────────────────────
+
+_current_model: str = settings.kaia_chat_model
+
+
+def get_model() -> str:
+    """Gibt das aktuell konfigurierte KAIA-Chat-Modell zurück."""
+    return _current_model
+
+
+def set_model_override(model: str) -> None:
+    """Setzt das KAIA-Chat-Modell in-memory (wirkt sofort, ohne Neustart).
+    Zusätzlich muss der Aufrufer die DB aktualisieren für Restart-Persistenz.
+    """
+    global _current_model, COST_INPUT_PER_TOKEN, COST_OUTPUT_PER_TOKEN
+    _current_model = model
+    _costs = _COST_TABLE.get(model, _COST_TABLE["claude-sonnet-4-6"])
+    COST_INPUT_PER_TOKEN = _costs[0]
+    COST_OUTPUT_PER_TOKEN = _costs[1]
+
+
+# Initialisierung der Kosten-Globals auf Basis des konfigurierten Startmodells
+_init_costs = _COST_TABLE.get(_current_model, _COST_TABLE["claude-sonnet-4-6"])
+COST_INPUT_PER_TOKEN = _init_costs[0]
+COST_OUTPUT_PER_TOKEN = _init_costs[1]
 
 # ── SSE event helpers ─────────────────────────────────────────────────────────
 

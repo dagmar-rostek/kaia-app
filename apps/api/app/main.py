@@ -16,6 +16,7 @@ from app.core.config import settings
 # already registered; the remaining domains need an explicit import here.
 from app.domains.eval import models as _eval_models  # noqa: F401
 from app.domains.roadmap import models as _roadmap_models  # noqa: F401
+from app.domains.settings import models as _settings_models  # noqa: F401
 from app.domains.survey import models as _survey_models  # noqa: F401
 from app.observability.logging import configure_logging
 from app.observability.sentry import init_sentry
@@ -27,6 +28,21 @@ log = structlog.get_logger()
 async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     configure_logging(debug=settings.debug)
     init_sentry()
+
+    # Gespeichertes kaia_chat_model aus DB laden (Restart-Persistenz für Admin-Switcher)
+    try:
+        from app.db.session import AsyncSessionLocal  # noqa: PLC0415
+        from app.domains.chat.sse import set_model_override  # noqa: PLC0415
+        from app.domains.settings.repository import SystemSettingsRepository  # noqa: PLC0415
+
+        async with AsyncSessionLocal() as db:
+            saved = await SystemSettingsRepository(db).get("kaia_chat_model")
+            if saved:
+                set_model_override(saved)
+                log.info("kaia_model_loaded_from_db", model=saved)
+    except Exception as _e:  # noqa: BLE001
+        log.warning("kaia_model_db_load_failed", error=str(_e))
+
     log.info("kaia_api_started", study_mode=settings.study_mode)
     yield
     log.info("kaia_api_stopped")

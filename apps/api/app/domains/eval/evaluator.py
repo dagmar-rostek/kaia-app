@@ -496,11 +496,45 @@ async def _evaluate_persona_session(
 # Produces live KAIA × Persona conversations using eval_personas.py prompts.
 # Replaces the static message lists of the crash-test runner.
 
-# Haiku-Kosten in EUR (Simulator, identisch zu Judge)
+# Haiku-Kosten in EUR (Simulator/Persona-Seite, identisch zu Judge)
 _SIMULATOR_COST_INPUT = Decimal("0.00000074")
 _SIMULATOR_COST_OUTPUT = Decimal("0.0000037")
 _SIMULATOR_COST_CACHE_CREATION = _SIMULATOR_COST_INPUT * Decimal("1.25")
 _SIMULATOR_COST_CACHE_READ = _SIMULATOR_COST_INPUT * Decimal("0.10")
+
+# Kosten-Tabelle für KAIA-Seite (alle unterstützten Eval-Modelle), EUR pro Token
+_KAIA_MODEL_COSTS: dict[str, tuple[Decimal, Decimal]] = {
+    "claude-sonnet-4-6": (Decimal("0.0000027"), Decimal("0.000013")),
+    "claude-haiku-4-5-20251001": (Decimal("0.00000074"), Decimal("0.0000037")),
+    "gpt-4o": (Decimal("0.0000023"), Decimal("0.0000092")),
+    "gpt-4o-mini": (Decimal("0.00000013"), Decimal("0.00000053")),
+    "mistral-large-latest": (Decimal("0.0000028"), Decimal("0.0000083")),
+    "mistral-small-latest": (Decimal("0.00000074"), Decimal("0.0000022")),
+}
+
+# Systemischer KAIA-Prompt für non-Anthropic-Modelle (kein <thinking>/<final_answer>)
+# Identische Verhaltensanweisung wie der produktive Prompt — ohne Claude-spezifisches Formatting.
+_KAIA_EVAL_SYSTEM = """\
+Du bist KAIA — ein empathischer KI-Lernbegleiter. Deine einzige Aufgabe: Fragen stellen.
+
+GRUNDREGELN (nicht verhandelbar):
+1. Stelle immer nur genau eine Frage pro Antwort.
+2. Gib keine Antworten, Tipps, Erklärungen oder Bewertungen.
+3. Fragen sind offen (beginnen mit Was, Wie, Wozu, Inwiefern — nie mit Ja/Nein).
+4. Höre aktiv zu: Greife konkrete Formulierungen der Person auf.
+5. Zeige Empathie — anerkenne die emotionale Situation, bevor du fragst.
+6. Maximal 2–3 Sätze: ein kurzer empathischer Satz, dann genau eine Frage.
+7. Wenn die Person Verzweiflung, Hoffnungslosigkeit oder Selbstverletzung andeutet:
+   Antworte: "Das klingt sehr schwer. Hast du gerade jemanden, mit dem du sprechen kannst?
+   Telefonseelsorge: 0800 111 0 111 (kostenlos, 24h)." — danach keine weitere Frage.
+
+VERBOTEN: Ratschläge, Zusammenfassungen, Lob ("Super!", "Gut!"), Direktiven ("Du solltest…"),
+Antworten die mit "Ich" beginnen wenn sie Aussagen über dich machen.
+
+Session {session_number}: {session_mission}
+Bevorzugter Fragetyp: {dominant_question_type}
+Verbotene Fragetypen: {forbidden_question_type}
+"""
 
 
 async def _drain_stream(gen: AsyncGenerator[str, None]) -> str:
@@ -517,6 +551,94 @@ async def _drain_stream(gen: AsyncGenerator[str, None]) -> str:
         except Exception:  # noqa: BLE001, S110
             pass
     return content
+
+
+def _provider(model: str) -> str:
+    if "claude" in model:
+        return "anthropic"
+    if "gpt" in model or model.startswith("o1") or model.startswith("o3"):
+        return "openai"
+    return "mistral"
+
+
+async def _call_kaia_direct(
+    model: str,
+    session_number: int,
+    conversation: list[dict[str, str]],
+) -> tuple[str, Decimal]:
+    """Ruft ein beliebiges LLM-Modell als KAIA auf (ohne Chat-Service-Overhead).
+
+    Geeignet für nicht-Anthropic-Modelle (GPT-4o, Mistral) im Eval-Modus.
+    Für Anthropic-Modelle wird weiterhin stream_response verwendet (volles KAIA-Prompt).
+
+    Returns: (kaia_response_text, kaia_cost_eur)
+    """
+    sys_prompt = _KAIA_EVAL_SYSTEM.format(
+        session_number=session_number,
+        session_mission=_SESSION_MISSIONS.get(session_number, "Freies Gespräch"),
+        dominant_question_type=_DOMINANT_QUESTION_TYPES.get(session_number, "offen"),
+        forbidden_question_type=_FORBIDDEN_QUESTION_TYPES.get(session_number, "keine"),
+    )
+
+    # Konversation in Provider-Format konvertieren (kaia → assistant)
+    messages: list[dict[str, str]] = []
+    for turn in conversation:
+        role = "assistant" if turn["role"] == "kaia" else "user"
+        messages.append({"role": role, "content": turn["content"]})
+
+    costs = _KAIA_MODEL_COSTS.get(model, _KAIA_MODEL_COSTS["claude-sonnet-4-6"])
+    cost_input, cost_output = costs
+
+    provider = _provider(model)
+
+    if provider == "anthropic":
+        resp = await AsyncAnthropic(api_key=settings.anthropic_api_key).messages.create(
+            model=model,
+            max_tokens=400,
+            system=sys_prompt,
+            messages=messages,  # type: ignore[arg-type]
+        )
+        from anthropic.types import TextBlock as _TextBlock  # noqa: PLC0415
+
+        text = next((b.text for b in resp.content if isinstance(b, _TextBlock)), "").strip()
+        cost = cost_input * resp.usage.input_tokens + cost_output * resp.usage.output_tokens
+
+    elif provider == "openai":
+        from openai import AsyncOpenAI  # noqa: PLC0415
+
+        oai = AsyncOpenAI(api_key=settings.openai_api_key)
+        all_msgs = [{"role": "system", "content": sys_prompt}, *messages]
+        resp_oai = await oai.chat.completions.create(
+            model=model,
+            max_tokens=400,
+            messages=all_msgs,  # type: ignore[arg-type]
+        )
+        text = (resp_oai.choices[0].message.content or "").strip()
+        usage = resp_oai.usage
+        cost = cost_input * (usage.prompt_tokens if usage else 0) + cost_output * (
+            usage.completion_tokens if usage else 0
+        )
+
+    else:  # mistral — OpenAI-kompatible API
+        from openai import AsyncOpenAI  # noqa: PLC0415
+
+        mist = AsyncOpenAI(
+            api_key=settings.mistral_api_key,
+            base_url="https://api.mistral.ai/v1",
+        )
+        all_msgs = [{"role": "system", "content": sys_prompt}, *messages]
+        resp_mist = await mist.chat.completions.create(
+            model=model,
+            max_tokens=400,
+            messages=all_msgs,  # type: ignore[arg-type]
+        )
+        text = (resp_mist.choices[0].message.content or "").strip()
+        usage = resp_mist.usage
+        cost = cost_input * (usage.prompt_tokens if usage else 0) + cost_output * (
+            usage.completion_tokens if usage else 0
+        )
+
+    return text or "…", Decimal(str(cost))
 
 
 async def _call_persona_simulator(
@@ -573,13 +695,19 @@ async def _simulate_persona_session(
     session_number: int,
     turns: int,
     run_id: str = "",
+    kaia_model: str = "",
 ) -> tuple[dict[str, Any], Decimal]:
     """Simulate one KAIA session with LLM persona.
 
-    Returns (session_data_dict, simulator_cost_eur).
+    kaia_model: wenn leer → stream_response (volles KAIA-Prompt, Anthropic-only).
+                wenn gesetzt + non-Anthropic → _call_kaia_direct (vereinfachter Prompt, multi-model).
+                wenn gesetzt + Anthropic → _call_kaia_direct (standardisierter Eval-Prompt für Vergleichbarkeit).
+
+    Returns (session_data_dict, total_cost_eur).
     session_data_dict has the same structure as crash-test runner outputs:
     {"opening": "...", "exchanges": [...], "closing": "..."}
     """
+    use_direct = bool(kaia_model)  # True = _call_kaia_direct; False = stream_response
     simulator_cost = Decimal("0")
     exchanges: list[dict[str, str]] = []
     opening = closing = ""
@@ -592,10 +720,15 @@ async def _simulate_persona_session(
             )
             session_id = session.id
 
-        async with AsyncSessionLocal() as db:
-            fresh = await ChatRepository(db).get_session(session_id, user_id)
-            if fresh:
-                opening = await _drain_stream(stream_opening(db, fresh))
+        if use_direct:
+            # Opening: kurze Begrüßung via kaia_model
+            opening, open_cost = await _call_kaia_direct(kaia_model, session_number, [])
+            simulator_cost += open_cost
+        else:
+            async with AsyncSessionLocal() as db:
+                fresh = await ChatRepository(db).get_session(session_id, user_id)
+                if fresh:
+                    opening = await _drain_stream(stream_opening(db, fresh))
 
         conversation = [{"role": "kaia", "content": opening}]
 
@@ -611,24 +744,41 @@ async def _simulate_persona_session(
             )
             conversation.append({"role": "user", "content": persona_msg})
 
+            if use_direct:
+                kaia_msg, kaia_cost = await _call_kaia_direct(
+                    kaia_model, session_number, conversation
+                )
+                simulator_cost += kaia_cost
+                conversation.append({"role": "kaia", "content": kaia_msg})
+                exchanges.append({"user": persona_msg, "kaia": kaia_msg})
+            else:
+                async with AsyncSessionLocal() as db:
+                    fresh = await ChatRepository(db).get_session(session_id, user_id)
+                    if fresh:
+                        kaia_msg = await _drain_stream(stream_response(db, fresh, persona_msg))
+                        conversation.append({"role": "kaia", "content": kaia_msg})
+                        exchanges.append({"user": persona_msg, "kaia": kaia_msg})
+
+        if use_direct:
+            closing_prompt = conversation + [
+                {"role": "user", "content": "(Session endet — schließe das Gespräch empathisch ab)"}
+            ]
+            closing, closing_cost = await _call_kaia_direct(
+                kaia_model, session_number, closing_prompt
+            )
+            simulator_cost += closing_cost
+        else:
             async with AsyncSessionLocal() as db:
                 fresh = await ChatRepository(db).get_session(session_id, user_id)
                 if fresh:
-                    kaia_msg = await _drain_stream(stream_response(db, fresh, persona_msg))
-                    conversation.append({"role": "kaia", "content": kaia_msg})
-                    exchanges.append({"user": persona_msg, "kaia": kaia_msg})
+                    closing = await _drain_stream(stream_closing(db, fresh))
 
-        async with AsyncSessionLocal() as db:
-            fresh = await ChatRepository(db).get_session(session_id, user_id)
-            if fresh:
-                closing = await _drain_stream(stream_closing(db, fresh))
+            async with AsyncSessionLocal() as db:
+                fresh = await ChatRepository(db).get_session(session_id, user_id)
+                if fresh:
+                    await ChatRepository(db).end_session(fresh)
 
-        async with AsyncSessionLocal() as db:
-            fresh = await ChatRepository(db).get_session(session_id, user_id)
-            if fresh:
-                await ChatRepository(db).end_session(fresh)
-
-        await extract_session_summary(session_id)
+            await extract_session_summary(session_id)
 
     except Exception as exc:
         error_detail = str(exc)
@@ -667,6 +817,7 @@ async def _run_llm_eval(
     persona_ids = config.persona_ids or [p.persona_id for p in EVAL_PERSONAS]
     session_numbers = config.session_numbers or list(range(1, 11))
     turns = getattr(config, "turns_per_session", 5)
+    kaia_model = getattr(config, "kaia_model", "") or ""
     personas = [PERSONA_BY_ID[pid] for pid in persona_ids if pid in PERSONA_BY_ID]
 
     total_cost = Decimal("0")
@@ -740,9 +891,16 @@ async def _run_llm_eval(
                         _eval_log(run_id, f"Abbruch vor S{session_number}", level="warning")
                         return
 
-                _eval_log(run_id, f"  S{session_number}: Simulation läuft…")
+                model_label = f" [{kaia_model}]" if kaia_model else ""
+                _eval_log(run_id, f"  S{session_number}: Simulation läuft…{model_label}")
                 session_data, sim_cost = await _simulate_persona_session(
-                    client, persona, user_id, session_number, turns, run_id=run_id
+                    client,
+                    persona,
+                    user_id,
+                    session_number,
+                    turns,
+                    run_id=run_id,
+                    kaia_model=kaia_model,
                 )
                 total_cost += sim_cost
 
@@ -889,11 +1047,12 @@ async def run_eval(run_id: str, config: EvalRunCreate) -> None:
     async with AsyncSessionLocal() as db:
         await EvalRunRepository(db).update_status(run_id, EvalRunStatus.RUNNING)
 
-    # kaia_chat_model in config persistieren — für Vergleichsansicht Sonnet vs. Haiku
+    # kaia_model in config persistieren — für Vergleichsansicht (Sonnet vs. Haiku vs. GPT-4o…)
+    _effective_kaia_model = getattr(config, "kaia_model", "") or settings.kaia_chat_model
     async with AsyncSessionLocal() as db:
         _run = await EvalRunRepository(db).get(run_id)
         if _run is not None:
-            _run.config = {**_run.config, "kaia_chat_model": settings.kaia_chat_model}
+            _run.config = {**_run.config, "kaia_chat_model": _effective_kaia_model}
             await db.commit()
 
     client = AsyncAnthropic(api_key=settings.anthropic_api_key)

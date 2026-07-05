@@ -30,10 +30,10 @@ from app.domains.chat.sse import (
     COST_INPUT_PER_TOKEN,
     COST_OUTPUT_PER_TOKEN,
     MAX_TOKENS,
-    MODEL,
     delta,
     done,
     error,
+    get_model,
     thinking_event,
     thinking_strip,
 )
@@ -396,7 +396,7 @@ async def stream_response(
 
     try:
         async with client.messages.stream(
-            model=MODEL,
+            model=get_model(),
             max_tokens=MAX_TOKENS,
             system=[
                 {"type": "text", "text": system_prompt, "cache_control": {"type": "ephemeral"}}
@@ -463,7 +463,7 @@ async def stream_opening(
 
     try:
         async with client.messages.stream(
-            model=MODEL,
+            model=get_model(),
             max_tokens=MAX_TOKENS,
             system=[
                 {"type": "text", "text": system_prompt, "cache_control": {"type": "ephemeral"}}
@@ -525,7 +525,7 @@ async def stream_closing(
 
     try:
         async with client.messages.stream(
-            model=MODEL,
+            model=get_model(),
             max_tokens=300,
             system=[
                 {"type": "text", "text": system_prompt, "cache_control": {"type": "ephemeral"}}
@@ -589,7 +589,7 @@ async def stream_meta_question(
 
     try:
         async with client.messages.stream(
-            model=MODEL,
+            model=get_model(),
             max_tokens=120,
             system=[
                 {"type": "text", "text": system_prompt, "cache_control": {"type": "ephemeral"}}
@@ -659,7 +659,7 @@ async def _log_usage(
             "sid": session.id,
             "uid": session.user_id,
             "provider": "claude",
-            "model": MODEL,
+            "model": get_model(),
             "inp": input_tokens,
             "out": output_tokens,
             "cost": float(cost),
