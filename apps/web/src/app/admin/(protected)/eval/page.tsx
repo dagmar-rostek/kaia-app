@@ -52,6 +52,7 @@ interface HeatmapData {
   run_id: string
   status: string
   evaluator_model: string
+  kaia_chat_model?: string
   personas: HeatmapPersona[]
   weakest_persona_id: string | null
   weakest_session_number: number | null
@@ -153,6 +154,15 @@ function estimateCost(personas: number, sessions: number, turns: number): string
   return `€${base.toFixed(2)}–${(base * 1.4).toFixed(2)}`
 }
 
+// ── Hilfsfunktionen ────────────────────────────────────────────────────────────
+
+function kaiaChatModelLabel(run: EvalRun): string {
+  const m = (run.config?.kaia_chat_model as string | undefined) ?? ""
+  if (m.includes("haiku")) return "Haiku"
+  if (m.includes("sonnet")) return "Sonnet"
+  return "Sonnet" // Default vor erstem Deploy mit kaia_chat_model
+}
+
 // ── Main Component ─────────────────────────────────────────────────────────────
 
 export default function EvalPage() {
@@ -176,6 +186,8 @@ export default function EvalPage() {
   const [selectedPersonas, setSelectedPersonas] = useState<string[]>(["P01"])
   const [turnsPerSession, setTurnsPerSession] = useState(5)
   const [maxSessions, setMaxSessions] = useState(10)
+  const [compareRunId, setCompareRunId] = useState<string | null>(null)
+  const [compareHeatmap, setCompareHeatmap] = useState<HeatmapData | null>(null)
 
   const loadRuns = useCallback(async () => {
     try {
@@ -206,6 +218,15 @@ export default function EvalPage() {
       if (res.ok) setEvalLog(await res.json())
     } catch {
       // silent — log is best-effort
+    }
+  }, [])
+
+  const loadCompareHeatmap = useCallback(async (runId: string) => {
+    try {
+      const res = await fetch(`/admin/api/eval/runs/${runId}/heatmap`)
+      if (res.ok) setCompareHeatmap(await res.json())
+    } catch {
+      // silent
     }
   }, [])
 
@@ -257,6 +278,14 @@ export default function EvalPage() {
       void loadDetail(selectedRun, selectedCell.persona, selectedCell.session) // eslint-disable-line react-hooks/set-state-in-effect
     }
   }, [selectedCell, selectedRun, loadDetail])
+
+  useEffect(() => {
+    if (compareRunId) {
+      void loadCompareHeatmap(compareRunId) // eslint-disable-line react-hooks/set-state-in-effect
+    } else {
+      setCompareHeatmap(null)
+    }
+  }, [compareRunId, loadCompareHeatmap])
 
   const startEval = async () => {
     setStarting(true)
@@ -532,33 +561,56 @@ export default function EvalPage() {
             </div>
           )}
           {runs.map((run) => (
-            <button
-              key={run.id}
-              onClick={() => setSelectedRun(run.id)}
-              className={`w-full text-left p-3 rounded-lg border transition-colors ${
-                selectedRun === run.id
-                  ? "bg-zinc-800 border-violet-500"
-                  : "bg-zinc-900 border-zinc-800 hover:border-zinc-600"
-              }`}
-            >
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-mono text-zinc-400 truncate">{run.id}</span>
-                <RunStatusBadge status={run.status} />
-              </div>
-              <div className="text-xs text-zinc-500 mt-1">
-                {new Date(run.started_at).toLocaleString("de-DE", {
-                  day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit",
-                })}
-                {run.total_cost_eur != null && (
-                  <span className="ml-2 text-zinc-400">
-                    €{run.total_cost_eur.toFixed(3)}
+            <div key={run.id}>
+              <button
+                onClick={() => setSelectedRun(run.id)}
+                className={`w-full text-left p-3 rounded-lg border transition-colors ${
+                  selectedRun === run.id
+                    ? "bg-zinc-800 border-violet-500"
+                    : "bg-zinc-900 border-zinc-800 hover:border-zinc-600"
+                }`}
+              >
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-mono text-zinc-400 truncate">{run.id}</span>
+                  <RunStatusBadge status={run.status} />
+                </div>
+                <div className="flex items-center gap-2 mt-1 text-xs text-zinc-500">
+                  {new Date(run.started_at).toLocaleString("de-DE", {
+                    day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit",
+                  })}
+                  <span className={`px-1.5 py-0.5 rounded text-[10px] font-medium ${
+                    kaiaChatModelLabel(run) === "Haiku"
+                      ? "bg-orange-500/20 text-orange-400"
+                      : "bg-blue-500/20 text-blue-400"
+                  }`}>
+                    {kaiaChatModelLabel(run)}
                   </span>
+                  {run.total_cost_eur != null && (
+                    <span className="text-zinc-400">€{run.total_cost_eur.toFixed(3)}</span>
+                  )}
+                </div>
+                {(run.config?.persona_ids as string[] | undefined)?.length && (
+                  <div className="flex flex-wrap gap-1 mt-1">
+                    {(run.config.persona_ids as string[]).map((p) => (
+                      <span key={p} className="text-[10px] bg-zinc-700 text-zinc-400 px-1 rounded">{p}</span>
+                    ))}
+                  </div>
                 )}
-              </div>
-              {run.error && (
-                <p className="text-xs text-red-400 mt-1 truncate">{run.error}</p>
-              )}
-            </button>
+                {run.error && (
+                  <p className="text-xs text-red-400 mt-1 truncate">{run.error}</p>
+                )}
+              </button>
+              <button
+                onClick={() => setCompareRunId(compareRunId === run.id ? null : run.id)}
+                className={`w-full text-[10px] py-0.5 rounded mt-0.5 transition-colors ${
+                  compareRunId === run.id
+                    ? "bg-amber-500/20 text-amber-400 border border-amber-500/40"
+                    : "text-zinc-600 hover:text-zinc-400"
+                }`}
+              >
+                {compareRunId === run.id ? "⊖ Vergleich entfernen" : "⊕ Als Vergleich setzen"}
+              </button>
+            </div>
           ))}
         </div>
 
@@ -627,6 +679,25 @@ export default function EvalPage() {
             </div>
           ) : (
             <div className="space-y-4">
+              {/* Vergleich-Banner */}
+              {compareHeatmap && (
+                <div className="flex items-center gap-2 px-3 py-2 bg-amber-500/10 border border-amber-500/30 rounded-lg text-xs">
+                  <span className="text-amber-400 font-medium">Vergleich aktiv:</span>
+                  <span className="font-mono text-zinc-400 truncate">{compareRunId}</span>
+                  <span className={`px-1.5 py-0.5 rounded text-[10px] font-medium ${
+                    (compareHeatmap.kaia_chat_model ?? "").includes("haiku")
+                      ? "bg-orange-500/20 text-orange-400"
+                      : "bg-blue-500/20 text-blue-400"
+                  }`}>
+                    {(compareHeatmap.kaia_chat_model ?? "").includes("haiku") ? "Haiku" : "Sonnet"}
+                  </span>
+                  <button
+                    onClick={() => { setCompareRunId(null); setCompareHeatmap(null) }}
+                    className="ml-auto text-zinc-500 hover:text-zinc-300"
+                  >✕</button>
+                </div>
+              )}
+
               {/* Summary bar */}
               <div className="flex items-center gap-6 p-4 bg-zinc-900 rounded-lg border border-zinc-800">
                 <div>
@@ -722,6 +793,15 @@ export default function EvalPage() {
                         </td>
                         {Array.from({ length: 10 }, (_, i) => i + 1).map((sNum) => {
                           const cell = persona.sessions.find((s) => s.session_number === sNum)
+                          const compareCell = compareHeatmap
+                            ? compareHeatmap.personas
+                                .find((p) => p.persona_id === persona.persona_id)
+                                ?.sessions.find((s) => s.session_number === sNum) ?? null
+                            : null
+                          const delta =
+                            cell?.score_pct != null && compareCell?.score_pct != null
+                              ? Math.round(cell.score_pct - compareCell.score_pct)
+                              : null
                           const isSelected =
                             selectedCell?.persona === persona.persona_id &&
                             selectedCell?.session === sNum
@@ -746,13 +826,22 @@ export default function EvalPage() {
                                         ? `${cell.score_pct.toFixed(0)}%`
                                         : "—"}
                                     </span>
-                                    {cell.flagged_metrics.length > 0 && !cell.has_error && (
+                                    {compareCell?.score_pct != null && cell.score_pct != null ? (
+                                      <span className={`text-[9px] leading-none mt-0.5 ${
+                                        delta === 0 ? "text-zinc-400"
+                                        : delta != null && delta > 0 ? "text-green-400"
+                                        : "text-red-400"
+                                      }`}>
+                                        {delta != null && delta > 0 ? `↑${delta}` : delta != null && delta < 0 ? `↓${Math.abs(delta)}` : "="}{" "}
+                                        {compareCell.score_pct.toFixed(0)}%
+                                      </span>
+                                    ) : cell.flagged_metrics.length > 0 && !cell.has_error ? (
                                       <span className="text-[9px] opacity-75 mt-0.5 leading-none">
                                         ⚑ {cell.flagged_metrics
                                           .map((k) => k.split("_")[0].toUpperCase())
                                           .join(" ")}
                                       </span>
-                                    )}
+                                    ) : null}
                                   </>
                                 ) : (
                                   <span className="text-zinc-600">—</span>

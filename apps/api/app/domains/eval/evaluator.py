@@ -889,6 +889,13 @@ async def run_eval(run_id: str, config: EvalRunCreate) -> None:
     async with AsyncSessionLocal() as db:
         await EvalRunRepository(db).update_status(run_id, EvalRunStatus.RUNNING)
 
+    # kaia_chat_model in config persistieren — für Vergleichsansicht Sonnet vs. Haiku
+    async with AsyncSessionLocal() as db:
+        _run = await EvalRunRepository(db).get(run_id)
+        if _run is not None:
+            _run.config = {**_run.config, "kaia_chat_model": settings.kaia_chat_model}
+            await db.commit()
+
     client = AsyncAnthropic(api_key=settings.anthropic_api_key)
 
     # ── Modus 1: LLM-Simulation (Standard) ────────────────────────────────────
