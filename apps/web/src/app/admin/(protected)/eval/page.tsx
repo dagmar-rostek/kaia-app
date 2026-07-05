@@ -149,11 +149,11 @@ const ALL_PERSONAS = [
 ]
 
 // Kosten in EUR pro Turn, kalibriert auf Messwerte (Stand Juli 2026, inkl. KAIA + Simulator + Judge):
-// Haiku: €0.52 / (1P × 3S × 5T) = €0.035/Turn (gemessen)
+// Haiku: ∅ zweier Messungen: €0.52/(1P×3S×5T)=0.035, €1.21/(2P×3S×5T)=0.040 → 0.040/Turn
 // Sonnet: €1.30 / (1P × 3S × 5T) = €0.087/Turn (gemessen)
 // GPT-4o, Mistral: Hochrechnung aus API-Preisseiten, noch nicht empirisch validiert
 const MODEL_COST_PER_TURN: Record<string, number> = {
-  "claude-haiku-4-5-20251001": 0.035,
+  "claude-haiku-4-5-20251001": 0.040,
   "claude-sonnet-4-6": 0.087,
   "gpt-4o": 0.21,
   "gpt-4o-mini": 0.012,
