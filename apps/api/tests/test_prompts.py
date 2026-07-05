@@ -43,13 +43,15 @@ def test_seed_templates_all_characters_have_active() -> None:
     assert active_chars == {"warm", "challenging", "wild"}
 
 
-def test_v2_warm_supersedes_v1_warm() -> None:
-    """v1 warm must be inactive; v2 warm must be active."""
+def test_v3_warm_supersedes_v1_v2_warm() -> None:
+    """v1 and v2 warm must be inactive; v3 warm must be the active version."""
     v1 = next(t for t in SEED_TEMPLATES if t["name"] == "kaia_system_v1_warm")
     v2 = next(t for t in SEED_TEMPLATES if t["name"] == "kaia_system_v2_warm")
-    assert v1["is_active"] is False, "v1 warm must be inactive (superseded by v2)"
-    assert v2["is_active"] is True, "v2 warm must be active"
-    assert v2["version"] > v1["version"]
+    v3 = next(t for t in SEED_TEMPLATES if t["name"] == "kaia_system_v3_warm")
+    assert v1["is_active"] is False, "v1 warm must be inactive (superseded by v3)"
+    assert v2["is_active"] is False, "v2 warm must be inactive (superseded by v3)"
+    assert v3["is_active"] is True, "v3 warm must be active"
+    assert v3["version"] > v2["version"] > v1["version"]
 
 
 def test_prompt_warm_v1_contains_key_elements() -> None:
