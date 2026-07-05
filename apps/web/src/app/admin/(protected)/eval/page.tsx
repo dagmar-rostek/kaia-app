@@ -175,6 +175,7 @@ export default function EvalPage() {
   const [showStartModal, setShowStartModal] = useState(false)
   const [selectedPersonas, setSelectedPersonas] = useState<string[]>(["P01"])
   const [turnsPerSession, setTurnsPerSession] = useState(5)
+  const [maxSessions, setMaxSessions] = useState(10)
 
   const loadRuns = useCallback(async () => {
     try {
@@ -267,6 +268,7 @@ export default function EvalPage() {
         turns_per_session: turnsPerSession,
       }
       if (selectedPersonas.length < 10) body.persona_ids = selectedPersonas
+      if (maxSessions < 10) body.session_numbers = Array.from({ length: maxSessions }, (_, i) => i + 1)
       const res = await fetch("/admin/api/eval/runs", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -448,26 +450,45 @@ export default function EvalPage() {
                 </div>
               </div>
 
+              {/* Sessions per persona */}
+              <div>
+                <label className="text-xs font-medium text-zinc-400 block mb-2">
+                  Sessions pro Persona: <span className="text-white">{maxSessions}</span>
+                </label>
+                <input
+                  type="range"
+                  min={1}
+                  max={10}
+                  value={maxSessions}
+                  onChange={(e) => setMaxSessions(Number(e.target.value))}
+                  className="w-full accent-violet-500"
+                />
+                <div className="flex justify-between text-[10px] text-zinc-600 mt-0.5">
+                  <span>1 (S1 only)</span>
+                  <span>10 (vollständig)</span>
+                </div>
+              </div>
+
               {/* Cost estimate */}
               <div className="bg-zinc-800 rounded-lg p-3 text-xs">
                 <div className="flex justify-between">
                   <span className="text-zinc-400">Geschätzte Kosten:</span>
                   <span className="font-medium text-zinc-200">
                     {selectedPersonas.length > 0
-                      ? estimateCost(selectedPersonas.length, 10, turnsPerSession)
+                      ? estimateCost(selectedPersonas.length, maxSessions, turnsPerSession)
                       : "—"}
                   </span>
                 </div>
                 <div className="flex justify-between mt-1">
                   <span className="text-zinc-400">Runs:</span>
                   <span className="text-zinc-300">
-                    {selectedPersonas.length} Personas × 10 Sessions × {turnsPerSession} Turns
+                    {selectedPersonas.length} Personas × {maxSessions} Sessions × {turnsPerSession} Turns
                   </span>
                 </div>
                 <div className="flex justify-between mt-1">
                   <span className="text-zinc-400">Dauer ca.:</span>
                   <span className="text-zinc-300">
-                    {Math.ceil(selectedPersonas.length * 10 * 1.5)} min
+                    {Math.ceil(selectedPersonas.length * maxSessions * 1.5)} min
                   </span>
                 </div>
               </div>
