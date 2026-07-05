@@ -881,25 +881,49 @@ export default function EvalPage() {
             <div className="space-y-4">
               {/* Vergleich-Banner */}
               {compareHeatmap && (
-                <div className="flex items-center gap-2 px-3 py-2 bg-amber-500/10 border border-amber-500/30 rounded-lg text-xs">
-                  <span className="text-amber-400 font-medium">Vergleich aktiv:</span>
-                  <span className="font-mono text-zinc-400 truncate">{compareRunId}</span>
-                  {compareHeatmap.kaia_chat_model && (
-                    <span className={`px-1.5 py-0.5 rounded text-[10px] font-medium ${modelBadgeClass(compareHeatmap.kaia_chat_model)}`}>
-                      {modelShortLabel(compareHeatmap.kaia_chat_model)}
-                    </span>
-                  )}
-                  <button
-                    onClick={() => { setCompareRunId(null); setCompareHeatmap(null) }}
-                    className="ml-auto text-zinc-500 hover:text-zinc-300"
-                  >✕</button>
+                <div className="px-3 py-2 bg-amber-500/10 border border-amber-500/30 rounded-lg text-xs space-y-1.5">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className="text-amber-400 font-medium">Vergleich aktiv</span>
+                    <span className="text-zinc-600">—</span>
+                    <span className="text-zinc-500">A (ausgewählt):</span>
+                    {heatmap.kaia_chat_model ? (
+                      <span className={`px-1.5 py-0.5 rounded text-[10px] font-medium ${modelBadgeClass(heatmap.kaia_chat_model)}`}>
+                        {modelShortLabel(heatmap.kaia_chat_model)}
+                      </span>
+                    ) : <span className="font-mono text-zinc-400 truncate max-w-[120px]">{selectedRun}</span>}
+                    <span className="text-zinc-600">vs</span>
+                    <span className="text-zinc-500">B (Referenz):</span>
+                    {compareHeatmap.kaia_chat_model ? (
+                      <span className={`px-1.5 py-0.5 rounded text-[10px] font-medium ${modelBadgeClass(compareHeatmap.kaia_chat_model)}`}>
+                        {modelShortLabel(compareHeatmap.kaia_chat_model)}
+                      </span>
+                    ) : <span className="font-mono text-zinc-400 truncate max-w-[120px]">{compareRunId}</span>}
+                    <button
+                      onClick={() => { setCompareRunId(null); setCompareHeatmap(null) }}
+                      className="ml-auto text-zinc-500 hover:text-zinc-300"
+                    >✕</button>
+                  </div>
+                  {heatmap.system_avg_pct != null && compareHeatmap.system_avg_pct != null && (() => {
+                    const d = heatmap.system_avg_pct - compareHeatmap.system_avg_pct
+                    return (
+                      <div className="flex items-center gap-3 text-[11px]">
+                        <span className="text-zinc-400">System-Ø: A = <strong className="text-zinc-200">{heatmap.system_avg_pct.toFixed(1)}%</strong></span>
+                        <span className="text-zinc-600">·</span>
+                        <span className="text-zinc-400">B = <strong className="text-zinc-200">{compareHeatmap.system_avg_pct.toFixed(1)}%</strong></span>
+                        <span className={`font-bold ${d > 0 ? "text-green-400" : d < 0 ? "text-red-400" : "text-zinc-500"}`}>
+                          {d > 0 ? `↑+${d.toFixed(1)}pp` : d < 0 ? `↓${d.toFixed(1)}pp` : "= gleich"}
+                        </span>
+                      </div>
+                    )
+                  })()}
+                  <p className="text-[10px] text-zinc-600">Zellen zeigen: A-Score oben · ↑/↓ Delta · B-Score in grau</p>
                 </div>
               )}
 
               {/* Summary bar */}
               <div className="flex items-center gap-6 p-4 bg-zinc-900 rounded-lg border border-zinc-800">
                 <div>
-                  <p className="text-xs text-zinc-500">System-Ø</p>
+                  <p className="text-xs text-zinc-500">{compareHeatmap ? "A: System-Ø" : "System-Ø"}</p>
                   <p className="text-xl font-bold">
                     {heatmap.system_avg_pct != null
                       ? `${heatmap.system_avg_pct.toFixed(1)}%`
@@ -1049,21 +1073,30 @@ export default function EvalPage() {
                           )
                         })}
                         <td className="px-2 py-1 text-center">
-                          <span
-                            className={`text-xs font-bold ${
-                              persona.avg_score_pct != null
-                                ? persona.avg_score_pct >= 67
-                                  ? "text-green-400"
-                                  : persona.avg_score_pct >= 34
-                                  ? "text-yellow-400"
-                                  : "text-red-400"
-                                : "text-zinc-600"
-                            }`}
-                          >
-                            {persona.avg_score_pct != null
-                              ? `${persona.avg_score_pct.toFixed(0)}%`
-                              : "—"}
-                          </span>
+                          {(() => {
+                            const avg = persona.avg_score_pct
+                            const cmpPersona = compareHeatmap?.personas.find(
+                              (p) => p.persona_id === persona.persona_id
+                            )
+                            const cmpAvg = cmpPersona?.avg_score_pct ?? null
+                            const d = avg != null && cmpAvg != null ? avg - cmpAvg : null
+                            return (
+                              <div className="flex flex-col items-center">
+                                <span className={`text-xs font-bold ${
+                                  avg != null
+                                    ? avg >= 67 ? "text-green-400" : avg >= 34 ? "text-yellow-400" : "text-red-400"
+                                    : "text-zinc-600"
+                                }`}>
+                                  {avg != null ? `${avg.toFixed(0)}%` : "—"}
+                                </span>
+                                {d != null && (
+                                  <span className={`text-[9px] leading-none ${d > 0 ? "text-green-400" : d < 0 ? "text-red-400" : "text-zinc-500"}`}>
+                                    {d > 0 ? `+${d.toFixed(0)}` : d.toFixed(0)}
+                                  </span>
+                                )}
+                              </div>
+                            )
+                          })()}
                         </td>
                       </tr>
                     ))}
@@ -1072,21 +1105,24 @@ export default function EvalPage() {
                       <td className="pt-2 pr-3 text-xs text-zinc-500 font-medium">Ø Session</td>
                       {Array.from({ length: 10 }, (_, i) => i + 1).map((s) => {
                         const avg = heatmap.column_averages[String(s)]
+                        const cmpAvg = compareHeatmap?.column_averages[String(s)] ?? null
+                        const d = avg != null && cmpAvg != null ? avg - cmpAvg : null
                         return (
                           <td key={s} className="px-1 pt-2 text-center">
-                            <span
-                              className={`text-xs font-bold ${
+                            <div className="flex flex-col items-center">
+                              <span className={`text-xs font-bold ${
                                 avg != null
-                                  ? avg >= 67
-                                    ? "text-green-400"
-                                    : avg >= 34
-                                    ? "text-yellow-400"
-                                    : "text-red-400"
+                                  ? avg >= 67 ? "text-green-400" : avg >= 34 ? "text-yellow-400" : "text-red-400"
                                   : "text-zinc-600"
-                              }`}
-                            >
-                              {avg != null ? `${avg.toFixed(0)}%` : "—"}
-                            </span>
+                              }`}>
+                                {avg != null ? `${avg.toFixed(0)}%` : "—"}
+                              </span>
+                              {d != null && (
+                                <span className={`text-[9px] leading-none ${d > 0 ? "text-green-400" : d < 0 ? "text-red-400" : "text-zinc-500"}`}>
+                                  {d > 0 ? `+${d.toFixed(0)}` : d.toFixed(0)}
+                                </span>
+                              )}
+                            </div>
                           </td>
                         )
                       })}
