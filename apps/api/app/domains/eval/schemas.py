@@ -200,6 +200,7 @@ class HeatmapRead(BaseModel):
     run_id: str
     status: EvalRunStatus
     evaluator_model: str
+    kaia_chat_model: str | None = None
     personas: list[HeatmapPersonaRead]
 
     # Aggregierte Metriken für "Schwächstes Glied"-Banner (UX-Spec)

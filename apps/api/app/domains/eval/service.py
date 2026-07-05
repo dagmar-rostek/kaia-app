@@ -89,6 +89,7 @@ async def build_heatmap(
         run_id=run.id,
         status=run.status,
         evaluator_model=run.evaluator_model,
+        kaia_chat_model=run.config.get("kaia_chat_model"),
         personas=personas,
         weakest_persona_id=weakest.persona_id if weakest else None,
         weakest_session_number=weakest.session_number if weakest else None,

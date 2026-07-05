@@ -348,6 +348,34 @@ async def cancel_run(
     return {"status": "cancelled", "run_id": run_id}
 
 
+# ── DELETE /admin/eval/runs/{run_id} ──────────────────────────────────────────
+
+
+@router.delete("/runs/{run_id}", response_model=dict[str, str], status_code=200)
+async def delete_run(
+    run_id: str,
+    repo: Annotated[EvalRunRepository, Depends(_run_repo)],
+    admin: Annotated[Any, Depends(require_admin)],
+) -> dict[str, str]:
+    """Löscht einen Eval-Run inkl. aller results und transcripts.
+
+    Laufende Runs (status=running) werden abgebrochen bevor sie gelöscht werden.
+    Nicht wiederherstellbar.
+    """
+    run = await repo.get(run_id)
+    if run is None:
+        raise HTTPException(404, f"Eval-Run '{run_id}' nicht gefunden.")
+    if run.status in (EvalRunStatus.RUNNING, EvalRunStatus.PENDING):
+        cancel_eval_task(run_id)
+
+    deleted = await repo.delete(run_id)
+    if not deleted:
+        raise HTTPException(404, f"Eval-Run '{run_id}' konnte nicht gelöscht werden.")
+
+    log.info("eval_run_deleted", run_id=run_id, by=getattr(admin, "username", "admin"))
+    return {"status": "deleted", "run_id": run_id}
+
+
 # ── GET /admin/eval/runs/{run_id}/log ─────────────────────────────────────────
 
 

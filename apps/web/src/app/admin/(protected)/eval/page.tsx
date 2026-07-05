@@ -15,6 +15,7 @@ import {
   Flame,
   Shield,
   ShieldAlert,
+  Trash2,
 } from "lucide-react"
 
 // ── Types ──────────────────────────────────────────────────────────────────────
@@ -224,6 +225,8 @@ export default function EvalPage() {
   const [kaiaModel, setKaiaModel] = useState("")  // "" = aktuelles System-Modell
   const [compareRunId, setCompareRunId] = useState<string | null>(null)
   const [compareHeatmap, setCompareHeatmap] = useState<HeatmapData | null>(null)
+  const [deletingRunId, setDeletingRunId] = useState<string | null>(null)
+  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null)
 
   // ── Settings State (live model switcher) ──
   const [availableModels, setAvailableModels] = useState<AvailableModel[]>([])
@@ -412,6 +415,27 @@ export default function EvalPage() {
       }
     } finally {
       setRetesting(false)
+    }
+  }
+
+  const deleteRun = async (runId: string) => {
+    setDeletingRunId(runId)
+    setConfirmDeleteId(null)
+    try {
+      await fetch(`/admin/api/eval/runs/${runId}`, { method: "DELETE" })
+      if (selectedRun === runId) {
+        setSelectedRun(null)
+        setHeatmap(null)
+        setSelectedCell(null)
+        setDetail(null)
+      }
+      if (compareRunId === runId) {
+        setCompareRunId(null)
+        setCompareHeatmap(null)
+      }
+      await loadRuns()
+    } finally {
+      setDeletingRunId(null)
     }
   }
 
@@ -703,18 +727,46 @@ export default function EvalPage() {
                     : "bg-zinc-900 border-zinc-800 hover:border-zinc-600"
                 }`}
               >
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-mono text-zinc-400 truncate">{run.id}</span>
+                <div className="flex items-center justify-between gap-1">
+                  <span className="text-xs font-mono text-zinc-400 truncate flex-1">{run.id}</span>
                   <RunStatusBadge status={run.status} />
+                  {confirmDeleteId === run.id ? (
+                    <span className="flex items-center gap-1">
+                      <button
+                        onClick={(e) => { e.stopPropagation(); void deleteRun(run.id) }}
+                        className="text-[10px] px-1.5 py-0.5 bg-red-700 hover:bg-red-600 text-white rounded"
+                      >
+                        Ja
+                      </button>
+                      <button
+                        onClick={(e) => { e.stopPropagation(); setConfirmDeleteId(null) }}
+                        className="text-[10px] px-1.5 py-0.5 bg-zinc-700 hover:bg-zinc-600 text-zinc-300 rounded"
+                      >
+                        Nein
+                      </button>
+                    </span>
+                  ) : (
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        setConfirmDeleteId(run.id)
+                      }}
+                      disabled={deletingRunId === run.id}
+                      className="ml-1 p-0.5 text-zinc-600 hover:text-red-400 transition-colors disabled:opacity-40"
+                      title="Run löschen"
+                    >
+                      {deletingRunId === run.id
+                        ? <Loader2 className="w-3 h-3 animate-spin" />
+                        : <Trash2 className="w-3 h-3" />}
+                    </button>
+                  )}
                 </div>
                 <div className="flex items-center gap-2 mt-1 text-xs text-zinc-500">
                   {new Date(run.started_at).toLocaleString("de-DE", {
                     day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit",
                   })}
                   <span className={`px-1.5 py-0.5 rounded text-[10px] font-medium ${
-                    kaiaChatModelLabel(run) === "Haiku"
-                      ? "bg-orange-500/20 text-orange-400"
-                      : "bg-blue-500/20 text-blue-400"
+                    modelBadgeClass((run.config?.kaia_chat_model as string | undefined) ?? "claude-sonnet-4-6")
                   }`}>
                     {kaiaChatModelLabel(run)}
                   </span>
@@ -733,16 +785,18 @@ export default function EvalPage() {
                   <p className="text-xs text-red-400 mt-1 truncate">{run.error}</p>
                 )}
               </button>
-              <button
-                onClick={() => setCompareRunId(compareRunId === run.id ? null : run.id)}
-                className={`w-full text-[10px] py-0.5 rounded mt-0.5 transition-colors ${
-                  compareRunId === run.id
-                    ? "bg-amber-500/20 text-amber-400 border border-amber-500/40"
-                    : "text-zinc-600 hover:text-zinc-400"
-                }`}
-              >
-                {compareRunId === run.id ? "⊖ Vergleich entfernen" : "⊕ Als Vergleich setzen"}
-              </button>
+              {selectedRun !== run.id && (
+                <button
+                  onClick={() => setCompareRunId(compareRunId === run.id ? null : run.id)}
+                  className={`w-full text-[10px] py-0.5 rounded mt-0.5 transition-colors ${
+                    compareRunId === run.id
+                      ? "bg-amber-500/20 text-amber-400 border border-amber-500/40"
+                      : "text-zinc-600 hover:text-zinc-400"
+                  }`}
+                >
+                  {compareRunId === run.id ? "⊖ Vergleich entfernen" : "⊕ Als Vergleich setzen"}
+                </button>
+              )}
             </div>
           ))}
         </div>
@@ -817,13 +871,11 @@ export default function EvalPage() {
                 <div className="flex items-center gap-2 px-3 py-2 bg-amber-500/10 border border-amber-500/30 rounded-lg text-xs">
                   <span className="text-amber-400 font-medium">Vergleich aktiv:</span>
                   <span className="font-mono text-zinc-400 truncate">{compareRunId}</span>
-                  <span className={`px-1.5 py-0.5 rounded text-[10px] font-medium ${
-                    (compareHeatmap.kaia_chat_model ?? "").includes("haiku")
-                      ? "bg-orange-500/20 text-orange-400"
-                      : "bg-blue-500/20 text-blue-400"
-                  }`}>
-                    {(compareHeatmap.kaia_chat_model ?? "").includes("haiku") ? "Haiku" : "Sonnet"}
-                  </span>
+                  {compareHeatmap.kaia_chat_model && (
+                    <span className={`px-1.5 py-0.5 rounded text-[10px] font-medium ${modelBadgeClass(compareHeatmap.kaia_chat_model)}`}>
+                      {modelShortLabel(compareHeatmap.kaia_chat_model)}
+                    </span>
+                  )}
                   <button
                     onClick={() => { setCompareRunId(null); setCompareHeatmap(null) }}
                     className="ml-auto text-zinc-500 hover:text-zinc-300"

@@ -8,7 +8,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from sqlalchemy import func, select, update
+from sqlalchemy import delete, func, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.domains.eval.models import EvalResult, EvalRun, EvalRunStatus, EvalTranscript
@@ -49,6 +49,18 @@ class EvalRunRepository:
             values["finished_at"] = func.now()
         await self._db.execute(update(EvalRun).where(EvalRun.id == run_id).values(**values))
         await self._db.commit()
+
+    async def delete(self, run_id: str) -> bool:
+        """Löscht einen Eval-Run inkl. aller results + transcripts (CASCADE).
+
+        Gibt True zurück wenn ein Run gefunden und gelöscht wurde, sonst False.
+        """
+        existing = await self.get(run_id)
+        if existing is None:
+            return False
+        await self._db.execute(delete(EvalRun).where(EvalRun.id == run_id))
+        await self._db.commit()
+        return True
 
 
 class EvalResultRepository:
