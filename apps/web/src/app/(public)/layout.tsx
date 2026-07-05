@@ -11,7 +11,8 @@ const NAV = [
   { href: "/release-notes", label: "Release Notes" },
   { href: "/architektur",   label: "Architektur" },
   { href: "/datenschutz",   label: "Datenschutz" },
-]
+  { href: "/admin",         label: "Admin", admin: true },
+] as const
 
 export default function PublicLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -21,13 +22,17 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
           KAIA
         </Link>
         <nav className="flex items-center gap-4">
-          {NAV.map(({ href, label }) => (
+          {NAV.map((item) => (
             <Link
-              key={href}
-              href={href}
-              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+              key={item.href}
+              href={item.href}
+              className={
+                "admin" in item && item.admin
+                  ? "text-sm font-medium text-muted-foreground hover:text-foreground transition-colors border border-border rounded-md px-2.5 py-1 hover:bg-muted"
+                  : "text-sm text-muted-foreground hover:text-foreground transition-colors"
+              }
             >
-              {label}
+              {item.label}
             </Link>
           ))}
           <ThemeToggle />
