@@ -392,13 +392,15 @@ async def stream_response(
         timeout=httpx.Timeout(connect=10.0, read=120.0, write=10.0, pool=5.0),
     )
     raw_chunks: list[str] = []
-    input_tokens = output_tokens = 0
+    input_tokens = output_tokens = cache_creation_tokens = cache_read_tokens = 0
 
     try:
         async with client.messages.stream(
             model=MODEL,
             max_tokens=MAX_TOKENS,
-            system=system_prompt,
+            system=[
+                {"type": "text", "text": system_prompt, "cache_control": {"type": "ephemeral"}}
+            ],
             messages=api_messages,  # type: ignore[arg-type]
         ) as stream:
             async for text in stream.text_stream:
@@ -406,6 +408,8 @@ async def stream_response(
             final_msg = await stream.get_final_message()
             input_tokens = final_msg.usage.input_tokens
             output_tokens = final_msg.usage.output_tokens
+            cache_creation_tokens = getattr(final_msg.usage, "cache_creation_input_tokens", 0) or 0
+            cache_read_tokens = getattr(final_msg.usage, "cache_read_input_tokens", 0) or 0
     except Exception as exc:
         log.error("llm_stream_error", error=str(exc), session_id=session.id)
         yield error("KAIA ist gerade nicht erreichbar. Bitte versuche es in einem Moment erneut.")
@@ -421,7 +425,9 @@ async def stream_response(
     assistant_msg = await repo.save_message(
         session.id, MessageRole.ASSISTANT, final_content, thinking_raw=thinking
     )
-    await _log_usage(db, session, input_tokens, output_tokens)
+    await _log_usage(
+        db, session, input_tokens, output_tokens, cache_creation_tokens, cache_read_tokens
+    )
     yield done(assistant_msg.id, input_tokens, output_tokens)
     log.info(
         "llm_response_complete",
@@ -453,13 +459,15 @@ async def stream_opening(
         timeout=httpx.Timeout(connect=10.0, read=120.0, write=10.0, pool=5.0),
     )
     raw_chunks: list[str] = []
-    input_tokens = output_tokens = 0
+    input_tokens = output_tokens = cache_creation_tokens = cache_read_tokens = 0
 
     try:
         async with client.messages.stream(
             model=MODEL,
             max_tokens=MAX_TOKENS,
-            system=system_prompt,
+            system=[
+                {"type": "text", "text": system_prompt, "cache_control": {"type": "ephemeral"}}
+            ],
             messages=[{"role": "user", "content": trigger}],
         ) as stream:
             async for text in stream.text_stream:
@@ -467,6 +475,8 @@ async def stream_opening(
             final_msg = await stream.get_final_message()
             input_tokens = final_msg.usage.input_tokens
             output_tokens = final_msg.usage.output_tokens
+            cache_creation_tokens = getattr(final_msg.usage, "cache_creation_input_tokens", 0) or 0
+            cache_read_tokens = getattr(final_msg.usage, "cache_read_input_tokens", 0) or 0
     except Exception as exc:
         log.error("llm_opening_error", error=str(exc), session_id=session.id)
         yield error("KAIA ist gerade nicht erreichbar.")
@@ -486,7 +496,9 @@ async def stream_opening(
     except IntegrityError:
         log.warning("llm_opening_session_gone", session_id=session.id)
         return
-    await _log_usage(db, session, input_tokens, output_tokens)
+    await _log_usage(
+        db, session, input_tokens, output_tokens, cache_creation_tokens, cache_read_tokens
+    )
     yield done(assistant_msg.id, input_tokens, output_tokens)
     log.info("llm_opening_complete", session_id=session.id)
 
@@ -509,13 +521,15 @@ async def stream_closing(
         timeout=httpx.Timeout(connect=10.0, read=120.0, write=10.0, pool=5.0),
     )
     raw_chunks: list[str] = []
-    input_tokens = output_tokens = 0
+    input_tokens = output_tokens = cache_creation_tokens = cache_read_tokens = 0
 
     try:
         async with client.messages.stream(
             model=MODEL,
             max_tokens=300,
-            system=system_prompt,
+            system=[
+                {"type": "text", "text": system_prompt, "cache_control": {"type": "ephemeral"}}
+            ],
             messages=api_messages,  # type: ignore[arg-type]
         ) as stream:
             async for text in stream.text_stream:
@@ -523,6 +537,8 @@ async def stream_closing(
             final_msg = await stream.get_final_message()
             input_tokens = final_msg.usage.input_tokens
             output_tokens = final_msg.usage.output_tokens
+            cache_creation_tokens = getattr(final_msg.usage, "cache_creation_input_tokens", 0) or 0
+            cache_read_tokens = getattr(final_msg.usage, "cache_read_input_tokens", 0) or 0
     except Exception as exc:
         log.error("llm_closing_error", error=str(exc), session_id=session.id)
         yield error("KAIA ist gerade nicht erreichbar.")
@@ -538,7 +554,9 @@ async def stream_closing(
     assistant_msg = await repo.save_message(
         session.id, MessageRole.ASSISTANT, final_content, thinking_raw=thinking
     )
-    await _log_usage(db, session, input_tokens, output_tokens)
+    await _log_usage(
+        db, session, input_tokens, output_tokens, cache_creation_tokens, cache_read_tokens
+    )
     yield done(assistant_msg.id, input_tokens, output_tokens)
     log.info("llm_closing_complete", session_id=session.id)
 
@@ -567,13 +585,15 @@ async def stream_meta_question(
         timeout=httpx.Timeout(connect=10.0, read=120.0, write=10.0, pool=5.0),
     )
     raw_chunks: list[str] = []
-    input_tokens = output_tokens = 0
+    input_tokens = output_tokens = cache_creation_tokens = cache_read_tokens = 0
 
     try:
         async with client.messages.stream(
             model=MODEL,
             max_tokens=120,
-            system=system_prompt,
+            system=[
+                {"type": "text", "text": system_prompt, "cache_control": {"type": "ephemeral"}}
+            ],
             messages=api_messages,  # type: ignore[arg-type]
         ) as stream:
             async for text in stream.text_stream:
@@ -581,6 +601,8 @@ async def stream_meta_question(
             final_msg = await stream.get_final_message()
             input_tokens = final_msg.usage.input_tokens
             output_tokens = final_msg.usage.output_tokens
+            cache_creation_tokens = getattr(final_msg.usage, "cache_creation_input_tokens", 0) or 0
+            cache_read_tokens = getattr(final_msg.usage, "cache_read_input_tokens", 0) or 0
     except Exception as exc:
         log.error("llm_meta_error", error=str(exc), session_id=session.id)
         yield error("KAIA ist gerade nicht erreichbar.")
@@ -600,7 +622,9 @@ async def stream_meta_question(
     assistant_msg = await repo.save_message(
         session.id, MessageRole.ASSISTANT, final_content, thinking_raw=thinking
     )
-    await _log_usage(db, session, input_tokens, output_tokens)
+    await _log_usage(
+        db, session, input_tokens, output_tokens, cache_creation_tokens, cache_read_tokens
+    )
     yield done(assistant_msg.id, input_tokens, output_tokens)
     log.info("llm_meta_complete", session_id=session.id, feedback_type=feedback_type)
 
@@ -613,11 +637,16 @@ async def _log_usage(
     session: ChatSession,
     input_tokens: int,
     output_tokens: int,
+    cache_creation_tokens: int = 0,
+    cache_read_tokens: int = 0,
 ) -> None:
     from app.db.session import Base  # noqa: F401 — ensure models loaded
 
+    # Cache-creation billed at 1.25×, cache-read at 0.10× normal input rate
     cost = (
         Decimal(input_tokens) * COST_INPUT_PER_TOKEN
+        + Decimal(cache_creation_tokens) * COST_INPUT_PER_TOKEN * Decimal("1.25")
+        + Decimal(cache_read_tokens) * COST_INPUT_PER_TOKEN * Decimal("0.10")
         + Decimal(output_tokens) * COST_OUTPUT_PER_TOKEN
     )
     await db.execute(
