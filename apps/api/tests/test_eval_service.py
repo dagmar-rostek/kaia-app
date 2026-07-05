@@ -35,6 +35,7 @@ async def test_build_heatmap_empty_run() -> None:
     run.id = "run_test_001"
     run.status = "completed"
     run.evaluator_model = "claude-haiku-4-5-20251001"
+    run.config = {"kaia_chat_model": None}
 
     result_repo = AsyncMock()
     result_repo.get_aggregated_for_heatmap = AsyncMock(return_value=[])
@@ -55,6 +56,7 @@ async def test_build_heatmap_single_cell() -> None:
     run.id = "run_test_002"
     run.status = "completed"
     run.evaluator_model = "claude-haiku-4-5-20251001"
+    run.config = {"kaia_chat_model": "claude-haiku-4-5-20251001"}
 
     # (persona_id, session_number, avg_score, flagged_metrics, has_error)
     result_repo = AsyncMock()

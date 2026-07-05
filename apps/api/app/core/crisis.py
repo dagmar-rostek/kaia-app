@@ -19,7 +19,7 @@ import re
 # und akute Hoffnungslosigkeit. Sortiert nach Schweregrad (hoch → niedrig).
 _RAW_PATTERNS = [
     # Suizid — explizit
-    r"\bsuizid\b",
+    r"\bsuizid",  # matches Suizid, Suizidgedanken, Suizidversuch etc.
     r"\bselbstmord\b",
     r"mich\s+(um|er)bringen",
     r"mir\s+das\s+leben\s+nehmen",
@@ -44,6 +44,12 @@ _RAW_PATTERNS = [
     r"besser\s+(wäre\s+es|wenn\s+ich)\s+(tot|weg|nicht\s+mehr)",
     r"ertrag(e|en)\s+(das|es|mein\s+leben)\s+nicht\s+mehr",
     r"kann\s+nicht\s+mehr\s+(weiter|leben)",
+    # Existentielle Verallgemeinerung — Suizidäquivalente
+    r"\blast\s+für\s+(alle|andere|jeden|euch)",  # "eine Last für alle"
+    r"niemand\s+braucht?\s+mich(\s+wirklich)?",  # passiver Suizidwunsch
+    r"wäre\s+es\s+nicht\s+besser\s+(für\s+(alle|euch)\s+)?wenn\s+ich\s+(weg|nicht\s+mehr)",
+    r"oder\s+überhaupt\s+gerade",  # Existentielle Verallgemeinerung (P04-Signal S6)
+    r"(weiß|kann)\s+nicht\s+mehr\s+weiter",  # "weiß nicht mehr weiter", "kann nicht mehr weiter"
 ]
 
 _PATTERNS: list[re.Pattern[str]] = [re.compile(p, re.IGNORECASE) for p in _RAW_PATTERNS]

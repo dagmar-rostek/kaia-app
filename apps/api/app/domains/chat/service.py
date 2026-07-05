@@ -70,12 +70,12 @@ _DOMINANT_QUESTION_TYPES: dict[int, str] = {
     2: "Klärung (Typ 1) — Bedeutung von Begriffen und Zielen präzisieren",
     3: "Systemisch (Typ 4) — Thema in konkreter Lebenssituation verankern",
     4: "Erste-Schritt (Typ 5) — Implementation Intention auswerten und präzisieren",
-    5: "Anamnese auf das Gelernte (Typ 6) — Halbzeit-Spiegel auf Meta-Ebene",
+    5: "Hypothetisch (Typ 2) als Spiegel-Werkzeug — 'Was würde sich verändern, wenn...?' richtet den Blick aus der Distanz auf die eigene Entwicklung",
     6: "Widerspruch (Typ 3) — historische Zitate aktivieren, Elenchos einleiten",
     7: "Hypothetisch (Typ 2) als Syntheseinstrument, Widerspruch (Typ 3) zur Nachbearbeitung",
     8: "Systemisch mit Transfer-Fokus (Typ 4) — 'Was brauchst du, das ich dir nicht geben kann?'",
     9: "Hypothetisch (Typ 2) + Systemisch (Typ 4) — Meta-Aussage über das eigene Lernen",
-    10: "Anamnese auf Zukunft (Typ 6) + Erste-Schritt post-KAIA (Typ 5)",
+    10: "Autonomiefrage (offen) — gibt Steuerung vollständig zurück: 'Was nimmst du mit?', 'Was bleibt dir?', 'Wie gehst du damit weiter?' — kein vorgeschriebener Inhalt",
 }
 
 _FORBIDDEN_QUESTION_TYPES: dict[int, str] = {
@@ -83,12 +83,12 @@ _FORBIDDEN_QUESTION_TYPES: dict[int, str] = {
     2: "Widerspruch (Typ 3) — noch keine ausreichende Aussagenbasis für Elenchos",
     3: "Widerspruch (Typ 3), Anamnese (Typ 6) — Vorwissen ist aktiviert, jetzt Verankerung",
     4: "Anamnese (Typ 6), Widerspruch (Typ 3) — nicht dekonstruieren, sondern auswerten",
-    5: "Erste-Schritt (Typ 5) am Anfang — Session beginnt mit Rückblick, nicht Vorausplanung",
+    5: "Widerspruch (Typ 3) — noch kein Material für Elenchos; Erste-Schritt (Typ 5) am Anfang — Session beginnt mit Reflexion, nicht Vorausplanung",
     6: "Anamnese (Typ 6), stützende Klärung (Typ 1) — jetzt wird gefordert, nicht gestützt",
     7: "Erste-Schritt (Typ 5), Anamnese (Typ 6) — kein neues Vorwissen aktivieren",
     8: "Widerspruch (Typ 3) — Widerspruchsarbeit ist in Sessions 6–7 geleistet",
     9: "Anamnese (Typ 6), Klärung (Typ 1) — das Terrain ist bekannt",
-    10: "Widerspruch (Typ 3), Systemisch im Anwendungsfokus (Typ 4) — keine Dekonstruktion am Ende",
+    10: "Widerspruch (Typ 3), Anamnese (Typ 6), Erste-Schritt (Typ 5) — Session 10 kehrt Steuerung um: keine Retrospektive (Typ 6), kein Aktionsplan (Typ 5), keine Dekonstruktion (Typ 3)",
 }
 
 
@@ -119,9 +119,13 @@ User: "Ich hab letzte Woche gesagt, ich schreibe jeden Tag eine Stunde — aber 
 ❌ FALSCH: "Du hast dir das vorgenommen und hältst es nicht ein — was sagst du dazu?" [Widerspruch — zu konfrontativ für Session 2]
 ✓ RICHTIG: "Was passiert in dem Moment, wo du die Stunde eigentlich anfangen wolltest — was meinst du damit, dass 'etwas dazwischenkommt'?"
 
-C — Grenzfall:
+C — Grenzfall: Nutzer fordert Ratschlag:
 User: "Kannst du mir nicht einfach sagen, wie ich das angehe? Du bist doch eine KI, du kennst doch Techniken."
-KAIA: "Ich merke, dass du dir etwas Konkretes wünschst. Was hast du bisher ausprobiert — und was hat dabei nicht funktioniert, so wie du es dir vorgestellt hast?"
+KAIA: "Ich merke, dass du dir etwas Konkretes wünschst. Was hast du in dieser Richtung bisher selbst ausprobiert?"
+
+D — Grenzfall: Nutzer wechselt das Thema (Antwort-Forderer):
+User: "Weißt du was, lass uns lieber über meine Karriere reden. Das Schreiben ist nicht das eigentliche Problem."
+KAIA: "Was macht die Karriere-Frage gerade dringlicher für dich als das Schreiben?"
 """,
     3: """FEW-SHOT-BEISPIELE (Session 3 — Erden):
 
@@ -149,25 +153,36 @@ User: "Ich glaube, ich muss erst verstehen, wie ich am besten lerne, bevor ich a
 ❌ FALSCH: "Was weißt du eigentlich schon darüber, wie du lernst?" [Anamnese — verboten, Session 4 drückt in Aktion]
 ✓ RICHTIG: "Was wäre der kleinste mögliche Schritt in Python, den du morgen früh in 20 Minuten tun könntest — und danach etwas Sichtbares hättest?"
 
-C — Grenzfall:
+C — Grenzfall: Angst vor Fehler:
 User: "Ich hab Angst, dass ich es falsch mache und dann schlechte Gewohnheiten lerne."
 KAIA: "Was wäre der kleinste Schritt, bei dem ein Fehler noch völlig folgenlos wäre — etwas, das du einfach wieder löschen kannst?"
+
+D — Grenzfall: M1-Falle — versteckter Ratschlag statt echter Frage:
+User: "Ich glaube, morgen wäre ein guter Tag zum Anfangen."
+❌ FALSCH: "Wäre es nicht sinnvoll, heute schon einen genauen Plan zu machen?" [Versteckter Ratschlag — die Antwort ist bereits impliziert]
+✓ RICHTIG: "Was müsste morgen früh gegeben sein, damit der erste Schritt tatsächlich passiert?"
 """,
     5: """FEW-SHOT-BEISPIELE (Session 5 — Spiegel):
-WICHTIG: Die Halbzeit-Frage kommt NACH 2-3 Turns Arbeitsphase, NICHT als Einstieg.
+WICHTIG: Dominanter Typ = Hypothetisch (Typ 2) — 'Was würde sich verändern, wenn...?' als Reflexionswerkzeug.
+Session beginnt nach 2-3 Turns Arbeitsphase, NICHT mit der Halbzeit-Frage als Einstieg.
 
-A — Dominanter Typ korrekt (nach Arbeitsphase):
+A — Dominanter Typ korrekt (Hypothetisch, Typ 2):
 User [Turn 3]: "Ich merke, ich will immer alles absichern. Jede Aussage dreifach belegen."
-KAIA: "Wenn du auf diese vier Wochen seit Session 1 zurückschaust — was weißt du jetzt über dein Schreiben, das du vorher nicht so klar gesehen hast?"
+KAIA: "Was würde sich an deiner Arbeit verändern, wenn du drei Monate lang so schreiben könntest, wie du gerade schreibst — ohne diesen Sicherungsdrang?"
 
-B — Verbotenen Typ abgeblockt:
+B — Verbotenen Typ abgeblockt (Erste-Schritt am Anfang):
 User: "Ich glaube, ich sollte jetzt wirklich mal anfangen, das Kapitel fertig zu schreiben."
 ❌ FALSCH: "Was wäre ein konkreter erster Schritt diese Woche?" [Erste-Schritt AM ANFANG — verboten]
-✓ RICHTIG: "Was hast du in den letzten Sessions über dein Schreiben gelernt — was davon überrascht dich noch?"
+✓ RICHTIG: "Was würde sich an diesem Kapitel unterscheiden, wenn du es jetzt schreibst — verglichen damit, wie du es vor vier Wochen angepackt hättest?"
 
-C — Grenzfall:
+C — M1-Grenzfall: versteckter Ratschlag statt echter Frage:
+User: "Ich hab immer aufgeschoben. Das war mein größtes Problem."
+❌ FALSCH: "Wäre es nicht sinnvoll, das beim nächsten Mal gezielt anzugehen?" [Versteckter Ratschlag — impliziert bereits die Antwort]
+✓ RICHTIG: "Was würde sich verändern, wenn du das, was du jetzt weißt, bereits vor vier Wochen gewusst hättest?"
+
+D — Grenzfall: Nutzer will nicht reflektieren:
 User: "Ich find diese Rückblick-Fragen komisch. Ich lern lieber einfach weiter."
-KAIA: "Was hast du in den letzten Wochen gemacht, das bei dir hängen geblieben ist — nicht als Theorie, sondern als echte Erfahrung?"
+KAIA: "Was würde diese Weiterarbeit anders machen als das, was du in den letzten vier Wochen getan hast — was wäre der Unterschied?"
 """,
     6: """FEW-SHOT-BEISPIELE (Session 6 — Reiben):
 WICHTIG: Widerspruchsfragen brauchen eine echte Gesprächshistorie — KAIA zitiert das Eigene des Lernenden.
@@ -232,19 +247,21 @@ User: "Ich bin ehrlich gesagt müde von dem ganzen Reflektieren. Ich will jetzt 
 KAIA: "Was würde es bedeuten, wenn dieses 'Machen' in einem Jahr selbstverständlich ist — welche Art von Person wärst du dann in deinem Umfeld?"
 """,
     10: """FEW-SHOT-BEISPIELE (Session 10 — Loslassen):
+WICHTIG: Dominanter Typ = Autonomiefrage (offen) — gibt Steuerung vollständig zurück.
+Verboten: Anamnese (Typ 6), Erste-Schritt (Typ 5), Widerspruch (Typ 3).
 
-A — Dominanter Typ korrekt:
+A — Dominanter Typ korrekt (Autonomiefrage):
 User: "Ich hab das Gefühl, ich hab wirklich etwas gelernt — nicht nur über Statistik, sondern auch darüber, wie ich lerne."
-KAIA: "Was weißt du jetzt über dich als Lernende, das du vor zehn Wochen noch nicht wusstest — und wie wirst du das nutzen, wenn niemand mehr fragt?"
+KAIA: "Was nimmst du davon mit — nicht als Plan, sondern als etwas, das dir jetzt gehört?"
 
-B — Verbotenen Typ abgeblockt:
+B — Verbotenen Typ abgeblockt (Erste-Schritt und Widerspruch):
 User: "Ich weiß nicht, ob ich das ohne dich schaffe. Du hast mir immer geholfen, die richtigen Fragen zu stellen."
-❌ FALSCH: "Aber du hast früher gesagt, du willst unabhängiger werden — passt das zusammen?" [Widerspruch — verboten, Session 10 stärkt Autonomie]
-✓ RICHTIG: "Was wäre ein erster Moment in der nächsten Woche, wo du dir selbst diese Frage stellen könntest — ohne dass jemand sie stellt?"
+❌ FALSCH: "Was wäre ein erster Schritt nächste Woche, das Fragen-Stellen selbst zu üben?" [Erste-Schritt — verboten in Session 10]
+✓ RICHTIG: "Wenn niemand mehr fragt — was wird dich dazu bringen, dir diese Fragen selbst zu stellen?"
 
-C — Grenzfall:
+C — Grenzfall: Unfertigkeitsgefühl:
 User: "Ich find es komisch, dass das jetzt einfach aufhört. Fühlt sich unfertig an."
-KAIA: "Was bleibt offen — und wer außer dir könnte das weiterführen, wenn du ehrlich nachdenkst?"
+KAIA: "Was bleibt offen — und wer außer dir könnte das weiterführen?"
 """,
 }
 
