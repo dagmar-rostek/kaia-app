@@ -410,6 +410,16 @@ async def _evaluate_persona_session(
         score = raw.get("score")
         reasoning = raw.get("reasoning", "")
         flagged = raw.get("flagged", False)
+
+        metric_short = metric.value.split("_")[0].upper()  # e.g. "m1" → "M1"
+        if score is None:
+            _eval_log(
+                run_id,
+                f"    {metric_short}: score=None — {reasoning[:150]}",
+                level="warning",
+            )
+        else:
+            _eval_log(run_id, f"    {metric_short}: score={score}/3")
         if score is not None and score <= 1:
             flagged = True
 
@@ -552,6 +562,7 @@ async def _simulate_persona_session(
     user_id: int,
     session_number: int,
     turns: int,
+    run_id: str = "",
 ) -> tuple[dict[str, Any], Decimal]:
     """Simulate one KAIA session with LLM persona.
 
@@ -610,13 +621,20 @@ async def _simulate_persona_session(
         await extract_session_summary(session_id)
 
     except Exception as exc:
+        error_detail = str(exc)
         log.error(
             "llm_simulation_session_error",
             persona=persona.persona_id,
             session=session_number,
-            error=str(exc),
+            error=error_detail,
         )
-        error = str(exc)
+        if run_id:
+            _eval_log(
+                run_id,
+                f"  S{session_number}: Simulations-Fehler → {error_detail[:200]}",
+                level="error",
+            )
+        error = error_detail
 
     return {
         "opening": opening,
@@ -712,14 +730,15 @@ async def _run_llm_eval(
 
                 _eval_log(run_id, f"  S{session_number}: Simulation läuft…")
                 session_data, sim_cost = await _simulate_persona_session(
-                    client, persona, user_id, session_number, turns
+                    client, persona, user_id, session_number, turns, run_id=run_id
                 )
                 total_cost += sim_cost
 
                 if session_data.get("status") == "error" or not session_data.get("exchanges"):
+                    reason = session_data.get("error") or "leere Exchanges (kein Fehler gesetzt)"
                     _eval_log(
                         run_id,
-                        f"  S{session_number}: übersprungen (Simulation-Fehler oder leer)",
+                        f"  S{session_number}: übersprungen — {reason[:200]}",
                         level="warning",
                     )
                     log.warning(
