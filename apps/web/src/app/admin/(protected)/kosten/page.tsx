@@ -61,7 +61,7 @@ function EuroBadge({ amount }: { amount: number }) {
 }
 
 function CentBadge({ amount }: { amount: number }) {
-  const display = amount < 0.01 ? `€${(amount * 100).toFixed(3)}ct` : `€${amount.toFixed(4)}`
+  const display = amount < 0.01 ? `€${(amount * 100).toFixed(2)}ct` : `€${amount.toFixed(2)}`
   return (
     <span className="inline-flex items-center rounded-md border px-2 py-0.5 text-xs font-mono font-medium bg-blue-500/10 text-blue-400 border-blue-500/20 tabular-nums">
       {display}
@@ -111,7 +111,7 @@ export default async function KostenPage() {
           </p>
           {live ? (
             <>
-              <p className="text-2xl font-bold text-foreground font-mono">€{live.total_eur.toFixed(4)}</p>
+              <p className="text-2xl font-bold text-foreground font-mono">€{live.total_eur.toFixed(2)}</p>
               <p className="text-xs text-muted-foreground">gesamt seit DB-Reset</p>
             </>
           ) : (
