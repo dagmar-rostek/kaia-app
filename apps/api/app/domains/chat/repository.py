@@ -47,6 +47,21 @@ class ChatRepository:
         )
         return result.scalar_one_or_none()
 
+    async def get_active_session(self, user_id: int) -> ChatSession | None:
+        """Return the most recent non-ended session with messages, or None.
+
+        Used by the frontend on page load to resume a session the user left open
+        (e.g. closed the browser tab mid-session without clicking 'Session beenden').
+        """
+        result = await self.db.execute(
+            select(ChatSession)
+            .where(ChatSession.user_id == user_id, ChatSession.ended_at.is_(None))
+            .options(selectinload(ChatSession.messages))
+            .order_by(ChatSession.id.desc())
+            .limit(1)
+        )
+        return result.scalar_one_or_none()
+
     async def list_sessions(self, user_id: int) -> list[ChatSession]:
         result = await self.db.execute(
             select(ChatSession)

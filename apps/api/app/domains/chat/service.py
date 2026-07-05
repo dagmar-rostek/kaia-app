@@ -278,12 +278,85 @@ def _session_mission_block(session_number: int) -> tuple[str, str, str, str]:
 
 # ── Trigger constants ─────────────────────────────────────────────────────────
 
-CLOSING_TRIGGER = (
+# Sessionspezifische Abschlussfragen — variiert pro Session, um Habituation zu vermeiden.
+# Jede Frage ist auf die Missions-Energie der Session zugeschnitten.
+# Formulierungen destilliert aus Didaktiker + Psychologe-Review (2026-07-05).
+_SESSION_CLOSING_TRIGGERS: dict[int, str] = {
+    1: (
+        "[Gesprächsende — stelle jetzt genau eine Abschlussfrage. "
+        "Fokus S1 (Ankern): Was sieht die lernende Person jetzt klarer, das vorher noch unscharf war? "
+        "Orientierung: 'Was hast du heute entdeckt, das du vor diesem Gespräch noch nicht so klar benennen konntest?' "
+        "Keine Bewertung, kein Lob, keine Zusammenfassung. Maximal zwei Sätze.]"
+    ),
+    2: (
+        "[Gesprächsende — stelle jetzt genau eine Abschlussfrage. "
+        "Fokus S2 (Kartieren): Wo steht die lernende Person jetzt — verglichen mit dem Gesprächsbeginn? "
+        "Orientierung: 'Wo stehst du gerade mit dem Thema — verglichen mit dem Beginn unseres Gesprächs?' "
+        "Keine Bewertung, kein Lob, keine Zusammenfassung. Maximal zwei Sätze.]"
+    ),
+    3: (
+        "[Gesprächsende — stelle jetzt genau eine Abschlussfrage. "
+        "Fokus S3 (Erden): Was nimmt die lernende Person mit — konkret, nicht abstrakt? "
+        "Orientierung: 'Was nimmst du aus diesem Gespräch mit — wenn überhaupt etwas?' "
+        "Der Zusatz 'wenn überhaupt etwas' ist wichtig: er macht 'nichts Konkretes' zu einer validen Antwort. "
+        "Keine Bewertung, kein Lob, keine Zusammenfassung. Maximal zwei Sätze.]"
+    ),
+    4: (
+        "[Gesprächsende — stelle jetzt genau eine Abschlussfrage. "
+        "Fokus S4 (Ausprobieren): Gibt es eine konkrete Handlungsabsicht für die nächsten Tage? "
+        "Orientierung: 'Gibt es etwas aus diesem Gespräch, das du in den nächsten Tagen ausprobieren oder anders machen willst?' "
+        "Keine Bewertung, kein Lob, keine Zusammenfassung. Maximal zwei Sätze.]"
+    ),
+    5: (
+        "[Gesprächsende — stelle jetzt genau eine Abschlussfrage. "
+        "Fokus S5 (Spiegel): Was hat sich im Denken verändert — oder was bleibt noch offen? "
+        "Orientierung: 'Was siehst du jetzt anders — oder was bleibt noch offen für dich?' "
+        "Keine Bewertung, kein Lob, keine Zusammenfassung. Maximal zwei Sätze.]"
+    ),
+    6: (
+        "[Gesprächsende — stelle jetzt genau eine Abschlussfrage. "
+        "Fokus S6 (Reiben): Die Widerspruchsarbeit hat etwas aufgedeckt — was war die unerwarteste Wendung? "
+        "Orientierung: 'Was war die unerwarteste Wendung in diesem Gespräch — für dich selbst?' "
+        "Keine Bewertung, kein Lob, keine Zusammenfassung. Maximal zwei Sätze.]"
+    ),
+    7: (
+        "[Gesprächsende — stelle jetzt genau eine Abschlussfrage. "
+        "Fokus S7 (Schärfen): Die lernende Person hat eine Position erarbeitet — für was nimmt sie Verantwortung? "
+        "Orientierung: 'Wofür nimmst du nach diesem Gespräch Verantwortung — in deinem Lernen?' "
+        "Keine Bewertung, kein Lob, keine Zusammenfassung. Maximal zwei Sätze.]"
+    ),
+    8: (
+        "[Gesprächsende — stelle jetzt genau eine Abschlussfrage. "
+        "Fokus S8 (Übergeben): KAIA gibt Steuerung ab — was trägt die lernende Person ohne Begleitung weiter? "
+        "Orientierung: 'Was trägst du von hier weiter — auch wenn niemand mehr fragt?' "
+        "Keine Bewertung, kein Lob, keine Zusammenfassung. Maximal zwei Sätze.]"
+    ),
+    9: (
+        "[Gesprächsende — stelle jetzt genau eine Abschlussfrage. "
+        "Fokus S9 (Konsolidieren): Was weiß die lernende Person jetzt über sich als Lernende? "
+        "Orientierung: 'Was weißt du jetzt über dich als Lernende, das du vor diesem Gespräch noch nicht so klar benennen konntest?' "
+        "Keine Bewertung, kein Lob, keine Zusammenfassung. Maximal zwei Sätze.]"
+    ),
+    10: (
+        "[Gesprächsende — stelle jetzt genau eine Abschlussfrage. "
+        "Fokus S10 (Loslassen): Letzte Frage — was bleibt, wenn alles andere verblasst? "
+        "Orientierung: 'Was bleibt — wenn du in einem Jahr an diese zehn Wochen denkst?' "
+        "Keine Bewertung, kein Lob. Diese Frage ist der letzte Gesprächsmoment. Maximal ein Satz.]"
+    ),
+}
+
+_CLOSING_TRIGGER_DEFAULT = (
     "[Gesprächsende — stelle jetzt genau eine Abschlussfrage. "
     "Keine Bewertung, kein Lob, keine Zusammenfassung. "
-    "Eine kurze, offene Frage die den eigenen Gedanken des Lernenden weitertragen lässt. "
+    "Eine kurze, offene Frage die den eigenen Gedanken der lernenden Person weitertragen lässt. "
     "Maximal zwei Sätze.]"
 )
+
+
+def get_closing_trigger(session_number: int) -> str:
+    """Return the session-specific closing trigger, with fallback to generic."""
+    return _SESSION_CLOSING_TRIGGERS.get(session_number, _CLOSING_TRIGGER_DEFAULT)
+
 
 META_TRIGGERS = {
     "stuck": (
@@ -531,7 +604,7 @@ async def stream_closing(
 
     history = await repo.get_messages(session.id)
     api_messages = [{"role": str(m.role), "content": m.content} for m in history if m.content]
-    api_messages.append({"role": "user", "content": CLOSING_TRIGGER})
+    api_messages.append({"role": "user", "content": get_closing_trigger(session.session_number)})
 
     client = AsyncAnthropic(
         api_key=settings.anthropic_api_key,

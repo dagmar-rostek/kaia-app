@@ -87,6 +87,23 @@ async def list_sessions(
     return [SessionResponse.model_validate(s) for s in sessions]
 
 
+@router.get("/sessions/active", response_model=SessionWithMessages)
+async def get_active_session(
+    user: CurrentUser,
+    db: AsyncSession = Depends(get_db),  # noqa: B008
+) -> SessionWithMessages:
+    """Return the user's current open session (ended_at IS NULL) with messages.
+
+    Used by the frontend on page load to resume a session left open mid-way.
+    Returns 404 if no active session exists (frontend should create a new session).
+    """
+    repo = ChatRepository(db)
+    session = await repo.get_active_session(user.id)
+    if not session:
+        raise HTTPException(status_code=404, detail="Keine aktive Session.")
+    return SessionWithMessages.model_validate(session)
+
+
 @router.get("/sessions/{session_id}", response_model=SessionWithMessages)
 async def get_session(
     session_id: int,

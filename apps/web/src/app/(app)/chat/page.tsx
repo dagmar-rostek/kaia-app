@@ -20,6 +20,18 @@ interface ChatMessage {
   isClosing?: boolean  // marks the closure bubble
 }
 
+interface ApiMessage {
+  id: number
+  role: string
+  content: string
+}
+
+interface SessionData {
+  id: number
+  session_number: number
+  messages?: ApiMessage[]
+}
+
 // Closure state machine:
 //   idle            → normal chat
 //   loading         → /closing SSE in flight
@@ -102,6 +114,7 @@ export default function ChatPage() {
   const [closureExchanges, setClosureExchanges] = useState(0)
   const [lastKaiaMessageId, setLastKaiaMessageId] = useState<number | null>(null)
   const [activeFeedback,   setActiveFeedback]   = useState<string | null>(null)
+  const [resumed,          setResumed]          = useState(false)  // true wenn bestehende Session fortgesetzt
 
   const bottomRef        = useRef<HTMLDivElement>(null)
   const textareaRef      = useRef<HTMLTextAreaElement>(null)
@@ -127,7 +140,23 @@ export default function ChatPage() {
     }
   }, [])
 
-  // Auto-create session + fetch KAIA opening on mount and after reset
+  // Best-effort: end session when user closes the browser tab/window.
+  // navigator.sendBeacon is more reliable than fetch in beforeunload.
+  useEffect(() => {
+    const handleUnload = () => {
+      if (!sessionId || closureState === "ended") return
+      const token = tokenStore.get() ?? (typeof localStorage !== "undefined" ? localStorage.getItem("kaia_access_token") : null) ?? ""
+      navigator.sendBeacon(
+        `${API_BASE}/api/v1/chat/sessions/${sessionId}/end`,
+        new Blob([JSON.stringify({ token })], { type: "application/json" }),
+      )
+    }
+    window.addEventListener("beforeunload", handleUnload)
+    return () => window.removeEventListener("beforeunload", handleUnload)
+  }, [sessionId, closureState])
+
+  // On mount: try to resume an existing open session, otherwise create a new one.
+  // This ensures the user doesn't lose their mid-session chat when they close the tab.
   useEffect(() => {
     let cancelled = false
     const streamId = `a-open-${Date.now()}`
@@ -136,7 +165,46 @@ export default function ChatPage() {
       setLoading(true)
       setClosureState("idle")
       setClosureExchanges(0)
+      setResumed(false)
+
       try {
+        // 1. Check for an existing open session
+        const activeRes = await fetch(`${API_BASE}/api/v1/chat/sessions/active`, {
+          headers: { ...getAuthHeader() },
+        })
+
+        if (activeRes.ok) {
+          // Resume: load existing session + its messages
+          const sessData = await activeRes.json() as SessionData
+          if (cancelled) return
+          setSessionId(sessData.id)
+          setSessionNumber(sessData.session_number)
+          setResumed(true)
+
+          const history: ChatMessage[] = (sessData.messages ?? [])
+            .filter((m: ApiMessage) => m.content)
+            .map((m: ApiMessage) => ({
+              id: `h-${m.id}`,
+              role: m.role as Role,
+              content: m.content,
+            }))
+          setMessages(history)
+          userTurnCountRef.current = history.filter(m => m.role === "user").length
+          setLoading(false)
+          return
+        }
+
+        if (activeRes.status === 403) {
+          const body = await activeRes.json().catch(() => ({})) as { code?: string; redirect?: string }
+          if (body.redirect) { router.replace(body.redirect); return }
+          if (body.code === "study_completed") {
+            setError("Die Studie ist abgeschlossen. Danke für deine Teilnahme!")
+            setLoading(false)
+            return
+          }
+        }
+
+        // 2. No active session — create a new one
         const sessRes = await fetch(`${API_BASE}/api/v1/chat/sessions`, {
           method: "POST",
           headers: { "Content-Type": "application/json", ...getAuthHeader() },
@@ -200,6 +268,7 @@ export default function ChatPage() {
     setError(null)
     setClosureState("idle")
     setClosureExchanges(0)
+    setResumed(false)
     setOpenTrigger(t => t + 1)
   }, [])
 
@@ -466,6 +535,21 @@ export default function ChatPage() {
         aria-label="Chat-Verlauf"
       >
         <div className="max-w-2xl mx-auto space-y-4">
+          {/* Resume notice — shown when a previously open session was restored */}
+          {resumed && messages.length > 0 && (
+            <p className="text-center text-xs text-muted-foreground/50 pt-2 pb-1">
+              Dein letztes Gespräch wurde fortgesetzt.
+            </p>
+          )}
+
+          {/* Explanation for completed sessions — previous chats are not shown here */}
+          {!resumed && sessionNumber !== null && sessionNumber > 1 && messages.length === 1 && (
+            <p className="text-center text-xs text-muted-foreground/40 pt-1 pb-2">
+              Deine früheren Sessions wurden gespeichert. KAIA trägt den Kontext weiter —
+              auch wenn du den Verlauf hier nicht siehst.
+            </p>
+          )}
+
           {/* Silent context sentence for Sessions 9 and 10 */}
           {sessionNumber !== null && sessionNumber >= 9 && messages.length > 0 && (
             <p className="text-center text-xs text-muted-foreground/50 pt-2 pb-1">
