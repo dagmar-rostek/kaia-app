@@ -199,6 +199,24 @@ function kaiaChatModelLabel(run: EvalRun): string {
   return modelShortLabel((run.config?.kaia_chat_model as string | undefined) ?? "claude-sonnet-4-6")
 }
 
+// Farben für Run-Zeilen im Vergleichsmodus (primary + bis zu 3 weitere)
+const COMPARE_ROW_COLORS = [
+  "text-violet-300",   // primary (selectedRun)
+  "text-amber-300",    // compare 1
+  "text-sky-300",      // compare 2
+  "text-emerald-300",  // compare 3
+]
+
+function runCompareLabel(run: EvalRun | undefined, hm: HeatmapData | null | undefined): string {
+  const model = hm?.kaia_chat_model ?? (run?.config?.kaia_chat_model as string | undefined) ?? "Sonnet"
+  const date = run
+    ? new Date(run.started_at).toLocaleString("de-DE", {
+        day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit",
+      })
+    : "—"
+  return `${modelShortLabel(model)} · ${date}`
+}
+
 // ── Main Component ─────────────────────────────────────────────────────────────
 
 export default function EvalPage() {
@@ -223,8 +241,11 @@ export default function EvalPage() {
   const [turnsPerSession, setTurnsPerSession] = useState(5)
   const [maxSessions, setMaxSessions] = useState(10)
   const [kaiaModel, setKaiaModel] = useState("")  // "" = aktuelles System-Modell
-  const [compareRunId, setCompareRunId] = useState<string | null>(null)
-  const [compareHeatmap, setCompareHeatmap] = useState<HeatmapData | null>(null)
+
+  // ── Compare State — bis zu 3 weitere Runs neben dem primary ──
+  const [compareRunIds, setCompareRunIds] = useState<string[]>([])
+  const [compareHeatmaps, setCompareHeatmaps] = useState<Record<string, HeatmapData>>({})
+
   const [deletingRunId, setDeletingRunId] = useState<string | null>(null)
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null)
 
@@ -262,15 +283,6 @@ export default function EvalPage() {
       if (res.ok) setEvalLog(await res.json())
     } catch {
       // silent — log is best-effort
-    }
-  }, [])
-
-  const loadCompareHeatmap = useCallback(async (runId: string) => {
-    try {
-      const res = await fetch(`/admin/api/eval/runs/${runId}/heatmap`)
-      if (res.ok) setCompareHeatmap(await res.json())
-    } catch {
-      // silent
     }
   }, [])
 
@@ -356,13 +368,32 @@ export default function EvalPage() {
     }
   }, [selectedCell, selectedRun, loadDetail])
 
+  // Lade alle Compare-Heatmaps wenn compareRunIds sich ändert
   useEffect(() => {
-    if (compareRunId) {
-      void loadCompareHeatmap(compareRunId) // eslint-disable-line react-hooks/set-state-in-effect
-    } else {
-      setCompareHeatmap(null)
+    if (compareRunIds.length === 0) {
+      setCompareHeatmaps({}) // eslint-disable-line react-hooks/set-state-in-effect
+      return
     }
-  }, [compareRunId, loadCompareHeatmap])
+    const load = async () => {
+      const result: Record<string, HeatmapData> = {}
+      for (const runId of compareRunIds) {
+        try {
+          const res = await fetch(`/admin/api/eval/runs/${runId}/heatmap`)
+          if (res.ok) result[runId] = await res.json()
+        } catch { /* silent */ }
+      }
+      setCompareHeatmaps(result)
+    }
+    void load()
+  }, [compareRunIds])
+
+  const toggleCompareRun = useCallback((runId: string) => {
+    setCompareRunIds((prev) => {
+      if (prev.includes(runId)) return prev.filter((id) => id !== runId)
+      if (prev.length >= 3) return prev  // max 3 zusätzliche Runs
+      return [...prev, runId]
+    })
+  }, [])
 
   const startEval = async () => {
     setStarting(true)
@@ -429,10 +460,12 @@ export default function EvalPage() {
         setSelectedCell(null)
         setDetail(null)
       }
-      if (compareRunId === runId) {
-        setCompareRunId(null)
-        setCompareHeatmap(null)
-      }
+      setCompareRunIds((prev) => prev.filter((id) => id !== runId))
+      setCompareHeatmaps((prev) => {
+        const next = { ...prev }
+        delete next[runId]
+        return next
+      })
       await loadRuns()
     } finally {
       setDeletingRunId(null)
@@ -462,6 +495,7 @@ export default function EvalPage() {
 
   const currentRun = runs.find((r) => r.id === selectedRun)
   const isRunning = currentRun?.status === "running" || currentRun?.status === "pending"
+  const compareActive = compareRunIds.length > 0
 
   return (
     <div className="min-h-screen bg-zinc-950 text-zinc-100 p-6">
@@ -659,7 +693,7 @@ export default function EvalPage() {
                 )}
                 {kaiaModel && kaiaModel !== "mistral-large-latest" && (
                   <p className="text-[10px] text-zinc-500 mt-1">
-                    Verwendet {modelShortLabel(kaiaModel)} als KAIA — vergleichbar via Compare-Button nach Run.
+                    Verwendet {modelShortLabel(kaiaModel)} als KAIA — vergleichbar via Compare nach Run.
                   </p>
                 )}
               </div>
@@ -719,6 +753,17 @@ export default function EvalPage() {
           <p className="text-xs font-medium text-zinc-500 uppercase tracking-wider mb-3">
             Eval-Runs
           </p>
+          {compareActive && (
+            <div className="px-2 py-1.5 bg-amber-500/10 border border-amber-500/30 rounded-lg text-[10px] text-amber-400 flex items-center justify-between">
+              <span>{compareRunIds.length} Vergleichs-Run{compareRunIds.length !== 1 ? "s" : ""} aktiv</span>
+              <button
+                onClick={() => setCompareRunIds([])}
+                className="text-zinc-500 hover:text-zinc-300 ml-2"
+              >
+                ✕ alle
+              </button>
+            </div>
+          )}
           {runs.length === 0 && (
             <div className="rounded-lg border border-zinc-800 bg-zinc-900/50 p-4 space-y-2">
               <p className="text-sm text-zinc-400 font-medium">Noch kein Eval-Run</p>
@@ -798,16 +843,24 @@ export default function EvalPage() {
                   <p className="text-xs text-red-400 mt-1 truncate">{run.error}</p>
                 )}
               </button>
+              {/* Compare-Toggle: erscheint unter allen Runs außer dem selektierten */}
               {selectedRun !== run.id && (
                 <button
-                  onClick={() => setCompareRunId(compareRunId === run.id ? null : run.id)}
+                  onClick={() => toggleCompareRun(run.id)}
+                  disabled={compareRunIds.length >= 3 && !compareRunIds.includes(run.id)}
                   className={`w-full text-[10px] py-0.5 rounded mt-0.5 transition-colors ${
-                    compareRunId === run.id
+                    compareRunIds.includes(run.id)
                       ? "bg-amber-500/20 text-amber-400 border border-amber-500/40"
+                      : compareRunIds.length >= 3
+                      ? "text-zinc-700 cursor-not-allowed"
                       : "text-zinc-600 hover:text-zinc-400"
                   }`}
                 >
-                  {compareRunId === run.id ? "⊖ Vergleich entfernen" : "⊕ Als Vergleich setzen"}
+                  {compareRunIds.includes(run.id)
+                    ? "⊖ Aus Vergleich entfernen"
+                    : compareRunIds.length >= 3
+                    ? "⊕ Vergleich voll (max. 3)"
+                    : "⊕ Zum Vergleich hinzufügen"}
                 </button>
               )}
             </div>
@@ -879,51 +932,10 @@ export default function EvalPage() {
             </div>
           ) : (
             <div className="space-y-4">
-              {/* Vergleich-Banner */}
-              {compareHeatmap && (
-                <div className="px-3 py-2 bg-amber-500/10 border border-amber-500/30 rounded-lg text-xs space-y-1.5">
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <span className="text-amber-400 font-medium">Vergleich aktiv</span>
-                    <span className="text-zinc-600">—</span>
-                    <span className="text-zinc-500">A (ausgewählt):</span>
-                    {heatmap.kaia_chat_model ? (
-                      <span className={`px-1.5 py-0.5 rounded text-[10px] font-medium ${modelBadgeClass(heatmap.kaia_chat_model)}`}>
-                        {modelShortLabel(heatmap.kaia_chat_model)}
-                      </span>
-                    ) : <span className="font-mono text-zinc-400 truncate max-w-[120px]">{selectedRun}</span>}
-                    <span className="text-zinc-600">vs</span>
-                    <span className="text-zinc-500">B (Referenz):</span>
-                    {compareHeatmap.kaia_chat_model ? (
-                      <span className={`px-1.5 py-0.5 rounded text-[10px] font-medium ${modelBadgeClass(compareHeatmap.kaia_chat_model)}`}>
-                        {modelShortLabel(compareHeatmap.kaia_chat_model)}
-                      </span>
-                    ) : <span className="font-mono text-zinc-400 truncate max-w-[120px]">{compareRunId}</span>}
-                    <button
-                      onClick={() => { setCompareRunId(null); setCompareHeatmap(null) }}
-                      className="ml-auto text-zinc-500 hover:text-zinc-300"
-                    >✕</button>
-                  </div>
-                  {heatmap.system_avg_pct != null && compareHeatmap.system_avg_pct != null && (() => {
-                    const d = heatmap.system_avg_pct - compareHeatmap.system_avg_pct
-                    return (
-                      <div className="flex items-center gap-3 text-[11px]">
-                        <span className="text-zinc-400">System-Ø: A = <strong className="text-zinc-200">{heatmap.system_avg_pct.toFixed(1)}%</strong></span>
-                        <span className="text-zinc-600">·</span>
-                        <span className="text-zinc-400">B = <strong className="text-zinc-200">{compareHeatmap.system_avg_pct.toFixed(1)}%</strong></span>
-                        <span className={`font-bold ${d > 0 ? "text-green-400" : d < 0 ? "text-red-400" : "text-zinc-500"}`}>
-                          {d > 0 ? `↑+${d.toFixed(1)}pp` : d < 0 ? `↓${d.toFixed(1)}pp` : "= gleich"}
-                        </span>
-                      </div>
-                    )
-                  })()}
-                  <p className="text-[10px] text-zinc-600">Zellen zeigen: A-Score oben · ↑/↓ Delta · B-Score in grau</p>
-                </div>
-              )}
-
               {/* Summary bar */}
               <div className="flex items-center gap-6 p-4 bg-zinc-900 rounded-lg border border-zinc-800">
                 <div>
-                  <p className="text-xs text-zinc-500">{compareHeatmap ? "A: System-Ø" : "System-Ø"}</p>
+                  <p className="text-xs text-zinc-500">System-Ø</p>
                   <p className="text-xl font-bold">
                     {heatmap.system_avg_pct != null
                       ? `${heatmap.system_avg_pct.toFixed(1)}%`
@@ -963,153 +975,116 @@ export default function EvalPage() {
                 </div>
               </div>
 
-              {/* Heatmap grid */}
-              <div className="overflow-x-auto">
-                <table className="w-full border-collapse">
-                  <thead>
-                    <tr>
-                      <th className="text-left text-xs text-zinc-500 font-medium pb-2 pr-3 min-w-[140px]">
-                        Persona
-                      </th>
-                      {Array.from({ length: 10 }, (_, i) => i + 1).map((s) => (
-                        <th
-                          key={s}
-                          className="text-center text-xs text-zinc-500 font-medium pb-2 px-1 min-w-[64px]"
-                        >
-                          <div>S{s}</div>
-                          <div className="text-zinc-600 font-normal text-[10px]">
-                            {SESSION_NAMES[s]}
-                          </div>
+              {/* ── Normal-Modus: flache Tabelle ── */}
+              {!compareActive && (
+                <div className="overflow-x-auto">
+                  <table className="w-full border-collapse">
+                    <thead>
+                      <tr>
+                        <th className="text-left text-xs text-zinc-500 font-medium pb-2 pr-3 min-w-[140px]">
+                          Persona
                         </th>
-                      ))}
-                      <th className="text-center text-xs text-zinc-500 font-medium pb-2 px-2 min-w-[56px]">
-                        Ø
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {heatmap.personas.map((persona) => (
-                      <tr key={persona.persona_id}>
-                        <td className="pr-3 py-1">
-                          <div>
-                            <div className="flex items-center gap-1.5">
-                              <span className="text-sm font-medium text-zinc-300">
-                                {persona.persona_id}
-                              </span>
-                              {persona.persona_id === "P04" && (
-                                <span
-                                  title="P04 Jonas — Krisenfall: M7 Crisis Detection prüfen"
-                                  className="inline-flex items-center gap-0.5 text-[10px] text-red-400 bg-red-500/10 rounded px-1 py-0.5"
-                                >
-                                  <ShieldAlert className="w-2.5 h-2.5" />
-                                  Crisis
-                                </span>
-                              )}
+                        {Array.from({ length: 10 }, (_, i) => i + 1).map((s) => (
+                          <th
+                            key={s}
+                            className="text-center text-xs text-zinc-500 font-medium pb-2 px-1 min-w-[64px]"
+                          >
+                            <div>S{s}</div>
+                            <div className="text-zinc-600 font-normal text-[10px]">
+                              {SESSION_NAMES[s]}
                             </div>
-                            {persona.learning_topic && (
-                              <p className="text-[10px] text-zinc-600 leading-tight">
-                                {persona.learning_topic}
-                              </p>
-                            )}
-                          </div>
-                        </td>
-                        {Array.from({ length: 10 }, (_, i) => i + 1).map((sNum) => {
-                          const cell = persona.sessions.find((s) => s.session_number === sNum)
-                          const compareCell = compareHeatmap
-                            ? compareHeatmap.personas
-                                .find((p) => p.persona_id === persona.persona_id)
-                                ?.sessions.find((s) => s.session_number === sNum) ?? null
-                            : null
-                          const delta =
-                            cell?.score_pct != null && compareCell?.score_pct != null
-                              ? Math.round(cell.score_pct - compareCell.score_pct)
-                              : null
-                          const isSelected =
-                            selectedCell?.persona === persona.persona_id &&
-                            selectedCell?.session === sNum
-                          return (
-                            <td key={sNum} className="px-1 py-1">
-                              <button
-                                onClick={() =>
-                                  setSelectedCell({ persona: persona.persona_id, session: sNum })
-                                }
-                                className={`w-full h-12 rounded flex flex-col items-center justify-center
-                                            text-xs font-medium transition-all
-                                            ${cell ? scoreColor(cell.score_pct, cell.has_error) : "bg-zinc-800 text-zinc-600"}
-                                            ${isSelected ? "ring-2 ring-white ring-offset-1 ring-offset-zinc-950" : "hover:opacity-80"}
-                                          `}
-                              >
-                                {cell ? (
-                                  <>
-                                    <span className="text-sm font-bold leading-none">
-                                      {cell.has_error
-                                        ? "Err"
-                                        : cell.score_pct != null
-                                        ? `${cell.score_pct.toFixed(0)}%`
-                                        : "—"}
-                                    </span>
-                                    {compareCell?.score_pct != null && cell.score_pct != null ? (
-                                      <span className={`text-[9px] leading-none mt-0.5 ${
-                                        delta === 0 ? "text-zinc-400"
-                                        : delta != null && delta > 0 ? "text-green-400"
-                                        : "text-red-400"
-                                      }`}>
-                                        {delta != null && delta > 0 ? `↑${delta}` : delta != null && delta < 0 ? `↓${Math.abs(delta)}` : "="}{" "}
-                                        {compareCell.score_pct.toFixed(0)}%
-                                      </span>
-                                    ) : cell.flagged_metrics.length > 0 && !cell.has_error ? (
-                                      <span className="text-[9px] opacity-75 mt-0.5 leading-none">
-                                        ⚑ {cell.flagged_metrics
-                                          .map((k) => k.split("_")[0].toUpperCase())
-                                          .join(" ")}
-                                      </span>
-                                    ) : null}
-                                  </>
-                                ) : (
-                                  <span className="text-zinc-600">—</span>
-                                )}
-                              </button>
-                            </td>
-                          )
-                        })}
-                        <td className="px-2 py-1 text-center">
-                          {(() => {
-                            const avg = persona.avg_score_pct
-                            const cmpPersona = compareHeatmap?.personas.find(
-                              (p) => p.persona_id === persona.persona_id
-                            )
-                            const cmpAvg = cmpPersona?.avg_score_pct ?? null
-                            const d = avg != null && cmpAvg != null ? avg - cmpAvg : null
-                            return (
-                              <div className="flex flex-col items-center">
-                                <span className={`text-xs font-bold ${
-                                  avg != null
-                                    ? avg >= 67 ? "text-green-400" : avg >= 34 ? "text-yellow-400" : "text-red-400"
-                                    : "text-zinc-600"
-                                }`}>
-                                  {avg != null ? `${avg.toFixed(0)}%` : "—"}
+                          </th>
+                        ))}
+                        <th className="text-center text-xs text-zinc-500 font-medium pb-2 px-2 min-w-[56px]">
+                          Ø
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {heatmap.personas.map((persona) => (
+                        <tr key={persona.persona_id}>
+                          <td className="pr-3 py-1">
+                            <div>
+                              <div className="flex items-center gap-1.5">
+                                <span className="text-sm font-medium text-zinc-300">
+                                  {persona.persona_id}
                                 </span>
-                                {d != null && (
-                                  <span className={`text-[9px] leading-none ${d > 0 ? "text-green-400" : d < 0 ? "text-red-400" : "text-zinc-500"}`}>
-                                    {d > 0 ? `+${d.toFixed(0)}` : d.toFixed(0)}
+                                {persona.persona_id === "P04" && (
+                                  <span
+                                    title="P04 Jonas — Krisenfall: M7 Crisis Detection prüfen"
+                                    className="inline-flex items-center gap-0.5 text-[10px] text-red-400 bg-red-500/10 rounded px-1 py-0.5"
+                                  >
+                                    <ShieldAlert className="w-2.5 h-2.5" />
+                                    Crisis
                                   </span>
                                 )}
                               </div>
+                              {persona.learning_topic && (
+                                <p className="text-[10px] text-zinc-600 leading-tight">
+                                  {persona.learning_topic}
+                                </p>
+                              )}
+                            </div>
+                          </td>
+                          {Array.from({ length: 10 }, (_, i) => i + 1).map((sNum) => {
+                            const cell = persona.sessions.find((s) => s.session_number === sNum)
+                            const isSelected =
+                              selectedCell?.persona === persona.persona_id &&
+                              selectedCell?.session === sNum
+                            return (
+                              <td key={sNum} className="px-1 py-1">
+                                <button
+                                  onClick={() =>
+                                    setSelectedCell({ persona: persona.persona_id, session: sNum })
+                                  }
+                                  className={`w-full h-12 rounded flex flex-col items-center justify-center
+                                              text-xs font-medium transition-all
+                                              ${cell ? scoreColor(cell.score_pct, cell.has_error) : "bg-zinc-800 text-zinc-600"}
+                                              ${isSelected ? "ring-2 ring-white ring-offset-1 ring-offset-zinc-950" : "hover:opacity-80"}
+                                            `}
+                                >
+                                  {cell ? (
+                                    <>
+                                      <span className="text-sm font-bold leading-none">
+                                        {cell.has_error
+                                          ? "Err"
+                                          : cell.score_pct != null
+                                          ? `${cell.score_pct.toFixed(0)}%`
+                                          : "—"}
+                                      </span>
+                                      {cell.flagged_metrics.length > 0 && !cell.has_error && (
+                                        <span className="text-[9px] opacity-75 mt-0.5 leading-none">
+                                          ⚑ {cell.flagged_metrics
+                                            .map((k) => k.split("_")[0].toUpperCase())
+                                            .join(" ")}
+                                        </span>
+                                      )}
+                                    </>
+                                  ) : (
+                                    <span className="text-zinc-600">—</span>
+                                  )}
+                                </button>
+                              </td>
                             )
-                          })()}
-                        </td>
-                      </tr>
-                    ))}
-                    {/* Column averages */}
-                    <tr className="border-t border-zinc-800">
-                      <td className="pt-2 pr-3 text-xs text-zinc-500 font-medium">Ø Session</td>
-                      {Array.from({ length: 10 }, (_, i) => i + 1).map((s) => {
-                        const avg = heatmap.column_averages[String(s)]
-                        const cmpAvg = compareHeatmap?.column_averages[String(s)] ?? null
-                        const d = avg != null && cmpAvg != null ? avg - cmpAvg : null
-                        return (
-                          <td key={s} className="px-1 pt-2 text-center">
-                            <div className="flex flex-col items-center">
+                          })}
+                          <td className="px-2 py-1 text-center">
+                            <span className={`text-xs font-bold ${
+                              persona.avg_score_pct != null
+                                ? persona.avg_score_pct >= 67 ? "text-green-400" : persona.avg_score_pct >= 34 ? "text-yellow-400" : "text-red-400"
+                                : "text-zinc-600"
+                            }`}>
+                              {persona.avg_score_pct != null ? `${persona.avg_score_pct.toFixed(0)}%` : "—"}
+                            </span>
+                          </td>
+                        </tr>
+                      ))}
+                      {/* Column averages */}
+                      <tr className="border-t border-zinc-800">
+                        <td className="pt-2 pr-3 text-xs text-zinc-500 font-medium">Ø Session</td>
+                        {Array.from({ length: 10 }, (_, i) => i + 1).map((s) => {
+                          const avg = heatmap.column_averages[String(s)]
+                          return (
+                            <td key={s} className="px-1 pt-2 text-center">
                               <span className={`text-xs font-bold ${
                                 avg != null
                                   ? avg >= 67 ? "text-green-400" : avg >= 34 ? "text-yellow-400" : "text-red-400"
@@ -1117,20 +1092,117 @@ export default function EvalPage() {
                               }`}>
                                 {avg != null ? `${avg.toFixed(0)}%` : "—"}
                               </span>
-                              {d != null && (
-                                <span className={`text-[9px] leading-none ${d > 0 ? "text-green-400" : d < 0 ? "text-red-400" : "text-zinc-500"}`}>
-                                  {d > 0 ? `+${d.toFixed(0)}` : d.toFixed(0)}
+                            </td>
+                          )
+                        })}
+                        <td />
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              )}
+
+              {/* ── Vergleichs-Modus: per-Persona-Blöcke ── */}
+              {compareActive && (
+                <div className="space-y-3">
+                  {/* Lauf-Legende */}
+                  <div className="flex items-center gap-4 flex-wrap px-1">
+                    <span className="text-xs text-zinc-500">Läufe:</span>
+                    {[selectedRun, ...compareRunIds].map((rid, idx) => {
+                      const run = runs.find((r) => r.id === rid)
+                      const hm = idx === 0 ? heatmap : compareHeatmaps[rid ?? ""]
+                      return (
+                        <span key={rid} className={`text-xs font-medium ${COMPARE_ROW_COLORS[idx]}`}>
+                          {idx === 0 ? "★ " : ""}
+                          {runCompareLabel(run, hm)}
+                        </span>
+                      )
+                    })}
+                    <button
+                      onClick={() => setCompareRunIds([])}
+                      className="ml-auto text-[10px] text-zinc-600 hover:text-zinc-400"
+                    >
+                      ✕ Vergleich beenden
+                    </button>
+                  </div>
+
+                  {/* Spaltenkopf + per-Persona-Blöcke */}
+                  <div className="overflow-x-auto">
+                    <div className="min-w-max">
+                      {/* Globaler Spaltenkopf */}
+                      <div className="flex items-end mb-1 pl-3">
+                        <div className="w-32 shrink-0" />
+                        {Array.from({ length: 10 }, (_, i) => i + 1).map((s) => (
+                          <div key={s} className="w-14 text-center shrink-0">
+                            <div className="text-xs text-zinc-500 font-medium">S{s}</div>
+                            <div className="text-[10px] text-zinc-600">{SESSION_NAMES[s]}</div>
+                          </div>
+                        ))}
+                        <div className="w-12 text-center shrink-0 text-xs text-zinc-500 font-medium">Ø</div>
+                      </div>
+
+                      {/* Per-Persona-Blöcke */}
+                      {heatmap.personas.map((persona) => {
+                        const comparePersonas = compareRunIds.map((rid) =>
+                          compareHeatmaps[rid]?.personas.find((p) => p.persona_id === persona.persona_id) ?? null
+                        )
+                        return (
+                          <div
+                            key={persona.persona_id}
+                            className="mb-3 bg-zinc-900 border border-zinc-800 rounded-lg overflow-hidden"
+                          >
+                            {/* Persona-Header */}
+                            <div className="px-3 py-1.5 border-b border-zinc-800 flex items-center gap-2">
+                              <span className="font-mono font-bold text-sm text-zinc-200">
+                                {persona.persona_id}
+                              </span>
+                              {persona.persona_id === "P04" && (
+                                <span className="inline-flex items-center gap-0.5 text-[10px] text-red-400 bg-red-500/10 rounded px-1 py-0.5">
+                                  <ShieldAlert className="w-2.5 h-2.5" />
+                                  Crisis
                                 </span>
                               )}
+                              {persona.learning_topic && (
+                                <span className="text-xs text-zinc-500">{persona.learning_topic}</span>
+                              )}
                             </div>
-                          </td>
+
+                            {/* Run-Zeilen */}
+                            <div>
+                              {/* Primärer Run */}
+                              <PersonaRunRow
+                                label={runCompareLabel(currentRun, heatmap)}
+                                labelColor={COMPARE_ROW_COLORS[0]}
+                                persona={persona}
+                                selectedCell={selectedCell}
+                                onCellClick={(s) =>
+                                  setSelectedCell({ persona: persona.persona_id, session: s })
+                                }
+                              />
+                              {/* Compare-Runs */}
+                              {compareRunIds.map((rid, idx) => {
+                                const cmpRun = runs.find((r) => r.id === rid)
+                                const cmpHm = compareHeatmaps[rid]
+                                const cmpPersona = comparePersonas[idx]
+                                return (
+                                  <PersonaRunRow
+                                    key={rid}
+                                    label={runCompareLabel(cmpRun, cmpHm)}
+                                    labelColor={COMPARE_ROW_COLORS[idx + 1]}
+                                    persona={cmpPersona}
+                                    selectedCell={null}
+                                    onCellClick={undefined}
+                                  />
+                                )
+                              })}
+                            </div>
+                          </div>
                         )
                       })}
-                      <td />
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
+                    </div>
+                  </div>
+                </div>
+              )}
 
               {/* Legend */}
               <div className="flex items-center gap-4 text-xs text-zinc-500">
@@ -1149,7 +1221,7 @@ export default function EvalPage() {
                 ))}
               </div>
 
-              {/* Run-Log (collapsed by default after completion) */}
+              {/* Run-Log */}
               {evalLog.length > 0 && (
                 <div className="bg-zinc-900 border border-zinc-800 rounded-lg overflow-hidden">
                   <button
@@ -1366,4 +1438,77 @@ function RunStatusBadge({ status }: { status: EvalRun["status"] }) {
   if (status === "running" || status === "pending")
     return <Loader2 className="w-3.5 h-3.5 text-violet-400 animate-spin flex-shrink-0" />
   return <ChevronRight className="w-3.5 h-3.5 text-zinc-600 flex-shrink-0" />
+}
+
+function PersonaRunRow({
+  label,
+  labelColor,
+  persona,
+  selectedCell,
+  onCellClick,
+}: {
+  label: string
+  labelColor: string
+  persona: HeatmapPersona | null
+  selectedCell: { persona: string; session: number } | null
+  onCellClick?: (session: number) => void
+}) {
+  return (
+    <div className="flex items-center border-t border-zinc-800/60 first:border-t-0">
+      {/* Run-Label */}
+      <div className={`w-32 shrink-0 px-3 py-1 text-[10px] font-medium leading-tight ${labelColor}`}>
+        {label}
+      </div>
+      {/* Session-Zellen */}
+      {Array.from({ length: 10 }, (_, i) => i + 1).map((sNum) => {
+        const cell = persona?.sessions.find((s) => s.session_number === sNum) ?? null
+        const isSelected =
+          selectedCell?.session === sNum && selectedCell?.persona === persona?.persona_id
+        const colorClass = cell
+          ? scoreColor(cell.score_pct, cell.has_error)
+          : "bg-zinc-800/50 text-zinc-700"
+        const content = cell
+          ? cell.has_error
+            ? "Err"
+            : cell.score_pct != null
+            ? `${cell.score_pct.toFixed(0)}%`
+            : "—"
+          : "—"
+        return (
+          <div key={sNum} className="w-14 shrink-0 px-0.5 py-0.5">
+            {onCellClick ? (
+              <button
+                onClick={() => onCellClick(sNum)}
+                className={`w-full h-8 rounded text-xs font-medium transition-all flex items-center justify-center
+                  ${colorClass}
+                  ${isSelected ? "ring-2 ring-white ring-offset-1 ring-offset-zinc-950" : "hover:opacity-80"}`}
+              >
+                {content}
+              </button>
+            ) : (
+              <div
+                className={`w-full h-8 rounded text-xs font-medium flex items-center justify-center ${colorClass}`}
+              >
+                {content}
+              </div>
+            )}
+          </div>
+        )
+      })}
+      {/* Ø */}
+      <div className="w-12 shrink-0 px-2 text-center">
+        <span className={`text-xs font-bold ${
+          persona?.avg_score_pct != null
+            ? persona.avg_score_pct >= 67
+              ? "text-green-400"
+              : persona.avg_score_pct >= 34
+              ? "text-yellow-400"
+              : "text-red-400"
+            : "text-zinc-700"
+        }`}>
+          {persona?.avg_score_pct != null ? `${persona.avg_score_pct.toFixed(0)}%` : "—"}
+        </span>
+      </div>
+    </div>
+  )
 }
