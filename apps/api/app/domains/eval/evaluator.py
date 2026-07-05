@@ -60,6 +60,8 @@ JUDGE_MODEL = "claude-haiku-4-5-20251001"
 # Input: $0.80/MTok → €0.74/MTok; Output: $4.00/MTok → €3.70/MTok
 JUDGE_COST_INPUT_PER_TOKEN = Decimal("0.00000074")
 JUDGE_COST_OUTPUT_PER_TOKEN = Decimal("0.0000037")
+JUDGE_COST_CACHE_CREATION_PER_TOKEN = JUDGE_COST_INPUT_PER_TOKEN * Decimal("1.25")
+JUDGE_COST_CACHE_READ_PER_TOKEN = JUDGE_COST_INPUT_PER_TOKEN * Decimal("0.10")
 
 # M7 wird nur ab dieser Session für P04 ausgeführt (Krisensignal-Erwartung)
 _M7_CRISIS_EXPECTED_FROM_SESSION = 5  # S5: "Manchmal stelle ich mir vor wie es wäre..."
@@ -235,10 +237,10 @@ async def _call_judge(
     client: AsyncAnthropic,
     metric: MetricKey,
     context: dict[str, str],
-) -> tuple[dict[str, Any], int, int]:
+) -> tuple[dict[str, Any], int, int, int, int]:
     """Ruft den LLM-Judge für eine Metrik auf.
 
-    Gibt (parsed_result_dict, input_tokens, output_tokens) zurück.
+    Gibt (parsed_result_dict, input_tokens, output_tokens, cache_creation_tokens, cache_read_tokens) zurück.
     Bei Parse-Fehlern: score=None, flagged=True.
     """
     system_prompt, user_template = _load_prompt_body(metric)
@@ -249,12 +251,14 @@ async def _call_judge(
             model=JUDGE_MODEL,
             max_tokens=512,
             temperature=0,
-            system=system_prompt,
+            system=[
+                {"type": "text", "text": system_prompt, "cache_control": {"type": "ephemeral"}}
+            ],
             messages=[{"role": "user", "content": user_prompt}],
         )
     except Exception as exc:
         log.error("judge_api_error", metric=metric, error=str(exc))
-        return {"score": None, "reasoning": f"API-Fehler: {exc}", "flagged": True}, 0, 0
+        return {"score": None, "reasoning": f"API-Fehler: {exc}", "flagged": True}, 0, 0, 0, 0
 
     from anthropic.types import TextBlock  # noqa: PLC0415
 
@@ -262,6 +266,8 @@ async def _call_judge(
     raw = block.text.strip() if isinstance(block, TextBlock) else ""
     input_tokens = response.usage.input_tokens
     output_tokens = response.usage.output_tokens
+    cache_creation_tokens = getattr(response.usage, "cache_creation_input_tokens", 0) or 0
+    cache_read_tokens = getattr(response.usage, "cache_read_input_tokens", 0) or 0
 
     # JSON aus der Antwort extrahieren (Haiku schreibt manchmal trotzdem Markdown)
     json_match = re.search(r"\{.*\}", raw, re.DOTALL)
@@ -271,6 +277,8 @@ async def _call_judge(
             {"score": None, "reasoning": f"Parse-Fehler: {raw[:200]}", "flagged": True},
             input_tokens,
             output_tokens,
+            cache_creation_tokens,
+            cache_read_tokens,
         )
 
     try:
@@ -281,9 +289,11 @@ async def _call_judge(
             {"score": None, "reasoning": f"JSON-Fehler: {exc}", "flagged": True},
             input_tokens,
             output_tokens,
+            cache_creation_tokens,
+            cache_read_tokens,
         )
 
-    return result, input_tokens, output_tokens
+    return result, input_tokens, output_tokens, cache_creation_tokens, cache_read_tokens
 
 
 # ── Persona-Session-Evaluator ─────────────────────────────────────────────────
@@ -341,10 +351,15 @@ async def _evaluate_persona_session(
                 expected_signal or "keines in dieser Session erwartet"
             )
 
-        raw, input_tokens, output_tokens = await _call_judge(client, metric, context)
+        raw, input_tokens, output_tokens, cache_creation, cache_read = await _call_judge(
+            client, metric, context
+        )
 
         cost = (
-            JUDGE_COST_INPUT_PER_TOKEN * input_tokens + JUDGE_COST_OUTPUT_PER_TOKEN * output_tokens
+            JUDGE_COST_INPUT_PER_TOKEN * input_tokens
+            + JUDGE_COST_CACHE_CREATION_PER_TOKEN * cache_creation
+            + JUDGE_COST_CACHE_READ_PER_TOKEN * cache_read
+            + JUDGE_COST_OUTPUT_PER_TOKEN * output_tokens
         )
         total_cost += cost
 
@@ -420,6 +435,8 @@ async def _evaluate_persona_session(
 # Haiku-Kosten in EUR (Simulator, identisch zu Judge)
 _SIMULATOR_COST_INPUT = Decimal("0.00000074")
 _SIMULATOR_COST_OUTPUT = Decimal("0.0000037")
+_SIMULATOR_COST_CACHE_CREATION = _SIMULATOR_COST_INPUT * Decimal("1.25")
+_SIMULATOR_COST_CACHE_READ = _SIMULATOR_COST_INPUT * Decimal("0.10")
 
 
 async def _drain_stream(gen: AsyncGenerator[str, None]) -> str:
@@ -443,8 +460,8 @@ async def _call_persona_simulator(
     persona: EvalPersona,
     session_number: int,
     conversation: list[dict[str, str]],
-) -> tuple[str, int, int]:
-    """Call haiku as persona simulator. Returns (response_text, input_tokens, output_tokens)."""
+) -> tuple[str, int, int, int, int]:
+    """Call haiku as persona simulator. Returns (response_text, input_tokens, output_tokens, cache_creation_tokens, cache_read_tokens)."""
     if session_number <= 3:
         phase = f"[Session {session_number} — Frühphase S1-3: Grundverhalten zeigen]"
     elif session_number <= 6:
@@ -465,7 +482,7 @@ async def _call_persona_simulator(
 
     response = await client.messages.create(
         model="claude-haiku-4-5-20251001",
-        system=system,
+        system=[{"type": "text", "text": system, "cache_control": {"type": "ephemeral"}}],
         messages=messages,  # type: ignore[arg-type]
         max_tokens=200,
         temperature=0.7,
@@ -474,7 +491,15 @@ async def _call_persona_simulator(
 
     block = response.content[0] if response.content else None
     text = block.text.strip() if isinstance(block, TextBlock) else "..."
-    return text, response.usage.input_tokens, response.usage.output_tokens
+    cache_creation_tokens = getattr(response.usage, "cache_creation_input_tokens", 0) or 0
+    cache_read_tokens = getattr(response.usage, "cache_read_input_tokens", 0) or 0
+    return (
+        text,
+        response.usage.input_tokens,
+        response.usage.output_tokens,
+        cache_creation_tokens,
+        cache_read_tokens,
+    )
 
 
 async def _simulate_persona_session(
@@ -510,10 +535,15 @@ async def _simulate_persona_session(
         conversation = [{"role": "kaia", "content": opening}]
 
         for _ in range(turns):
-            persona_msg, in_tok, out_tok = await _call_persona_simulator(
+            persona_msg, in_tok, out_tok, cache_create, cache_read = await _call_persona_simulator(
                 client, persona, session_number, conversation
             )
-            simulator_cost += _SIMULATOR_COST_INPUT * in_tok + _SIMULATOR_COST_OUTPUT * out_tok
+            simulator_cost += (
+                _SIMULATOR_COST_INPUT * in_tok
+                + _SIMULATOR_COST_CACHE_CREATION * cache_create
+                + _SIMULATOR_COST_CACHE_READ * cache_read
+                + _SIMULATOR_COST_OUTPUT * out_tok
+            )
             conversation.append({"role": "user", "content": persona_msg})
 
             async with AsyncSessionLocal() as db:
