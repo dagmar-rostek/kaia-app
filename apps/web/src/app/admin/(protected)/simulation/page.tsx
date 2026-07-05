@@ -15,6 +15,7 @@ import {
   User,
   Timer,
   Zap,
+  BarChart2,
 } from "lucide-react"
 
 // ── Static Persona Definitions ─────────────────────────────────────────────────
@@ -206,6 +207,13 @@ function PersonaAvatar({ def, size = 48 }: { def: PersonaDef; size?: number }) {
 }
 
 // ── Types ──────────────────────────────────────────────────────────────────────
+
+interface RunSummary {
+  run_id: string
+  started_at: string | null
+  status: string
+  persona_count: number
+}
 
 interface PersonaStatus {
   codename: string
@@ -608,7 +616,7 @@ function ETABanner({
 
 export default function SimulationPage() {
   const [runId, setRunId] = useState<string | null>(null)
-  const [allRunIds, setAllRunIds] = useState<string[]>([])
+  const [allRunSummaries, setAllRunSummaries] = useState<RunSummary[]>([])
   const [status, setStatus] = useState<RunStatus | null>(null)
   const [results, setResults] = useState<RunResults | null>(null)
   const [starting, setStarting] = useState(false)
@@ -632,8 +640,8 @@ export default function SimulationPage() {
     try {
       const res = await fetch("/admin/api/simulation/runs")
       if (res.ok) {
-        const ids = await res.json() as string[]
-        setAllRunIds(ids.slice().reverse()) // newest first
+        const summaries = await res.json() as RunSummary[]
+        setAllRunSummaries(summaries.slice().reverse()) // newest first
       }
     } catch { /* ignore */ }
   }
@@ -730,7 +738,12 @@ export default function SimulationPage() {
       const data = await res.json() as { run_id?: string; error?: string }
       if (!res.ok || !data.run_id) throw new Error(data.error ?? "Start fehlgeschlagen")
       setRunId(data.run_id)
-      setAllRunIds((prev) => [data.run_id!, ...prev])
+      setAllRunSummaries((prev) => [{
+        run_id: data.run_id!,
+        started_at: new Date().toISOString(),
+        status: "running",
+        persona_count: 0,
+      }, ...prev])
       const sRes = await fetch(`/admin/api/simulation/${data.run_id}/status`)
       if (sRes.ok) setStatus(await sRes.json() as RunStatus)
     } catch (err) {
@@ -866,23 +879,32 @@ export default function SimulationPage() {
         </div>
 
         {/* Run History */}
-        {allRunIds.length > 0 && (
+        {allRunSummaries.length > 0 && (
           <div className="rounded-xl border border-zinc-800 bg-zinc-900 p-4 space-y-2">
             <h2 className="text-xs font-semibold text-zinc-500 uppercase tracking-widest">
-              Lauf-Historie ({allRunIds.length})
+              Lauf-Historie ({allRunSummaries.length})
             </h2>
             <div className="flex flex-wrap gap-2">
-              {allRunIds.map((id) => (
+              {allRunSummaries.map((summary) => (
                 <button
-                  key={id}
-                  onClick={() => void switchToRun(id)}
-                  className={`px-3 py-1.5 rounded-md border text-xs font-mono transition-colors
-                    ${runId === id
+                  key={summary.run_id}
+                  onClick={() => void switchToRun(summary.run_id)}
+                  className={`flex flex-col items-start px-3 py-2 rounded-md border text-xs transition-colors
+                    ${runId === summary.run_id
                       ? "border-violet-500/60 bg-violet-500/15 text-violet-300"
                       : "border-zinc-700 bg-zinc-800 text-zinc-400 hover:border-zinc-600 hover:text-zinc-200"
                     }`}
                 >
-                  {id}
+                  <span className="font-mono">{summary.run_id.slice(0, 12)}…</span>
+                  <span className="text-[10px] text-zinc-600 mt-0.5">
+                    {summary.started_at
+                      ? new Date(summary.started_at).toLocaleString("de-DE", {
+                          day: "2-digit", month: "2-digit",
+                          hour: "2-digit", minute: "2-digit",
+                        })
+                      : "—"}
+                    {summary.persona_count > 0 && ` · ${summary.persona_count} P`}
+                  </span>
                 </button>
               ))}
             </div>
@@ -914,14 +936,23 @@ export default function SimulationPage() {
           </div>
         </div>
 
-        {/* Load results */}
+        {/* Load results + Eval-Link */}
         {isDone && !results && !loadingResults && (
-          <button
-            onClick={loadResults}
-            className="text-sm underline text-zinc-500 hover:text-zinc-300"
-          >
-            Transkripte laden
-          </button>
+          <div className="flex items-center gap-4">
+            <button
+              onClick={loadResults}
+              className="text-sm underline text-zinc-500 hover:text-zinc-300"
+            >
+              Transkripte laden
+            </button>
+            <a
+              href="/admin/eval"
+              className="flex items-center gap-1.5 text-sm text-violet-400 hover:text-violet-300 transition-colors"
+            >
+              <BarChart2 className="h-4 w-4" />
+              Eval für diesen Run starten →
+            </a>
+          </div>
         )}
         {loadingResults && (
           <div className="flex items-center gap-2 text-sm text-zinc-500">

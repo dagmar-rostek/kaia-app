@@ -11,7 +11,12 @@ from app.core.deps import require_admin
 from app.core.security import create_access_token, hash_password
 from app.db.session import get_db
 from app.domains.chat.repository import ChatRepository
-from app.domains.simulation.runner import cancel_run, get_run_status, list_run_ids, run_simulation
+from app.domains.simulation.runner import (
+    cancel_run,
+    get_run_status,
+    list_run_summaries,
+    run_simulation,
+)
 from app.domains.users.models import User, UserStatus
 from app.domains.users.repository import RefreshTokenRepository, UserRepository
 from app.domains.users.schemas import UserAdminRead, UserApprove, UserReject
@@ -114,9 +119,9 @@ async def start_simulation(body: SimulationStart | None = None) -> dict[str, str
 
 
 @router.get("/simulation/runs")
-async def list_simulation_runs() -> list[str]:
-    """List all run IDs (in-memory, lost on server restart)."""
-    return list_run_ids()
+async def list_simulation_runs() -> list[dict[str, Any]]:
+    """List run summaries with metadata (in-memory, lost on server restart)."""
+    return list_run_summaries()
 
 
 @router.post("/simulation/cancel/{run_id}")

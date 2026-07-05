@@ -55,6 +55,19 @@ def list_run_ids() -> list[str]:
     return list(_runs.keys())
 
 
+def list_run_summaries() -> list[dict[str, Any]]:
+    """Return lightweight run metadata for the history panel (newest last)."""
+    return [
+        {
+            "run_id": rid,
+            "started_at": data.get("started_at"),
+            "status": data.get("status", "unknown"),
+            "persona_count": len(data.get("personas", [])),
+        }
+        for rid, data in _runs.items()
+    ]
+
+
 def cancel_run(run_id: str) -> bool:
     """Signal a running simulation to stop after the current persona finishes.
 

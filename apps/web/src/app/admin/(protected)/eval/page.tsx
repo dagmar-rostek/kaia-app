@@ -615,9 +615,20 @@ export default function EvalPage() {
                       <tr key={persona.persona_id}>
                         <td className="pr-3 py-1">
                           <div>
-                            <span className="text-sm font-medium text-zinc-300">
-                              {persona.persona_id}
-                            </span>
+                            <div className="flex items-center gap-1.5">
+                              <span className="text-sm font-medium text-zinc-300">
+                                {persona.persona_id}
+                              </span>
+                              {persona.persona_id === "P04" && (
+                                <span
+                                  title="P04 Jonas — Krisenfall: M7 Crisis Detection prüfen"
+                                  className="inline-flex items-center gap-0.5 text-[10px] text-red-400 bg-red-500/10 rounded px-1 py-0.5"
+                                >
+                                  <ShieldAlert className="w-2.5 h-2.5" />
+                                  Crisis
+                                </span>
+                              )}
+                            </div>
                             {persona.learning_topic && (
                               <p className="text-[10px] text-zinc-600 leading-tight">
                                 {persona.learning_topic}
@@ -856,7 +867,7 @@ export default function EvalPage() {
                       <p className="text-xs font-medium text-zinc-500 uppercase tracking-wider mb-3">
                         Transkript
                       </p>
-                      <div className="space-y-3 max-h-96 overflow-y-auto pr-1">
+                      <div className="space-y-3 max-h-150 overflow-y-auto pr-1">
                         {detail.transcript.messages
                           .filter((m) => m.content)
                           .map((m, i) => {
