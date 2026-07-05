@@ -477,7 +477,15 @@ export default function EvalPage() {
             Eval-Runs
           </p>
           {runs.length === 0 && (
-            <p className="text-zinc-500 text-sm">Noch kein Eval-Run.</p>
+            <div className="rounded-lg border border-zinc-800 bg-zinc-900/50 p-4 space-y-2">
+              <p className="text-sm text-zinc-400 font-medium">Noch kein Eval-Run</p>
+              <p className="text-xs text-zinc-600 leading-snug">
+                Die Eval-Matrix ist unabhängig von der Simulation. Klicke{" "}
+                <span className="text-violet-400">&quot;Neuen Eval starten&quot;</span>{" "}
+                oben rechts — der Eval führt die Personas gegen KAIA und bewertet jede Session
+                mit LLM-as-Judge (M1–M7).
+              </p>
+            </div>
           )}
           {runs.map((run) => (
             <button
@@ -513,8 +521,11 @@ export default function EvalPage() {
         {/* Main area */}
         <div>
           {!selectedRun ? (
-            <div className="flex items-center justify-center h-64 text-zinc-600 text-sm">
-              Wähle einen Eval-Run aus der Liste.
+            <div className="flex flex-col items-center justify-center h-64 gap-2 text-zinc-600 text-sm">
+              <span>Wähle einen Eval-Run aus der Liste</span>
+              <span className="text-xs text-zinc-700">
+                oder starte einen neuen Eval oben rechts
+              </span>
             </div>
           ) : isRunning ? (
             <div className="flex flex-col items-center justify-center h-64 gap-3 text-zinc-400">
