@@ -640,11 +640,24 @@ export default function EvalPage() {
                   className="w-full bg-zinc-800 border border-zinc-700 rounded px-3 py-2 text-sm text-zinc-200 focus:outline-none focus:border-violet-500"
                 >
                   <option value="">System-Modell ({liveModel ? modelShortLabel(liveModel) : "Sonnet"})</option>
-                  {availableModels.map((m) => (
-                    <option key={m.id} value={m.id}>{m.label}</option>
-                  ))}
+                  {availableModels.map((m) => {
+                    const hint =
+                      m.id === "mistral-small-latest" ? " ★ Empfohlen für Eval" :
+                      m.id === "mistral-large-latest" ? " ⚠ Sehr langsam (0,07 req/s)" :
+                      ""
+                    return (
+                      <option key={m.id} value={m.id}>{m.label}{hint}</option>
+                    )
+                  })}
                 </select>
-                {kaiaModel && (
+                {kaiaModel === "mistral-large-latest" && (
+                  <div className="mt-2 px-3 py-2 bg-amber-900/30 border border-amber-700/40 rounded text-[11px] text-amber-300">
+                    <strong>⚠ Rate-Limit-Warnung:</strong> Mistral Large erlaubt nur 0,07 req/s.
+                    Runs können 10–90 min dauern. Retry-Backoff aktiv (bis 60s Wartezeit pro Call).
+                    Für schnelle Eval lieber <strong>Mistral Small</strong> (5 req/s).
+                  </div>
+                )}
+                {kaiaModel && kaiaModel !== "mistral-large-latest" && (
                   <p className="text-[10px] text-zinc-500 mt-1">
                     Verwendet {modelShortLabel(kaiaModel)} als KAIA — vergleichbar via Compare-Button nach Run.
                   </p>

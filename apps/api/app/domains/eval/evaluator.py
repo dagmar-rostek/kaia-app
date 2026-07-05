@@ -561,15 +561,22 @@ def _provider(model: str) -> str:
     return "mistral"
 
 
+def _is_rate_limit_error(exc: Exception) -> bool:
+    """Erkennt 429-Rate-Limit-Fehler aller Provider (Anthropic, OpenAI, Mistral)."""
+    s = str(exc).lower()
+    return "429" in s or "rate limit" in s or "rate_limited" in s or "ratelimit" in s
+
+
 async def _call_kaia_direct(
     model: str,
     session_number: int,
     conversation: list[dict[str, str]],
+    run_id: str = "",
 ) -> tuple[str, Decimal]:
     """Ruft ein beliebiges LLM-Modell als KAIA auf (ohne Chat-Service-Overhead).
 
-    Geeignet für nicht-Anthropic-Modelle (GPT-4o, Mistral) im Eval-Modus.
-    Für Anthropic-Modelle wird weiterhin stream_response verwendet (volles KAIA-Prompt).
+    Retry-Logik: Bei 429-Rate-Limit-Fehlern bis zu 6 Versuche mit exponentiellem Backoff
+    (5s → 10s → 20s → 40s → 60s → 60s). Relevant vor allem für Mistral-Large (0,07 req/s).
 
     Returns: (kaia_response_text, kaia_cost_eur)
     """
@@ -598,55 +605,84 @@ async def _call_kaia_direct(
 
     costs = _KAIA_MODEL_COSTS.get(model, _KAIA_MODEL_COSTS["claude-sonnet-4-6"])
     cost_input, cost_output = costs
-
     provider = _provider(model)
 
-    if provider == "anthropic":
-        resp = await AsyncAnthropic(api_key=settings.anthropic_api_key).messages.create(
-            model=model,
-            max_tokens=400,
-            system=sys_prompt,
-            messages=messages,  # type: ignore[arg-type]
-        )
-        from anthropic.types import TextBlock as _TextBlock  # noqa: PLC0415
+    text = ""
+    cost: Decimal = Decimal("0")
+    _retry_delay = 5.0
+    _max_retries = 6
 
-        text = next((b.text for b in resp.content if isinstance(b, _TextBlock)), "").strip()
-        cost = cost_input * resp.usage.input_tokens + cost_output * resp.usage.output_tokens
+    for _attempt in range(_max_retries + 1):
+        try:
+            if provider == "anthropic":
+                resp = await AsyncAnthropic(api_key=settings.anthropic_api_key).messages.create(
+                    model=model,
+                    max_tokens=400,
+                    system=sys_prompt,
+                    messages=messages,  # type: ignore[arg-type]
+                )
+                from anthropic.types import TextBlock as _TextBlock  # noqa: PLC0415
 
-    elif provider == "openai":
-        from openai import AsyncOpenAI  # noqa: PLC0415
+                text = next((b.text for b in resp.content if isinstance(b, _TextBlock)), "").strip()
+                cost = cost_input * resp.usage.input_tokens + cost_output * resp.usage.output_tokens
 
-        oai = AsyncOpenAI(api_key=settings.openai_api_key)
-        all_msgs = [{"role": "system", "content": sys_prompt}, *messages]
-        resp_oai = await oai.chat.completions.create(
-            model=model,
-            max_tokens=400,
-            messages=all_msgs,  # type: ignore[arg-type]
-        )
-        text = (resp_oai.choices[0].message.content or "").strip()
-        usage = resp_oai.usage
-        cost = cost_input * (usage.prompt_tokens if usage else 0) + cost_output * (
-            usage.completion_tokens if usage else 0
-        )
+            elif provider == "openai":
+                from openai import AsyncOpenAI  # noqa: PLC0415
 
-    else:  # mistral — OpenAI-kompatible API
-        from openai import AsyncOpenAI  # noqa: PLC0415
+                oai = AsyncOpenAI(api_key=settings.openai_api_key)
+                all_msgs = [{"role": "system", "content": sys_prompt}, *messages]
+                resp_oai = await oai.chat.completions.create(
+                    model=model,
+                    max_tokens=400,
+                    messages=all_msgs,  # type: ignore[arg-type]
+                )
+                text = (resp_oai.choices[0].message.content or "").strip()
+                usage = resp_oai.usage
+                cost = cost_input * (usage.prompt_tokens if usage else 0) + cost_output * (
+                    usage.completion_tokens if usage else 0
+                )
 
-        mist = AsyncOpenAI(
-            api_key=settings.mistral_api_key,
-            base_url="https://api.mistral.ai/v1",
-        )
-        all_msgs = [{"role": "system", "content": sys_prompt}, *messages]
-        resp_mist = await mist.chat.completions.create(
-            model=model,
-            max_tokens=400,
-            messages=all_msgs,  # type: ignore[arg-type]
-        )
-        text = (resp_mist.choices[0].message.content or "").strip()
-        usage = resp_mist.usage
-        cost = cost_input * (usage.prompt_tokens if usage else 0) + cost_output * (
-            usage.completion_tokens if usage else 0
-        )
+            else:  # mistral — OpenAI-kompatible API
+                from openai import AsyncOpenAI  # noqa: PLC0415
+
+                mist = AsyncOpenAI(
+                    api_key=settings.mistral_api_key,
+                    base_url="https://api.mistral.ai/v1",
+                )
+                all_msgs = [{"role": "system", "content": sys_prompt}, *messages]
+                resp_mist = await mist.chat.completions.create(
+                    model=model,
+                    max_tokens=400,
+                    messages=all_msgs,  # type: ignore[arg-type]
+                )
+                text = (resp_mist.choices[0].message.content or "").strip()
+                usage = resp_mist.usage
+                cost = cost_input * (usage.prompt_tokens if usage else 0) + cost_output * (
+                    usage.completion_tokens if usage else 0
+                )
+
+            break  # Erfolg — Retry-Schleife verlassen
+
+        except Exception as _exc:
+            if _is_rate_limit_error(_exc) and _attempt < _max_retries:
+                _wait = min(_retry_delay, 60.0)
+                _retry_delay = min(_retry_delay * 2, 120.0)
+                _msg = (
+                    f"Rate-Limit 429 ({model}) — warte {_wait:.0f}s "
+                    f"(Versuch {_attempt + 1}/{_max_retries})"
+                )
+                if run_id:
+                    _eval_log(run_id, _msg, level="warning")
+                log.warning(
+                    "kaia_rate_limit_retry",
+                    model=model,
+                    attempt=_attempt,
+                    delay=_wait,
+                    error=str(_exc)[:200],
+                )
+                await asyncio.sleep(_wait)
+            else:
+                raise
 
     return text or "…", Decimal(str(cost))
 
@@ -732,7 +768,7 @@ async def _simulate_persona_session(
 
         if use_direct:
             # Opening: kurze Begrüßung via kaia_model
-            opening, open_cost = await _call_kaia_direct(kaia_model, session_number, [])
+            opening, open_cost = await _call_kaia_direct(kaia_model, session_number, [], run_id)
             simulator_cost += open_cost
         else:
             async with AsyncSessionLocal() as db:
@@ -756,7 +792,7 @@ async def _simulate_persona_session(
 
             if use_direct:
                 kaia_msg, kaia_cost = await _call_kaia_direct(
-                    kaia_model, session_number, conversation
+                    kaia_model, session_number, conversation, run_id
                 )
                 simulator_cost += kaia_cost
                 conversation.append({"role": "kaia", "content": kaia_msg})
@@ -774,7 +810,7 @@ async def _simulate_persona_session(
                 {"role": "user", "content": "(Session endet — schließe das Gespräch empathisch ab)"}
             ]
             closing, closing_cost = await _call_kaia_direct(
-                kaia_model, session_number, closing_prompt
+                kaia_model, session_number, closing_prompt, run_id
             )
             simulator_cost += closing_cost
         else:
