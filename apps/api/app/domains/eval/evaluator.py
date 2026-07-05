@@ -581,10 +581,20 @@ async def _call_kaia_direct(
     )
 
     # Konversation in Provider-Format konvertieren (kaia → assistant)
+    # Leere Inhalte werden gefiltert (können bei fehlgeschlagenen Upstream-Calls entstehen)
     messages: list[dict[str, str]] = []
     for turn in conversation:
         role = "assistant" if turn["role"] == "kaia" else "user"
-        messages.append({"role": role, "content": turn["content"]})
+        content = turn["content"].strip()
+        if content:
+            messages.append({"role": role, "content": content})
+
+    # OpenAI/Mistral erfordern mindestens eine User-Message vor der ersten Assistant-Message.
+    # Beim Opening-Call ist die Konversation leer — Placeholder einfügen.
+    if not messages or messages[0]["role"] == "assistant":
+        messages = [
+            {"role": "user", "content": "(Gesprächsbeginn — eröffne das Gespräch)"}
+        ] + messages
 
     costs = _KAIA_MODEL_COSTS.get(model, _KAIA_MODEL_COSTS["claude-sonnet-4-6"])
     cost_input, cost_output = costs
