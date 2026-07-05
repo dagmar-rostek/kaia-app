@@ -64,6 +64,13 @@ JUDGE_COST_OUTPUT_PER_TOKEN = Decimal("0.0000037")
 JUDGE_COST_CACHE_CREATION_PER_TOKEN = JUDGE_COST_INPUT_PER_TOKEN * Decimal("1.25")
 JUDGE_COST_CACHE_READ_PER_TOKEN = JUDGE_COST_INPUT_PER_TOKEN * Decimal("0.10")
 
+# ── Fail-Fast-Fehler ─────────────────────────────────────────────────────────
+
+
+class _APIQuotaError(Exception):
+    """Anthropic-Key hat sein Spending-Limit erreicht — kein weiterer Aufruf sinnvoll."""
+
+
 # ── In-Memory State ───────────────────────────────────────────────────────────
 # Läuft im FastAPI-Prozess; bei Restart leer. Reicht für Admin-Only-UI.
 _eval_tasks: dict[str, asyncio.Task[None]] = {}
@@ -301,7 +308,10 @@ async def _call_judge(
             messages=[{"role": "user", "content": user_prompt}],
         )
     except Exception as exc:
-        log.error("judge_api_error", metric=metric, error=str(exc))
+        error_str = str(exc)
+        if "API usage limits" in error_str or "specified API usage limits" in error_str:
+            raise _APIQuotaError(error_str) from exc
+        log.error("judge_api_error", metric=metric, error=error_str)
         return {"score": None, "reasoning": f"API-Fehler: {exc}", "flagged": True}, 0, 0, 0, 0
 
     from anthropic.types import TextBlock  # noqa: PLC0415
@@ -622,6 +632,8 @@ async def _simulate_persona_session(
 
     except Exception as exc:
         error_detail = str(exc)
+        if "API usage limits" in error_detail or "specified API usage limits" in error_detail:
+            raise _APIQuotaError(error_detail) from exc
         log.error(
             "llm_simulation_session_error",
             persona=persona.persona_id,
@@ -773,6 +785,8 @@ async def _run_llm_eval(
                     _eval_log(
                         run_id, f"  S{session_number}: ✓ {len(eval_results)} Metriken (Ø {avg_str})"
                     )
+                except _APIQuotaError:
+                    raise  # Quota-Fehler direkt weitergeben — kein weiterer Aufruf sinnvoll
                 except Exception as exc:
                     _eval_log(run_id, f"  S{session_number}: Judge-Fehler: {exc}", level="error")
                     log.error(
@@ -799,6 +813,14 @@ async def _run_llm_eval(
             _eval_log(run_id, f"✓ {persona.persona_id} abgeschlossen")
             log.info("llm_eval_persona_done", run_id=run_id, persona=persona.persona_id)
 
+    except _APIQuotaError as exc:
+        error_msg = f"Anthropic API-Kontingent erschöpft. Zugang wieder ab 2026-08-01. {exc}"
+        _eval_log(
+            run_id,
+            "ABBRUCH: Anthropic API-Kontingent erschöpft — Zugang ab 01.08.2026",
+            level="error",
+        )
+        log.error("llm_eval_quota_exceeded", run_id=run_id, error=str(exc))
     except Exception as exc:
         error_msg = str(exc)
         log.error("llm_eval_fatal_error", run_id=run_id, error=error_msg)
