@@ -8,6 +8,12 @@ omit =
     app/main.py
     # Integration-only: makes real LLM API calls, not unit-testable
     app/domains/simulation/runner.py
+    # Integration-only: LLM-Judge scoring, requires real API keys
+    app/domains/eval/evaluator.py
+    # Pure data constants — persona prompt strings, no logic
+    app/domains/simulation/eval_personas.py
+    # Integration-only: LLM session summarisation, requires real API keys
+    app/domains/chat/summary.py
     # Integration-only: requires real SMTP connection
     app/observability/email.py
 
