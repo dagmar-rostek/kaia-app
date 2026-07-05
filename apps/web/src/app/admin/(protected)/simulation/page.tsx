@@ -549,7 +549,7 @@ function ETABanner({
   status: RunStatus
   elapsedSec: number
 }) {
-  const totalSessions = 10 * 10
+  const totalSessions = Math.max(status.personas.length, 1) * 10
   const doneSessions = status.personas.reduce((sum, p) => sum + p.sessions_done, 0)
   const pct = Math.round((doneSessions / totalSessions) * 100)
 
