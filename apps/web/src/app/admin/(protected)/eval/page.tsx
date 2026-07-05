@@ -1,7 +1,6 @@
 "use client"
 
 import { useState, useEffect, useCallback, useRef } from "react"
-import { authFetch } from "@/lib/auth"
 import {
   Play,
   Square,
@@ -176,7 +175,7 @@ export default function EvalPage() {
 
   const loadRuns = useCallback(async () => {
     try {
-      const res = await authFetch("/api/v1/admin/eval/runs")
+      const res = await fetch("/admin/api/eval/runs")
       if (res.ok) {
         const data: EvalRun[] = await res.json()
         setRuns(data.sort((a, b) => b.started_at.localeCompare(a.started_at)))
@@ -188,7 +187,7 @@ export default function EvalPage() {
 
   const loadHeatmap = useCallback(async (runId: string) => {
     try {
-      const res = await authFetch(`/api/v1/admin/eval/runs/${runId}/heatmap`)
+      const res = await fetch(`/admin/api/eval/runs/${runId}/heatmap`)
       if (res.ok) {
         setHeatmap(await res.json())
       }
@@ -201,8 +200,8 @@ export default function EvalPage() {
     setDetailLoading(true)
     setDetail(null)
     try {
-      const res = await authFetch(
-        `/api/v1/admin/eval/runs/${runId}/sessions/${personaId}/${session}`
+      const res = await fetch(
+        `/admin/api/eval/runs/${runId}/sessions/${personaId}/${session}`
       )
       if (res.ok) setDetail(await res.json())
     } finally {
@@ -245,7 +244,7 @@ export default function EvalPage() {
         turns_per_session: turnsPerSession,
       }
       if (selectedPersonas.length < 10) body.persona_ids = selectedPersonas
-      const res = await authFetch("/api/v1/admin/eval/runs", {
+      const res = await fetch("/admin/api/eval/runs", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),
@@ -269,7 +268,7 @@ export default function EvalPage() {
     if (!selectedRun || !selectedCell) return
     setRetesting(true)
     try {
-      const res = await authFetch(`/api/v1/admin/eval/runs/${selectedRun}/retest`, {
+      const res = await fetch(`/admin/api/eval/runs/${selectedRun}/retest`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -292,7 +291,7 @@ export default function EvalPage() {
     setStopping(true)
     setError(null)
     try {
-      const res = await authFetch(`/api/v1/admin/eval/runs/${selectedRun}/cancel`, {
+      const res = await fetch(`/admin/api/eval/runs/${selectedRun}/cancel`, {
         method: "POST",
       })
       if (!res.ok) {
