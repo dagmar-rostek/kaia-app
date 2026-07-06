@@ -1,6 +1,6 @@
 export const dynamic = "force-dynamic"
 
-import { Clock, CheckCircle2, XCircle, Users, AlertTriangle, Mail } from "lucide-react"
+import { Clock, CheckCircle2, XCircle, Users, AlertTriangle } from "lucide-react"
 import { ApproveButton, RejectButton, DeleteButton, StudyStartMailButton } from "./UserActions"
 
 const API = process.env.INTERNAL_API_URL ?? process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000/api"
