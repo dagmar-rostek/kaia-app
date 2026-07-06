@@ -20,6 +20,7 @@ class RegisterRequest(BaseModel):
     consent_research_data: Literal[True]  # Art. 9 DSGVO — psychologische Selbsteinschätzungsdaten
     consent_analytics: bool = False
     consent_version: str = Field(default="1.0", max_length=20)
+    learning_topic: str | None = Field(default=None, max_length=500)
 
 
 class LoginRequest(BaseModel):

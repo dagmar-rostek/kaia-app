@@ -45,11 +45,14 @@ class AuthService:
             raise AuthError("Benutzername bereits vergeben.", 409)
 
         now = datetime.now(UTC)
+        topic = data.learning_topic.strip() if data.learning_topic else None
         user = User(
             email=data.email,
             username=data.username,
             password_hash=hash_password(data.password),
             status=UserStatus.PENDING,
+            learning_topic=topic,
+            onboarding_complete=bool(topic),
             consent_data=True,
             consent_research_data=True,
             consent_analytics=data.consent_analytics,

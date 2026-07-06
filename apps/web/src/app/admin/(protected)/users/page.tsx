@@ -1,7 +1,7 @@
 export const dynamic = "force-dynamic"
 
 import { Clock, CheckCircle2, XCircle, Users, AlertTriangle } from "lucide-react"
-import { ApproveButton, RejectButton } from "./UserActions"
+import { ApproveButton, RejectButton, DeleteButton } from "./UserActions"
 
 const API = process.env.INTERNAL_API_URL ?? process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000/api"
 
@@ -118,6 +118,7 @@ export default async function UsersPage() {
                       <div className="flex items-center gap-2 justify-end">
                         <ApproveButton userId={u.id} />
                         <RejectButton userId={u.id} />
+                        <DeleteButton userId={u.id} />
                       </div>
                     </td>
                   </tr>
@@ -192,7 +193,10 @@ export default async function UsersPage() {
                         </span>
                       </td>
                       <td className="px-4 py-3">
-                        <ApproveButton userId={u.id} />
+                        <div className="flex items-center gap-2 justify-end">
+                          <ApproveButton userId={u.id} />
+                          <DeleteButton userId={u.id} />
+                        </div>
                       </td>
                     </tr>
                   )

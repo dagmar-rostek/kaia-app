@@ -59,6 +59,19 @@ async def approve_user(
     return await svc.approve_user(user, data.approved_by)
 
 
+@router.delete("/users/{user_id}", status_code=204)
+async def delete_user(
+    user_id: int,
+    db: Annotated[AsyncSession, Depends(get_db)],
+    svc: Annotated[UserService, Depends(_svc)],
+) -> None:
+    """Hard-delete: anonymisiert E-Mail und gibt sie für Neu-Registrierung frei."""
+    user = await UserRepository(db).get_by_id(user_id)
+    if not user or user.status == UserStatus.DELETED:
+        raise HTTPException(404, "User nicht gefunden.")
+    await svc.delete(user, "admin_removed")
+
+
 @router.post("/users/{user_id}/reject", response_model=UserAdminRead)
 async def reject_user(
     user_id: int,

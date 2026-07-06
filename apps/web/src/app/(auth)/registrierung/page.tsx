@@ -4,6 +4,21 @@ import { useState, useRef, useEffect } from "react"
 import Link from "next/link"
 import { Eye, EyeOff, Check, Loader2 } from "lucide-react"
 
+const TOPIC_SUGGESTIONS = [
+  "Zeitmanagement",
+  "Führung & Mitarbeitergespräche",
+  "Kommunikation & Präsentation",
+  "Entscheidungen unter Unsicherheit",
+  "Konfliktgespräche",
+  "Vertrieb & Überzeugung",
+  "Selbstorganisation",
+  "Wissenschaftliches Schreiben",
+  "Python / Programmieren",
+  "Statistik verstehen",
+  "Prüfungsvorbereitung",
+  "Storytelling",
+]
+
 const API = process.env.NEXT_PUBLIC_API_URL ?? "/api"
 
 type Field = "email" | "username" | "password" | "confirm"
@@ -80,6 +95,7 @@ export default function RegistrierungPage() {
   const [confirm, setConfirm] = useState("")
   const [showPw, setShowPw] = useState(false)
   const [showConfirm, setShowConfirm] = useState(false)
+  const [learningTopic, setLearningTopic] = useState("")
   const [consentData, setConsentData] = useState(false)
   const [consentResearch, setConsentResearch] = useState(false)
   const [consentAnalytics, setConsentAnalytics] = useState(false)
@@ -112,6 +128,10 @@ export default function RegistrierungPage() {
     e.preventDefault()
     setTouched({ email: true, username: true, password: true, confirm: true })
     if (Object.keys(fieldErrors).length > 0) return
+    if (!learningTopic.trim()) {
+      setGeneralError("Bitte gib dein Lernthema ein.")
+      return
+    }
     if (!consentData) { consentDataRef.current?.focus(); return }
     if (!consentResearch) { consentResearchRef.current?.focus(); return }
 
@@ -125,6 +145,7 @@ export default function RegistrierungPage() {
           email,
           username,
           password,
+          learning_topic: learningTopic.trim(),
           consent_data: true,
           consent_research_data: true,
           consent_analytics: consentAnalytics,
@@ -377,6 +398,43 @@ export default function RegistrierungPage() {
               Stimmt überein.
             </p>
           )}
+        </div>
+
+        {/* Lernthema */}
+        <div className="space-y-2">
+          <label htmlFor="learning_topic" className="text-sm font-medium">
+            Was möchtest du mit KAIA lernen?
+          </label>
+          <p className="text-xs text-muted-foreground">
+            KAIA begleitet dich vier Wochen bei einem Thema. Schreib es auf — so konkret oder offen wie du willst.
+          </p>
+          <input
+            id="learning_topic"
+            type="text"
+            value={learningTopic}
+            onChange={e => setLearningTopic(e.target.value)}
+            placeholder="z. B. Führung, Zeitmanagement, Python …"
+            disabled={loading}
+            maxLength={500}
+            className="w-full rounded-lg border border-border bg-background px-4 py-3 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring disabled:opacity-60"
+          />
+          <div className="flex flex-wrap gap-1.5 pt-0.5">
+            {TOPIC_SUGGESTIONS.map(s => (
+              <button
+                key={s}
+                type="button"
+                onClick={() => setLearningTopic(s)}
+                disabled={loading}
+                className={`rounded-full border px-2.5 py-0.5 text-xs transition-colors disabled:opacity-50 ${
+                  learningTopic === s
+                    ? "border-foreground bg-foreground text-background"
+                    : "border-border text-muted-foreground hover:border-foreground/40 hover:text-foreground"
+                }`}
+              >
+                {s}
+              </button>
+            ))}
+          </div>
         </div>
 
         {/* Einwilligungen */}

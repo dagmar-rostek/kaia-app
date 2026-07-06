@@ -28,3 +28,11 @@ export async function rejectUser(userId: number, reason: string): Promise<void> 
   })
   revalidatePath("/admin/users")
 }
+
+export async function deleteUser(userId: number): Promise<void> {
+  await fetch(`${API}/v1/admin/users/${userId}`, {
+    method: "DELETE",
+    headers: adminHeaders(),
+  })
+  revalidatePath("/admin/users")
+}

@@ -1,8 +1,8 @@
 "use client"
 
 import { useState, useTransition } from "react"
-import { CheckCircle2, XCircle, Loader2 } from "lucide-react"
-import { approveUser, rejectUser } from "./actions"
+import { CheckCircle2, XCircle, Loader2, Trash2 } from "lucide-react"
+import { approveUser, rejectUser, deleteUser } from "./actions"
 
 export function ApproveButton({ userId }: { userId: number }) {
   const [pending, startTransition] = useTransition()
@@ -53,6 +53,39 @@ export function RejectButton({ userId }: { userId: number }) {
         {pending ? <Loader2 className="h-3.5 w-3.5 animate-spin inline" /> : "Bestätigen"}
       </button>
       <button onClick={() => setOpen(false)} className="text-xs text-muted-foreground hover:text-foreground">
+        Abbrechen
+      </button>
+    </div>
+  )
+}
+
+export function DeleteButton({ userId }: { userId: number }) {
+  const [confirm, setConfirm] = useState(false)
+  const [pending, startTransition] = useTransition()
+
+  if (!confirm) {
+    return (
+      <button
+        onClick={() => setConfirm(true)}
+        className="inline-flex items-center gap-1.5 rounded-md bg-red-500/10 border border-red-500/20 px-3 py-1.5 text-xs font-medium text-red-700 dark:text-red-400 hover:bg-red-500/20 transition-colors"
+      >
+        <Trash2 className="h-3.5 w-3.5" />
+        Löschen
+      </button>
+    )
+  }
+
+  return (
+    <div className="flex items-center gap-2">
+      <span className="text-xs text-muted-foreground">Wirklich löschen?</span>
+      <button
+        disabled={pending}
+        onClick={() => startTransition(() => deleteUser(userId))}
+        className="text-xs text-red-600 dark:text-red-400 font-medium hover:underline disabled:opacity-50"
+      >
+        {pending ? <Loader2 className="h-3.5 w-3.5 animate-spin inline" /> : "Ja, löschen"}
+      </button>
+      <button onClick={() => setConfirm(false)} className="text-xs text-muted-foreground hover:text-foreground">
         Abbrechen
       </button>
     </div>
