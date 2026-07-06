@@ -69,7 +69,6 @@ const FEATURES: Feature[] = [
   { title: "Studienprotokoll + Einwilligungserklärung", desc: "Vollständiges Studienprotokoll (v1.0), Teilnahmevereinbarung druckfertig, R-basierte Power-Analyse N=32.", status: "done", month: "done", chapter: "Kap. 6", tags: ["Wissenschaft","Ethik"], agents: ["psychologist","compliance","discovery-researcher"], aufwand: "1h 15min", sha: "7404aa3", icon: FileText },
 
   // ── JUNI — Woche 1 (1.–7. Juni) — KRITISCHER PFAD ──
-  { title: "Ethikvotum — nicht nötig ✓", desc: "Betreuer (07.06.2026): Kein formales Ethikvotum erforderlich. Selbstcheck positiv. SRH Fernhochschule ist von der Ethikkommission PH/SRH Heidelberg unabhängig. Ethische Maßnahmen (DSGVO, KI-Disclosure, Crisis-Detection) bleiben als gute Praxis bestehen.", status: "done", month: "done", chapter: "Kap. 6", tags: ["Wissenschaft","Ethik"], agents: ["compliance","psychologist"], aufwand: "0h", sha: "2bba9a9", icon: CheckCircle2 },
   { title: "DB-Schema (Alembic) — vollständig ✓", desc: "Alle 11 Tabellen live: users, refresh_tokens, chat_sessions, messages, memory_chunks, gse_results, consent_logs, user_profiles, roadmap_goals, prompt_templates, llm_usage, audit_events, preregistrations.", status: "done", month: "done", chapter: "Kap. 4", tags: ["Backend","DB"], agents: ["architect","security"], aufwand: "3h", sha: "76714cb", icon: Database },
 
   // ── WEITERBILDUNG — KW 1 ──
@@ -94,7 +93,7 @@ const FEATURES: Feature[] = [
   // ── JUNI — Woche 4 (22.–30. Juni) ──
   { title: "LLM-Evaluation (synthetische Daten)", desc: "Claude/GPT-4o/Mistral: Sokratik, Empathie, Konsistenz, Datenschutz. VOR Study-Lock.", status: "planned", month: "juni", chapter: "Kap. 5", tags: ["LLM-Eval","Wissenschaft"], agents: ["ai-engineer","mlops","psychologist","didaktiker"], aufwand: "6h", week: 4, icon: FlaskConical },
   { title: "DPAs Anthropic / OpenAI / Mistral", desc: "Data Processing Agreements abschließen. Standard-DPA-Prozess.", status: "planned", month: "juni", chapter: "Kap. 6", tags: ["DSGVO","Rechtlich"], agents: ["compliance"], aufwand: "1h", week: 4, icon: FileText },
-  { title: "Pre-Registration OSF.io + Study-Lock", desc: "H1–H3 auf osf.io registrieren. Dann Study-Lock aktivieren. Bis 12.07. erledigt — Studie startet 15.07.", status: "planned", month: "juni", chapter: "Kap. 6", tags: ["Wissenschaft","Studie"], agents: ["discovery-researcher","psychologist","mlops"], aufwand: "1h", week: 4, icon: Lock },
+  { title: "Study-Lock aktivieren", desc: "STUDY_MODE=locked in .env setzen — Prompt-Freeze während Datenerhebung. Bis 12.07. erledigt — Studie startet 16.07.", status: "planned", month: "juli", chapter: "Kap. 6", tags: ["Studie"], agents: ["mlops"], aufwand: "15min", week: 4, icon: Lock },
 
   // ── JUNI — Woche 4 (22.–30. Juni) — ergänzt ──
   { title: "Outcome-Formulierung beim Lernziel-Setup", desc: "KAIA akzeptiert kein vages Thema. Progressiver 3-Fragen-Dialog (Kontext → Vermeidungsmotiv → Annäherungsmotiv) transformiert 'KI lernen' in konkretes Lernergebnis nach Bloom (Biggs & Tang). Outcome-Anker: kollabierbare Leiste oben im Chat, immer sichtbar, editierbar.", status: "planned", month: "juni", chapter: "Kap. 3 · Kap. 4", tags: ["AI","UX","Studie","Psychologie"], agents: ["ai-engineer","ux-designer","psychologist","didaktiker"], aufwand: "3h", week: 4, icon: Target },
@@ -158,13 +157,11 @@ const TAG_COLORS: Record<string, string> = {
 
 const SCIENCE_OBLIGATIONS = [
   { label: "Crisis-Detection",              detail: "Keyword-Filter vor LLM — Eskalationshinweis Telefonseelsorge",         done: true,  critical: true  },
-  { label: "Ethikvotum SRH",               detail: "Betreuer (07.06.2026): nicht erforderlich. Ethische Maßnahmen bleiben als gute Praxis.",  done: true,  critical: false },
   { label: "KI-Disclosure",                detail: "/ki-disclosure Seite + disclosure-ack Endpoint implementiert",           done: true,  critical: true  },
   { label: "Multi-Step-Consent",           detail: "2 getrennte Checkboxen: Datenverarbeitung + Analytics",                  done: true,  critical: false },
   { label: "Datenschutzerklärung",         detail: "/datenschutz mit allen Art. 15–21 Rechten, Schrems-II, Löschfrist",      done: true,  critical: false },
   { label: "Studienprotokoll (v1.0)",      detail: "docs/STUDIENPROTOKOLL.md — Forschungsfrage, H1–H3, Power-Analyse",       done: true,  critical: false },
   { label: "Einwilligungserklärung",       detail: "docs/TEILNAHMEVEREINBARUNG.md — druckfertig",                            done: true,  critical: false },
-  { label: "Pre-Registration OSF.io",      detail: "Geplant KW 3 Juni — VOR Datensicht Pflicht",                             done: false, critical: false },
   { label: "Power-Analyse G*Power/R",      detail: "docs/power_analyse.R — N=32 (80% Power), Rekrutierungsziel 46",          done: true,  critical: false },
   { label: "LLM Model-Pinning",            detail: "Immer versionierte IDs — nie generisch",                                 done: false, critical: false },
   { label: "Study-Lock",                   detail: "Prompt-Freeze während Datenerhebung (STUDY_MODE=locked)",                done: false, critical: false },
@@ -347,7 +344,7 @@ function ScienceSection() {
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 flex-wrap">
                   <span className={`text-sm font-medium ${o.done ? "line-through text-muted-foreground" : o.critical ? "text-red-600 dark:text-red-400" : ""}`}>{o.label}</span>
-                  {o.critical && !o.done && <span className="text-xs text-red-500 font-medium">· Pflicht für Ethikvotum</span>}
+                  {o.critical && !o.done && <span className="text-xs text-red-500 font-medium">· kritisch</span>}
                 </div>
                 <p className="text-xs text-muted-foreground mt-0.5">{o.detail}</p>
               </div>

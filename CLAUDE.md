@@ -114,21 +114,19 @@ Service-Layer getrennt von HTTP. Repository-Pattern für DB-Zugriff.
 
 ## Wissenschaftliche Pflichten (nicht ignorierbar)
 
-Diese Punkte sind keine Nice-to-haves — ohne sie gibt es kein Ethikvotum, keine Studie, keine Thesis:
+Diese Punkte sind keine Nice-to-haves — ohne sie gibt es keine Studie, keine Thesis:
 
 1. **Crisis-Detection** — Pre-Filter auf User-Input, statische Eskalations-Notice (Telefonseelsorge 0800 111 0 111)
-2. **Ethikvotum SRH** — Antrag läuft, kann 4–8 Wochen dauern
-3. **DSGVO Art. 15–21** vollständig implementiert
-4. **KI-Disclosure** vor Onboarding — expliziter Hinweis dass KAIA eine KI ist (computational empathy, kein Mensch)
-5. **Multi-Step-Consent** — 2 getrennte Checkboxen (Datenverarbeitung + Analytics/Studie)
-6. **Pre-Registration OSF.io** — Hypothesen vor Datensicht festlegen
-7. **Power-Analyse G*Power** — Stichprobengröße vor Studienstart
-8. **LLM Model-Pinning** — immer versionierte Model-IDs, nie `claude` generisch
-9. **Study-Lock** — Prompt-Freeze während Datenerhebung
-10. **pgvector Row-Level-Security** — user_id als Pflichtparameter, kein Cross-User-Leak
-11. **DPAs** mit Anthropic, OpenAI, Mistral
-12. **Schrems-II** in Datenschutzerklärung
-13. **LLM-Evaluationsbericht** — systematischer Vergleich Claude/GPT-4o/Mistral nach definierten Kriterien (Empathiequalität, sokratische Gesprächsführung, Konsistenz, Datenschutzkonformität)
+2. **DSGVO Art. 15–21** vollständig implementiert
+3. **KI-Disclosure** vor Onboarding — expliziter Hinweis dass KAIA eine KI ist (computational empathy, kein Mensch)
+4. **Multi-Step-Consent** — 2 getrennte Checkboxen (Datenverarbeitung + Analytics/Studie)
+5. **Power-Analyse G*Power** — Stichprobengröße vor Studienstart
+6. **LLM Model-Pinning** — immer versionierte Model-IDs, nie `claude` generisch
+7. **Study-Lock** — Prompt-Freeze während Datenerhebung
+8. **pgvector Row-Level-Security** — user_id als Pflichtparameter, kein Cross-User-Leak
+9. **DPAs** mit Anthropic, OpenAI, Mistral
+10. **Schrems-II** in Datenschutzerklärung
+11. **LLM-Evaluationsbericht** — systematischer Vergleich Claude/GPT-4o/Mistral nach definierten Kriterien (Empathiequalität, sokratische Gesprächsführung, Konsistenz, Datenschutzkonformität)
 
 ---
 
@@ -284,11 +282,11 @@ Bei mehrschrittigen Aufgaben kurzer Plan mit Verifikationsschritten. Starke Erfo
 
 1. **Klarheit vor Geschwindigkeit.** Lieber eine Rückfrage zu viel als ein falscher Entwurf.
 2. **Verliebe dich in das Problem, nicht in die Lösung.** Discovery vor Build.
-3. **Die Studie ist das Produkt.** Jede Entscheidung muss Reproduzierbarkeit, DSGVO und Ethikvotum-Anforderungen standhalten.
+3. **Die Studie ist das Produkt.** Jede Entscheidung muss Reproduzierbarkeit und DSGVO standhalten.
 4. **Compliance ist kein Anhängsel.** EU-AI-Act-Bewertung steht vor der Architektur.
 5. **Fachliche Fundierung ist nicht verhandelbar.** GSE ist eine validierte psychometrische Skala — keine Pseudo-Diagnostik im hübschen UI.
 6. **Fairness wird gemessen, nicht gefühlt.** Bias-Audit ist Pflicht, wenn das System Menschen bewertet.
-7. **Crisis-Detection ist nicht optional.** Ohne sie gibt es kein Ethikvotum.
+7. **Crisis-Detection ist nicht optional.** Fachliche und ethische Mindestanforderung.
 8. **Tests sind Teil der Definition of Done.** 80% Backend-Coverage ist CI-Gate.
 9. **Der Mensch entscheidet bei Konflikten.** Agents schlagen vor, streiten wenn nötig, die Entwicklerin entscheidet.
 10. **Conflict of Interest offen benennen.** Die Entwicklerin ist gleichzeitig Forscherin — das muss in der Thesis stehen und beeinflusst Design-Entscheidungen.

@@ -177,11 +177,6 @@ export default async function ProductionReadinessPage() {
           detail: "DSGVO-konforme Einwilligungserklärung für Studienteilnehmer hinterlegen",
           status: "warn",
         },
-        {
-          label: "Ethikvotum",
-          detail: "SRH-Ethikvotum liegt vor oder wird beantragt",
-          status: "manual",
-        },
       ],
     },
     {

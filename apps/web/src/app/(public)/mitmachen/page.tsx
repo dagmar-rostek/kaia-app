@@ -464,8 +464,7 @@ export default function MitmachenPage() {
         <div className="space-y-2">
           <h2 className="text-2xl font-bold tracking-tight">Fast so weit.</h2>
           <p className="text-muted-foreground text-sm max-w-md mx-auto">
-            Die Registrierung öffnet am <strong className="text-foreground">16. Juli 2026</strong> —
-            nach Vorliegen des Ethikvotums der SRH.
+            Die Registrierung ist geöffnet. Die Studie startet am <strong className="text-foreground">16. Juli 2026</strong>.
           </p>
         </div>
         <StudyCountdown label="Noch" />
