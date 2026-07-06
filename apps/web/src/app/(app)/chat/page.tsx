@@ -195,7 +195,8 @@ export default function ChatPage() {
         }
 
         if (activeRes.status === 403) {
-          const body = await activeRes.json().catch(() => ({})) as { code?: string; redirect?: string }
+          const raw = await activeRes.json().catch(() => ({}))
+          const body = (raw.detail ?? raw) as { code?: string; redirect?: string }
           if (body.redirect) { router.replace(body.redirect); return }
           if (body.code === "study_completed") {
             setError("Die Studie ist abgeschlossen. Danke für deine Teilnahme!")
@@ -211,7 +212,8 @@ export default function ChatPage() {
           body: JSON.stringify({ character }),
         })
         if (sessRes.status === 403) {
-          const body = await sessRes.json().catch(() => ({})) as { code?: string; redirect?: string }
+          const raw = await sessRes.json().catch(() => ({}))
+          const body = (raw.detail ?? raw) as { code?: string; redirect?: string }
           if (body.redirect) { router.replace(body.redirect); return }
           if (body.code === "study_completed") {
             setError("Die Studie ist abgeschlossen. Danke für deine Teilnahme!")

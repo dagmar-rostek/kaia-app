@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useRef } from "react"
+import { useState, useRef, useEffect } from "react"
 import Link from "next/link"
 import { Eye, EyeOff, Check, Loader2 } from "lucide-react"
 
@@ -8,6 +8,12 @@ const API = process.env.NEXT_PUBLIC_API_URL ?? "/api"
 
 type Field = "email" | "username" | "password" | "confirm"
 type Errors = Partial<Record<Field, string>>
+
+interface SlotStats {
+  total: number
+  remaining: number
+  max: number
+}
 
 function validateFields(
   email: string,
@@ -29,7 +35,45 @@ function validateFields(
   return errs
 }
 
+function SlotCounter({ stats }: { stats: SlotStats | null | "loading" }) {
+  if (stats === "loading") {
+    return (
+      <div
+        aria-hidden="true"
+        className="h-7 w-48 rounded-full bg-muted/60 animate-pulse motion-reduce:animate-none"
+      />
+    )
+  }
+  if (stats === null) return null
+
+  const { remaining, max } = stats
+  const isFull = remaining === 0
+  const isLow = remaining > 0 && remaining <= 5
+
+  const colorClasses = isFull
+    ? "border-red-500/30 bg-red-500/10 text-red-700 dark:text-red-400"
+    : isLow
+      ? "border-amber-500/30 bg-amber-500/10 text-amber-700 dark:text-amber-400"
+      : "border-emerald-500/30 bg-emerald-500/10 text-emerald-700 dark:text-emerald-400"
+
+  const label = isFull
+    ? "Alle Plätze belegt"
+    : `Noch ${remaining} von ${max} Plätzen frei`
+
+  return (
+    <span
+      role="status"
+      aria-live="polite"
+      className={`inline-flex items-center rounded-full border px-3 py-1 text-sm font-medium ${colorClasses}`}
+    >
+      {label}
+    </span>
+  )
+}
+
 export default function RegistrierungPage() {
+  const [stats, setStats] = useState<SlotStats | null | "loading">("loading")
+
   const [email, setEmail] = useState("")
   const [username, setUsername] = useState("")
   const [password, setPassword] = useState("")
@@ -46,6 +90,13 @@ export default function RegistrierungPage() {
 
   const consentDataRef = useRef<HTMLInputElement>(null)
   const consentResearchRef = useRef<HTMLInputElement>(null)
+
+  useEffect(() => {
+    fetch(`${API}/v1/preregister/stats`)
+      .then(r => r.json())
+      .then((d: SlotStats) => setStats(d))
+      .catch(() => setStats(null))
+  }, [])
 
   const fieldErrors = validateFields(email, username, password, confirm)
 
@@ -95,6 +146,7 @@ export default function RegistrierungPage() {
     }
   }
 
+  // --- Erfolgs-Screen ---
   if (done) {
     return (
       <div className="w-full max-w-md space-y-8 text-center">
@@ -145,13 +197,47 @@ export default function RegistrierungPage() {
     )
   }
 
+  const isFull = stats !== "loading" && stats !== null && stats.remaining === 0
+
+  // --- Vollständig ausgebucht ---
+  if (isFull) {
+    return (
+      <div className="w-full max-w-md space-y-8 text-center">
+        <div className="space-y-3">
+          <span className="inline-flex items-center rounded-full border border-red-500/30 bg-red-500/10 text-red-700 dark:text-red-400 px-3 py-1 text-sm font-medium">
+            Alle Plätze belegt
+          </span>
+          <h1 className="text-2xl font-bold tracking-tight">Die Studie ist voll.</h1>
+          <p className="text-sm text-muted-foreground leading-relaxed max-w-sm mx-auto">
+            Alle {stats.max} Plätze der KAIA-Pilotstudie sind vergeben. Schreib Dagmar direkt,
+            falls du auf eine Warteliste möchtest.
+          </p>
+        </div>
+        <p className="text-xs text-muted-foreground">
+          <a
+            href="mailto:Dagmar.Rostek@stud.mobile-university.de"
+            className="underline hover:text-foreground transition-colors"
+          >
+            Dagmar.Rostek@stud.mobile-university.de
+          </a>
+        </p>
+      </div>
+    )
+  }
+
+  // --- Registrierungsformular ---
   return (
     <div className="w-full max-w-md space-y-8">
-      <div className="space-y-1">
-        <h1 className="text-2xl font-bold tracking-tight">Registrierung</h1>
-        <p className="text-sm text-muted-foreground">
-          Schön, dass du dabei bist. Gleich kannst du loslegen.
-        </p>
+
+      {/* Kopfbereich mit Platz-Counter */}
+      <div className="space-y-3">
+        <SlotCounter stats={stats} />
+        <div className="space-y-1">
+          <h1 className="text-2xl font-bold tracking-tight">Sei dabei.</h1>
+          <p className="text-sm text-muted-foreground">
+            Registriere dich jetzt — Dagmar schaltet deinen Account manuell frei.
+          </p>
+        </div>
       </div>
 
       <form noValidate onSubmit={handleSubmit} className="space-y-7">
@@ -376,14 +462,14 @@ export default function RegistrierungPage() {
               Wird gesendet…
             </>
           ) : (
-            "Mitmachen"
+            "Anmelden"
           )}
         </button>
 
         <p className="text-center text-xs text-muted-foreground">
           Bereits registriert?{" "}
           <Link href="/login" className="underline text-foreground hover:no-underline">
-            Anmelden
+            Zum Login
           </Link>
         </p>
       </form>
