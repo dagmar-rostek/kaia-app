@@ -1,7 +1,7 @@
 export const dynamic = "force-dynamic"
 
-import { Clock, CheckCircle2, XCircle, Users, AlertTriangle } from "lucide-react"
-import { ApproveButton, RejectButton, DeleteButton } from "./UserActions"
+import { Clock, CheckCircle2, XCircle, Users, AlertTriangle, Mail } from "lucide-react"
+import { ApproveButton, RejectButton, DeleteButton, StudyStartMailButton } from "./UserActions"
 
 const API = process.env.INTERNAL_API_URL ?? process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000/api"
 
@@ -54,11 +54,14 @@ export default async function UsersPage() {
   return (
     <div className="p-8 max-w-5xl mx-auto space-y-8">
       {/* Header */}
-      <div className="space-y-1">
-        <h1 className="text-2xl font-bold tracking-tight">Teilnehmende</h1>
-        <p className="text-muted-foreground text-sm">
-          User-Approval — Studienkontrolle. Nur freigegebene Accounts können sich einloggen.
-        </p>
+      <div className="flex items-start justify-between gap-4">
+        <div className="space-y-1">
+          <h1 className="text-2xl font-bold tracking-tight">Teilnehmende</h1>
+          <p className="text-muted-foreground text-sm">
+            User-Approval — Studienkontrolle. Nur freigegebene Accounts können sich einloggen.
+          </p>
+        </div>
+        {active.length > 0 && <StudyStartMailButton activeCount={active.length} />}
       </div>
 
       {/* Stats */}

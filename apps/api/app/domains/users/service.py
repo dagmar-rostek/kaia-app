@@ -11,6 +11,7 @@ from app.core.security import (
     new_token_family,
     verify_password,
 )
+from app.domains.users.emails import send_account_approved, send_registration_confirmation
 from app.domains.users.models import RefreshToken, User, UserStatus
 from app.domains.users.repository import RefreshTokenRepository, UserRepository
 from app.domains.users.schemas import RegisterRequest
@@ -67,6 +68,7 @@ class AuthService:
             f"*ID:* {user.id}",
             emoji="👤",
         )
+        await send_registration_confirmation(user.username, user.email)
         return user
 
     async def login(
@@ -217,7 +219,9 @@ class UserService:
             f"*User freigegeben*\n*User:* {user.username} ({user.email})\n*Von:* {approved_by}",
             emoji="✅",
         )
-        return await self._users.save(user)
+        saved = await self._users.save(user)
+        await send_account_approved(saved.username, saved.email)
+        return saved
 
     async def reject_user(self, user: User, reason: str) -> User:
         """Admin: Ablehnung / Sperrung eines Users."""

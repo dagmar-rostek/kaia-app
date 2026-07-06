@@ -1,8 +1,8 @@
 "use client"
 
 import { useState, useTransition } from "react"
-import { CheckCircle2, XCircle, Loader2, Trash2 } from "lucide-react"
-import { approveUser, rejectUser, deleteUser } from "./actions"
+import { CheckCircle2, XCircle, Loader2, Trash2, Mail } from "lucide-react"
+import { approveUser, rejectUser, deleteUser, sendStudyStartMails } from "./actions"
 
 export function ApproveButton({ userId }: { userId: number }) {
   const [pending, startTransition] = useTransition()
@@ -84,6 +84,52 @@ export function DeleteButton({ userId }: { userId: number }) {
         className="text-xs text-red-600 dark:text-red-400 font-medium hover:underline disabled:opacity-50"
       >
         {pending ? <Loader2 className="h-3.5 w-3.5 animate-spin inline" /> : "Ja, löschen"}
+      </button>
+      <button onClick={() => setConfirm(false)} className="text-xs text-muted-foreground hover:text-foreground">
+        Abbrechen
+      </button>
+    </div>
+  )
+}
+
+export function StudyStartMailButton({ activeCount }: { activeCount: number }) {
+  const [confirm, setConfirm] = useState(false)
+  const [sent, setSent] = useState<number | null>(null)
+  const [pending, startTransition] = useTransition()
+
+  if (sent !== null) {
+    return (
+      <span className="inline-flex items-center gap-1.5 rounded-md bg-emerald-500/10 border border-emerald-500/20 px-3 py-1.5 text-xs font-medium text-emerald-700 dark:text-emerald-400">
+        <CheckCircle2 className="h-3.5 w-3.5" />
+        {sent} Mails versendet
+      </span>
+    )
+  }
+
+  if (!confirm) {
+    return (
+      <button
+        onClick={() => setConfirm(true)}
+        className="inline-flex items-center gap-1.5 rounded-md border border-border px-3 py-1.5 text-xs font-medium text-muted-foreground hover:text-foreground hover:border-foreground/40 transition-colors"
+      >
+        <Mail className="h-3.5 w-3.5" />
+        Studienstart-Mail ({activeCount})
+      </button>
+    )
+  }
+
+  return (
+    <div className="flex items-center gap-2 rounded-md border border-amber-500/20 bg-amber-500/5 px-3 py-1.5">
+      <span className="text-xs text-muted-foreground">An {activeCount} aktive User senden?</span>
+      <button
+        disabled={pending}
+        onClick={() => startTransition(async () => {
+          const result = await sendStudyStartMails()
+          setSent(result.sent)
+        })}
+        className="text-xs text-amber-700 dark:text-amber-400 font-medium hover:underline disabled:opacity-50"
+      >
+        {pending ? <Loader2 className="h-3.5 w-3.5 animate-spin inline" /> : "Ja, senden"}
       </button>
       <button onClick={() => setConfirm(false)} className="text-xs text-muted-foreground hover:text-foreground">
         Abbrechen

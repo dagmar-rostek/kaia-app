@@ -36,3 +36,12 @@ export async function deleteUser(userId: number): Promise<void> {
   })
   revalidatePath("/admin/users")
 }
+
+export async function sendStudyStartMails(): Promise<{ sent: number }> {
+  const res = await fetch(`${API}/v1/admin/study-start-mail`, {
+    method: "POST",
+    headers: adminHeaders(),
+  })
+  if (!res.ok) return { sent: 0 }
+  return res.json() as Promise<{ sent: number }>
+}

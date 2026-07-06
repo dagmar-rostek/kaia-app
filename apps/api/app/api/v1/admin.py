@@ -17,6 +17,7 @@ from app.domains.simulation.runner import (
     list_run_summaries,
     run_simulation,
 )
+from app.domains.users.emails import send_study_start
 from app.domains.users.models import User, UserStatus
 from app.domains.users.repository import RefreshTokenRepository, UserRepository
 from app.domains.users.schemas import UserAdminRead, UserApprove, UserReject
@@ -216,6 +217,22 @@ async def get_costs(db: Annotated[AsyncSession, Depends(get_db)]) -> dict[str, A
     sessions = [dict(r._mapping) for r in per_session]
 
     return {"total_eur": total_eur, "by_model": by_model, "recent_sessions": sessions}
+
+
+@router.post("/study-start-mail", status_code=200)
+async def send_study_start_emails(
+    db: Annotated[AsyncSession, Depends(get_db)],
+) -> dict[str, int]:
+    """Sendet die Studienstart-E-Mail an alle aktiven (freigeschalteten) User.
+
+    Schließt admin_test@kaia.internal aus. Kann mehrfach aufgerufen werden —
+    Verantwortung für Timing liegt beim Admin.
+    """
+    users = await UserRepository(db).get_all(UserStatus.ACTIVE)
+    real_users = [u for u in users if not u.email.endswith("@kaia.internal")]
+    for user in real_users:
+        await send_study_start(user.username, user.email)
+    return {"sent": len(real_users)}
 
 
 @router.delete("/reset-test-user", status_code=204)
