@@ -1,9 +1,20 @@
 "use client"
 
-import { useState, useEffect, useMemo } from "react"
+import { useState, useEffect, useMemo, useTransition } from "react"
 import { useRouter } from "next/navigation"
-import { CheckCircle2, Circle, ArrowRight, RotateCcw, Save, AlertTriangle } from "lucide-react"
+import { CheckCircle2, Circle, ArrowRight, RotateCcw, Save, AlertTriangle, Bot } from "lucide-react"
 import { tokenStore } from "@/lib/auth"
+import { setUserModel } from "../users/actions"
+
+const MODELS = [
+  { id: "", label: "System-Standard" },
+  { id: "claude-sonnet-4-6", label: "Claude Sonnet 4.6" },
+  { id: "claude-haiku-4-5-20251001", label: "Claude Haiku 4.5" },
+  { id: "gpt-5.6-terra", label: "GPT-5.6 Terra" },
+  { id: "gpt-4.1-mini", label: "GPT-4.1 mini" },
+  { id: "mistral-large-latest", label: "Mistral Large" },
+  { id: "mistral-small-latest", label: "Mistral Small" },
+]
 
 interface JourneyState {
   state: "pre_pending" | "active" | "post_pending" | "completed"
@@ -58,6 +69,9 @@ export function JourneyTestClient() {
   const [savingTopic, setSavingTopic] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [resetMsg, setResetMsg] = useState<string | null>(null)
+  const [testUserId, setTestUserId] = useState<number | null>(null)
+  const [liveModel, setLiveModel] = useState<string | null>(null)
+  const [modelPending, startModelTransition] = useTransition()
 
   const loading = loadedKey !== refreshKey
   const authHeader = useMemo(
@@ -99,8 +113,10 @@ export function JourneyTestClient() {
         return
       }
       const j = await jRes.json() as JourneyState
-      const u = await uRes.json() as { learning_topic: string | null }
+      const u = await uRes.json() as { id: number; learning_topic: string | null; kaia_model: string | null }
       setJourney(j)
+      setTestUserId(u.id)
+      setLiveModel(u.kaia_model)
       setSavedTopic(u.learning_topic)
       setTopic(prev => prev || (u.learning_topic ?? ""))
       setError(null)
@@ -129,6 +145,14 @@ export function JourneyTestClient() {
     } finally {
       setResetting(false)
     }
+  }
+
+  function handleSwitchModel(modelId: string) {
+    if (testUserId === null) return
+    setLiveModel(modelId || null)
+    startModelTransition(async () => {
+      await setUserModel(testUserId, modelId || null)
+    })
   }
 
   async function handleSaveTopic() {
@@ -205,6 +229,28 @@ export function JourneyTestClient() {
             Gespeichert: <span className="font-medium text-foreground">{savedTopic}</span>
           </p>
         )}
+      </section>
+
+      {/* Model switcher */}
+      <section className="space-y-3">
+        <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">KI-Modell</h2>
+        <div className="flex items-center gap-3">
+          <Bot className="h-4 w-4 text-muted-foreground shrink-0" />
+          <select
+            value={liveModel ?? ""}
+            onChange={(e) => handleSwitchModel(e.target.value)}
+            disabled={modelPending || testUserId === null}
+            className="flex-1 rounded-md border border-border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring disabled:opacity-50"
+          >
+            {MODELS.map((m) => (
+              <option key={m.id} value={m.id}>{m.label}</option>
+            ))}
+          </select>
+          {modelPending && <span className="text-xs text-muted-foreground">Speichert…</span>}
+        </div>
+        <p className="text-xs text-muted-foreground">
+          Aktiv: <span className="font-medium text-foreground">{liveModel ?? "System-Standard"}</span>
+        </p>
       </section>
 
       {/* Current state */}

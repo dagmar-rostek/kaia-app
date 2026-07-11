@@ -59,6 +59,9 @@ class User(Base):
     # Learning topic (set at registration, immutable after first session)
     learning_topic: Mapped[str | None] = mapped_column(String(500), nullable=True)
 
+    # LLM-Modell-Zuweisung (null = globales System-Modell)
+    kaia_model: Mapped[str | None] = mapped_column(String(100), nullable=True)
+
     # Simulation flag — marks test/research users, never real participants
     is_simulation: Mapped[bool] = mapped_column(Boolean, default=False)
     simulation_run: Mapped[str | None] = mapped_column(String(100), nullable=True)

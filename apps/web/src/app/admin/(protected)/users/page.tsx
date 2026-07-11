@@ -2,6 +2,7 @@ export const dynamic = "force-dynamic"
 
 import { Clock, CheckCircle2, XCircle, Users, AlertTriangle } from "lucide-react"
 import { ApproveButton, RejectButton, DeleteButton, StudyStartMailButton } from "./UserActions"
+import { UserModelSelector } from "./UserModelSelector"
 
 const API = process.env.INTERNAL_API_URL ?? process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000/api"
 
@@ -17,6 +18,8 @@ interface AdminUser {
   approved_by: string | null
   last_login_at: string | null
   created_at: string
+  learning_topic: string | null
+  kaia_model: string | null
 }
 
 async function fetchUsers(): Promise<AdminUser[]> {
@@ -145,18 +148,25 @@ export default async function UsersPage() {
               <thead>
                 <tr className="border-b border-border bg-muted/30">
                   <th className="text-left px-4 py-2.5 text-xs font-medium text-muted-foreground">User</th>
-                  <th className="text-left px-4 py-2.5 text-xs font-medium text-muted-foreground">E-Mail</th>
-                  <th className="text-left px-4 py-2.5 text-xs font-medium text-muted-foreground">Freigegeben</th>
-                  <th className="text-left px-4 py-2.5 text-xs font-medium text-muted-foreground">Letzter Login</th>
+                  <th className="text-left px-4 py-2.5 text-xs font-medium text-muted-foreground">Lernthema</th>
+                  <th className="text-left px-4 py-2.5 text-xs font-medium text-muted-foreground">Modell</th>
+                  <th className="text-left px-4 py-2.5 text-xs font-medium text-muted-foreground">Login</th>
                   <th className="px-4 py-2.5" />
                 </tr>
               </thead>
               <tbody className="divide-y divide-border">
                 {active.map((u) => (
                   <tr key={u.id} className="hover:bg-muted/20 transition-colors">
-                    <td className="px-4 py-3 font-medium">{u.username}</td>
-                    <td className="px-4 py-3 text-muted-foreground font-mono text-xs">{u.email}</td>
-                    <td className="px-4 py-3 text-muted-foreground text-xs">{fmt(u.approved_at)}</td>
+                    <td className="px-4 py-3">
+                      <p className="font-medium">{u.username}</p>
+                      <p className="text-xs text-muted-foreground font-mono">{u.email}</p>
+                    </td>
+                    <td className="px-4 py-3 text-muted-foreground text-xs max-w-45 truncate">
+                      {u.learning_topic ?? "—"}
+                    </td>
+                    <td className="px-4 py-3">
+                      <UserModelSelector userId={u.id} currentModel={u.kaia_model} />
+                    </td>
                     <td className="px-4 py-3 text-muted-foreground text-xs">{fmt(u.last_login_at)}</td>
                     <td className="px-4 py-3">
                       <RejectButton userId={u.id} />

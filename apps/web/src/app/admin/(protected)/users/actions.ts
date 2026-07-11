@@ -37,6 +37,15 @@ export async function deleteUser(userId: number): Promise<void> {
   revalidatePath("/admin/users")
 }
 
+export async function setUserModel(userId: number, model: string | null): Promise<void> {
+  await fetch(`${API}/v1/admin/users/${userId}/model`, {
+    method: "PATCH",
+    headers: adminHeaders(),
+    body: JSON.stringify({ kaia_model: model }),
+  })
+  revalidatePath("/admin/users")
+}
+
 export async function sendStudyStartMails(): Promise<{ sent: number }> {
   const res = await fetch(`${API}/v1/admin/study-start-mail`, {
     method: "POST",

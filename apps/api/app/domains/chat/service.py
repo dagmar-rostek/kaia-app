@@ -61,6 +61,7 @@ async def _call_llm(
     system_prompt: str,
     messages: list[dict[str, str]],
     max_tokens: int = MAX_TOKENS,
+    model_override: str | None = None,
 ) -> tuple[list[str], int, int, int, int]:
     """Call the active LLM (Anthropic / OpenAI / Mistral) and collect the full response.
 
@@ -68,7 +69,7 @@ async def _call_llm(
     All four streaming functions buffer the full response before yielding to the client
     (thinking_strip needs to see the full text), so collecting here adds no latency.
     """
-    model = get_model()
+    model = model_override or get_model()
     provider = _provider(model)
     raw_chunks: list[str] = []
     input_tokens = output_tokens = cache_creation = cache_read = 0
@@ -536,6 +537,7 @@ async def stream_response(
     session: ChatSession,
     user_content: str,
     debug: bool = False,
+    model_override: str | None = None,
 ) -> AsyncGenerator[str, None]:
     """Core SSE generator: crisis check → prompt → LLM → strip → persist → log."""
     repo = ChatRepository(db)
@@ -562,7 +564,7 @@ async def stream_response(
             output_tokens,
             cache_creation_tokens,
             cache_read_tokens,
-        ) = await _call_llm(system_prompt, api_messages)
+        ) = await _call_llm(system_prompt, api_messages, model_override=model_override)
     except Exception as exc:
         log.error("llm_stream_error", error=str(exc), session_id=session.id)
         yield error("KAIA ist gerade nicht erreichbar. Bitte versuche es in einem Moment erneut.")
@@ -594,6 +596,7 @@ async def stream_opening(
     db: AsyncSession,
     session: ChatSession,
     debug: bool = False,
+    model_override: str | None = None,
 ) -> AsyncGenerator[str, None]:
     """Generate KAIA's opening message for a fresh session (no user message stored)."""
     repo = ChatRepository(db)
@@ -614,7 +617,9 @@ async def stream_opening(
             output_tokens,
             cache_creation_tokens,
             cache_read_tokens,
-        ) = await _call_llm(system_prompt, [{"role": "user", "content": trigger}])
+        ) = await _call_llm(
+            system_prompt, [{"role": "user", "content": trigger}], model_override=model_override
+        )
     except Exception as exc:
         log.error("llm_opening_error", error=str(exc), session_id=session.id)
         yield error("KAIA ist gerade nicht erreichbar.")
@@ -645,6 +650,7 @@ async def stream_closing(
     db: AsyncSession,
     session: ChatSession,
     debug: bool = False,
+    model_override: str | None = None,
 ) -> AsyncGenerator[str, None]:
     """Generate KAIA's closing question — full history + closing trigger sent to LLM."""
     repo = ChatRepository(db)
@@ -661,7 +667,9 @@ async def stream_closing(
             output_tokens,
             cache_creation_tokens,
             cache_read_tokens,
-        ) = await _call_llm(system_prompt, api_messages, max_tokens=300)
+        ) = await _call_llm(
+            system_prompt, api_messages, max_tokens=300, model_override=model_override
+        )
     except Exception as exc:
         log.error("llm_closing_error", error=str(exc), session_id=session.id)
         yield error("KAIA ist gerade nicht erreichbar.")
@@ -689,6 +697,7 @@ async def stream_meta_question(
     session: ChatSession,
     feedback_type: str,
     debug: bool = False,
+    model_override: str | None = None,
 ) -> AsyncGenerator[str, None]:
     """SSE stream of KAIA's meta-cognitive reaction to a stuck/unclear signal."""
     trigger = META_TRIGGERS.get(feedback_type)
@@ -710,7 +719,9 @@ async def stream_meta_question(
             output_tokens,
             cache_creation_tokens,
             cache_read_tokens,
-        ) = await _call_llm(system_prompt, api_messages, max_tokens=120)
+        ) = await _call_llm(
+            system_prompt, api_messages, max_tokens=120, model_override=model_override
+        )
     except Exception as exc:
         log.error("llm_meta_error", error=str(exc), session_id=session.id)
         yield error("KAIA ist gerade nicht erreichbar.")

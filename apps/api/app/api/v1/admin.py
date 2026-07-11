@@ -11,6 +11,7 @@ from app.core.deps import require_admin
 from app.core.security import create_access_token, hash_password
 from app.db.session import get_db
 from app.domains.chat.repository import ChatRepository
+from app.domains.chat.sse import _COST_TABLE
 from app.domains.simulation.runner import (
     cancel_run,
     get_run_status,
@@ -71,6 +72,26 @@ async def delete_user(
     if not user or user.status == UserStatus.DELETED:
         raise HTTPException(404, "User nicht gefunden.")
     await svc.delete(user, "admin_removed")
+
+
+class UserModelUpdate(BaseModel):
+    kaia_model: str | None = None
+
+
+@router.patch("/users/{user_id}/model", response_model=UserAdminRead)
+async def set_user_model(
+    user_id: int,
+    body: UserModelUpdate,
+    db: Annotated[AsyncSession, Depends(get_db)],
+) -> User:
+    """Setzt das KAIA-Modell für einen einzelnen User (null = globales System-Modell)."""
+    user = await _get_user_or_404(user_id, db)
+    if body.kaia_model is not None and body.kaia_model not in _COST_TABLE:
+        raise HTTPException(400, f"Unbekanntes Modell: {body.kaia_model}")
+    user.kaia_model = body.kaia_model
+    await db.commit()
+    await db.refresh(user)
+    return user
 
 
 @router.post("/users/{user_id}/reject", response_model=UserAdminRead)

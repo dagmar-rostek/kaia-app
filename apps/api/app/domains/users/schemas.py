@@ -41,6 +41,7 @@ class UserRead(BaseModel):
     onboarding_complete: bool
     ki_disclosure_seen_at: datetime | None
     learning_topic: str | None = None
+    kaia_model: str | None = None
     created_at: datetime
 
     model_config = {"from_attributes": True}
@@ -69,6 +70,8 @@ class UserAdminRead(BaseModel):
     approved_by: str | None
     last_login_at: datetime | None
     created_at: datetime
+    learning_topic: str | None = None
+    kaia_model: str | None = None
 
     model_config = {"from_attributes": True}
 

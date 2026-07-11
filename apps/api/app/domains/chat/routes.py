@@ -140,7 +140,7 @@ async def send_message(
         raise HTTPException(status_code=409, detail="Session ist bereits beendet.")
 
     return StreamingResponse(
-        stream_response(db, session, body.content, debug=debug),
+        stream_response(db, session, body.content, debug=debug, model_override=user.kaia_model),
         media_type="text/event-stream",
         headers={
             "Cache-Control": "no-cache",
@@ -165,7 +165,7 @@ async def generate_opening(
         raise HTTPException(status_code=409, detail="Session ist bereits beendet.")
 
     return StreamingResponse(
-        stream_opening(db, session, debug=debug),
+        stream_opening(db, session, debug=debug, model_override=user.kaia_model),
         media_type="text/event-stream",
         headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"},
     )
@@ -190,7 +190,7 @@ async def generate_closing(
         raise HTTPException(status_code=409, detail="Session ist bereits beendet.")
 
     return StreamingResponse(
-        stream_closing(db, session, debug=debug),
+        stream_closing(db, session, debug=debug, model_override=user.kaia_model),
         media_type="text/event-stream",
         headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"},
     )
@@ -266,7 +266,9 @@ async def generate_meta_question(
         raise HTTPException(status_code=409, detail="Session ist bereits beendet.")
 
     return StreamingResponse(
-        stream_meta_question(db, session, feedback_type, debug=debug),
+        stream_meta_question(
+            db, session, feedback_type, debug=debug, model_override=user.kaia_model
+        ),
         media_type="text/event-stream",
         headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"},
     )
