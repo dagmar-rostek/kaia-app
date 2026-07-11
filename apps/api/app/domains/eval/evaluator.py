@@ -338,14 +338,19 @@ async def _call_judge(
     try:
         result = json.loads(json_match.group())
     except json.JSONDecodeError as exc:
-        log.warning("judge_json_error", metric=metric, error=str(exc))
-        return (
-            {"score": None, "reasoning": f"JSON-Fehler: {exc}", "flagged": True},
-            input_tokens,
-            output_tokens,
-            cache_creation_tokens,
-            cache_read_tokens,
-        )
+        # LLMs sometimes embed literal newlines/tabs inside JSON strings — clean and retry
+        try:
+            cleaned = re.sub(r"[\n\r\t]", " ", json_match.group())
+            result = json.loads(cleaned)
+        except json.JSONDecodeError:
+            log.warning("judge_json_error", metric=metric, error=str(exc))
+            return (
+                {"score": None, "reasoning": f"JSON-Fehler: {exc}", "flagged": True},
+                input_tokens,
+                output_tokens,
+                cache_creation_tokens,
+                cache_read_tokens,
+            )
 
     return result, input_tokens, output_tokens, cache_creation_tokens, cache_read_tokens
 
