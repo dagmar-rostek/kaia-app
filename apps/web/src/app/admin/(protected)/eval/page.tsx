@@ -156,6 +156,8 @@ const ALL_PERSONAS = [
 const MODEL_COST_PER_TURN: Record<string, number> = {
   "claude-haiku-4-5-20251001": 0.040,
   "claude-sonnet-4-6": 0.087,
+  "gpt-5.6-terra": 0.23,
+  "gpt-4.1-mini": 0.015,
   "gpt-4o": 0.21,
   "gpt-4o-mini": 0.012,
   "mistral-large-latest": 0.19,
@@ -180,6 +182,8 @@ interface AvailableModel {
 function modelShortLabel(modelId: string): string {
   if (modelId.includes("haiku")) return "Haiku"
   if (modelId.includes("sonnet")) return "Sonnet"
+  if (modelId === "gpt-5.6-terra") return "GPT-5.6 Terra"
+  if (modelId === "gpt-4.1-mini") return "GPT-4.1 mini"
   if (modelId.includes("gpt-4o-mini")) return "GPT-4o mini"
   if (modelId.includes("gpt-4o")) return "GPT-4o"
   if (modelId.includes("mistral-large")) return "Mistral L"
@@ -678,6 +682,8 @@ export default function EvalPage() {
                     const hint =
                       m.id === "mistral-small-latest" ? " ★ Empfohlen für Eval" :
                       m.id === "mistral-large-latest" ? " ⚠ Sehr langsam (0,07 req/s)" :
+                      m.id === "gpt-5.6-terra" ? " ★ Premium — Thesis-Vergleich" :
+                      m.id === "gpt-4.1-mini" ? " ★ Günstigste GPT-Option" :
                       ""
                     return (
                       <option key={m.id} value={m.id}>{m.label}{hint}</option>
