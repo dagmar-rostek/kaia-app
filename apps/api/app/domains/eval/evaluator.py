@@ -506,6 +506,8 @@ _SIMULATOR_COST_CACHE_READ = _SIMULATOR_COST_INPUT * Decimal("0.10")
 _KAIA_MODEL_COSTS: dict[str, tuple[Decimal, Decimal]] = {
     "claude-sonnet-4-6": (Decimal("0.0000027"), Decimal("0.000013")),
     "claude-haiku-4-5-20251001": (Decimal("0.00000074"), Decimal("0.0000037")),
+    "gpt-5.6-terra": (Decimal("0.0000023"), Decimal("0.0000092")),
+    "gpt-4.1-mini": (Decimal("0.00000037"), Decimal("0.0000015")),
     "gpt-4o": (Decimal("0.0000023"), Decimal("0.0000092")),
     "gpt-4o-mini": (Decimal("0.00000013"), Decimal("0.00000053")),
     "mistral-large-latest": (Decimal("0.0000028"), Decimal("0.0000083")),

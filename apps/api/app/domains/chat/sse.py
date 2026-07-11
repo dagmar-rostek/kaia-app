@@ -21,6 +21,7 @@ _COST_TABLE: dict[str, tuple[Decimal, Decimal]] = {
     "claude-haiku-4-5-20251001": (Decimal("0.00000074"), Decimal("0.0000037")),
     "gpt-4o": (Decimal("0.0000022"), Decimal("0.0000088")),
     "gpt-4o-mini": (Decimal("0.00000013"), Decimal("0.00000053")),
+    "gpt-5.6-terra": (Decimal("0.0000023"), Decimal("0.0000092")),
     "gpt-4.1-mini": (Decimal("0.00000037"), Decimal("0.0000015")),
     "mistral-large-latest": (Decimal("0.0000026"), Decimal("0.0000078")),
     "mistral-small-latest": (Decimal("0.00000074"), Decimal("0.0000022")),
