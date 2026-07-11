@@ -105,11 +105,18 @@ async def _call_llm(
             timeout=httpx.Timeout(connect=10.0, read=120.0, write=10.0, pool=5.0),
         )
         all_msgs = [{"role": "system", "content": system_prompt}, *messages]
-        resp = await oai.chat.completions.create(
-            model=model,
-            max_tokens=max_tokens,
-            messages=all_msgs,  # type: ignore[arg-type]
-        )
+        if provider == "openai":
+            resp = await oai.chat.completions.create(
+                model=model,
+                max_completion_tokens=max_tokens,
+                messages=all_msgs,  # type: ignore[arg-type]
+            )
+        else:
+            resp = await oai.chat.completions.create(
+                model=model,
+                max_tokens=max_tokens,
+                messages=all_msgs,  # type: ignore[arg-type]
+            )
         text = (resp.choices[0].message.content or "").strip()
         raw_chunks = [text]
         if resp.usage:

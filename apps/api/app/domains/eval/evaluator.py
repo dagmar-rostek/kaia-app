@@ -635,7 +635,7 @@ async def _call_kaia_direct(
                 all_msgs = [{"role": "system", "content": sys_prompt}, *messages]
                 resp_oai = await oai.chat.completions.create(
                     model=model,
-                    max_tokens=400,
+                    max_completion_tokens=400,
                     messages=all_msgs,  # type: ignore[arg-type]
                 )
                 text = (resp_oai.choices[0].message.content or "").strip()
