@@ -26,8 +26,9 @@ router = APIRouter(
 _ALL_MODELS = [
     {"id": "claude-sonnet-4-6", "label": "Claude Sonnet 4.6", "provider": "anthropic"},
     {"id": "claude-haiku-4-5-20251001", "label": "Claude Haiku 4.5", "provider": "anthropic"},
-    {"id": "gpt-4o", "label": "GPT-4o", "provider": "openai"},
-    {"id": "gpt-4o-mini", "label": "GPT-4o mini", "provider": "openai"},
+    {"id": "gpt-4.1-mini", "label": "GPT-4.1 mini", "provider": "openai"},
+    {"id": "gpt-4o", "label": "GPT-4o (Legacy)", "provider": "openai"},
+    {"id": "gpt-4o-mini", "label": "GPT-4o mini (Legacy)", "provider": "openai"},
     {"id": "mistral-large-latest", "label": "Mistral Large", "provider": "mistral"},
     {"id": "mistral-small-latest", "label": "Mistral Small", "provider": "mistral"},
 ]

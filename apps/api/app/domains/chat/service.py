@@ -48,6 +48,77 @@ from app.domains.prompts.service import PromptContext, render_prompt
 
 log = structlog.get_logger()
 
+
+def _provider(model: str) -> str:
+    if "gpt" in model or model.startswith(("o1", "o3", "o4")):
+        return "openai"
+    if "mistral" in model:
+        return "mistral"
+    return "anthropic"
+
+
+async def _call_llm(
+    system_prompt: str,
+    messages: list[dict[str, str]],
+    max_tokens: int = MAX_TOKENS,
+) -> tuple[list[str], int, int, int, int]:
+    """Call the active LLM (Anthropic / OpenAI / Mistral) and collect the full response.
+
+    Returns (raw_chunks, input_tokens, output_tokens, cache_creation_tokens, cache_read_tokens).
+    All four streaming functions buffer the full response before yielding to the client
+    (thinking_strip needs to see the full text), so collecting here adds no latency.
+    """
+    model = get_model()
+    provider = _provider(model)
+    raw_chunks: list[str] = []
+    input_tokens = output_tokens = cache_creation = cache_read = 0
+
+    if provider == "anthropic":
+        client = AsyncAnthropic(
+            api_key=settings.anthropic_api_key,
+            timeout=httpx.Timeout(connect=10.0, read=120.0, write=10.0, pool=5.0),
+        )
+        async with client.messages.stream(
+            model=model,
+            max_tokens=max_tokens,
+            system=[
+                {"type": "text", "text": system_prompt, "cache_control": {"type": "ephemeral"}}
+            ],
+            messages=messages,  # type: ignore[arg-type]
+        ) as stream:
+            async for text in stream.text_stream:
+                raw_chunks.append(text)
+            final_msg = await stream.get_final_message()
+            input_tokens = final_msg.usage.input_tokens
+            output_tokens = final_msg.usage.output_tokens
+            cache_creation = getattr(final_msg.usage, "cache_creation_input_tokens", 0) or 0
+            cache_read = getattr(final_msg.usage, "cache_read_input_tokens", 0) or 0
+
+    else:
+        from openai import AsyncOpenAI  # noqa: PLC0415
+
+        api_key = settings.openai_api_key if provider == "openai" else settings.mistral_api_key
+        base_url = None if provider == "openai" else "https://api.mistral.ai/v1"
+        oai = AsyncOpenAI(
+            api_key=api_key,
+            base_url=base_url,
+            timeout=httpx.Timeout(connect=10.0, read=120.0, write=10.0, pool=5.0),
+        )
+        all_msgs = [{"role": "system", "content": system_prompt}, *messages]
+        resp = await oai.chat.completions.create(
+            model=model,
+            max_tokens=max_tokens,
+            messages=all_msgs,  # type: ignore[arg-type]
+        )
+        text = (resp.choices[0].message.content or "").strip()
+        raw_chunks = [text]
+        if resp.usage:
+            input_tokens = resp.usage.prompt_tokens
+            output_tokens = resp.usage.completion_tokens
+
+    return raw_chunks, input_tokens, output_tokens, cache_creation, cache_read
+
+
 # ── Didaktisches Progressionsmodell (Didaktiker, 2026-07-04) ──────────────────
 # Jede Session hat eine Mission, einen dominanten Fragetyp und Verbote.
 # Diese Tabellen werden als Prompt-Context übergeben — nicht im LLM generiert.
@@ -477,29 +548,14 @@ async def stream_response(
 
     api_messages = [{"role": str(m.role), "content": m.content} for m in history if m.content]
 
-    client = AsyncAnthropic(
-        api_key=settings.anthropic_api_key,
-        timeout=httpx.Timeout(connect=10.0, read=120.0, write=10.0, pool=5.0),
-    )
-    raw_chunks: list[str] = []
-    input_tokens = output_tokens = cache_creation_tokens = cache_read_tokens = 0
-
     try:
-        async with client.messages.stream(
-            model=get_model(),
-            max_tokens=MAX_TOKENS,
-            system=[
-                {"type": "text", "text": system_prompt, "cache_control": {"type": "ephemeral"}}
-            ],
-            messages=api_messages,  # type: ignore[arg-type]
-        ) as stream:
-            async for text in stream.text_stream:
-                raw_chunks.append(text)
-            final_msg = await stream.get_final_message()
-            input_tokens = final_msg.usage.input_tokens
-            output_tokens = final_msg.usage.output_tokens
-            cache_creation_tokens = getattr(final_msg.usage, "cache_creation_input_tokens", 0) or 0
-            cache_read_tokens = getattr(final_msg.usage, "cache_read_input_tokens", 0) or 0
+        (
+            raw_chunks,
+            input_tokens,
+            output_tokens,
+            cache_creation_tokens,
+            cache_read_tokens,
+        ) = await _call_llm(system_prompt, api_messages)
     except Exception as exc:
         log.error("llm_stream_error", error=str(exc), session_id=session.id)
         yield error("KAIA ist gerade nicht erreichbar. Bitte versuche es in einem Moment erneut.")
@@ -544,29 +600,14 @@ async def stream_opening(
     else:
         trigger = "[Gesprächsstart — stelle deine Eröffnungsfrage.]"
 
-    client = AsyncAnthropic(
-        api_key=settings.anthropic_api_key,
-        timeout=httpx.Timeout(connect=10.0, read=120.0, write=10.0, pool=5.0),
-    )
-    raw_chunks: list[str] = []
-    input_tokens = output_tokens = cache_creation_tokens = cache_read_tokens = 0
-
     try:
-        async with client.messages.stream(
-            model=get_model(),
-            max_tokens=MAX_TOKENS,
-            system=[
-                {"type": "text", "text": system_prompt, "cache_control": {"type": "ephemeral"}}
-            ],
-            messages=[{"role": "user", "content": trigger}],
-        ) as stream:
-            async for text in stream.text_stream:
-                raw_chunks.append(text)
-            final_msg = await stream.get_final_message()
-            input_tokens = final_msg.usage.input_tokens
-            output_tokens = final_msg.usage.output_tokens
-            cache_creation_tokens = getattr(final_msg.usage, "cache_creation_input_tokens", 0) or 0
-            cache_read_tokens = getattr(final_msg.usage, "cache_read_input_tokens", 0) or 0
+        (
+            raw_chunks,
+            input_tokens,
+            output_tokens,
+            cache_creation_tokens,
+            cache_read_tokens,
+        ) = await _call_llm(system_prompt, [{"role": "user", "content": trigger}])
     except Exception as exc:
         log.error("llm_opening_error", error=str(exc), session_id=session.id)
         yield error("KAIA ist gerade nicht erreichbar.")
@@ -606,29 +647,14 @@ async def stream_closing(
     api_messages = [{"role": str(m.role), "content": m.content} for m in history if m.content]
     api_messages.append({"role": "user", "content": get_closing_trigger(session.session_number)})
 
-    client = AsyncAnthropic(
-        api_key=settings.anthropic_api_key,
-        timeout=httpx.Timeout(connect=10.0, read=120.0, write=10.0, pool=5.0),
-    )
-    raw_chunks: list[str] = []
-    input_tokens = output_tokens = cache_creation_tokens = cache_read_tokens = 0
-
     try:
-        async with client.messages.stream(
-            model=get_model(),
-            max_tokens=300,
-            system=[
-                {"type": "text", "text": system_prompt, "cache_control": {"type": "ephemeral"}}
-            ],
-            messages=api_messages,  # type: ignore[arg-type]
-        ) as stream:
-            async for text in stream.text_stream:
-                raw_chunks.append(text)
-            final_msg = await stream.get_final_message()
-            input_tokens = final_msg.usage.input_tokens
-            output_tokens = final_msg.usage.output_tokens
-            cache_creation_tokens = getattr(final_msg.usage, "cache_creation_input_tokens", 0) or 0
-            cache_read_tokens = getattr(final_msg.usage, "cache_read_input_tokens", 0) or 0
+        (
+            raw_chunks,
+            input_tokens,
+            output_tokens,
+            cache_creation_tokens,
+            cache_read_tokens,
+        ) = await _call_llm(system_prompt, api_messages, max_tokens=300)
     except Exception as exc:
         log.error("llm_closing_error", error=str(exc), session_id=session.id)
         yield error("KAIA ist gerade nicht erreichbar.")
@@ -670,29 +696,14 @@ async def stream_meta_question(
     api_messages = [{"role": str(m.role), "content": m.content} for m in history if m.content]
     api_messages.append({"role": "user", "content": trigger})
 
-    client = AsyncAnthropic(
-        api_key=settings.anthropic_api_key,
-        timeout=httpx.Timeout(connect=10.0, read=120.0, write=10.0, pool=5.0),
-    )
-    raw_chunks: list[str] = []
-    input_tokens = output_tokens = cache_creation_tokens = cache_read_tokens = 0
-
     try:
-        async with client.messages.stream(
-            model=get_model(),
-            max_tokens=120,
-            system=[
-                {"type": "text", "text": system_prompt, "cache_control": {"type": "ephemeral"}}
-            ],
-            messages=api_messages,  # type: ignore[arg-type]
-        ) as stream:
-            async for text in stream.text_stream:
-                raw_chunks.append(text)
-            final_msg = await stream.get_final_message()
-            input_tokens = final_msg.usage.input_tokens
-            output_tokens = final_msg.usage.output_tokens
-            cache_creation_tokens = getattr(final_msg.usage, "cache_creation_input_tokens", 0) or 0
-            cache_read_tokens = getattr(final_msg.usage, "cache_read_input_tokens", 0) or 0
+        (
+            raw_chunks,
+            input_tokens,
+            output_tokens,
+            cache_creation_tokens,
+            cache_read_tokens,
+        ) = await _call_llm(system_prompt, api_messages, max_tokens=120)
     except Exception as exc:
         log.error("llm_meta_error", error=str(exc), session_id=session.id)
         yield error("KAIA ist gerade nicht erreichbar.")
@@ -748,7 +759,7 @@ async def _log_usage(
         {
             "sid": session.id,
             "uid": session.user_id,
-            "provider": "claude",
+            "provider": _provider(get_model()),
             "model": get_model(),
             "inp": input_tokens,
             "out": output_tokens,
