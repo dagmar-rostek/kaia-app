@@ -534,6 +534,34 @@ export default function ChatPage() {
         />
       )}
 
+      {/* Ton-Selector — direkt über dem Chat */}
+      {sessionId && closureState !== "ended" && (
+        <div className="shrink-0 border-b border-border/40 px-4 py-2">
+          <div className="max-w-2xl mx-auto flex items-center gap-2.5">
+            <span className="text-[10px] text-muted-foreground/50 uppercase tracking-wide shrink-0">
+              Ton
+            </span>
+            <div className="flex gap-1.5 flex-wrap">
+              {(Object.keys(CHARACTER_LABELS) as Character[]).map(c => (
+                <button
+                  key={c}
+                  onClick={() => resetSession(c)}
+                  disabled={closureState !== "idle"}
+                  title={`Gesprächston wechseln zu: ${CHARACTER_LABELS[c]} — startet eine neue Session`}
+                  className={`text-xs px-2.5 py-1 rounded-lg transition-colors disabled:opacity-40 ${
+                    character === c
+                      ? "bg-foreground text-background"
+                      : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                  }`}
+                >
+                  {CHARACTER_LABELS[c]}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Messages */}
       <div
         className="flex-1 overflow-y-auto px-4 py-6"
@@ -692,32 +720,6 @@ export default function ChatPage() {
       {/* Input */}
       <div className="shrink-0 border-t border-border px-4 py-3">
 
-        {/* Character / tone selector */}
-        {closureState !== "ended" && (
-          <div className="max-w-2xl mx-auto flex items-center gap-2.5 mb-3">
-            <span className="text-[10px] text-muted-foreground/50 uppercase tracking-wide shrink-0">
-              Ton
-            </span>
-            <div className="flex gap-1.5 flex-wrap">
-              {(Object.keys(CHARACTER_LABELS) as Character[]).map(c => (
-                <button
-                  key={c}
-                  onClick={() => resetSession(c)}
-                  disabled={closureState !== "idle"}
-                  title="Startet eine neue Session mit diesem Gesprächston"
-                  className={`text-xs px-2.5 py-1 rounded-lg transition-colors disabled:opacity-40 ${
-                    character === c
-                      ? "bg-foreground text-background"
-                      : "text-muted-foreground hover:text-foreground hover:bg-muted"
-                  }`}
-                >
-                  {CHARACTER_LABELS[c]}
-                </button>
-              ))}
-            </div>
-          </div>
-        )}
-
         <div className="max-w-2xl mx-auto flex items-end gap-2">
           <textarea
             ref={textareaRef}
@@ -741,22 +743,21 @@ export default function ChatPage() {
               ? <Loader2 className="h-4 w-4 animate-spin" />
               : <Send className="h-4 w-4" />}
           </button>
-        </div>
-
-        <div className="max-w-2xl mx-auto mt-2 flex items-center justify-between">
-          <p className="text-xs text-muted-foreground/40">
-            Enter senden · Shift+Enter neue Zeile
-          </p>
           {closureState === "idle" && closureExchanges === 0 && sessionId && messages.length > 1 && (
             <button
               onClick={() => void startClosure()}
-              className="text-xs text-muted-foreground/60 hover:text-foreground transition-colors flex items-center gap-1"
+              title="Sitzung abschließen — beendet die Session bewusst, wenn du genug für heute hast"
+              aria-label="Sitzung abschließen"
+              className="shrink-0 p-3 rounded-xl border border-border text-muted-foreground hover:text-foreground hover:border-foreground/40 transition-colors"
             >
-              <CheckCircle2 className="h-3 w-3" />
-              Sitzung abschließen
+              <CheckCircle2 className="h-4 w-4" />
             </button>
           )}
         </div>
+
+        <p className="text-xs text-muted-foreground/40 max-w-2xl mx-auto mt-1.5">
+          Enter senden · Shift+Enter neue Zeile
+        </p>
       </div>
 
       <LegalFooter />
