@@ -703,7 +703,7 @@ export default function ChatPage() {
                 <button
                   key={c}
                   onClick={() => resetSession(c)}
-                  disabled={closureState === "ended"}
+                  disabled={closureState !== "idle"}
                   title="Startet eine neue Session mit diesem Gesprächston"
                   className={`text-xs px-2.5 py-1 rounded-lg transition-colors disabled:opacity-40 ${
                     character === c
