@@ -746,11 +746,12 @@ export default function ChatPage() {
           {closureState === "idle" && closureExchanges === 0 && sessionId && messages.length > 1 && (
             <button
               onClick={() => void startClosure()}
-              title="Sitzung abschließen — beendet die Session bewusst, wenn du genug für heute hast"
+              title="Beendet die Session bewusst — wenn du heute genug besprochen hast"
               aria-label="Sitzung abschließen"
-              className="shrink-0 p-3 rounded-xl border border-border text-muted-foreground hover:text-foreground hover:border-foreground/40 transition-colors"
+              className="shrink-0 flex items-center gap-1.5 px-3 py-3 rounded-xl border border-border text-muted-foreground hover:text-foreground hover:border-foreground/60 hover:bg-muted transition-colors whitespace-nowrap"
             >
-              <CheckCircle2 className="h-4 w-4" />
+              <CheckCircle2 className="h-4 w-4 shrink-0" />
+              <span className="text-xs font-medium">Beenden</span>
             </button>
           )}
         </div>
