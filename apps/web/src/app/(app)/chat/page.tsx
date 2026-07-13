@@ -2,10 +2,13 @@
 
 import { useCallback, useEffect, useRef, useState } from "react"
 import { useRouter } from "next/navigation"
-import { DoorOpen, LogOut, Loader2, Plus, Send } from "lucide-react"
+import { DoorOpen, Flag, Info, LogOut, Loader2, Plus, Send } from "lucide-react"
 import Link from "next/link"
 import { LegalFooter } from "@/components/LegalFooter"
 import { tokenStore, authFetch, apiLogout } from "@/lib/auth"
+import { ChatInfoPanel } from "./ChatInfoPanel"
+import { ChatDayBanner } from "./ChatDayBanner"
+import { ChatReportModal } from "./ChatReportModal"
 
 const API_BASE = ""  // relative — Caddy proxies /api/* to FastAPI
 
@@ -113,6 +116,11 @@ export default function ChatPage() {
   const [lastKaiaMessageId, setLastKaiaMessageId] = useState<number | null>(null)
   const [activeFeedback,   setActiveFeedback]   = useState<string | null>(null)
   const [resumed,          setResumed]          = useState(false)  // true wenn bestehende Session fortgesetzt
+  const [showInfoPanel,    setShowInfoPanel]    = useState(false)
+  const [bannerDismissed, setBannerDismissed] = useState(false)
+  const [showReportModal,  setShowReportModal]  = useState(false)
+  // Derived: show banner only when no user message sent yet AND not manually dismissed
+  const showDayBanner = !bannerDismissed && !messages.some(m => m.role === "user")
 
   const bottomRef        = useRef<HTMLDivElement>(null)
   const textareaRef      = useRef<HTMLTextAreaElement>(null)
@@ -266,6 +274,7 @@ export default function ChatPage() {
     setClosureState("idle")
     setClosureExchanges(0)
     setResumed(false)
+    setBannerDismissed(false)
     setOpenTrigger(t => t + 1)
   }, [])
 
@@ -522,6 +531,24 @@ export default function ChatPage() {
             </button>
           )}
           <button
+            onClick={() => setShowInfoPanel(v => !v)}
+            title="Anleitung anzeigen"
+            aria-label="Anleitung anzeigen"
+            className="p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors ml-1"
+          >
+            <Info className="h-4 w-4" />
+          </button>
+          {sessionId && (
+            <button
+              onClick={() => setShowReportModal(true)}
+              title="KAIA melden — wenn sich KAIA seltsam verhält"
+              aria-label="KAIA-Verhalten melden"
+              className="p-1.5 rounded-lg text-muted-foreground hover:text-amber-500 hover:bg-muted transition-colors"
+            >
+              <Flag className="h-4 w-4" />
+            </button>
+          )}
+          <button
             onClick={() => void handleLogout()}
             title="Abmelden"
             aria-label="Abmelden"
@@ -531,6 +558,14 @@ export default function ChatPage() {
           </button>
         </div>
       </header>
+
+      {sessionNumber !== null && (
+        <ChatDayBanner
+          sessionNumber={sessionNumber}
+          show={showDayBanner}
+          onDismiss={() => setBannerDismissed(true)}
+        />
+      )}
 
       {/* Messages */}
       <div
@@ -731,6 +766,15 @@ export default function ChatPage() {
       </div>
 
       <LegalFooter />
+
+      <ChatInfoPanel open={showInfoPanel} onClose={() => setShowInfoPanel(false)} />
+
+      {showReportModal && sessionId && (
+        <ChatReportModal
+          sessionId={sessionId}
+          onClose={() => setShowReportModal(false)}
+        />
+      )}
     </div>
   )
 }

@@ -13,6 +13,7 @@ from app.domains.chat.schemas import (
     FeedbackResponse,
     MessageCreate,
     SessionCreate,
+    SessionReport,
     SessionResponse,
     SessionWithMessages,
 )
@@ -244,6 +245,28 @@ async def save_feedback(
         message_id=body.message_id,
     )
     return FeedbackResponse.model_validate(fb)
+
+
+@router.post("/sessions/{session_id}/report", status_code=status.HTTP_204_NO_CONTENT)
+async def report_session(
+    session_id: int,
+    body: SessionReport,
+    user: CurrentUser,
+    db: AsyncSession = Depends(get_db),  # noqa: B008
+) -> None:
+    """Teilnehmende melden auffälliges KAIA-Verhalten — löst Slack-Benachrichtigung aus."""
+    from app.observability.slack import notify  # noqa: PLC0415
+
+    repo = ChatRepository(db)
+    session = await repo.get_session(session_id, user.id)
+    if not session:
+        raise HTTPException(status_code=404, detail="Session nicht gefunden.")
+
+    reason_text = body.reason or "(kein Grund angegeben)"
+    await notify(
+        f"KAIA-Meldung von *{user.username}* (Session #{session_id})\nGrund: {reason_text}",
+        emoji="🚩",
+    )
 
 
 @router.post("/sessions/{session_id}/meta-question")

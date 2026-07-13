@@ -85,5 +85,12 @@ class FeedbackResponse(BaseModel):
     model_config = {"from_attributes": True}
 
 
+# ── Session Report ────────────────────────────────────────────────────────────
+
+
+class SessionReport(BaseModel):
+    reason: str | None = None
+
+
 # Update forward ref
 SessionWithMessages.model_rebuild()
