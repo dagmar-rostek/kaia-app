@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react"
 import { useRouter } from "next/navigation"
-import { DoorOpen, Flag, Info, LogOut, Loader2, Plus, Send } from "lucide-react"
+import { AlertCircle, CheckCircle2, HelpCircle, LogOut, Loader2, Plus, Send } from "lucide-react"
 import Link from "next/link"
 import { LegalFooter } from "@/components/LegalFooter"
 import { tokenStore, authFetch, apiLogout } from "@/lib/auth"
@@ -519,33 +519,22 @@ export default function ChatPage() {
           >
             <Plus className="h-4 w-4" />
           </button>
-          {closureState === "idle" && closureExchanges === 0 && sessionId && messages.length > 1 && (
-            <button
-              onClick={() => void startClosure()}
-              title="Beendet diese Session — KAIA stellt eine Abschlussfrage, danach wird die Session gespeichert"
-              aria-label="Session beenden"
-              className="flex items-center gap-1.5 ml-1 px-3 py-1.5 rounded-lg border border-border text-xs font-medium text-foreground hover:bg-muted transition-colors"
-            >
-              <DoorOpen className="h-3.5 w-3.5" />
-              Session beenden
-            </button>
-          )}
           <button
             onClick={() => setShowInfoPanel(v => !v)}
-            title="Anleitung anzeigen"
-            aria-label="Anleitung anzeigen"
+            title="Hilfe & Anleitung"
+            aria-label="Hilfe & Anleitung anzeigen"
             className="p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors ml-1"
           >
-            <Info className="h-4 w-4" />
+            <HelpCircle className="h-4 w-4" />
           </button>
           {sessionId && (
             <button
               onClick={() => setShowReportModal(true)}
-              title="KAIA melden — wenn sich KAIA seltsam verhält"
+              title="KAIA melden — wenn sich KAIA seltsam verhält oder etwas Unangemessenes schreibt"
               aria-label="KAIA-Verhalten melden"
               className="p-1.5 rounded-lg text-muted-foreground hover:text-amber-500 hover:bg-muted transition-colors"
             >
-              <Flag className="h-4 w-4" />
+              <AlertCircle className="h-4 w-4" />
             </button>
           )}
           <button
@@ -635,9 +624,9 @@ export default function ChatPage() {
               <button
                 onClick={() => void endSession()}
                 className="text-sm px-4 py-2.5 rounded-xl border border-border text-foreground hover:bg-muted transition-colors"
-                aria-label="Session jetzt beenden"
+                aria-label="Sitzung jetzt abschließen"
               >
-                Session beenden
+                Sitzung abschließen
               </button>
             </div>
           )}
@@ -758,8 +747,8 @@ export default function ChatPage() {
               onClick={() => void startClosure()}
               className="text-xs text-muted-foreground/60 hover:text-foreground transition-colors flex items-center gap-1"
             >
-              <DoorOpen className="h-3 w-3" />
-              Session beenden
+              <CheckCircle2 className="h-3 w-3" />
+              Sitzung abschließen
             </button>
           )}
         </div>

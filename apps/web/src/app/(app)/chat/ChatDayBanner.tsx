@@ -39,7 +39,7 @@ export function ChatDayBanner({ sessionNumber, show, onDismiss }: Props) {
         </div>
         <button
           onClick={onDismiss}
-          className="p-1 rounded text-muted-foreground/60 hover:text-foreground transition-colors shrink-0"
+          className="p-2.5 -m-1.5 rounded text-muted-foreground/60 hover:text-foreground transition-colors shrink-0"
           aria-label="Hinweis ausblenden"
         >
           <X className="h-3.5 w-3.5" />
