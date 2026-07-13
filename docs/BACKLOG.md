@@ -18,9 +18,9 @@
 
 ### DSGVO
 - [ ] **Separate Einwilligungserklärung** — Dokument für Forschungsteilnahme (≠ DSGVO-Consent): Studienzweck, Risiken, Freiwilligkeit, Right-to-Withdraw mit Datenlöschung
-- [ ] **DPA Anthropic** — Data Processing Addendum unterzeichnen (privacy.anthropic.com)
-- [ ] **DPA OpenAI** — Data Processing Addendum unterzeichnen (openai.com/privacy)
-- [ ] **DPA Mistral** — Auftragsverarbeitungsvertrag (einfacher, EU-Anbieter)
+- [ ] **DPA Anthropic** ⚠️ Frist: 18. Juli 2026 — 1. In [console.anthropic.com](https://console.anthropic.com) → Settings → Privacy → "Data Processing Agreement" herunterladen & unterzeichnen. Alternativ: E-Mail an privacy@anthropic.com mit Betreff "DPA Request – Research Use". PDF archivieren.
+- [ ] **DPA OpenAI** ⚠️ Frist: 18. Juli 2026 — 1. In [platform.openai.com](https://platform.openai.com) → Settings → Privacy → "Data Processing Addendum" akzeptieren (Checkbox + PDF-Download). 5 Minuten, selbst-servicebar.
+- [ ] **DPA Mistral** ⚠️ Frist: 18. Juli 2026 — 1. In [console.mistral.ai](https://console.mistral.ai) → Account → Legal, oder E-Mail an legal@mistral.ai. EU-Anbieter (Paris), unkomplizierter als Anthropic/OpenAI.
 - [ ] **Schrems-II-Dokumentation** — SCCs für US-Datenübermittlung in Datenschutzerklärung
 - [ ] **Datenschutzerklärung** auf kaia.rostek-dagmar.eu (Art. 13/14 DSGVO-konform)
 - [ ] **Impressum** auf kaia.rostek-dagmar.eu (TMG-Pflicht)
