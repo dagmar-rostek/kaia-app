@@ -9,8 +9,170 @@
 
 ---
 
-**Stand heute:** Monday, 23. June 2026  
-**131 Einträge insgesamt · 20 Release-Tage · ~79 h Gesamt-Aufwand**
+**Stand heute:** 13. Juli 2026  
+**~190 Einträge insgesamt · 25 Release-Tage · ~120 h Gesamt-Aufwand**
+
+---
+
+## 2026-07-13 — Chat-Anleitung, Tages-Banner, Melde-Funktion + UX-Redesign
+
+**13.07.2026 · Chat-Guidance v1.0**
+
+Auf Empfehlung von UX-Designer und Didaktiker erhält der Chat-Bereich drei neue Komponenten zur Studienführung — zusammen mit einem umfassenden UX-Redesign der Bedienelemente.
+
+**ChatInfoPanel** — Anleitung auf Abruf (HelpCircle-Icon im Header). Erklärt die drei KAIA-Charaktere mit Beschreibung, vier Spielregeln (max. 1 Session/Tag, bewusster Abschluss, kein Zeitdruck, 10 Sessions in 4 Wochen) und alle fünf Feedback-Buttons. Information permanent abrufbar — nicht nur einmalig beim Onboarding.
+
+**ChatDayBanner** — Kontext-Banner beim Session-Start: "Session N von 10 · [Phasenhinweis]". Phasenhinweise führen didaktisch durch die Journey (Einstiegsphase → Hauptphase → Abschluss). Schließbar per ×, erscheint bei neuer Session wieder. Basiert auf Distributed Practice (Cepeda et al., 2006): Die Pause zwischen Sessions ist pädagogisch relevant — der Banner macht die Progression sichtbar.
+
+**ChatReportModal** — Melde-Funktion (AlertCircle-Icon im Header). Teilnehmende können auffälliges KAIA-Verhalten melden. Optionale Textarea für Freitext. POST `/api/v1/chat/sessions/{id}/report` → Slack-Webhook. Enthält automatisch Crisis-Detection-Disclaimer (Telefonseelsorge 0800 111 0 111). Notfallkontakt ist sichtbar, ohne klinisch zu wirken.
+
+**13.07.2026 · `2c41f50`** — Chat-Header-Icons korrigiert nach UX-Review: Flag → AlertCircle (semantisch: Meldung, kein Punkt-setzen), DoorOpen → CheckCircle2 (Session abschließen = Abschluss, nicht Abgang), "Session beenden" → "Sitzung abschließen" (sprachlich positiver), Info → HelpCircle. · `15min`
+
+**13.07.2026 · `2e99a90`** — Charakter-Buttons aus dem Header in den Input-Bereich verschoben. Kontextuell sinnvoller: Die Charakterwahl gehört zur Gesprächsgestaltung, nicht zur globalen Navigation. Labels: 🌸 Begleitend · ⚡ Konfrontierend · 🎭 Perspektivwechselnd. Tap-Target ≥44px (WCAG 2.5.5). · `20min`
+
+**13.07.2026 · `ddd4811`** — Studienstart auf 1. August 2026 verschoben (war 16. Juli). StudyCountdown, /mitmachen, Landing Page, Vorregistrierungs-Flow, Studienprotokoll, Backend-Service aktualisiert. Study-Lock jetzt 28. Juli 2026. · `20min`
+
+**Thesis-Relevanz:** ChatInfoPanel + ChatDayBanner erfüllen Didaktik-Gate G12 (Lernziele explizit kommuniziert, Session-Sequenzierung für Teilnehmende sichtbar). ChatReportModal erfüllt Security-Gate G4 (Crisis-Eskalationspfad). Charakter-Selektor im Input-Bereich entspricht UX-Gate G6 (kontextuell platzierte Kontrollen). · `~4h Implementierung + Team-Abstimmung`
+
+---
+
+## 2026-07-11 — Per-User LLM-Modell + GPT-5.6 Terra + GPT-4.1 mini + Eval-Fix
+
+**11.07.2026 · `20319f8`** — Per-User-Modellzuweisung implementiert: Admin kann für jeden Studienteilnehmenden das LLM individuell festlegen (Admin → User-Liste → Modell-Dropdown, auch in Journey-Test). Neue Spalte `kaia_model` (nullable) in `users`. PATCH `/api/v1/admin/users/{id}`. Gilt für alle vier Stream-Funktionen (opening, response, closing, meta-question). System-Standard wenn leer. Schema-Update: `UserRead` gibt `kaia_model` zurück. · `2h 30min`  
+*feat: per-user LLM model assignment + GPT-5.6 Terra support*
+
+**11.07.2026 · `2a275ae`** — Kritischer Fix für OpenAI GPT-5.x: API lehnt `max_tokens` ab (invalid_request_error), erwartet `max_completion_tokens`. Betrifft alle Chat-Stream-Calls und Eval-Judge-Calls für GPT-5.x. Mistral verwendet weiterhin `max_tokens`. · `30min`  
+*fix: use max_completion_tokens for OpenAI GPT-5.x models*
+
+**11.07.2026 · `52df1e6`** — GPT-5.6 Terra (gpt-5.6-terra) in Eval-Pipeline, Admin-Model-Switcher und Kostentabelle. Kosten: $5.00/M Input · $15.00/M Output. · `30min`
+
+**11.07.2026 · `430b6f0`** — GPT-4.1 mini Labels und Cost-Estimates im Eval-UI. · `15min`
+
+**11.07.2026 · `50e6339`** — Eval-Judge JSON-Parse-Fehler: LLMs betten gelegentlich literale Newlines in JSON-Strings ein. Fix: Zwei-Stufen-Parse (sauber → `re.sub(r"[\n\r\t]", " ", ...)` Bereinigung → Fallback score=None mit Logging). · `30min`
+
+**Thesis-Relevanz:** Per-User-Modellzuweisung ist Voraussetzung für kontrollierten LLM-Vergleich (Forschungsfrage 3): Jede Testgruppe erhält exakt ein Modell. GPT-5.6 Terra erweitert den Evaluationsrahmen auf aktuelle SOTA-Modelle. · `~4h gesamt`
+
+---
+
+## 2026-07-07 — Chat-Abschluss-Stabilisierung
+
+**07.07.2026 · `7b70779`** — Vier kritische Chat-Fixes: (1) Abschluss-Schleife — KAIA fragte nach dem Close endlos nach Feedback (State-Machine-Fix). (2) Logout-Redirect nach Session-Ende. (3) Startseite-Link im Footer. (4) Token-Refresh robuster — stale Tokens werden proaktiv rotiert. · `45min`
+
+---
+
+## 2026-07-06 — E-Mail-System, Registrierung v2, Datenschutz-Bereinigung
+
+**06.07.2026 · `5687029`** — E-Mail-Benachrichtigungen für drei Ereignisse: Registrierung (Bestätigung + Wartehinweis), Freischaltung durch Admin (mit Login-Link), Studienstart (mit Journey-Link). DSGVO-konform, kein Tracking-Pixel, SMTP via FastAPI BackgroundTask. · `1h 30min`
+
+**06.07.2026 · `169ce2b`** — Lernthema-Eingabe direkt im Registrierungsformular (war bisher erst im Onboarding). Admin kann User löschen (DSGVO Art. 17 Kaskade aller Daten). · `45min`
+
+**06.07.2026 · `faf2818`** — Journey-Routing-Fix, Registrierungsformular-Redesign, Session-Start-403-Fix. · `30min`
+
+**06.07.2026 · `d1f19db`** — OSF-Pre-Registration und Ethikvotum-Hinweise aus allen öffentlichen Seiten entfernt. Hintergrund: Beides noch nicht abgeschlossen — öffentliche Ankündigung wäre irreführend. · `15min`
+
+**06.07.2026 · `390310a`** — Unbenutzter Mail-Import in Admin-Users entfernt. · `5min`
+
+---
+
+## 2026-07-05 — Eval-Matrix, Crash-Persona-Simulation, Multi-Model, Prompt Caching (Mega-Sprint)
+
+**05.07.2026 · Sprint-Zusammenfassung**
+
+29 Commits an einem Tag. Der vollständige LLM-Evaluations-Stack wurde implementiert — von der Crash-Persona-Simulation über die Eval-Matrix bis zum Vergleichsmodus. Gleichzeitig: Prompt Caching, KAIA_CHAT_MODEL env-var, session-spezifische Abschlussfragen, Session-Resume, Crisis-Detection-Erweiterung und UX-Verbesserungen.
+
+**05.07.2026 · `f2185a3`** — Eval-Matrix v1: Vier Metriken (Empathie, Sokratik, Konsistenz, Crisis-Detection-Safety). LLM-as-Judge (Claude Sonnet 4.6). Simulation-Persona-Runner (10 Crash-Personas). Cancel-Endpoint. Admin-UI mit Live-Log + Heatmap. · `4h`
+
+**05.07.2026 · `0bef876`** — Simulation: Stop-Button, Persona-Auswahl (alle/Teilmenge), Lauf-Historie mit Zeitstempel. · `1h`
+
+**05.07.2026 · `3c5f4d6`** — Multi-Model Eval: Alle vier LLMs (Claude Sonnet, Claude Haiku, GPT-4o, Mistral Large) parallel evaluierbar. Admin Model Switcher für Chat. · `2h`
+
+**05.07.2026 · `703d42e`** — Eval-Vergleichsmodus: Direkte Gegenüberstellung zweier Modelle über alle Metriken. · `1h`
+
+**05.07.2026 · `720afc8`** — KAIA_CHAT_MODEL env-var für Modell-Override ohne Code-Änderung. · `20min`
+
+**05.07.2026 · `0624951`** — KAIA_CHAT_MODEL via .env ins Docker-Environment durchgereicht. · `10min`
+
+**05.07.2026 · `d0a09e9`** — Anthropic Prompt Caching für alle LLM-Calls aktiviert. System-Prompts + Session-Kontext als Cache-Kandidaten markiert. ~70% Kostenreduktion bei langen Prompts. · `45min`
+
+**05.07.2026 · `fce8d36`** — Prompt Caching auch für Eval-Judge und Persona-Simulator. Judge-System-Prompt identisch über alle Metriken — idealer Cache-Kandidat. · `20min`
+
+**05.07.2026 · `6783206`** — Eval Compare Mode: Per-Persona-Blöcke vertikal gestapelt für bessere Lesbarkeit. · `30min`
+
+**05.07.2026 · `9b60e42`** — Compare Mode UX: Deltas in Ø-Spalten, klareres Differenz-Banner. · `20min`
+
+**05.07.2026 · `c3ef8ec`** — Eval-Run löschen möglich. Compare-Mode-Fixes. Model-Badge generalisiert. · `30min`
+
+**05.07.2026 · `82aa06e`** — Simulation + Eval-Matrix UX: 4-Schritt-Flow (Modell → Simulation → Eval → Ergebnisse), ETA-Banner, Fortschrittsanzeige. · `45min`
+
+**05.07.2026 · `76fc9f1`** — Heatmap zeigt geflaggte Metriken pro Zelle statt has_flags-Bool. · `20min`
+
+**05.07.2026 · `8ebeb10`** — Session-spezifische Abschlussfragen (Session 10 ≠ 1-9). Session-Wiederaufnahme wenn Browser ohne Abschluss geschlossen wird (window-close-Handling via GET /sessions/active). · `45min`
+
+**05.07.2026 · `1d10b97`** — Session-Prompt-Modell mit M2-Judge synchronisiert. Crisis-Detection erweitert (mehr Trigger-Phrasen). · `30min`
+
+**05.07.2026 · `0e5cfad`** — Rate-Limit-Retry mit exponenziellem Backoff. Mistral-Small-Empfehlung im Eval-UI für kosteneffiziente Evaluierungen. · `30min`
+
+**05.07.2026 · `ea3fb2b`** — Fix: Mistral + OpenAI brauchen mindestens eine User-Message (leere Message-History crash). · `15min`
+
+**05.07.2026 · `9751e60`** — Fail-fast bei erschöpftem Anthropic API-Kontingent (429 → sofortiger Fehler). · `15min`
+
+**05.07.2026 · `fe4daab`** — Eval-Log zeigt Simulations-Fehler + Judge-Reasoning bei score=None. · `20min`
+
+**05.07.2026 · `e7aa1b6`** — Eval Stop = tatsächlich Stop. Live-Log. Prompt-Pfad-Fix. · `15min`
+
+**05.07.2026 · `c2b2bf2`** — Eval-Matrix Leerstate erklärt Trennung von Simulation und Eval. · `10min`
+
+**05.07.2026 · `9e5428e`** — ETA-Banner zeigt korrekte Gesamtsession-Anzahl bei Teilauswahl. · `10min`
+
+**05.07.2026 · `8ff33f4`** — session_numbers im Eval-Modal korrekt übertragen. · `10min`
+
+**05.07.2026 · `106616f`** — Haiku-Kostenrate auf 0.040 EUR/Turn (empirisch gemessen). · `5min`
+
+**05.07.2026 · `73b05c4`** — Kostenschätzung auf empirische Messwerte kalibriert. · `10min`
+
+**05.07.2026 · `1622c61`** — Kostenangaben auf 2 Nachkommastellen. · `5min`
+
+**05.07.2026 · `56c6102`** — Eval-Matrix Login-Redirect behoben (Next.js Admin-Proxy-Routen). · `10min`
+
+**05.07.2026 · `eab24df`** — test_chat + test_prompts repariert (UserProfileRepository + v3 warm-Prompt). · `20min`
+
+**05.07.2026 · `43915b4`** — Release Notes Redesign: Neue Timeline-Ansicht. Admin-Link in Nav für eingeloggte Admins. · `30min`
+
+**05.07.2026 · `3bf2983`** — Coverage-Gate wiederhergestellt: 66% (war 53% durch neue Eval/Simulation-Dateien). · `20min`
+
+**Thesis-Relevanz:** Eval-Matrix + Crash-Persona-Simulation sind der methodische Kern des LLM-Evaluationsberichts (Deliverable 3, Kapitel 5). Systematischer Vergleich Claude/GPT-4o/Mistral über 4 Metriken ist Pflicht-Deliverable. Prompt Caching macht intensive Evaluation kosteneffizient. · `~14h Mega-Sprint`
+
+---
+
+## 2026-07-04 — Supplement: Live-Kosten, Auth, API-Stabilisierung, Quality Gates
+
+*Ergänzende Commits zum Session-Architektur-v3-Release vom gleichen Tag.*
+
+**04.07.2026 · `b14a8f9`** — Live-Kostentransparenz: llm_usage-Tabelle, Admin-Dashboard zeigt Kosten pro User in Echtzeit. Basis für Cost-Guard (max. €2/User). · `45min`
+
+**04.07.2026 · `fbe9ef3`** — API-Timeouts auf alle Anthropic-Client-Calls (connect=5s, read=60s, write=10s). · `15min`
+
+**04.07.2026 · `dccd0e5`** — MAX_TOKENS 1500 → 3000. v3-Prompt braucht deutlich mehr Denk-Budget. · `10min`
+
+**04.07.2026 · `a581887`** — authFetch leitet bei abgelaufener Session automatisch auf /login um. · `15min`
+
+**04.07.2026 · `f3af262`** — Admin-Test-Token auf 2h (war 15min — zu kurz für Journey-Tests). · `5min`
+
+**04.07.2026 · `bb2c306`** — KAIA nutzt learning_topic in erster Session für gezieltes Motiv-Probing. · `20min`
+
+**04.07.2026 · `f60241c`** — Admin-Dashboard Health-Check URL korrigiert (doppeltes /api entfernt). · `5min`
+
+**04.07.2026 · `2315c23`** — Migration ON CONFLICT → DELETE+INSERT (PostgreSQL-Kompatibilität). · `10min`
+
+**04.07.2026 · `aecb221`** — Haiku gibt JSON mit Markdown-Fences zurück — Strip-Mechanismus. Cross-Session-Kontext robuster. · `30min`
+
+**04.07.2026 · `b284aa1`** — Tier-2 Qualitäts-Gates: Domain-Grenzen durch import-linter erzwungen, Factory-Pattern. · `1h`
+
+**04.07.2026 · `a9a4604`** — Quality Gates Tier 1: chat/service.py aufgeteilt, Test hardening. · `45min`
+
+**04.07.2026 · `4c181cc`** — mypy zum Pre-Commit-Hook hinzugefügt. · `20min`
+
+**04.07.2026 · `550a2c2`** — mypy-Fehler in summary, survey/service, users/models behoben. · `20min`
 
 ---
 

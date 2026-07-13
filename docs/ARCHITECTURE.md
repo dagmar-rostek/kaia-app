@@ -1,31 +1,66 @@
 # KAIA – Systemarchitektur
 
 > Diese Datei ist die einzige Quelle der Wahrheit für die Systemarchitektur.
-> Jede strukturelle Änderung muss hier dokumentiert werden — CI prüft das.
+> Jede strukturelle Änderung muss hier dokumentiert werden.
 > Die `/architektur`-Seite im Frontend rendert dieses Dokument direkt.
 
-**Stand:** Juni 2026 · Version 0.8.0
+**Stand:** 13. Juli 2026
 
 ---
 
-## Überblick
+## Systemüberblick
 
-KAIA ist ein sokratischer KI-Lernbegleiter für Studierende. Die Architektur ist
-**produktionstauglich von Tag 1** — modular, beobachtbar, DSGVO-konform.
+KAIA ist ein sokratischer KI-Lernbegleiter. Nutzer durchlaufen eine strukturierte 10-Session-Journey
+mit Pre- und Post-Messung (MSLQ + GSE). Das System ist DSGVO-konform, EU-gehostet und auf
+wissenschaftliche Reproduzierbarkeit ausgelegt.
 
 ```
 Browser (Next.js)
       │ HTTPS
       ▼
-  Caddy (Reverse Proxy + TLS)
+  Caddy (Reverse Proxy + TLS — Let's Encrypt)
       │
-      ├──▶  :3000  Next.js Frontend (SSR)
+      ├──▶  :3000  Next.js 14 Frontend (App Router, TypeScript)
       │
-      └──▶  :8000  FastAPI Backend (REST + SSE)
+      └──▶  :8000  FastAPI Backend (Python 3.12, async)
                         │
                         ├── PostgreSQL 16 + pgvector
-                        └── Sentry / Slack
+                        │
+                        ├── Anthropic API  (claude-sonnet-4-6, claude-haiku-4-5)
+                        ├── OpenAI API     (gpt-4o, gpt-5.6-terra, gpt-4.1-mini)
+                        ├── Mistral API    (mistral-large-latest, mistral-small-latest)
+                        │
+                        └── Sentry / Slack / structlog
 ```
+
+Hosting: Hetzner CX23, Helsinki (EU). Kein Drittanbieter-Cloud-Deployment.
+
+---
+
+## Tech-Stack
+
+| Bereich         | Technologie                                        | Begründung |
+|-----------------|----------------------------------------------------|---|
+| Backend         | FastAPI 0.115+, Python 3.12                        | Async, typisiert, OpenAPI auto |
+| Validierung     | Pydantic v2                                        | Typsicherheit, Settings-Management |
+| ORM             | SQLAlchemy 2.0 async                               | Connection-Pooling, typisiert |
+| Migrationen     | Alembic                                            | Versioniert, reversibel |
+| DB              | PostgreSQL 16 + pgvector                           | Eine DB, kein separates ChromaDB |
+| Auth            | Custom JWT — Access 15min, Refresh 30d rotierend   | Volle Kontrolle, DSGVO-klar |
+| Passwort-Hash   | bcrypt, 12 Runden                                  | Aktuell, kein passlib |
+| Frontend        | Next.js 14 App Router, TypeScript                  | SSR, App Router, typisiert |
+| UI              | Tailwind CSS v4 + shadcn/ui (Radix)                | A11y, keine Bundle-Bloat |
+| State           | React Query                                        | Server-State, Caching |
+| API-Validation  | Zod                                                | Laufzeit-Typprüfung FE |
+| LLM-Streaming   | Server-Sent Events (SSE)                           | Echtzeitausgabe, kein WebSocket-Overhead |
+| LLM-Provider    | Anthropic SDK + OpenAI SDK (auch Mistral)          | Drei Provider für LLM-Eval |
+| Prompt-Mgmt     | DB-gespeichert + Jinja2, live editierbar           | Kein Deploy für Prompt-Updates |
+| Observability   | Sentry (FE + BE), Slack-Webhooks, structlog JSON   | Fehler + Business-Events |
+| CI/CD           | GitHub Actions                                     | Pre-Commit: mypy, ruff, commitlint |
+| Coverage        | >= 66 % (CI-Gate, Backend)                         | Pflicht-Schwelle für Merge |
+| Hosting         | Hetzner CX23 Helsinki, Docker Compose              | EU, DSGVO, kostengünstig |
+| TLS             | Caddy + Let's Encrypt                              | Automatisch, zero-config |
+| Analytics       | Plausible (EU-Cloud)                               | DSGVO-konform, kein Cookie-Banner |
 
 ---
 
@@ -34,66 +69,68 @@ Browser (Next.js)
 ```
 kaia-app/
 ├── apps/
-│   ├── api/                    FastAPI Backend (Python 3.12)
-│   │   ├── alembic/            Migrationen (async env.py)
-│   │   │   └── versions/       0001: users + refresh_tokens
+│   ├── api/                         FastAPI Backend (Python 3.12)
+│   │   ├── alembic/                 Migrationen (async env.py)
+│   │   │   └── versions/            versionierte Migrationsschritte
 │   │   └── app/
-│   │       ├── api/v1/         HTTP-Endpoints (versioniert)
 │   │       ├── core/
-│   │       │   ├── config.py   Settings (Pydantic BaseSettings)
-│   │       │   ├── security.py bcrypt, JWT, token-hash utils
-│   │       │   └── deps.py     get_current_user, require_admin
-│   │       ├── db/             SQLAlchemy 2.0 async + Alembic
-│   │       ├── domains/        Domain-Driven Design
-│   │       │   ├── users/         User, RefreshToken — Auth, Approval, DSGVO-Deletion
-│   │       │   ├── chat/          ChatSession, Message, MemoryChunk, SessionFeedback
-│   │       │   ├── survey/        GseResult, MslqResult, ConsentLog — Pre/Post + Journey State
-│   │       │   ├── roadmap/       RoadmapGoal, UserProfile — Lernziele + Profil
-│   │       │   ├── prompts/       PromptTemplate — DB-Jinja2, versioniert, live editierbar
-│   │       │   └── preregistration/ PreRegistration — Voranmeldungs-Warteliste
-│   │       └── observability/  Sentry, Slack, Structured Logging
+│   │       │   ├── config.py        Settings (Pydantic BaseSettings)
+│   │       │   ├── security.py      bcrypt, JWT, token-hash utils
+│   │       │   └── deps.py          get_current_user, require_admin
+│   │       ├── api/v1/              HTTP-Endpunkt-Registrierung (versioniert)
+│   │       ├── db/                  SQLAlchemy 2.0 async + Session-Factory
+│   │       ├── domains/             Domain-Driven Design
+│   │       │   ├── users/           User, RefreshToken — Auth, Approval, DSGVO
+│   │       │   ├── chat/            ChatSession, Message, Feedback, summary.py
+│   │       │   ├── surveys/         MSLQ, GSE, Journey State
+│   │       │   ├── analytics/       llm_usage — Token- und Kosten-Tracking
+│   │       │   ├── eval/            evaluator.py, Personas, Simulation-Runner
+│   │       │   ├── preregistration/ Voranmeldungs-Warteliste
+│   │       │   └── prompts/         DB-Jinja2-Templates, versioniert, live editierbar
+│   │       └── observability/       sentry.py, slack.py, structlog JSON
 │   │
-│   └── web/                    Next.js 14 App Router (TypeScript)
+│   └── web/                         Next.js 14 App Router (TypeScript)
 │       └── src/
-│           ├── app/            Seiten (App Router)
-│           │   ├── (public)/   Öffentlicher Bereich — shared layout mit Nav
-│           │   │   ├── page.tsx            Landing Page
-│           │   │   ├── architektur/        ARCHITECTURE.md Renderer
-│           │   │   ├── release-notes/      RELEASE_NOTES.md Renderer
-│           │   │   ├── wissenschaft/       24 wissenschaftliche Quellen
-│           │   │   ├── datenschutz/        DSGVO-Erklärung (Art. 15–21, Schrems-II)
+│           ├── app/
+│           │   ├── (public)/        Öffentlicher Bereich — shared Nav-Layout
+│           │   │   ├── page.tsx              Landing Page
+│           │   │   ├── architektur/          ARCHITECTURE.md Renderer
+│           │   │   ├── release-notes/        RELEASE_NOTES.md Renderer
+│           │   │   ├── wissenschaft/         Wissenschaftliche Quellen (24+)
+│           │   │   ├── mitmachen/            Studien-Info + Voranmeldung
+│           │   │   ├── datenschutz/          DSGVO Art. 15–21, Schrems-II
 │           │   │   └── impressum/
-│           │   ├── (auth)/     Login, Registrierung, DSGVO-Consent
-│           │   │   └── ki-disclosure/      KI-Disclosure + Bestätigungs-Button
-│           │   ├── (app)/      Chat, Survey Pre/Post (journey-gated)
-│           │   │   ├── chat/           Chat mit KAIA (Session-Handling, SSE, EMA-Buttons)
-│           │   │   ├── survey/pre/     Pre-Messung: MSLQ (30 Items) + GSE (10 Items)
-│           │   │   └── survey/post/    Post-Messung: identisch, measurement_type="post"
-│           │   └── admin/      Passwortgeschützt via Server Component Layout
-│           │       ├── page.tsx               Dashboard + API-Health
-│           │       ├── login/
-│           │       ├── chat-test/             Split-View Prompt-Testing + EMA-Buttons
-│           │       ├── lerndesign/            10-Session-Architektur + Bloom + Sentiment
-│           │       ├── instrumente/           MSLQ + GSE Dokumentation (Thesis-Anhang)
-│           │       ├── users/                 User-Approval (pending/aktiv/gesperrt)
-│           │       ├── thesis/                Live-Thesis-Cockpit (Kapitel 1–6)
-│           │       ├── production-readiness/  Deployment-Checkliste
-│           │       ├── roadmap/               Feature-Roadmap (Filter, Agents, SHA)
-│           │       ├── prompts/               Prompt-Sandbox (Jinja2-Editor, Live-Test)
-│           │       ├── release-notes/         Changelog-Viewer
-│           │       ├── architektur/           Architektur-Viewer
-│           │       ├── kosten/                Kostenübersicht
-│           │       └── daily-log/             Entwicklungs-Tagebuch
-│           ├── components/     Geteilte UI-Komponenten
+│           │   ├── (auth)/          Login, Registrierung, Consent, KI-Disclosure
+│           │   ├── (app)/           Geschützter Bereich (AuthGuard)
+│           │   │   ├── chat/                 Chat mit KAIA (SSE, EMA-Buttons)
+│           │   │   ├── onboarding/           Onboarding-Flow
+│           │   │   └── survey/               Pre/Post MSLQ + GSE
+│           │   └── admin/           Admin-Bereich (Server Component Layout)
+│           │       ├── page.tsx              Dashboard + API-Health
+│           │       ├── users/                User-Approval (pending/aktiv/gesperrt)
+│           │       ├── prompts/              Prompt-Sandbox (Jinja2-Editor, Live-Test)
+│           │       ├── journey-test/         Journey-State-Test-Tool
+│           │       ├── eval/                 Eval-Run-Interface + Heatmap
+│           │       ├── lerndesign/           10-Session-Architektur + Bloom
+│           │       ├── instrumente/          MSLQ + GSE Dokumentation
+│           │       ├── thesis/               Live-Thesis-Cockpit (Kapitel 1–6)
+│           │       ├── production-readiness/ Deployment-Checkliste
+│           │       ├── roadmap/              Feature-Roadmap
+│           │       ├── kosten/               LLM-Kostenübersicht
+│           │       ├── release-notes/        Changelog-Viewer
+│           │       ├── architektur/          Architektur-Viewer
+│           │       └── daily-log/            Entwicklungs-Tagebuch
+│           ├── components/          Geteilte UI-Komponenten
 │           └── lib/
-│               ├── api.ts      Typisierter API-Client (React Query)
-│               └── docs.ts     readDoc() — /docs (Prod) oder ../../docs (lokal)
+│               ├── api.ts           Typisierter API-Client (React Query)
+│               ├── auth.ts          AuthContext, AuthGuard
+│               └── docs.ts          readDoc() — /docs (Prod) oder ../../docs (lokal)
 │
 ├── docs/
-│   ├── ARCHITECTURE.md         ← diese Datei
-│   ├── RELEASE_NOTES.md        ← auto-generiert via scripts/
-│   ├── BACKLOG.md              GitHub-Issue-Backlog
-│   └── DECISIONS/              Architecture Decision Records (ADRs)
+│   ├── ARCHITECTURE.md              diese Datei
+│   ├── RELEASE_NOTES.md             auto-generiert via scripts/
+│   ├── DAILY_LOG.md                 Entwicklungs-Tagebuch
+│   └── adr/                         Architecture Decision Records
 │
 ├── scripts/
 │   └── generate_release_notes.py
@@ -104,148 +141,464 @@ kaia-app/
     └── Caddyfile
 ```
 
----
-
-## Tech-Stack
-
-| Bereich | Technologie | Begründung |
-|---|---|---|
-| Backend | FastAPI 0.115+ | Async, typisiert, OpenAPI auto |
-| ORM | SQLAlchemy 2.0 async | Connection-Pooling, Migrations |
-| Migrationen | Alembic | Versioniert, reversibel |
-| Vektorspeicher | pgvector | Eine DB, kein separates ChromaDB |
-| Frontend | Next.js 14 App Router | SSR, TypeScript, eingebaut i18n-ready |
-| UI | Tailwind CSS + shadcn/ui | Dark/Light, A11y, keine Bundle-Bloat |
-| Auth | JWT (Access 15min + Refresh 30d) | Volle Kontrolle, DSGVO-klar |
-| Observability | Sentry + Slack-Webhook | Fehler + Business-Events |
-| Logging | structlog (JSON) + Correlation IDs | Debuggable in Produktion |
-| LLM | Claude (Anthropic) · GPT (OpenAI) · Mistral | A/B-testbar via Prompt-Variants |
-| Prompt-Mgmt | DB-gespeichert + Jinja2 + `<thinking>`-Split | Live-editierbar, versioniert, Backend strippt Reasoning-Block |
-| Hosting | Hetzner CX23 + Docker Compose | EU, DSGVO, kostengünstig |
-| TLS | Caddy + Let's Encrypt | Automatisch, zero-config |
+Jede Domain folgt dem Muster: `models.py · repository.py · service.py · routes.py · schemas.py · tests/`.
+Service-Layer ist von HTTP getrennt. Repository-Pattern für alle DB-Zugriffe.
 
 ---
 
-## Datenspeicher
+## Datenmodell
 
-### PostgreSQL — 14 Tabellen (Stand v0.9.0)
+### Tabellen (Stand Juli 2026)
 
-| Tabelle | Domain | Beschreibung |
-|---|---|---|
-| `users` | users | Profile, Auth, Consent, Status (pending/active/suspended/deleted) |
-| `refresh_tokens` | users | JWT Refresh-Token-Rotation + Reuse-Detection |
-| `user_learning_profiles` | users | **Neu (v0.9.0)** Persistenter Layer-1-Snapshot: gse_baseline, gse_items, subscale_scores (MSLQ), LLM-generierte profile_interpretation (Haiku, max. 120 Wörter). UNIQUE(user_id) — unveränderlich nach Erstellung. |
-| `chat_sessions` | chat | Lernsessions: Character, session_number, Modus, session_summary (Layer 2 kumulative Daten inkl. strongest_quote) |
-| `messages` | chat | Einzelne Nachrichten inkl. detected_state, thinking_raw |
-| `memory_chunks` | chat | Vectorized Insights (pgvector 1536-dim) für Cross-Session-Recall |
-| `session_feedback` | chat | EMA-Signale (transfer_marker, wow, stuck, unclear) |
-| `gse_results` | survey | GSE Pre/Post Messungen (Schwarzer & Jerusalem, 1995, 10 Items, 4-pt) |
-| `mslq_results` | survey | MSLQ Pre/Post Messungen (Pintrich et al., 1991, 30 Items, 7-pt, 4 Subskalen) |
-| `consent_logs` | survey | DSGVO Art. 7 Audit-Log (immutable append-only) |
-| `roadmap_goals` | roadmap | Lernziele mit Status + Deadline |
-| `user_profiles` | roadmap | Versioniertes Nutzerprofil (stable + dynamic + session-aggregated) |
-| `prompt_templates` | prompts | Jinja2-Prompts versioniert, live editierbar, Character-spezifisch |
-| `llm_usage` | (core) | Token-Verbrauch + Kosten pro LLM-Call (Cost-Tracking) |
+| Tabelle                 | Domain       | Beschreibung |
+|-------------------------|--------------|---|
+| `users`                 | users        | Profil, Auth, Status, per-User-Modell-Override |
+| `refresh_tokens`        | users        | JWT Refresh-Token-Rotation + Reuse-Detection |
+| `user_learning_profiles`| users        | Immutable Baseline: gse_baseline, subscale_scores, profile_interpretation |
+| `chat_sessions`         | chat         | Lernsessions: session_number, character, session_summary (JSONB) |
+| `chat_messages`         | chat         | Einzelnachrichten: role, content, detected_state, interaction_mode |
+| `session_feedback`      | chat         | EMA-Signale: transfer_marker, wow, stuck, unclear |
+| `survey_responses`      | surveys      | Pre/Post MSLQ + GSE: items (JSONB), scores (JSONB) |
+| `llm_usage`             | analytics    | Token-Verbrauch + Kosten pro LLM-Call |
+| `prompts`               | prompts      | Jinja2-Templates: name, template, version, is_active |
+| `preregistrations`      | preregistration | Voranmeldungs-Warteliste |
 
-**Alembic-Migrationen:** 9 versionierte Schritte, vollständig reversibel.
+### Spalten-Details: Schlüsseltabellen
 
-### Zwei-Schichten-Profil-Modell (v0.9.0)
+**users**
+```
+id (UUID PK), username, email, hashed_password,
+is_active (bool), is_admin (bool), is_approved (bool),
+kaia_model (nullable — per-User-Modell-Override),
+learning_topic, created_at
+```
+
+**user_learning_profiles** (UNIQUE user_id — unveränderlich nach Erstellung)
+```
+user_id (FK), gse_baseline (float),
+subscale_scores (JSONB — MSLQ-Subskalen),
+gse_items (JSONB — Rohwerte 10 Items),
+profile_interpretation (Text — LLM-generiert, Haiku, max. 120 Wörter),
+created_at
+```
+
+**chat_sessions**
+```
+id (UUID PK), user_id (FK), session_number (int),
+character (varchar), started_at, ended_at,
+session_summary (JSONB):
+    insight_for_next_session,
+    strongest_quote,
+    observation,
+    topics_discussed
+```
+
+**chat_messages**
+```
+id (UUID PK), session_id (FK), role (user/assistant),
+content (text), created_at,
+detected_state (nullable), interaction_mode (nullable)
+```
+
+**survey_responses**
+```
+id (UUID PK), user_id (FK),
+measurement_type (pre/post),
+instrument (mslq/gse),
+items (JSONB — Rohantworten), scores (JSONB — berechnete Subskalen),
+completed_at
+```
+
+**llm_usage**
+```
+id (UUID PK), user_id (FK), session_id (FK nullable),
+model_id (varchar), input_tokens (int), output_tokens (int),
+cost_eur (numeric), created_at
+```
+
+### Zwei-Schichten-Profil-Modell
 
 ```
 Layer 1 — Immutable Baseline (user_learning_profiles)
-    │   Erstellt einmalig als BackgroundTask nach Abschluss beider Pre-Surveys
-    │   Inhalt: gse_baseline (float), gse_items (JSONB), subscale_scores (JSONB),
-    │           profile_interpretation (Text, Haiku-generiert, max. 120 Wörter),
-    │           interpretation_prompt_hash (SHA-256, für Reproduzierbarkeit)
-    │   Race-Condition-Guard: UNIQUE(user_id) + IntegrityError-Catch
-    │
-Layer 2 — Kumulative Session-Daten (chat_sessions.session_summary JSONB)
-    │   Aktualisiert nach jeder Session via extract_session_summary (Haiku)
-    │   Felder: last_first_step, last_session_observation, insight_for_next_session,
-    │           strongest_quote (neu: stärkster eigener Satz des Lernenden)
-    │
-    ▼
-PromptContext — zusammengeführt in _build_system_prompt():
-    session_number, session_phase, is_final_session, user_turns,
-    learner_profile, gse_baseline, session_history_summary (alle Vorsessions),
-    historical_quotes (strongest_quote je Session, für Sessions 6–10)
+    Erstellt einmalig als BackgroundTask nach Abschluss beider Pre-Surveys.
+    Race-Condition-Guard: UNIQUE(user_id) + IntegrityError-Catch.
+    Inhalte: gse_baseline, gse_items, subscale_scores (MSLQ),
+             profile_interpretation (Haiku-generiert, max. 120 Wörter).
+
+Layer 2 — Kumulatives Session-Gedächtnis (chat_sessions.session_summary)
+    Aktualisiert nach jeder Session via extract_session_summary (Haiku, BackgroundTask).
+    Felder: insight_for_next_session, strongest_quote,
+            observation, topics_discussed.
+
+        ▼
+PromptContext v3 — zusammengeführt in _build_system_prompt():
+    user_name, learning_topic
+    session_number, session_phase (early/mid/late), is_final_session, user_turns
+    learner_profile (Layer 1: profile_interpretation)
+    gse_baseline (Layer 1)
+    session_history_summary (Layer 2: alle Vorsessions, max. 9)
+    historical_quotes (strongest_quote je Session — aktiv ab Session 6)
+    insight_for_next_session, last_session_observation (Vorsession)
 ```
 
 ### pgvector (Semantisches Gedächtnis)
-- `memory_chunks.embedding`: Vector(1536) für Approximate Nearest-Neighbour (IVFFLAT)
-- **Pflicht:** jede Query gefiltert nach `user_id` — keine Cross-User-Leaks
+
+pgvector ist installiert und verfügbar. Vektorspeicherung für Cross-Session-Recall ist geplant
+(memory_chunks — nicht aktiv in Produktion). Pflicht bei Aktivierung: jede Query gefiltert nach
+`user_id` — keine Cross-User-Leaks.
 
 ---
 
-## Sicherheits-Prinzipien
+## API-Schicht
 
-- CORS: Allowlist nur `kaia.rostek-dagmar.eu` + `localhost:3000`
-- JWT: Access-Token 15min, Refresh-Token 30d rotierend
-- Passwörter: bcrypt direkt (12 Runden) + SHA-256-Pre-Hash (passlib entfernt — unmaintained seit 2023, inkompatibel mit bcrypt>=4.0)
-- Alle Admin-Aktionen: Audit-Log mit Timestamp + Begründung
-- Secrets: nur via Umgebungsvariablen (nie in Code)
-- TLS: HSTS enforced via Caddy
-- pgvector: Row-Level-Security für User-Isolation
-- Crisis-Detection: Pre-Filter vor jedem LLM-Call — 20+ deutsche Regex-Muster (Suizidgedanken, Selbstverletzung); bei Treffer statische Eskalations-Antwort (Telefonseelsorge 0800 111 0 111, Notruf 112), kein LLM-Processing
+Alle Endpunkte unter `/api/v1/`. Vollständige OpenAPI-Dokumentation unter `/api/v1/docs`.
 
----
+### Auth
 
-## Journey State Machine (Studienablauf)
+| Methode | Pfad                | Beschreibung |
+|---------|---------------------|---|
+| POST    | /auth/login         | Credentials → Access + Refresh Token |
+| POST    | /auth/refresh       | Refresh Token rotieren → neues Paar |
+| POST    | /auth/logout        | Refresh Token invalidieren |
 
-Jeder Nutzer durchläuft eine definierte Journey. Der State wird on-the-fly aus der DB berechnet:
+### Users
 
-```
-PRE_PENDING  ──(MSLQ Pre + GSE Pre abgeschlossen)──▶  ACTIVE (Session 1…10)
-                                                           │
-                                                  (session_count >= 10)
-                                                           │
-                                                           ▼
-                                                     POST_PENDING
-                                                           │
-                                                  (MSLQ Post + GSE Post)
-                                                           │
-                                                           ▼
-                                                       COMPLETED
-```
+| Methode | Pfad                        | Beschreibung |
+|---------|-----------------------------|---|
+| GET     | /users/me                   | Eigenes Profil |
+| PATCH   | /users/me                   | Profil-Update (learning_topic etc.) |
+| GET     | /users/me/journey-state     | Aktueller Journey-State (on-the-fly aus DB) |
 
-**Gating-Regeln:**
-- `POST /api/v1/chat/sessions` gibt 403 zurück, wenn `state ∈ {PRE_PENDING, POST_PENDING, COMPLETED}`
-- Frontend leitet bei 403 mit `redirect`-Feld automatisch weiter (`/survey/pre` oder `/survey/post`)
-- Pre-Messung: 30 MSLQ-Items (7-pt) + 10 GSE-Items (4-pt) — `GET /api/v1/survey/journey`
-- Post-Messung: identisch, aber `measurement_type = "post"`
-- Scoring server-seitig: Subskalen-Mittelwerte, Reverse-Coding (Items 33, 57)
+### Chat
 
----
+| Methode | Pfad                                    | Beschreibung |
+|---------|-----------------------------------------|---|
+| POST    | /chat/sessions                          | Neue Session erstellen (403 bei falschen Journey-States) |
+| GET     | /chat/sessions                          | Alle Sessions des Users |
+| GET     | /chat/sessions/active                   | Aktive Session (falls vorhanden) |
+| GET     | /chat/sessions/{id}                     | Session-Details |
+| POST    | /chat/sessions/{id}/messages            | Nutzer-Nachricht → SSE-Stream (KAIAs Antwort) |
+| POST    | /chat/sessions/{id}/opening             | Session-Eröffnung → SSE-Stream |
+| POST    | /chat/sessions/{id}/closing             | Session-Abschluss → SSE-Stream |
+| POST    | /chat/sessions/{id}/end                 | Session beenden (triggert BackgroundTask summary) |
+| POST    | /chat/sessions/{id}/feedback            | EMA-Signal speichern |
+| POST    | /chat/sessions/{id}/meta-question       | Meta-Frage → SSE-Stream |
+| POST    | /chat/sessions/{id}/report              | Session-Report generieren |
 
-## Studie-Modus
+### Survey
 
-```
-STUDY_MODE=development   # Alles erlaubt, Prompt-Änderungen möglich
-STUDY_MODE=pilot         # Wie development, aber mit Metriken-Logging
-STUDY_MODE=locked        # Prompt-Änderungen geblockt, Schema-Migrations geblockt
-```
+| Methode | Pfad            | Beschreibung |
+|---------|-----------------|---|
+| GET     | /survey/mslq    | MSLQ-Fragebogen abrufen |
+| POST    | /survey/mslq    | MSLQ-Antworten speichern + Scoring |
+| GET     | /survey/gse     | GSE-Fragebogen abrufen |
+| POST    | /survey/gse     | GSE-Antworten speichern (triggert BackgroundTask Lernprofil) |
 
-Während `locked`: CI lehnt PRs mit Prompt- oder Schema-Änderungen ab.
+### Admin
+
+| Methode | Pfad                    | Beschreibung |
+|---------|-------------------------|---|
+| GET     | /admin/users            | Alle User (mit Status) |
+| PATCH   | /admin/users/{id}       | Status ändern (approve/suspend) |
+| DELETE  | /admin/users/{id}       | User löschen (DSGVO Art. 17) |
+| GET     | /admin/stats            | System-Statistiken |
+| GET     | /admin/prompts          | Alle Prompt-Templates |
+| POST    | /admin/prompts          | Neues Template erstellen |
+| PATCH   | /admin/prompts/{id}     | Template aktualisieren (Study-Lock-Guard) |
+
+### Eval
+
+| Methode | Pfad                        | Beschreibung |
+|---------|-----------------------------|---|
+| POST    | /eval/run                   | Eval-Run starten (Persona + Modell) |
+| POST    | /eval/cancel                | Laufenden Eval-Run abbrechen |
+| GET     | /eval/runs                  | Alle Eval-Runs |
+| DELETE  | /eval/runs/{id}             | Eval-Run löschen |
+| GET     | /eval/runs/{id}/log         | Log eines Runs (SSE oder vollständig) |
+| POST    | /eval/simulate              | Einzelne Persona simulieren |
+
+### Sonstige
+
+| Methode | Pfad               | Beschreibung |
+|---------|--------------------|---|
+| GET     | /health            | Health-Check (DB-Ping, Version) |
+| POST    | /preregistration   | Voranmeldung speichern |
 
 ---
 
 ## LLM-Provider-Abstraktion
 
-Alle LLM-Calls laufen durch einen einheitlichen Interface:
+### Unterstützte Modelle (Stand Juli 2026)
+
+| Provider   | Modell-ID                       | Verwendung |
+|------------|---------------------------------|---|
+| Anthropic  | claude-sonnet-4-6               | Primärer Chat-Provider |
+| Anthropic  | claude-haiku-4-5-20251001       | Session-Summary, Profil-Interpretation |
+| OpenAI     | gpt-4o                          | LLM-Eval |
+| OpenAI     | gpt-5.6-terra                   | LLM-Eval |
+| OpenAI     | gpt-4.1-mini                    | LLM-Eval |
+| Mistral    | mistral-large-latest            | LLM-Eval (EU-Provider) |
+| Mistral    | mistral-small-latest            | LLM-Eval (EU-Provider) |
+
+Mistral-Calls laufen über die OpenAI-kompatible API (OpenAI SDK mit anderem Base-URL).
+
+### Per-User-Modell-Override
+
+`users.kaia_model` (nullable). Wenn gesetzt, überschreibt es den System-Default in allen
+4 Stream-Funktionen. Admin kann pro User ein anderes Modell zuweisen — für Eval-Zwecke
+ohne Code-Änderung.
+
+### API-Besonderheiten
+
+- **GPT-5.x:** `max_completion_tokens` statt `max_tokens` (OpenAI API-Änderung)
+- **Anthropic Prompt Caching:** aktiviert für System-Prompts und Session-Kontext (Input-Token-Kosten reduziert)
+- **Rate-Limit-Retry:** exponentieller Backoff bei 429-Antworten aller Provider
+
+### Datenfluss LLM-Calls
+
 ```
-LLMProvider (Abstract)
-├── ClaudeProvider    (Anthropic, USA — primärer Provider)
-├── OpenAIProvider    (OpenAI, USA — A/B-Vergleich)
-└── MistralProvider   (Mistral AI, EU — Datensouveränität)
+user_id + session_id
+        │
+        ├── Crisis-Detection Pre-Filter  (Regex, 20+ DE-Muster)
+        │       bei Treffer: statische Eskalations-Antwort (kein LLM-Call)
+        │       Telefonseelsorge 0800 111 0 111, Notruf 112
+        │
+        ▼
+_build_system_prompt(PromptContext)
+        Jinja2-Template aus DB (prompts-Tabelle, is_active=True)
+        + Layer-1-Profil + Layer-2-Session-History injiziert
+        │
+        ▼
+Provider-SDK-Call (Anthropic / OpenAI / Mistral)
+        │
+        ├── <thinking>-Block strippen (Anthropic Extended Thinking)
+        ├── SSE-Chunks an Frontend streamen
+        │
+        ▼
+llm_usage INSERT (model_id, input_tokens, output_tokens, cost_eur)
 ```
 
-Jeder Call loggt: `provider`, `model`, `input_tokens`, `output_tokens`,
-`cost_eur`, `prompt_variant_id`, `latency_ms` in `llm_usage`.
+### LLM-Kosten-Tracking
+
+Jeder LLM-Call schreibt einen Datensatz in `llm_usage`:
+`user_id, session_id, model_id, input_tokens, output_tokens, cost_eur, created_at`.
+Kostenübersicht unter `/admin/kosten`.
 
 ---
 
-## Deployment (Produktion)
+## Session-Architektur V3
 
+### 10-Session-Journey
+
+```
+Session 1–2   Erkunden         Thema und Lernenden kennenlernen
+Session 3–4   Transfer/Analyse Tiefere Auseinandersetzung mit dem Stoff
+Session 5     Halbzeit-Spiegel Obligatorischer Meilenstein-Trigger (hard-coded im Prompt)
+Session 6–8   Transfer/Analyse Historical Quotes aktiv (strongest_quote je Vorsession)
+Session 9–10  Synthese         Abschluss-Vorbereitung, stiller Kontext-Satz im UI
+Session 10    Drei-Aufgaben-Abschluss  Gegenüberstellung + Autonomisierung + kein GSE-Priming
+```
+
+### Prompt-Architektur
+
+```
+User-Input
+    │
+    ├── Crisis-Detection Pre-Filter
+    │
+    ▼
+_build_system_prompt()
+    Befüllt PromptContext mit 7+ Feldern (siehe Zwei-Schichten-Profil-Modell)
+    │
+    ▼
+KAIA_PROMPT_V3_WARM (Jinja2 in DB, is_active=True)
+    ├── Session-Kontext-Header (Vorsessions-Zusammenfassung, wenn session_number > 1)
+    ├── Persistenter Lernenden-Profil-Block (learner_profile — nie explizit zitieren)
+    ├── 8 interne Klassifikationsschritte im <thinking>-Block
+    │   (Lazarus, Fragetyp, Crisis, Grenz, Grounded, Phase, Rupture, Erwünschtheit)
+    ├── Session-5-Meilenstein-Trigger (obligatorisch)
+    ├── Historical-Quotes-Block (Sessions 6–10, Widerspruchsarbeit Typ 3)
+    ├── Session-10-Abschluss-Logik (3 simultane Aufgaben)
+    └── <final_answer> — max. 80 Wörter, ein Impuls
+    │
+    ▼
+Provider-SDK (Streaming)
+    │
+    ├── <thinking>-Block strippen
+    ▼
+SSE-Stream → Browser
+```
+
+### Prompt-Versionen
+
+| Name                         | Status   | Beschreibung |
+|------------------------------|----------|---|
+| `kaia_system_v1_warm`        | inaktiv  | Regression-Baseline v1 |
+| `kaia_system_v2_warm`        | inaktiv  | Eval-Regression-Baseline v2, für A/B-Vergleich erhalten |
+| `kaia_system_v3_warm`        | **aktiv**| Session-aware, Profil-integriert, Session-5-Trigger, Session-10-Logik |
+| `kaia_system_v1_challenging` | inaktiv  | Eval-Charakter |
+| `kaia_system_v1_wild`        | inaktiv  | Eval-Charakter |
+
+### BackgroundTasks
+
+| Trigger                              | Task                            | Beschreibung |
+|--------------------------------------|---------------------------------|---|
+| `POST /chat/sessions/{id}/end`       | `extract_session_summary()`     | Haiku extrahiert summary-JSONB aus Transkript |
+| `POST /survey/gse` (Pre abgeschlossen) | `maybe_create_learning_profile()` | Haiku erstellt profile_interpretation (idempotent, UNIQUE-Guard) |
+
+---
+
+## Journey State Machine
+
+State wird on-the-fly aus der DB berechnet — kein eigenes State-Feld.
+
+```
+PRE_PENDING
+    │   (MSLQ Pre + GSE Pre abgeschlossen)
+    ▼
+ACTIVE (Sessions 1 – 10)
+    │   (session_count >= 10)
+    ▼
+POST_PENDING
+    │   (MSLQ Post + GSE Post abgeschlossen)
+    ▼
+COMPLETED
+```
+
+**Gating-Regeln:**
+- `POST /chat/sessions` gibt 403 zurück, wenn `state ∈ {PRE_PENDING, POST_PENDING, COMPLETED}`
+- 403-Response enthält `redirect`-Feld (`/survey/pre` oder `/survey/post`)
+- Frontend leitet automatisch weiter
+- Pre-Messung: 30 MSLQ-Items (7-pt, 4 Subskalen) + 10 GSE-Items (4-pt)
+- Post-Messung: identisch, `measurement_type = "post"`
+- Scoring server-seitig: Subskalen-Mittelwerte, Reverse-Coding (MSLQ Items 33, 57)
+
+---
+
+## Eval-Pipeline
+
+### Zweck
+
+Systematischer LLM-Vergleich (Claude / GPT-4o / Mistral) nach wissenschaftlich definierten
+Kriterien für den LLM-Evaluationsbericht der Masterthesis.
+
+### Architektur
+
+```
+Admin-UI (/admin/eval)
+    │   POST /eval/run (persona_id, model_id)
+    ▼
+Simulation-Runner (domains/eval/)
+    │   10 Crash-Personas durchlaufen Chat-Flow gegen gewähltes Modell
+    │   Jede Persona: mehrere Turns simuliert
+    │
+    ▼
+Eval-Matrix (LLM-as-Judge)
+    │   4 Metriken pro Turn:
+    │   - Empathiequalität
+    │   - Sokratische Gesprächsführung
+    │   - Konsistenz
+    │   - Datenschutzkonformität
+    │
+    ├── Scores gespeichert in eval_runs
+    ▼
+Heatmap-Visualisierung im Admin-Frontend
+```
+
+### 10 Crash-Personas
+
+Synthetisch generierte Grenzfall-Szenarien für robuste Testabdeckung. Definiert in
+`domains/eval/`. Decken u.a. ab: Krisensprache, Off-Topic-Versuche, Injection-Patterns,
+Compliance-Grenzfälle.
+
+### Eval-Vergleichsmodus
+
+Zwei Modelle können parallel gegen dieselbe Persona laufen. Ergebnisse werden
+nebeneinander im Frontend dargestellt. Cancel-Endpunkt (`POST /eval/cancel`) bricht
+laufende Runs ab.
+
+---
+
+## Auth und Sicherheit
+
+### JWT-Flow
+
+```
+Login (POST /auth/login)
+    │   credentials verifiziert (bcrypt, 12 Runden)
+    ├── Access Token  (JWT, 15min, signed HS256)
+    └── Refresh Token (JWT, 30d, rotierend, in DB gespeichert)
+
+Token-Refresh (POST /auth/refresh)
+    │   Refresh Token validieren
+    ├── Alten Token invalidieren (Reuse-Detection)
+    └── Neues Paar ausstellen
+
+Logout (POST /auth/logout)
+    └── Refresh Token aus DB löschen
+```
+
+Passwort-Hashing: bcrypt direkt (12 Runden) + SHA-256-Pre-Hash. passlib ist entfernt
+(unmaintained seit 2023, inkompatibel mit bcrypt >= 4.0).
+
+### Sicherheitsprinzipien
+
+- **CORS:** Allowlist nur `kaia.rostek-dagmar.eu` + `localhost:3000`
+- **Secrets:** ausschließlich via Umgebungsvariablen (nie in Code oder Repo)
+- **TLS:** HSTS enforced via Caddy
+- **Row-Level-Security:** `user_id` als Pflichtparameter bei allen DB-Abfragen — kein Cross-User-Leak möglich
+- **pgvector:** Vektorsuche immer mit `user_id`-Filter
+- **Admin-Aktionen:** Audit-Log mit Timestamp
+- **Crisis-Detection:** Pre-Filter vor jedem LLM-Call, 20+ deutsche Regex-Muster (Suizidgedanken, Selbstverletzung). Bei Treffer: statische Eskalations-Antwort, kein LLM-Processing.
+- **Study-Lock:** Bei `STUDY_MODE=locked` blockt CI Prompt- und Schema-Änderungen
+
+### Study-Lock-Modi
+
+| STUDY_MODE    | Prompt-Änderungen | Schema-Migrationen |
+|---------------|-------------------|--------------------|
+| development   | erlaubt           | erlaubt            |
+| pilot         | erlaubt           | erlaubt            |
+| locked        | geblockt (CI)     | geblockt (CI)      |
+
+### DSGVO-Implementierung
+
+- Art. 7: Consent-Logging (zwei Checkboxen: Datenverarbeitung + Analytics/Studie)
+- Art. 13/14: Datenschutzerklärung mit Schrems-II-Abschnitt
+- Art. 15–21: DSGVO-Rechte implementiert (Auskunft, Löschung, Berichtigung)
+- Art. 17: Admin DELETE /admin/users/{id} — vollständige Datenlöschung
+- KI-Disclosure: expliziter Hinweis vor Onboarding (computational empathy, kein Mensch)
+- DPAs mit Anthropic, OpenAI, Mistral erforderlich
+
+### OWASP LLM Top 10
+
+Prompt Injection: Crisis-Detection Pre-Filter + Längenbegrenzung User-Input.
+Insecure Output Handling: `<thinking>`-Block wird vor SSE-Ausgabe entfernt.
+Training Data Poisoning: nicht anwendbar (kein Fine-Tuning).
+Model Denial of Service: Rate-Limit-Retry-Backoff, Token-Budget pro Request.
+Supply Chain: Model-Pinning mit versionierten Modell-IDs (nie generische Aliase).
+
+---
+
+## Deployment
+
+### Produktion
+
+```
+Hetzner CX23 Helsinki
+  └── Docker Compose (docker-compose.prod.yml)
+      ├── api        (FastAPI, :8000)
+      ├── web        (Next.js, :3000)
+      └── db         (PostgreSQL 16 + pgvector)
+
+  docs/ als Read-only-Volume → /docs:ro (Frontend liest Markdown direkt)
+
+Caddy (Host-Netzwerk)
+  ├── kaia.rostek-dagmar.eu → :3000 (Next.js)
+  └── kaia.rostek-dagmar.eu/api → :8000 (FastAPI)
+  TLS-Terminierung + HSTS via Let's Encrypt
+```
+
+Deploy-Befehl:
 ```bash
 ssh root@[hetzner-ip]
 cd ~/kaia-app
@@ -253,153 +606,63 @@ git pull
 docker compose -f infra/docker-compose.prod.yml --env-file .env up -d --build
 ```
 
-Caddy übernimmt TLS-Terminierung und Routing zu Port 3000 (Web) und 8000 (API).
-
----
-
-## Lokale Entwicklung
+### Lokale Entwicklung
 
 ```bash
-# DB + API in Docker (Port 5433 vermeidet Konflikt mit lokalem Postgres)
+# DB + API in Docker (Port 5433 — vermeidet Konflikt mit lokalem Postgres)
 docker compose -f infra/docker-compose.dev.yml --env-file apps/api/.env up
 
 # Frontend nativ (Hot-Reload)
 cd apps/web && npm run dev
 ```
 
-`docs/` wird in Produktion als Read-only-Volume gemountet (`../docs:/docs:ro`).
-In der lokalen Entwicklung liest `readDoc()` aus `../../docs` relativ zum `apps/web`-Verzeichnis.
+`readDoc()` liest in Produktion aus `/docs`, lokal aus `../../docs` (relativ zu `apps/web`).
+
+### CI/CD (GitHub Actions)
+
+| Check          | Tool         | Gate |
+|----------------|--------------|------|
+| Linting        | ruff         | Pflicht |
+| Typchecks      | mypy         | Pflicht |
+| Commit-Format  | commitlint   | Pflicht |
+| Test-Coverage  | pytest-cov   | >= 66 % Backend |
+| Study-Lock     | Custom CI    | bei STUDY_MODE=locked |
+
+Pre-Commit-Hooks: ruff + ESLint lokal (setup via `scripts/setup-hooks.sh`).
 
 ---
 
-## Prompt-Architektur (v3)
-
-Alle Prompt-Templates sind versioniert in der DB gespeichert und über `/admin/prompts` live editierbar.
+## Commit-Format
 
 ```
-User-Input
-    │
-    ├── [INPUT GUARD — geplant]
-    │   ├── PII-Anonymisierung (Microsoft Presidio)
-    │   ├── Topic-Constraint (BART zero-shot, verbotene Themen)
-    │   ├── Injection-Detection (Regex-Patterns)
-    │   └── Längenbegrenzung
-    │
-    ▼
-_build_system_prompt() — PromptContext befüllen:
-    │   ├── user_name, learning_topic (DB: users)
-    │   ├── session_number, session_phase (early/mid/late), is_final_session (DB: chat_sessions)
-    │   ├── user_turns (aus Message-History gezählt)
-    │   ├── learner_profile (DB: user_learning_profiles.profile_interpretation)
-    │   ├── gse_baseline (DB: user_learning_profiles.gse_baseline)
-    │   ├── session_history_summary (load_all_session_contexts: alle Vorsessions, max. 9)
-    │   ├── historical_quotes (load_historical_quotes: strongest_quote je Session, ab Session 6)
-    │   └── last_first_step, last_session_observation, insight_for_next_session (Vorsession)
-    │
-    ▼
-KAIA_PROMPT_V3_WARM (Jinja2-Template in DB — aktiv seit v0.9.0)
-    │   ├── Session-Kontext-Header (session_number > 1: Vorsessions-Zusammenfassung)
-    │   ├── Persistenter Lernenden-Profil-Block (learner_profile, nie explizit zitieren)
-    │   ├── 8 interne Klassifikationsschritte im <thinking>-Block
-    │   │   (Lazarus, Fragetyp, Crisis, Grenz, Grounded, Phase, Rupture, Erwünschtheit)
-    │   ├── Session-5-Meilenstein-Trigger (obligatorisch, nicht optional)
-    │   ├── Historical-Quotes-Block (Sessions 6–10: Widerspruchsarbeit Typ 3)
-    │   ├── Session-10-Abschluss-Logik (3 simultane Aufgaben)
-    │   └── <final_answer> — max. 80 Wörter, ein Impuls
-    │
-Claude API (claude-sonnet-4-6)
-    │
-    ├── Backend: <thinking>-Block strippen vor SSE-Ausgabe
-    │
-    ├── [OUTPUT GUARD — geplant]
-    │   ├── Wort-Limit-Check (80 Wörter)
-    │   ├── Kontext-Referenz-Check (Regex)
-    │   └── Direkte-Lösung-Check (LLM-as-Judge)
-    │
-    ├── extract_session_summary (Haiku, BackgroundTask nach Session-Ende)
-    │   ├── last_first_step, last_session_observation, insight_for_next_session
-    │   └── strongest_quote (neu: stärkster eigener Satz des Lernenden)
-    │
-    ▼
-User-Output (SSE-Stream)
+feat: kurze englische Beschreibung
+
+Release-Note: Was hat sich für Nutzer:innen verändert (Deutsch). Warum ist das für Thesis/Studie/Compliance relevant.
+Aufwand: 1h 20min
+Kategorie: Neu | Verbesserung | Fix | Infra | Docs
 ```
 
-**Prompt-Versionen:**
-- `kaia_system_v1_warm` — Regression-Baseline, inaktiv
-- `kaia_system_v2_warm` — Eval-Regression-Baseline (v2), inaktiv, erhalten für A/B-Vergleich
-- `kaia_system_v3_warm` — **aktiv (seit v0.9.0)** — session-aware, Profil-integriert, Session-5-Trigger, Session-10-Logik
-- `kaia_system_v1_challenging` · `kaia_system_v1_wild` — Eval-Charaktere, inaktiv
+Conventional Commits sind durch commitlint erzwungen.
 
 ---
 
-## Aktueller Stand (v0.9.0)
+## Design-Entscheidungen (Kurzübersicht)
 
-**Live auf kaia.rostek-dagmar.eu:**
-- Landing Page, /wissenschaft, /release-notes, /architektur, /datenschutz, /impressum (öffentlich)
-- Admin-Bereich: Dashboard, Chat-Test, Lerndesign (inkl. Nutzerprofil-Tab), Instrumente, Production Readiness, Changelog, Architektur, Kosten, Tagebuch, Roadmap, User-Approval, Prompt-Sandbox (v3), Thesis-Cockpit
-- Bug-Report-Widget → Slack · Plausible Analytics (datenschutzkonform)
-- Health-Endpoint GET /api/v1/health
+Vollständige ADRs unter `docs/adr/`.
 
-**API-Endpunkte (vollständig):**
-- Auth: register, login, refresh, logout, disclosure-ack
-- Users: me, admin CRUD (approve/reject/delete)
-- Chat: sessions CRUD, messages (SSE), opening/closing (SSE), end, feedback, meta-question
-- Survey: `GET /journey`, `POST /mslq`, `POST /gse` (triggern BackgroundTask für Lernenden-Profil)
-- Preregistration: submit, list, remove
-- Prompts: list, get, update (Study-Lock-Guard)
-- Crisis-Detection Pre-Filter vor allen LLM-Calls
+| Entscheidung                            | Gewählt                  | Abgelehnt                          | Grund |
+|-----------------------------------------|--------------------------|------------------------------------|---|
+| Vektorspeicher                          | pgvector (in PostgreSQL) | ChromaDB, Weaviate                 | Eine DB, weniger Ops, EU-compliant |
+| LLM-Streaming                           | SSE                      | WebSockets, Polling                | Simpel, HTTP-native, kein Handshake |
+| Prompt-Speicherung                      | DB + Jinja2              | Dateisystem, HuggingFace Hub       | Live editierbar, versioniert, kein Deploy |
+| Auth                                    | Custom JWT               | NextAuth, Keycloak                 | Volle Kontrolle, DSGVO-klar, kein Vendor |
+| Passwort-Hashing                        | bcrypt direkt            | passlib                            | passlib unmaintained, bcrypt >= 4.0 inkompatibel |
+| Mistral-Integration                     | OpenAI-kompatibler SDK   | Mistral-eigener SDK                | Ein Client-Code-Pfad für OpenAI + Mistral |
+| Per-User-Modell-Override                | DB-Feld users.kaia_model | Config-Datei, Feature-Flags        | Kein Deploy für Eval-Zuweisungen nötig |
+| Profil-Erstellung                       | BackgroundTask (async)   | Synchron in POST /survey/gse       | Survey-Response blockiert nicht auf LLM |
+| Hosting                                 | Hetzner CX23 Helsinki    | Vercel, Railway, AWS               | EU, DSGVO, DPA möglich, Kostenkontrolle |
+| Frontend-Framework                      | Next.js 14 App Router    | Vite + React SPA, Remix            | SSR, TypeScript, eingebaut i18n-ready |
 
-**DB-Schema:** 14 Tabellen, 9 Alembic-Migrationen (vollständig reversibel)
+---
 
-**Journey State Machine:** PRE_PENDING → ACTIVE (1–10 Sessions) → POST_PENDING → COMPLETED
-- Chat-Gating aktiv: 403 bei PRE_PENDING / POST_PENDING / COMPLETED
-- Frontend-Redirect zu /survey/pre bzw. /survey/post
-- Nach Pre-Survey: BackgroundTask erstellt `user_learning_profiles` (idempotent)
-
-**Session-Architektur (v0.9.0 — vollständig implementiert):**
-- `session_number`, `session_phase` (early/mid/late), `is_final_session`, `user_turns` im PromptContext
-- Kumulatives Session-Gedächtnis: alle Vorsessions aggregiert (`load_all_session_contexts`)
-- `strongest_quote` Extraktion pro Session (Basis für Widerspruchsarbeit und Session-10-Gegenüberstellung)
-- Persistentes Lernenden-Profil (Layer 1): MSLQ + GSE → LLM-Interpretation einmalig erstellt
-- Session-5 Meilenstein-Trigger (obligatorischer Halbzeit-Spiegel, hard-coded im Prompt)
-- Session-10 Drei-Aufgaben-Abschluss (Gegenüberstellung + Autonomisierung + kein GSE-Priming)
-- UI: "Session N von 10" im Header, stiller Kontext-Satz für Sessions 9+10
-
-**Nächste Milestones:**
-- MSLQ regelbasiertes Profil-Routing (4 Kombinationen → deterministischer Code-Pfad)
-- Profil-Briefing-Panel vor Session 1 (einmaliges Transparenz-Panel)
-- LLM-Evaluation-Framework (Claude vs. GPT-4o vs. Mistral)
-- Studienstart: geplant Q3 2026
-
-**Frontend implementiert:**
-- Login, Registrierung mit DSGVO-Zweifach-Consent, AuthContext, AuthGuard
-- /ki-disclosure mit Bestätigungs-Button
-- /datenschutz (DSGVO Art. 15–21, Schrems-II)
-- /admin/users (User-Approval UI, Server Actions)
-- /admin/lerndesign (Sessions 1–10 + Nutzerprofil-MSLQ-Tab + Sentiment + Features)
-
-**Prompt-System implementiert:**
-- `KAIA_PROMPT_V3_WARM` — session-aware, Profil-integriert, Session-5-Trigger, Session-10-Logik
-- `KAIA_PROMPT_V2_WARM` — erhalten als Eval-Regression-Baseline (inaktiv)
-- Sandbox `/admin/prompts` — 3-Charakter-Vergleich, thinking-stripping, localStorage-Persistenz
-- Forschungsgrundlage: `docs/PROMPT_ENGINEERING_RESEARCH.md` (6 Quellen, APA-7)
-
-**Voranmeldungs-System:**
-- `/vorregistrierung` — max. 50 Plätze, Live-Counter, Bestätigungsmail (Brevo), Slack-Notification
-- `/admin/vorregistrierung` — Server Component, Entfernen mit E-Mail-Benachrichtigung
-
-**Analytics:**
-- Plausible Analytics (EU-Cloud) — datenschutzkonform, kein Cookie-Banner, DSGVO-konform
-- Dashboard: https://plausible.io/kaia.rostek-dagmar.eu
-
-**Observability (lokal):**
-- Pre-Commit Hook: ruff + ESLint vor jedem Commit (`scripts/setup-hooks.sh`)
-- Anleitung: `docs/ANALYTICS.md`
-
-**Noch nicht implementiert:**
-- Input/Output Guards (Presidio PII, BART Topic-Constraint, Injection-Detection)
-- DSGVO-Endpunkte: Datenexport, Konto löschen, Consent-Update
-- **Chat Core (SSE-Streaming) — nächster Schritt**
-- LLM-Provider-Integration (Claude/GPT-4o/Mistral)
-- GSE Pre-Messung Frontend
-- Study-Lock (STUDY_MODE=locked)
+*Letzte Aktualisierung: 13. Juli 2026*

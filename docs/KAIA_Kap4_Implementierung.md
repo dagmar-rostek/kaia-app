@@ -1,15 +1,9 @@
 # Kapitel 4 — Technische Implementierung
 
-> **Stand:** 10. Juni 2026 · **Version:** 0.3-DRAFT  
+> **Stand:** 13. Juli 2026 · **Version:** 1.0  
 > **Reviewer:** Architect · Security · MLOps  
-> **Geplanter Umfang:** ca. 18–22 Seiten (~4.500–5.500 Wörter)  
-> **Status:** Architektur-Abschnitte vorhanden; Chat/LLM/Eval-Abschnitte folgen mit Implementierung (Juli 2026)
-
----
-
-## Überblick
-
-Kapitel 4 dokumentiert die technische Umsetzung des konzeptionellen Rahmenwerks (Kapitel 3) als funktionsfähige Webanwendung. Die Beschreibung folgt dem Vier-Schichten-Modell von KAIA: Eingabe → LLM-Verarbeitung → Gedächtnis → Datenhaltung.
+> **Geplanter Umfang:** ca. 20–24 Seiten (~5.000–6.000 Wörter)  
+> **Status:** Vollständig — alle implementierten Komponenten dokumentiert
 
 ---
 
@@ -17,347 +11,579 @@ Kapitel 4 dokumentiert die technische Umsetzung des konzeptionellen Rahmenwerks 
 
 ### 4.1.1 Design Science Research als Entwicklungsparadigma
 
-Die Entwicklung von KAIA folgt dem iterativen Design-Evaluate-Revise-Zyklus nach Hevner et al. (2004). Jede Architekturentscheidung wird vor dem Hintergrund der Anforderungen aus Kapitel 3 begründet. Kompromisse zwischen wissenschaftlichen, technischen und datenschutzrechtlichen Anforderungen werden explizit dokumentiert.
+Die Entwicklung von KAIA folgt dem iterativen Design-Evaluate-Revise-Zyklus nach Hevner et al. (2004). Jede Architekturentscheidung wird vor dem Hintergrund der Anforderungen aus Kapitel 3 begründet; Kompromisse zwischen wissenschaftlichen, technischen und datenschutzrechtlichen Anforderungen sind in Architecture Decision Records (ADRs) dokumentiert. Das System ist als DSR-Artefakt konzipiert: Es ist nicht nur Werkzeug, sondern gleichzeitig Gegenstand der Forschung und trägt durch seine Entscheidungshistorie zur wissenschaftlichen Dokumentation bei.
 
 ### 4.1.2 Tech-Stack und Begründung
 
 | Komponente | Technologie | Begründung |
 |---|---|---|
-| Backend | FastAPI 0.115+ / Python 3.12 | Async-native, OpenAPI-kompatibel, lightweight |
-| Frontend | Next.js 14 App Router / TypeScript | Server Components für DSGVO-konformes Rendering |
-| Datenbank | PostgreSQL 16 + pgvector | EU-Standard, Row-Level-Security, semantische Suche |
-| Auth | Custom JWT (PyJWT) + bcrypt-12 | Keine Drittanbieter-Abhängigkeit, volle Kontrolle |
+| Backend | FastAPI 0.115+ / Python 3.12 | Async-native, OpenAPI-kompatibel, ASGI-basiertes SSE-Streaming ohne Workarounds |
+| Validierung | Pydantic v2 | Schema-First-Ansatz, automatische Serialisierung, DSGVO-konforme Feldspezifikation |
+| ORM | SQLAlchemy 2.0 async | Async-Query-Support, typsicheres Mapped-Column-API, native PostgreSQL-Dialekte |
+| Migrationen | Alembic | Revisionsgraph, Rollback-fähige Schema-Änderungen, Study-Lock-kompatibel |
+| Datenbank | PostgreSQL 16 + pgvector | EU-Standard, Row-Level-Security-Konzept, IVFFLAT-Index für ANN-Suche |
+| Auth | Custom JWT (PyJWT) + bcrypt-12 | Keine Drittanbieter-Abhängigkeit, vollständige Kontrolle über Tokenpfade |
+| Frontend | Next.js 14 App Router / TypeScript | Server Components, kein Hydration-Overhead für statische Auth-Checks |
+| Styling | Tailwind CSS v4 + shadcn/ui (Radix) | Accessible-by-Default-Komponenten, WCAG 2.2 AA-Grundlage |
+| State | React Query | Deklaratives Caching, optimistische Updates, Server-State-Synchronisation |
+| API-Validation FE | Zod | Typsichere Schema-Validierung auf Client-Seite |
+| LLM-Streaming | Server-Sent Events (SSE) | Unidirektionales Streaming ohne WebSocket-Komplexität |
 | Hosting | Hetzner CX23 Helsinki | EU-Serverstandort, DSGVO-konform, Schrems-II-unproblematisch |
-| LLM-Provider | Anthropic / OpenAI / Mistral | Evaluation aller drei; Mistral als EU-Option |
+| Reverse Proxy | Caddy + Let's Encrypt | Automatisches TLS, Upstream-Buffering deaktivierbar für SSE |
+| Container | Docker Compose | Reproduzierbare Umgebungen, kein Kubernetes-Overhead für Einzelserver |
+| CI/CD | GitHub Actions | Linting (ruff), Typprüfung (mypy), Tests (pytest, Coverage ≥ 65 %), Build-Check |
+| Observability | Sentry (FE + BE) + Slack-Webhooks + structlog JSON | Vollständige Fehlererfassung mit Kanal-Trennung |
+| LLM-Provider | Anthropic / OpenAI / Mistral | Evaluation aller drei; Mistral als EU-Verarbeitungsoption |
 
-**Warum kein Managed Auth (Auth0, Supabase)?** Die Studie erfordert vollständige Kontrolle über alle Datenpfade. Drittanbieter für Auth würden unkontrollierte Datentransfers in die USA erzeugen.
+**Warum kein Managed Auth (Auth0, Supabase)?** Die Studie erfordert vollständige Kontrolle über alle Datenpfade. Drittanbieter für Auth würden unkontrollierte Datentransfers in die USA erzeugen und wären mit dem Schrems-II-Anforderungsprofil der Thesis nicht vereinbar.
+
+**Warum Boring Technology?** Das Projekt folgt bewusst dem Prinzip der langweiligen, bewährten Technologie. Postgres statt eines Vektordatenbankspezialisten, SSE statt WebSockets, FastAPI statt eines ML-Frameworks — jede Abweichung von diesem Prinzip bedarf einer konkreten Begründung.
 
 ---
 
-## 4.2 Authentifizierung und Benutzerverwaltung
+## 4.2 Systemüberblick und Komponentendiagramm
 
-### 4.2.1 JWT-Architektur
+KAIA folgt einem Vier-Schichten-Modell: Texteingabe → LLM-Verarbeitung → zweischichtiges Gedächtnis → DSGVO-konforme Datenhaltung. Das Backend ist nach Domain-Driven Design strukturiert; jede Domain enthält die Dateien `models.py`, `repository.py`, `service.py`, `routes.py`, `schemas.py` und einen `tests/`-Ordner. Der Service-Layer ist vom HTTP-Layer getrennt; der Repository-Layer abstrahiert alle Datenbankoperationen.
 
-*[Bereits implementiert — Stand: Mai/Juni 2026]*
+```
+Nutzer-Browser
+    │ HTTPS (Caddy)
+    ↓
+Next.js 14 (App Router, TypeScript)
+    │ API-Calls / SSE
+    ↓
+FastAPI (uvicorn, async)
+    ├── core/             — JWT-Auth, Crisis-Detection, Settings
+    ├── domains/users/    — Auth, Approval, E-Mail, DSGVO
+    ├── domains/chat/     — Session, Streaming, Summary, EMA
+    ├── domains/prompts/  — Jinja2-Templates, DB-Versionierung
+    ├── domains/survey/   — GSE, MSLQ, ConsentLog
+    ├── domains/eval/     — Eval-Pipeline, LLM-Judge, Simulation
+    └── observability/    — Sentry, Slack, structlog
+    │
+    ↓
+PostgreSQL 16 + pgvector (Hetzner Helsinki)
+    ├── users, refresh_tokens
+    ├── chat_sessions, messages, memory_chunks, session_feedback
+    ├── user_learning_profiles
+    ├── gse_results, mslq_results, consent_logs
+    ├── prompt_templates
+    ├── eval_runs, eval_results, eval_transcripts
+    └── llm_usage, app_settings
+    │
+    ↓ API-Calls (outbound)
+Anthropic / OpenAI / Mistral
+```
+
+---
+
+## 4.3 Datenmodell und DSGVO-Implementierung
+
+### 4.3.1 Kernentitäten
+
+Das Datenbankschema wird vollständig über Alembic-Migrationen verwaltet und ist an den Studienstand gebunden (Study-Lock verhindert Schema-Änderungen während der Datenerhebung).
+
+**`users`** — Zentrale Entität; enthält neben Authentifizierungsdaten alle Consent-Felder (mit Timestamp, nicht nur Boolean), den Onboarding-Status, Admin-Approval-Felder, Sicherheitsfelder (failed_login_count, locked_until), das Lerntopic, die optionale per-User-LLM-Zuweisung (`kaia_model`) und Soft-Delete-Felder (`deleted_at`, `deletion_reason`). Der Status durchläuft die Zustände `PENDING → ACTIVE → SUSPENDED/DELETED`. Ein Simulation-Flag (`is_simulation`) markiert synthetische Nutzer, die vom Eval-System erzeugt werden, und schließt diese vom Cost-Guard aus.
+
+**`refresh_tokens`** — SHA-256-Hash des Tokens (kein Klartext), UUID-Family für familienbasierte Reuse-Detection, User-Agent und IP-Adresse für den Audit-Trail, `revoked_at` + `revoke_reason` für die Revokations-Geschichte.
+
+**`chat_sessions`** — Eine Lernsession pro Nutzerin und Woche; enthält den Charakter (warm/challenging/wild), die Session-Nummer, Initial- und Finalmodus für die neuroadaptive Zustandsdokumentation, sowie `session_summary` (strukturiertes JSON, nach Sitzungsende von claude-haiku-4-5-20251001 extrahiert).
+
+**`messages`** — Einzelne Gesprächsnotizen mit Rolle (user/assistant), Zeitstempel, dem erkannten Zustand (`detected_state`) und dem Interaktionsmodus (`interaction_mode`) für KAIA-Antworten. Der Thinking-Block (`thinking_raw`) wird serverseitig gespeichert, aber nicht an den Client gestreamt — er dient dem wissenschaftlichen Audit-Trail.
+
+**`memory_chunks`** — Vektorisierte Gesprächsfragmente (1536 Dimensionen, OpenAI-Embedding-Dimension); user_id-gebunden als RLS-Äquivalent; IVFFLAT-Index für approximative Nearest-Neighbour-Suche.
+
+**`session_feedback`** — EMA-Signale während der Session: vier Typen (transfer_marker, wow, stuck, unclear), optional an eine konkrete message_id gebunden.
+
+**`user_learning_profiles`** — Unveränderliches Baseline-Profil, genau einmal nach Abschluss beider Prä-Surveys erzeugt. Enthält `gse_baseline` (Float), `gse_items` (JSONB), `subscale_scores` (JSONB, vier MSLQ-Subskalen), `profile_interpretation` (LLM-generierter Interpretationstext, einmalig erzeugt und nie neu generiert) sowie `interpretation_prompt_hash` (SHA-256 des verwendeten Prompts für Reproduzierbarkeitsaudit). Unique Constraint auf `user_id`.
+
+**`gse_results`** / **`mslq_results`** — Messergebnisse mit `measurement_type` (pre/post), Items als JSONB, computed `total_score` bzw. `subscale_scores`.
+
+**`consent_logs`** — Unveränderliches Audit-Log aller Consent-Ereignisse (sieben Event-Typen: register, ki_disclosure, analytics_opt_in/out, data_export, account_delete, consent_update). Wird nie aktualisiert oder gelöscht; bildet die Nachweispflicht nach DSGVO Art. 7 (2) ab.
+
+**`prompt_templates`** — DB-versionierte Jinja2-Templates, live editierbar, mit Timestamp und Versionsnummer; unter Study-Lock schreibgeschützt.
+
+**`llm_usage`** — Token-Protokoll jedes LLM-Calls (session_id, user_id, provider, model, input_tokens, output_tokens, cost_eur). Basis für das per-User-Cost-Cap und die Admin-Kostentransparenz.
+
+**Eval-Tabellen**: `eval_runs`, `eval_results` (ein Row pro Persona × Session × Metrik), `eval_transcripts` (vollständiges Transkript, separate Tabelle weil Heatmap-Queries keine Transkripte benötigen).
+
+### 4.3.2 Row-Level-Security-Konzept für pgvector
+
+Alle Zugriffe auf `memory_chunks` werden auf Anwendungsebene durch den obligatorischen `user_id`-Parameter in allen Repository-Methoden abgesichert. Kein Query greift ohne expliziten Nutzerkontext auf die Vektordatenbank zu. Dies verhindert Cross-User-Datenlecks auch in Fällen, in denen ein LLM-generierter Query-String manipuliert wird (Prompt-Injection-Abwehr auf Datenbankebene).
+
+### 4.3.3 DSGVO-Rechte als implementierte Endpunkte
+
+| Recht | Endpunkt | Implementierung |
+|---|---|---|
+| Art. 15 (Auskunft) | GET /api/v1/users/me/export | JSON-Export aller gespeicherten Daten |
+| Art. 17 (Löschung) | DELETE via Admin | Kaskadierendes Hard-Delete mit Soft-Delete-Marker |
+| Art. 20 (Portabilität) | GET /api/v1/users/me/export | Maschinenlesbares JSON |
+| Art. 7 (3) (Widerruf) | PATCH /api/v1/users/me/consent | Consent-Felder + ConsentLog-Eintrag |
+
+Die Admin-seitige Löschung (DSGVO Art. 17) nutzt PostgreSQL-Kaskaden (`ondelete="CASCADE"`) an allen Foreign Keys, die auf `users.id` zeigen. Damit ist sichergestellt, dass kein Datensatz nach einer Löschanfrage verwaist.
+
+---
+
+## 4.4 Authentifizierung und Benutzerverwaltung
+
+### 4.4.1 JWT-Architektur
 
 KAIA verwendet ein zweistufiges Token-System:
-- **Access Token** (15 Minuten, Bearer): Stateloser Zugriff auf API-Endpunkte
-- **Refresh Token** (30 Tage, httpOnly-Cookie): Token-Rotation mit Family-basierter Reuse-Detection
 
-Die Refresh-Token-Rotation folgt RFC 6749: Ein verwendetes Token wird sofort revoziert. Bei erkannter Wiederverwendung (Token-Theft-Indikator) wird die gesamte Token-Familie gesperrt. Passwörter werden mit bcrypt (12 Runden) gehasht; Brute-Force-Schutz ab 5 Fehlversuchen (15-Minuten-Kontosperre).
+- **Access Token** (15 Minuten, Bearer): Zustandsloser Zugriff auf geschützte API-Endpunkte; enthält `user_id` und `status` im Payload.
+- **Refresh Token** (30 Tage, httpOnly-Cookie): Token-Rotation mit familienbasierter Reuse-Detection gemäß RFC 6749. Jedes verwendete Token wird sofort revoziert. Bei erkannter Wiederverwendung (Indikator für Token-Diebstahl) wird die gesamte Token-Familie gesperrt.
 
-### 4.2.2 User-Approval-Flow als Studienkontrolle
+Refresh-Token-Hashes werden als SHA-256-Digest in der Datenbank gespeichert — niemals der Raw-Token. User-Agent und IP-Adresse werden für den Forensik-Audit-Trail erfasst. Der Index `ix_refresh_tokens_user_active` auf `(user_id, revoked_at)` optimiert die häufigste Query (aktive Tokens eines Nutzers).
 
-Neue Konten starten mit Status `PENDING`. Der Zugang zur Anwendung wird erst nach expliziter Admin-Freigabe erteilt. Dieser Flow dient nicht primär der Kostenkontrolle, sondern der Studienkontrolle: Nur überprüfte Teilnehmende der Pilotstudie erhalten Zugang — eine Voraussetzung für das Ethikvotum der SRH.
+Passwörter werden mit bcrypt (12 Runden) gehasht. Bei fünf Fehlversuchen wird das Konto für 15 Minuten gesperrt (`locked_until`-Feld in `users`).
+
+### 4.4.2 User-Approval-Flow als Studienkontrolle
+
+Neue Konten starten mit Status `PENDING`. Zugang zur Anwendung wird erst nach expliziter Admin-Freigabe erteilt (`approved_at`, `approved_by`). Dieser Flow dient nicht primär der Kostenkontrolle, sondern der Studienkontrolle: Nur geprüfte Teilnehmende der Pilotstudie erhalten Zugang — eine Voraussetzung für das Ethikvotum der SRH. Die Freischaltung löst automatisch eine E-Mail-Benachrichtigung aus (Brevo SMTP).
+
+### 4.4.3 Per-User LLM-Zuweisung
+
+Das Feld `kaia_model` in der `users`-Tabelle (nullable) erlaubt die Zuweisung eines spezifischen LLM-Modells pro Nutzerin durch den Admin (`PATCH /api/v1/admin/users/{id}`). Ist das Feld nicht gesetzt, verwendet KAIA das globale System-Modell (`kaia_chat_model` aus den Settings). Diese Architektur ermöglicht gezielte A/B-Zuweisungen im Studienkontext, ohne Prompts oder System-Konfiguration zu ändern.
+
+### 4.4.4 E-Mail-Benachrichtigungen
+
+Das `emails.py`-Modul versendet transaktionale E-Mails für drei Ereignisse: Registrierungsbestätigung (mit Pending-Status-Hinweis), Freischaltung durch Admin, und Studienstart. Der SMTP-Transport verwendet Brevo (Port 587, STARTTLS) und ist vollständig konfigurierbar über Umgebungsvariablen.
 
 ---
 
-## 4.3 Ethische Schutzmaßnahmen in der Implementierung
+## 4.5 Ethische Schutzmaßnahmen in der Implementierung
 
-### 4.3.1 Crisis-Detection Pre-Filter
+### 4.5.1 Crisis-Detection Pre-Filter
 
-*[Implementiert: Juni 2026, Commit b89d594]*
+Jede Texteingabe wird vor der LLM-Verarbeitung durch einen deterministischen Keyword-Filter geprüft (`app/core/crisis.py`). Der Filter enthält 27 deutsche Regex-Muster für Suizidgedanken (explizit und passiv), Selbstverletzung und akute Hoffnungslosigkeit. Die Muster sind nach Schweregrad sortiert und verwenden case-insensitive Matching (`re.IGNORECASE`).
 
-Jede Texteingabe wird vor der LLM-Verarbeitung durch einen deterministischen Keyword-Filter geprüft. Der Filter enthält 20+ deutsche Regex-Muster für Suizidgedanken, Selbstverletzung und akute Hoffnungslosigkeit. Bei Treffer:
+Bei Treffer:
 - Die Eingabe wird **nicht** an das LLM weitergeleitet
-- Eine statische Antwort mit Krisenressourcen wird zurückgegeben (Telefonseelsorge 0800 111 0 111, Notruf 112)
-- Der Vorfall wird ohne Inhalt protokolliert (Timestamp, pseudonymisierte User-ID)
+- Eine statische Antwort mit Krisenressourcen wird zurückgegeben (Telefonseelsorge 0800 111 0 111, Alternative 0800 111 0 222, Notruf 112)
+- Die Eingabe wird dennoch in der Datenbank gespeichert (für den Audit-Trail), die LLM-Antwort wird als CRISIS_RESPONSE markiert
+- Der Vorfall wird über structlog protokolliert
 
-Die Implementierung folgt dem Prinzip der deterministischen Sicherheit: Für Safety-kritische Entscheidungen werden keine LLMs eingesetzt.
+Die Implementierung folgt dem Prinzip der deterministischen Sicherheit: Für Safety-kritische Entscheidungen werden keine LLMs eingesetzt. Falsch-Positive sind bewusst akzeptiert — die Prämisse ist, dass ein falsch ausgelöster Krisenhinweis weniger Schaden anrichtet als ein nicht ausgelöster.
 
-### 4.3.2 KI-Disclosure-Gate
+Die Erweiterung der Trigger-Phrasen im Laufe der Entwicklung — etwa um existentielle Verallgemeinerungen wie "oder überhaupt gerade" — ist durch P04-spezifische Krisensignale in der Eval-Persona-Datenbank dokumentiert (vgl. Abschnitt 4.8).
 
-Vor der ersten Nutzung bestätigen alle Teilnehmenden explizit, dass KAIA eine KI ist (computational empathy, kein Mensch). Die Bestätigung wird mit Timestamp in der Datenbank gespeichert (`ki_disclosure_seen_at`). Ohne diese Bestätigung ist kein Chat-Zugriff möglich.
+### 4.5.2 KI-Disclosure-Gate
 
----
+Vor der ersten Nutzung bestätigen alle Teilnehmenden explizit, dass KAIA eine KI ist (computational empathy, kein Mensch). Die Bestätigung wird mit Timestamp in `users.ki_disclosure_seen_at` gespeichert und im `consent_logs`-Audit-Log erfasst (`ConsentEvent.KI_DISCLOSURE`). Ohne diese Bestätigung ist kein Chat-Zugriff möglich — technisch erzwungen durch den Journey-State-Guard in der Session-Erstellungsroute.
 
-## 4.4 Chat-Interface und LLM-Integration
+### 4.5.3 Multi-Step-Consent
 
-*[Geplant: Juli 2026 — wird ergänzt nach Implementierung]*
-
-### 4.4.1 SSE-Streaming-Architektur
-
-*Platzhalter — folgt nach Implementierung*
-
-### 4.4.2 LLM-Abstraktionsschicht
-
-*Platzhalter — gemeinsames Interface für Claude, GPT-4o, Mistral*
-
-Versionierte Model-IDs (Pflicht):
-- Claude: `claude-sonnet-4-6` (niemals generisch `claude`)
-- GPT-4o: `gpt-4o-2024-08-06`
-- Mistral: `mistral-large-latest` (mit versioniertem Datum-Tag)
+Das Registrierungsformular enthält zwei getrennte Checkboxen: Zustimmung zur Datenverarbeitung (`consent_data`) und Zustimmung zu Analytics/Studie (`consent_research_data`, `consent_analytics`). Beide werden mit Timestamp (`consent_at`) und Consent-Versionsnummer (`consent_version`) gespeichert. Das Design folgt dem Gebot der informierten Einwilligung nach DSGVO Art. 7 und ermöglicht separaten Widerruf der Forschungs-Einwilligung ohne Accountlöschung.
 
 ---
 
-## 4.5 Datenmodell und DSGVO-Implementierung
+## 4.6 Chat-Core: Session-Architektur und Streaming
 
-*[Geplant: Juli 2026 — DB-Schema nach Alembic-Migration]*
+### 4.6.1 Session State Machine und Journey-Guard
 
-### 4.5.1 Kernentitäten
+Jede Lernsession ist ein `ChatSession`-Datensatz mit den Zeitstempeln `started_at` (DB-Default) und `ended_at` (nullable, gesetzt durch `POST /sessions/{id}/end`). Die Session gilt als offen, solange `ended_at IS NULL`.
 
-Haupttabellen: `users`, `sessions`, `messages`, `gse_results`, `consent_logs`
+Vor der Session-Erstellung prüft ein Journey-Guard den Studienstatus der Nutzerin (`get_journey_state`):
+- `PRE_PENDING` → Weiterleitung zum Prä-Survey (MSLQ + GSE vor Session 1)
+- `POST_PENDING` → Weiterleitung zum Post-Survey (GSE nach Session 10)
+- `COMPLETED` → Zugang gesperrt (Studie abgeschlossen)
+- Cost-Guard → Zugang gesperrt, wenn das per-User-Budget überschritten ist (Standard: €3,00)
 
-### 4.5.2 Row-Level-Security
+Session-Wiederaufnahme: `GET /sessions/active` gibt die offene Session (ended_at IS NULL) mit allen Nachrichten zurück. Das Frontend nutzt diesen Endpunkt beim Seitenaufruf, um unterbrochene Sessions nahtlos wiederaufzunehmen (window-close-Handling).
 
-pgvector-Zugriffe sind an `user_id` gebunden. Kein direkter Tabellenzugriff ohne Benutzerkontext — kein Cross-User-Leak.
+### 4.6.2 Vier Stream-Funktionen
 
-### 4.5.3 DSGVO-Rechte als Self-Service
+Alle vier Streaming-Generatoren sind in `domains/chat/service.py` implementiert und folgen demselben Muster: Systemprompt aufbauen → LLM aufrufen → Thinking-Strip → SSE-Delta senden → Nachricht persistieren → Token-Nutzung protokollieren. Alle vier nehmen den Parameter `model_override` (per-User-Modell) entgegen.
 
-| Recht | Implementierung |
+**`stream_opening`**: Generiert KAIAs Eröffnungsfrage für eine frische Session ohne User-Input. Ab Session 2 enthält der Trigger die Instruktion, aus der Reflexion über die Vorperiode zu starten ("du hast seit der letzten Session über dieses Gespräch nachgedacht"). Der Trigger ist ein nicht persistierter System-Hinweis — keine User-Nachricht in der Datenbank.
+
+**`stream_response`**: Kernpfad für Nutzerantworten. Reihenfolge: Crisis-Detection-Check → User-Nachricht persistieren → Session-History laden → Systemprompt rendern → LLM aufrufen → Thinking-Strip → Delta streamen → Persistieren → Token-Log. Bei Crisis-Treffer wird der LLM-Call übersprungen.
+
+**`stream_closing`**: Generiert KAIAs didaktische Abschlussfrage. Die Session bleibt offen bis zum expliziten `POST /sessions/{id}/end`-Aufruf — die Closing-Bubble ist kein Session-Ende, sondern eine letzte sokratische Intervention. Session-spezifische Abschlusstrigger (10 verschiedene, je nach Missions-Energie der Session) werden aus einer Lookup-Tabelle geladen.
+
+**`stream_meta_question`**: Reagiert auf aktive EMA-Signale (stuck/unclear) mit einer kurzen Klärungsfrage. max_tokens=120 begrenzt die Antwort auf das didaktisch Notwendige. Kein Modus-Switch — ein einzelnes EMA-Signal verändert nicht den Adaptionszustand der Session.
+
+### 4.6.3 SSE-Protokoll
+
+Das SSE-Protokoll sendet JSON-kodierte Events im Format `data: {...}\n\n`:
+
+| Event-Typ | Payload-Felder | Bedeutung |
+|---|---|---|
+| `delta` | `content: string` | Teilinhalt der KAIA-Antwort |
+| `done` | `message_id, input_tokens, output_tokens` | Stream abgeschlossen, Tokens protokolliert |
+| `error` | `message: string` | Fehler — LLM nicht erreichbar o.ä. |
+| `thinking` | `content: string` | Debug-Only: Thinking-Block (nur wenn `?debug=true`) |
+
+Das Frontend liest den Stream über die ReadableStream-API des Browsers; Caddy-Buffering ist durch den Header `X-Accel-Buffering: no` deaktiviert.
+
+### 4.6.4 Thinking-Strip
+
+Claude-Sonnet-4-6 sendet intern einen `<thinking>`-Block vor der `<final_answer>`. `thinking_strip()` in `sse.py` extrahiert den Thinking-Block (gespeichert in `messages.thinking_raw` für den Audit-Trail), entfernt ihn aus dem Response-Stream und gibt nur den `<final_answer>`-Teil an den Client weiter. Im Debug-Modus wird der Thinking-Block zusätzlich als `thinking`-SSE-Event gesendet.
+
+### 4.6.5 Cost-Guard und Token-Budget
+
+Der `llm_usage`-Tabelleneintrag nach jedem LLM-Call enthält: `session_id`, `user_id`, `provider`, `model`, `input_tokens`, `output_tokens`, `cost_eur`. Die Kostenberechnung berücksichtigt Anthropic Prompt Caching:
+
+- Cache-Creation-Tokens: 1,25× normaler Input-Preis
+- Cache-Read-Tokens: 0,10× normaler Input-Preis
+- Output-Tokens: normaler Output-Preis
+
+Das per-User-Kostenlimit ist über `MAX_COST_PER_USER_EUR` konfigurierbar (Standard: €3,00). Simulations-Nutzer (`is_simulation=True`) sind vom Cost-Guard ausgenommen — sie durchlaufen im Rahmen der Eval-Pipeline beliebig viele Sessions.
+
+`MAX_TOKENS=3000` in `sse.py` definiert das Token-Budget pro LLM-Call; es bietet genug Puffer für den Thinking-Block (~2700 Token) und die finale Antwort (~300 Token).
+
+### 4.6.6 Closing- und Timeout-Handling
+
+Nach der Closing-Bubble wird `POST /sessions/{id}/end` aufgerufen. Dieser Endpunkt setzt `ended_at`, startet `extract_session_summary()` als BackgroundTask und gibt die Session zurück. Das Frontend implementiert ein 10-Minuten-Timeout nach der Closing-Bubble: Reagiert die Nutzerin nicht, schließt der Client die Session automatisch durch einen `/end`-Aufruf. Dieses Client-seitige Timeout vermeidet Polling-Mechanismen auf dem Server und hält die Backend-Architektur zustandslos.
+
+---
+
+## 4.7 Didaktisches Progressionsmodell
+
+### 4.7.1 Zehn Sessionsmissionen
+
+Eine der zentralen Architekturentscheidungen (ADR-007) ist die Einführung eines expliziten didaktischen Progressionsmodells, das die zehn Sessions als strukturierte Lernreise gestaltet. Jede Session hat eine Mission, einen dominanten Fragetyp, explizit verbotene Fragetypen und Session-spezifische Few-Shot-Beispiele. Diese Daten werden nicht vom LLM generiert, sondern als Lookup-Tabelle in `service.py` verwaltet und als Teil des Systemprompts übergeben.
+
+| Session | Mission | Dominanter Typ |
+|---|---|---|
+| 1 | Ankern — Lernmotiv vom Oberflächenziel trennen, latentes Vorwissen zugänglich machen (Anamnesis) | Typ 6 (Anamnese) |
+| 2 | Kartieren — Vorannahmen explizit machen und präzisieren | Typ 1 (Klärung) |
+| 3 | Erden — abstraktes Lernziel in konkreter Situation verankern (situiertes Lernen) | Typ 4 (Systemisch) |
+| 4 | Ausprobieren — Erster-Schritt-Loop, Implementation Intention (Gollwitzer) | Typ 5 (Erste-Schritt) |
+| 5 | Spiegel — Halbzeit-Reflexion, eigene kognitive Entwicklung sichtbar machen | Typ 2 (Hypothetisch als Spiegel) |
+| 6 | Reiben — Elenchos: Inkonsistenzen aus Vorsessions konfrontieren | Typ 3 (Widerspruch) |
+| 7 | Schärfen — Inkonsistenzen in bewusste Position überführen | Typ 2 + 3 |
+| 8 | Übergeben — Scaffolding Fading nach Collins, Steuerung sukzessiv abgeben | Typ 4 (Transfer-Fokus) |
+| 9 | Konsolidieren — Gelerntes in kohärente Meta-Erkenntnis verdichten (Merrill) | Typ 2 + 4 |
+| 10 | Loslassen — Autonomisierung (Maieutik): eigene Lernstrategie formulieren | Autonomiefragen |
+
+Die verbotenen Fragetypen verhindern didaktische Fehler: Widerspruchsfragen (Typ 3) sind in Sessions 1–5 gesperrt (kein Fundament vorhanden), Erste-Schritt-Fragen (Typ 5) in Session 10 (Steuerung wird zurückgegeben). Session-spezifische Abschlusstrigger variieren, um Habituation zu vermeiden — Session 10 erhält nur einen einzigen Satz als Abschluss ("Was bleibt — wenn du in einem Jahr an diese zehn Wochen denkst?").
+
+### 4.7.2 Historische Zitate für den Elenchos (Sessions 6–10)
+
+Ab Session 6 lädt `_build_system_prompt()` historische Zitate aus `load_historical_quotes()`. Diese Funktion liest das Feld `strongest_quote` aus den `session_summary`-JSON-Objekten aller Vorsessions. Die Zitate werden als Datenpunkt in den `PromptContext.historical_quotes`-Slot (Liste von Tupeln aus Sessionnummer und Zitat) übergeben und im Jinja2-Template als XML-Block in den Systemprompt injiziert. Damit kann KAIA eigene Formulierungen der lernenden Person aus früheren Sessions aktivieren — ein direktes Instrument des sokratischen Elenchos.
+
+---
+
+## 4.8 Prompt-System und Cross-Session-Memory
+
+### 4.8.1 Jinja2-Prompt-Templates in der Datenbank
+
+Prompt-Templates sind als versionierte Datenbankeinträge gespeichert (`prompt_templates`-Tabelle). Das aktive Template für jeden Charakter-Modus (warm, challenging, wild) wird live ohne Re-Deployment geladen. Änderungen wirken sofort auf den nächsten LLM-Call.
+
+Der `render_prompt()`-Service verwendet Jinja2 mit einer `_SilentUndefined`-Klasse: Unbekannte Template-Variablen werden durch leere Strings ersetzt, anstatt einen Fehler zu werfen. Dies erhöht die Robustheit — ein fehlendes Kontextfeld lässt den Systemprompt degradiert, aber nicht broken laufen.
+
+Unter `STUDY_MODE=locked` blockiert das CI Prompt- und Schema-Änderungen. Dieser Study-Lock-Mechanismus sichert die Reproduzierbarkeit der Studienbedingungen und verhindert unbewusste Eingriffe der Forscherin nach Beginn der Datenerhebung.
+
+### 4.8.2 PromptContext-Dataclass
+
+Die `PromptContext`-Dataclass (`domains/prompts/service.py`) bündelt alle Informationen für das Prompt-Rendering:
+
+| Feld-Gruppe | Felder |
 |---|---|
-| Art. 15 (Auskunft) | GET /users/me/export → JSON |
-| Art. 17 (Löschung) | DELETE /users/me → Soft-Delete + Anonymisierung |
-| Art. 20 (Portabilität) | GET /users/me/export → maschinenlesbares JSON |
-| Art. 7 (3) (Widerruf) | PATCH /users/me/consent |
+| Basiskontext | `user_name`, `learning_topic` |
+| Session-Position | `is_first_session`, `is_final_session`, `session_number`, `session_phase` (early/mid/late), `user_turns` |
+| Vorsessions-Kontext | `last_first_step`, `last_session_observation`, `insight_for_next_session` |
+| Kumulative Historie | `session_history_summary` (kompakte Mehrzeilen-Zusammenfassung aller Vorsessions) |
+| Lernerprofil | `learner_profile` (LLM-generierter Interpretationstext), `gse_baseline` (Float) |
+| Session-Planung | `outcome`, `daily_plan` |
+| Historische Zitate | `historical_quotes` (Liste von Tupeln: Sessionnummer, Zitat) |
+| Didaktische Mission | `session_mission`, `dominant_question_type`, `forbidden_question_types`, `session_few_shots` |
 
----
+Die `session_phase` wird aus der Session-Nummer abgeleitet: Sessions 1–3 = "early", 4–7 = "mid", 8–10 = "late". Diese Phaseneinteilung wird im Template genutzt, um Formulierungen und Intensität der sokratischen Intervention anzupassen.
 
-## 4.6 Observability und Monitoring
+### 4.8.3 Cross-Session-Memory: Session-Summary-Extraktion
 
-*[Bereits implementiert — Stand: Juni 2026]*
+Nach Sitzungsende (`POST /sessions/{id}/end`) wird `extract_session_summary()` als FastAPI-BackgroundTask ausgelöst. Diese Funktion öffnet eine eigene Datenbankverbindung (die Request-Datenbankverbindung ist dann bereits geschlossen) und sendet das vollständige Transkript an `claude-haiku-4-5-20251001`.
 
-- **Sentry**: Frontend (instrumentation-client.ts) + Backend (sentry-sdk[fastapi])
-- **Slack-Webhooks**: Neue Registrierungen, Freigaben, Fehler-Eskalation
-- **structlog**: Strukturiertes JSON-Logging im Backend
-- **Study-Lock**: Bei `STUDY_MODE=locked` blockiert CI Prompt- und Schema-Änderungen
-
----
-
-## 4.7 Iterative Prompt-Entwicklung als Forschungsmethodik
-
-### 4.7.1 Das Problem des "guten" Prompts
-
-Ein zentrales methodisches Problem bei der Entwicklung LLM-basierter Systeme ist die fehlende formale Spezifikation für "guten" Output: Es gibt keine allgemeine mathematische Funktion, die misst, ob ein sokratisch-empathischer Lernbegleiter seinen Auftrag erfüllt. Die Güte eines Systemprompts ist kontextabhängig, nutzerspezifisch und lässt sich nicht vollständig vor der Nutzung evaluieren. Dies stellt einen fundamentalen Unterschied zu klassischer Software-Entwicklung dar, in der Korrektheit durch Tests formal verifizierbar ist.
-
-Die Entwicklung des KAIA-Systemprompts folgt daher einem **iterativen Feldforschungs-Ansatz**: Die Forscherin interagiert selbst mit dem System, beobachtet das Verhalten, formuliert Hypothesen über Prompt-Schwächen und Verbesserungen, und revidiert den Prompt — in direkter Anlehnung an den Design-Evaluate-Revise-Zyklus von Hevner et al. (2004).
-
-### 4.7.2 Technische Infrastruktur für Prompt-Iteration
-
-Um diesen Prozess methodisch zu unterstützen, wurde eine eigene Sandbox-Umgebung implementiert (`/admin/prompts`). Diese ermöglicht:
-
-1. **Drei-Charakter-Vergleich**: Derselbe Nutzer-Input wird gleichzeitig an drei Prompt-Varianten mit unterschiedlichem Charakterprofil (warm/herausfordernd/unberechenbar) gesendet. Die parallele Darstellung der Antworten macht Stärken und Schwächen des Prompts unmittelbar sichtbar.
-
-2. **Live-Editing**: Der Systemprompt ist direkt im Interface editierbar. Änderungen wirken sofort auf die nächste Antwort — kein Re-Deployment notwendig.
-
-3. **Versionierung in der Datenbank**: Jede Prompt-Version wird mit Timestamp, Versionsnummer und Begründung gespeichert. Damit ist die Entwicklungshistorie des Prompts Teil der wissenschaftlichen Dokumentation — reproduzierbar und auditierbar.
-
-4. **Study-Lock**: Ab `STUDY_MODE=locked` sind keine Prompt-Änderungen mehr möglich. Dieser Mechanismus sichert die Reproduzierbarkeit der Studienbedingungen und verhindert unbewusste Eingriffe der Forscherin nach Beginn der Datenerhebung.
-
-### 4.7.3 Kriterien für Prompt-Güte
-
-Die Evaluation des Prompts erfolgt entlang vier operationalisierbarer Kriterien:
-
-| Kriterium | Operationalisierung |
-|---|---|
-| **Sokratische Integrität** | Gibt der Agent in >90% der Antworten keine direkte Antwort? Verwendet er alle drei Fragetypen (Klärung/Hypothetisch/Widerspruch)? |
-| **Sentiment-Responsivität** | Wechselt der Agent den Modus erkennbar wenn Überforderungs-Signale auftreten? |
-| **Charakterkonsistenz** | Bleibt der gewählte Charakter über eine Session stabil (gemessen durch Lexik und Tonalität)? |
-| **Outcome-Orientierung** | Bezieht der Agent seine Fragen erkennbar auf das formulierte Lernziel des Nutzers? |
-
-Diese Kriterien werden sowohl in den eigenen Testsessions der Forscherin als auch — in formalisierter Form — im LLM-Evaluationsbericht (Kapitel 5) angewendet.
-
-### 4.7.4 Der Entwicklungsprozess als Forschungsbeitrag
-
-Die iterative Prompt-Entwicklung ist nicht nur ein technischer Prozess, sondern ein methodischer Beitrag in eigener Sache: Sie dokumentiert, *wie* ein empathischer, neuroadaptiver Systemprompt entsteht. Jede Iteration — jeder Test, jede Reformulierung, jede Beobachtung — ist Teil des DSR-Artefakts. Die Prompt-Versionsdatenbank ist insofern nicht nur technische Infrastruktur, sondern Forschungsdokumentation.
-
-Dieser Ansatz hat eine bekannte Limitation: Die Forscherin ist gleichzeitig Entwicklerin und erste Testnutzerin. Das Risiko des Confirmation Bias — unbewusste Optimierung auf die eigene Kommunikationsweise — wird im Methodenkapitel (Kapitel 6) adressiert und durch die Vielfalt der Studienteilnehmenden im Feldtest empirisch geprüft.
-
----
-
-## 4.8 Cross-Session-Memory: Wissensart-Routing
-
-*[Konzipiert: Juni 2026 — Implementierung folgt Juli 2026]*
-
-### 4.8.1 Motivation und wissenschaftliche Grundlage
-
-KAIAs Gedächtnisarchitektur (vgl. Kapitel 3) sieht vor, dass relevante Erkenntnisse einer Session in die nächste übertragen werden. Die Qualität dieser Übergabe hängt jedoch nicht allein vom Inhalt ab, sondern von der *Art des Wissens*: Die Frage, ob ein Lernender noch unsicher über einen Begriff ist (konzeptuelles Wissen), ob er einen Prozess nicht beherrscht (prozedurales Wissen) oder ob er Schwierigkeiten hat, sein eigenes Lernen zu steuern (metakognitives Wissen), erfordert unterschiedliche sokratische Interventionen. Eine undifferenzierte Übergabe — "Thema X wurde besprochen" — läuft Gefahr, den didaktischen Anschluss zu verfehlen.
-
-Die Klassifikation stützt sich auf die überarbeitete Bloom'sche Taxonomie nach Anderson und Krathwohl (2001), die vier Wissensarten unterscheidet: faktisches Wissen (Terminologie, Fakten), konzeptuelles Wissen (Kategorien, Prinzipien, Theorien), prozedurales Wissen (Methoden, Algorithmen, Techniken) und metakognitives Wissen (Strategien, Selbstreflexion, Kontextwissen über das eigene Lernen). KAIA setzt diese Taxonomie nicht als diagnostisches Instrument ein, sondern als heuristische Routing-Grundlage: Die klassifizierte Wissensart informiert den Folgeprompt, nicht eine Score-basierte Bewertung des Lernenden.
-
-### 4.8.2 Erweiterung des session_summary-Schemas
-
-Das bestehende `session_summary`-JSON-Objekt, das am Sitzungsende durch das Haiku-Modell (`claude-haiku-4-5-20251001`) extrahiert wird, wird um vier Felder erweitert:
+Der Haiku-Extraktor produziert ein strukturiertes JSON-Objekt mit acht Pflichtfeldern:
 
 ```json
 {
   "first_step": "...",
   "observation": "...",
   "insight_for_next_session": "...",
-  "mood": "...",
-  "topics": ["..."],
+  "mood": "positiv|neutral|frustriert|unklar",
+  "topics": ["...", "..."],
   "strengths_observed": "...",
   "friction_points": "...",
-  "knowledge_type": "konzeptuell|prozedural|metakognitiv|faktisch|unklar",
-  "current_phase": 1,
-  "routing_confidence": "low|high",
-  "transfer_markers": ["Muss ich weiterdenken (Session 4, Thema X)"]
+  "strongest_quote": "..."
 }
 ```
 
-**`knowledge_type`** klassifiziert die dominante Wissensart der vergangenen Session nach Anderson und Krathwohl (2001). Der Wert `"unklar"` ist bewusst vorgesehen und signalisiert, dass das Modell keine zuverlässige Einschätzung treffen konnte — etwa bei stark gemischten Inhalten oder sehr kurzen Sessions.
+`strongest_quote` enthält den stärksten eigenen Satz der lernenden Person aus der Session — wörtlich zitiert, nicht paraphrasiert. Dieser Wert bildet die Grundlage der historischen Zitate-Funktion (vgl. 4.7.2).
 
-**`current_phase`** bildet den Fortschritt innerhalb der Sessionstruktur (Phase 1–7) ab und ermöglicht dem Folgeprompt, nahtlos anzuknüpfen, ohne die abgeschlossene Phase zu wiederholen.
+Die Extraktion enthält eine Markdown-Fence-Bereinigung: Haiku schreibt trotz expliziter Instruktion manchmal Code-Blöcke um das JSON. Der extrahierte Text wird vor dem `json.loads()`-Aufruf bereinigt.
 
-**`routing_confidence`** bewertet die Verlässlichkeit der Wissensart-Klassifikation. Das Feld nimmt die Werte `"low"` oder `"high"` an. Der Default für alle Sessions bis einschließlich Session 2 ist `"low"`.
+`load_all_session_contexts()` aggregiert alle Vorsessions mit vorhandener Summary zu einer kompakten Mehrzeilen-Darstellung (Stimmung | Themen | Beobachtung | vereinbarter Schritt | Reibungspunkte). `load_previous_session_fields()` liest nur die drei skalaren Felder der unmittelbaren Vorsession. Sessions ohne Summary werden übersprungen — fehlende Summaries blockieren keine Folge-Session.
 
-**`transfer_markers`** ist ein String-Array, das explizit vom Nutzer oder implizit durch KAIA markierte Denkaufgaben für die Folgesession enthält. Die Semantik entspricht dem Konzept der "Brücken" in Gagné's 9. Unterrichtsereignis (Transfer-Vorbereitung; Gagné, 1985).
+### 4.8.4 Anthropic Prompt Caching
 
-### 4.8.3 Routing-Confidence-Logik und Lock-in-Prävention
-
-Die Entscheidung, `routing_confidence` für frühe Sessions auf `"low"` zu setzen, adressiert ein systemisches Risiko: Das Haiku-Modell klassifiziert auf Basis von zwei bis drei Turns oft unzuverlässig. Würde ein `"high"`-Signal schon nach der ersten Session erzeugt, könnte der Systemprompt der Folgesession auf eine falsch klassifizierte Wissensart ausgerichtet werden — ein didaktischer Lock-in, der den tatsächlichen Bedarf des Lernenden verdeckt.
-
-Der Mechanismus ist bewusst konservativ: `"high"` setzt voraus, dass die Wissensart über mehrere Turns hinweg konsistent bestätigt wurde. Die konkrete Schwelle wird im Haiku-Extraktor-Prompt festgelegt und im Rahmen der LLM-Evaluation (Kapitel 5) empirisch überprüft.
-
-### 4.8.4 PromptContext-Erweiterung
-
-Der `PromptContext`-Dataclass in `domains/prompts/service.py` wird um drei Felder erweitert, die beim Aufbau des Systemprompts für eine neue Session befüllt werden:
-
-```python
-@dataclass
-class PromptContext:
-    # ... bestehende Felder ...
-    knowledge_type: str = ""
-    current_phase: int = 0
-    routing_confidence: str = ""
-```
-
-Diese Felder werden aus dem `session_summary`-JSON der letzten abgeschlossenen Session des Nutzers gelesen. Bei der ersten Session eines Nutzers bleiben alle drei Felder leer; das Jinja2-Template behandelt diesen Fall durch eine `is_first_session`-Bedingung.
-
-### 4.8.5 Jinja2-Template-Erweiterung
-
-Der Routing-Kontext wird als separater XML-Block in den Systemprompt injiziert. XML-Tags werden gegenüber Freitext bevorzugt, da sie dem Modell klare semantische Grenzen signalisieren (Anthropic, 2024):
-
-```jinja2
-{% if not is_first_session and knowledge_type %}
-<routing_context>
-  Wissensart aus vorheriger Session: {{ knowledge_type }}
-  Letzte Phase: {{ current_phase }}
-  {% if routing_confidence == "low" %}
-  Hinweis: Routing-Vertrauen niedrig — prüfe in der ersten Arbeitsphase,
-  ob diese Klassifikation der aktuellen Situation entspricht.
-  {% endif %}
-</routing_context>
-{% endif %}
-```
-
-Das Template ist im Sinne der Studienkontrolle versioniert in der Datenbank gespeichert und unterliegt dem Study-Lock-Mechanismus (vgl. Abschnitt 4.6).
-
-### 4.8.6 Erweiterung des Haiku-Extraktors
-
-Der Extraktorprompt für `claude-haiku-4-5-20251001` wird um zwei Ausgabefelder erweitert. Beide Felder sind Pflichtfelder in der JSON-Response:
-
-- **`knowledge_type`**: Dominante Wissensart nach Anderson und Krathwohl (2001). Erlaubte Werte: `konzeptuell`, `prozedural`, `metakognitiv`, `faktisch`, `unklar`. Der Extraktor wählt `"unklar"`, wenn keine Wissensart deutlich überwiegt oder die Datenlage zu dünn ist.
-- **`routing_confidence`**: `"low"`, wenn die Wissensart noch nicht über mehrere Turns konsistent bestätigt wurde; `"high"` andernfalls. Explizite Default-Instruktion: bei Sessions mit weniger als fünf Turns immer `"low"`.
-
-### 4.8.7 Thinking-Block-Erweiterung
-
-Der Extended-Thinking-Block von `claude-sonnet-4-6` (vgl. Abschnitt 4.4) wird um zwei Reasoning-Checks erweitert:
-
-**Check 9 — Wissensart-Klassifikation:** Welche der vier Wissensarten nach Anderson und Krathwohl (2001) dominiert im bisherigen Gesprächsverlauf? Gibt es Hinweise auf Mischformen? Wie hoch ist die Unsicherheit dieser Einschätzung?
-
-**Check 10 — Routing-Konsistenz:** Passt die nächste Frage zur bekannten Wissensart und zum `routing_confidence`-Wert? Bei `"low"` sollte der nächste Gesprächszug primär der Verifikation der Wissensart dienen, nicht bereits einer wissensartspezifischen Vertiefung.
-
-Diese Checks werden nicht für das Nutzer-Interface sichtbar — der Thinking-Block wird serverseitig gestripped, bevor die Antwort gestreamt wird.
+System-Prompts und Session-Kontext werden mit dem Anthropic-Caching-Mechanismus übergeben (`"cache_control": {"type": "ephemeral"}`). Die Kostenabrechnung berücksichtigt Cache-Creation-Tokens (1,25× Input-Preis) und Cache-Read-Tokens (0,10× Input-Preis). Caching ist auch für Judge- und Simulator-Calls in der Eval-Pipeline aktiviert.
 
 ---
 
-## 4.9 Session-Closing-Endpoint
+## 4.9 Multi-LLM-Provider-Abstraktion
 
-*[Konzipiert: Juni 2026 — Implementierung folgt Juli 2026]*
+### 4.9.1 Provider-Routing
 
-### 4.9.1 Didaktische Motivation
+Die Funktion `_provider(model: str) -> str` in `service.py` leitet aus dem Model-Identifier den Provider ab: Strings, die "gpt" enthalten oder mit "o1"/"o3"/"o4" beginnen, werden als OpenAI geroutet; "mistral"-Strings als Mistral; alle anderen als Anthropic.
 
-Das 9. Unterrichtsereignis in Gagné's Theorie der Instruktionsdesigns — Retention und Transfer sichern — beschreibt die Notwendigkeit, am Ende einer Lerneinheit explizit Verbindungen zur Zukunft herzustellen (Gagné, 1985). Im Kontext eines KI-Lernbegleiters bedeutet dies: Die Session sollte nicht durch ein technisches Timeout oder ein schlichtes "Chat beendet"-Label enden, sondern durch eine didaktisch gestaltete Abschlussinteraktion.
+### 4.9.2 Unterstützte Modelle (Stand Juli 2026)
 
-KAIA generiert zu diesem Zweck eine *Closing-Bubble* — eine KAIA-initiierte, nicht nutzerseitig ausgelöste Nachricht, die die Session abschließt. Die Formulierung folgt dem Prinzip der elaborativen Interrogation (Pressley et al., 1987): KAIA stellt keine bewertende Zusammenfassung bereit, sondern eine abschließende Frage, die den Transfer aus der Session in den Alltag des Lernenden initiiert.
+| Modell | Provider | API-Besonderheit | Eval |
+|---|---|---|---|
+| claude-sonnet-4-6 | Anthropic | Prompt Caching, Thinking-Block | Produktions-KAIA |
+| claude-haiku-4-5-20251001 | Anthropic | Prompt Caching | Extraktor / Judge |
+| gpt-4o | OpenAI | max_completion_tokens (nicht max_tokens) | Eval-Vergleich |
+| gpt-5.6-terra | OpenAI | max_completion_tokens | Eval-Vergleich |
+| gpt-4.1-mini | OpenAI | max_completion_tokens | Eval-Vergleich |
+| mistral-large-latest | Mistral | OpenAI-SDK, eigene Base-URL, max_tokens | Eval-Vergleich (EU) |
+| mistral-small-latest | Mistral | OpenAI-SDK, max_tokens | Eval-Vergleich (EU) |
 
-### 4.9.2 Endpunkt-Spezifikation
+Die API-Unterschiede zwischen Providern — insbesondere `max_completion_tokens` für OpenAI GPT-5.x gegenüber `max_tokens` für Mistral und Anthropic — werden in der `_call_llm()`-Funktion durch eine explizite Provider-Fallunterscheidung behandelt. Mistral nutzt die OpenAI-kompatible API (`base_url="https://api.mistral.ai/v1"`) über den OpenAI-Python-Client, um eine separate SDK-Abhängigkeit zu vermeiden.
 
-```
-POST /api/v1/chat/sessions/{session_id}/closing
-```
+### 4.9.3 API-Timeouts und Retry-Strategie
 
-Der Endpunkt folgt dem Muster des bestehenden `/opening`-Endpunkts und gibt einen SSE-Stream zurück. Die wesentlichen Unterschiede:
+Alle LLM-Clients verwenden strukturierte Timeouts:
+- `connect`: 10 s (Chat-Seite), 5 s (Extraktor)
+- `read`: 120 s (Chat-Seite), 60 s (Extraktor)
+- `write`: 10 s
 
-- Es wird **keine User-Message gespeichert**. Der Aufruf ist ein unsichtbarer Trigger — das Frontend sendet die Anfrage, ohne dass eine Nutzeringabe vorliegt.
-- KAIAs Closing-Bubble wird als reguläre `role: assistant`-Nachricht in der Datenbank gespeichert. Sie ist damit Teil der persistierten Session-Historie und fließt in das Cross-Session-Memory ein.
-- Die Summary-Extraktion (`extract_session_summary()`) wird **nach** dem Closing-Exchange als Background Task ausgelöst — nicht nach dem `/end`-Aufruf. Der Abschlussaustausch selbst ist damit Teil des Kontexts, den der Haiku-Extraktor verarbeitet. Dies erhöht die Qualität der `transfer_markers`-Felder, da KAIA in der Closing-Bubble explizit Brücken zur Folgesession benennt.
-- Der eigentliche `/end`-Aufruf schließt die Session in der Datenbank (Status-Änderung, Timestamp), ohne weitere LLM-Inferenz auszulösen.
+Bei Rate-Limit-Fehlern (HTTP 429) in der Eval-Pipeline implementiert `_call_kaia_direct()` einen exponentiellen Backoff: 5 s → 10 s → 20 s → 40 s → 60 s → 60 s (bis zu 6 Versuche). Dieser Mechanismus ist besonders für Mistral-Large relevant, das restriktive Rate-Limits hat (0,07 req/s).
 
-### 4.9.3 Timeout-Handling
+Erschöpfte API-Kontingente (`_APIQuotaError`) werden als Fail-Fast behandelt: Die Eval-Pipeline bricht sofort ab, ohne weitere API-Calls zu versuchen.
 
-Verbleibt ein Nutzer nach dem Closing-Exchange länger als 10 Minuten ohne Interaktion, schließt das Frontend die Session automatisch durch einen `/end`-Aufruf. Dieses Timeout-Handling ist vollständig client-seitig implementiert und erfordert keine serverseitige Zustandsverwaltung. Die Entscheidung, das Timeout nicht serverseitig zu implementieren, vermeidet einen Polling-Mechanismus auf dem Server und hält die Backend-Architektur stateless.
+### 4.9.4 Dynamischer Modell-Switcher
+
+`set_model_override(model: str)` in `sse.py` wechselt das globale KAIA-Chat-Modell zur Laufzeit ohne Neustart. Die Kostenkonstanten werden dabei synchron aktualisiert. Für Restart-Persistenz muss der Admin-Aufrufer zusätzlich die Datenbank aktualisieren; der In-Memory-State ist der primäre Pfad für sofortige Wirkung.
 
 ---
 
-## 4.10 In-Session-Feedback-API
-
-*[Konzipiert: Juni 2026 — Implementierung folgt Juli 2026]*
+## 4.10 In-Session-Feedback (EMA)
 
 ### 4.10.1 Wissenschaftliche Grundlage
 
-Die Messung von Erleben und Befinden während einer Aktivität — statt retrospektiv nach deren Abschluss — ist Kernprinzip der Experience Sampling Method (Csikszentmihalyi & Larson, 1987) und des Ecological Momentary Assessment (Shiffman, Stone, & Hufford, 2008). Beide Methoden zeigen, dass retrospektive Selbstberichte systematisch durch Rekonstruktionseffekte verzerrt werden: Gefühle wie Überforderung, Stocken oder ein plötzliches Verständnis ("Aha-Erlebnis") werden in der Rückschau geglättet und verlieren ihre diagnostische Präzision.
+Die Messung von Erleben während einer Aktivität — statt retrospektiv nach deren Abschluss — ist Kernprinzip der Experience Sampling Method (Csikszentmihalyi & Larson, 1987) und des Ecological Momentary Assessment (Shiffman et al., 2008). Retrospektive Selbstberichte werden systematisch durch Rekonstruktionseffekte verzerrt; Momente wie Blockade oder Aha-Erlebnis verlieren in der Rückschau ihre diagnostische Präzision.
 
-KAIA implementiert daher eine minimale In-Session-Feedback-Schnittstelle, die es Nutzenden erlaubt, solche Momente unmittelbar zu markieren. Die Reduktion auf wenige, klar definierte Feedback-Typen folgt dem Prinzip des Affect Labeling (Lieberman et al., 2007): Das bewusste Benennen eines Zustands kann selbst regulierend wirken — ein potentiell therapeutischer Nebeneffekt, der im vorliegenden Kontext nicht aktiv angestrebt, aber auch nicht ausgeschlossen wird und in der Studie beobachtet werden soll.
+KAIA implementiert vier EMA-Signaltypen, die Nutzende während einer Session senden können:
 
-### 4.10.2 Datenbankschema
+| Typ | Semantik | Wissenschaftliche Entsprechung | Reaktion |
+|---|---|---|---|
+| `transfer_marker` | "Das nehme ich mit" — Erkenntnis mit Transferpotenzial | Transfer-Intention (Gagné, 1985) | Passiv: nur gespeichert |
+| `wow` | "Das trifft etwas" — Resonanz-Signal | Affect Labeling (Lieberman et al., 2007) | Passiv: nur gespeichert |
+| `stuck` | "Ich hänge gerade" — Blockade-Signal | Cognitive Load Overload (Sweller, 1988) | Aktiv: löst Meta-Frage aus |
+| `unclear` | "Das verstehe ich nicht" — Verständnis-Lücke | Knowledge Gap (Anderson & Krathwohl, 2001) | Aktiv: löst Meta-Frage aus |
 
-```sql
-CREATE TABLE session_feedback (
-    id          SERIAL PRIMARY KEY,
-    session_id  INTEGER NOT NULL REFERENCES chat_sessions(id),
-    user_id     INTEGER NOT NULL REFERENCES users(id),
-    feedback_type VARCHAR(20) NOT NULL
-                CHECK (feedback_type IN (
-                    'transfer_marker',
-                    'engagement',
-                    'stuck',
-                    'unclear'
-                )),
-    message_id  INTEGER REFERENCES messages(id),
-    created_at  TIMESTAMP NOT NULL DEFAULT NOW()
-);
-```
+### 4.10.2 Endpunkt-Architektur
 
-`message_id` ist nullable: Feedback kann an eine konkrete Nachricht gebunden sein (z. B. "diese Frage war unklar") oder an den allgemeinen Sessionzustand (z. B. "ich komme gerade gut voran" = `engagement`).
+`POST /sessions/{id}/feedback` speichert das Signal (mit optionaler `message_id` für den Nachrichtenbezug). Bei aktiven Typen (stuck/unclear) ruft der Client anschließend `POST /sessions/{id}/meta-question?feedback_type=stuck|unclear` auf, um KAIAs Klärungsfrage als SSE-Stream zu empfangen. Die Trennung in zwei Calls (Speichern + Reagieren) erlaubt dem Frontend, das Feedback sofort zu bestätigen, auch wenn die Meta-Frage noch streamt.
 
-**Semantik der Feedback-Typen:**
+### 4.10.3 Transfer-Marker in der Session-Summary
 
-| Typ | Bedeutung | Wissenschaftliche Entsprechung |
+Transfer-Marker aus `session_feedback` werden am Sitzungsende nicht automatisch in die Summary übernommen (der Haiku-Extraktor hat Zugriff auf das vollständige Transkript, in dem markierte Momente erkennbar sind). Die direkten Feedback-Typen stehen für die quantitative Longitudinalauswertung zur Verfügung — etwa ob bestimmte Themen oder Session-Phasen systematisch mit `stuck`-Signalen assoziiert sind.
+
+---
+
+## 4.11 Survey-Infrastruktur: GSE und MSLQ
+
+### 4.11.1 GSE (Schwarzer & Jerusalem, 1995)
+
+Die Allgemeine Selbstwirksamkeitserwartung wird mit der validierten 10-Item-Skala von Schwarzer und Jerusalem (1995) gemessen. Items werden auf einer 4-stufigen Likert-Skala beantwortet (1 = "stimmt nicht" bis 4 = "stimmt genau"). Der Gesamtscore ist das arithmetische Mittel aller Items (Range 1,0–4,0). Normdaten: M = 2,97 (SD = 0,49, Schwarzer & Jerusalem, 1995).
+
+Zwei Messzeitpunkte: Prä (vor Session 1) und Post (nach Session 10). Die Prä-GSE fließt als `gse_baseline` in den `UserLearningProfile`-Eintrag und damit in den Systemprompt aller KAIA-Sessions ein.
+
+### 4.11.2 MSLQ (Pintrich et al., 1991, 1993)
+
+Der Motivated Strategies for Learning Questionnaire wird mit vier Subskalen (30 Items gesamt) auf einer 7-stufigen Likert-Skala eingesetzt (1 = "trifft gar nicht zu" bis 7 = "trifft völlig zu"). Fisher-Yates-Randomisierung der Item-Reihenfolge innerhalb jeder Subskala verhindert Reihenfolgeeffekte. Subskalen-Scores werden serverseitig als Mittelwerte berechnet.
+
+MSLQ wird ausschließlich zum Prä-Zeitpunkt erhoben (vor Session 1). Die Subskalen-Scores fließen als `subscale_scores` in das `UserLearningProfile` ein.
+
+### 4.11.3 Journey-State-Machine
+
+Die Kombination aus Survey-Ergebnissen und Session-Anzahl ergibt den `JourneyStateEnum`:
+- `PRE_PENDING`: Prä-Survey (MSLQ + GSE) noch nicht abgeschlossen
+- `IN_PROGRESS`: Session 1–9 aktiv
+- `POST_PENDING`: Session 10 beendet, Post-GSE ausstehend
+- `COMPLETED`: Post-GSE abgeschlossen
+- `BLOCKED`: Admin-Sperre oder Kostenlimit
+
+Der Journey-Guard verhindert, dass Nutzende Sessions starten, bevor sie die Voraussetzungen erfüllen — ein technisches Äquivalent zum experimentellen Protokoll.
+
+---
+
+## 4.12 Iterative Prompt-Entwicklung als Forschungsmethodik
+
+### 4.12.1 Das Problem des "guten" Prompts
+
+Ein zentrales methodisches Problem bei der Entwicklung LLM-basierter Systeme ist die fehlende formale Spezifikation für "guten" Output: Es gibt keine allgemeine mathematische Funktion, die misst, ob ein sokratisch-empathischer Lernbegleiter seinen Auftrag erfüllt. Die Güte eines Systemprompts ist kontextabhängig, nutzerspezifisch und lässt sich nicht vollständig vor der Nutzung evaluieren. Dies stellt einen fundamentalen Unterschied zu klassischer Software-Entwicklung dar, in der Korrektheit durch Tests formal verifizierbar ist.
+
+Die Entwicklung des KAIA-Systemprompts folgt daher einem **iterativen Feldforschungs-Ansatz**: Die Forscherin interagiert selbst mit dem System, beobachtet das Verhalten, formuliert Hypothesen über Prompt-Schwächen und Verbesserungen und revidiert den Prompt — in direkter Anlehnung an den Design-Evaluate-Revise-Zyklus von Hevner et al. (2004). KAIA_PROMPT_V3_WARM ist die aktive Version; V2 wird als Eval-Regressions-Baseline vorgehalten.
+
+### 4.12.2 Technische Infrastruktur für Prompt-Iteration
+
+Der Prompt-Editor (`/admin/prompts`) ermöglicht:
+
+1. **Drei-Charakter-Vergleich**: Derselbe Input gleichzeitig an drei Prompt-Varianten (warm/herausfordernd/unberechenbar). Die parallele Darstellung macht Stärken und Schwächen unmittelbar sichtbar.
+
+2. **Live-Editing**: Der Systemprompt ist direkt im Interface editierbar. Änderungen wirken sofort — kein Re-Deployment notwendig.
+
+3. **DB-Versionierung**: Jede Prompt-Version wird mit Timestamp, Versionsnummer und Begründung gespeichert. Die Prompt-Entwicklungshistorie ist Teil der wissenschaftlichen Dokumentation.
+
+4. **Study-Lock**: Bei `STUDY_MODE=locked` sind keine Prompt-Änderungen möglich. CI-Check blockiert entsprechende Merges.
+
+### 4.12.3 Kriterien für Prompt-Güte
+
+| Kriterium | Operationalisierung |
+|---|---|
+| **Sokratische Integrität** | Gibt KAIA in >90 % der Antworten keine direkte Antwort? Verwendet es alle sechs Fragetypen situationsadäquat? |
+| **Missions-Treue** | Entspricht der dominante Fragetyp der Sessionsaufgabe (M2 in der Eval-Matrix)? |
+| **Persona-Responsivität** | Reagiert KAIA erkennbar auf das individuelle Kommunikationsmuster (M3)? |
+| **Autonomie-Erhalt** | Gibt KAIA keine Ratschläge oder versteckten Instruktionen (M6)? |
+
+Diese Kriterien werden sowohl in den eigenen Testsessions der Forscherin als auch in formalisierter Form im LLM-Evaluationsbericht (Kapitel 5) angewendet.
+
+---
+
+## 4.13 LLM-Evaluations-Pipeline
+
+### 4.13.1 Architektur
+
+Die Eval-Pipeline ist vollständig im Backend implementiert (`domains/eval/evaluator.py`) und wird ausschließlich durch den Admin ausgelöst. Zwei Betriebsmodi:
+
+- **LLM-Simulation** (Standard): Automatisierte Persona-Simulation + Judge-Bewertung ohne vorhandene Transkripte.
+- **Crash-Test-Eval** (Legacy): Judge-Bewertung auf Basis statischer Transkripte aus dem Crash-Test-Runner.
+
+Ein Eval-Run wird als `asyncio.Task` im FastAPI-Prozess ausgeführt; der Status ist über `GET /admin/eval/runs/{run_id}/status` abrufbar. Live-Log-Einträge (bis 500 Zeilen, In-Memory) geben Einblick in den laufenden Prozess.
+
+### 4.13.2 Zehn Eval-Personas
+
+Die Eval-Personas sind in `domains/simulation/eval_personas.py` definiert. Jede Persona hat ein Lerntopic, ein Archetype-Muster (das "Sabotagemuster" in der Simulation) und einen detaillierten `simulator_prompt`. Die Personas decken ein Spektrum an Lernblockaden ab: von ängstlichen Perfektionisten über ungeduldig-lösungsfixierte Pragmatikerinnen bis zu einer Krisenfall-Persona (P04), die ab Session 5 eskalierend Krisensignale sendet.
+
+### 4.13.3 Sieben Evaluationsmetriken (M1–M7)
+
+Jede Metrik hat eine eigene Prompt-Datei in `prompts/eval/`:
+
+| Metrik | Bezeichnung | Bewertungsgegenstand |
 |---|---|---|
-| `transfer_marker` | "Das nehme ich mit" — Erkenntnis mit Transferpotenzial | Transfer-Intention (Gagné, 1985) |
-| `engagement` | "Ich bin drin" — Flow-Signal | Flow-Indikator (Csikszentmihalyi, 1990) |
-| `stuck` | "Ich komme nicht weiter" — Blockade-Signal | Cognitive Load Overload (Sweller, 1988) |
-| `unclear` | "Ich verstehe nicht" — Verständnis-Lücke | Knowledge Gap (Anderson & Krathwohl, 2001) |
+| M1 | Sokratische Reinheit | Enthält KAIA keine direkten Antworten/Ratschläge? |
+| M2 | Missions-Treue | Passt der dominante Fragetyp zur Session-Mission? |
+| M3 | Persona-Responsivität | Reagiert KAIA auf das Kommunikationsmuster der Persona? |
+| M4 | Fragenqualität / -tiefe | Wie tief und präzise sind KAIAs Fragen? |
+| M5 | Sequenz-Kohärenz | Bauen Fragen aufeinander auf statt thematisch zu springen? |
+| M6 | Autonomie-Erhalt | Erhält KAIA die Eigenständigkeit der lernenden Person? |
+| M7 | Crisis-Detection-Safety | Reagiert KAIA korrekt auf Krisensignale? (nur P04, ab S5) |
 
-### 4.10.3 Endpunkt-Spezifikation
+Scores: 0 (nicht erfüllt) bis 3 (vollständig erfüllt). M7-Score 0 ist sicherheitskritisch und wird immer geflaggt sowie als `log.error` protokolliert.
 
-```
-POST /api/v1/chat/sessions/{session_id}/feedback
-```
+### 4.13.4 LLM-as-Judge
 
-Request-Body:
-```json
-{
-  "feedback_type": "transfer_marker",
-  "message_id": 42
-}
-```
+**Judge-Modell**: `claude-haiku-4-5-20251001` (cost-efficient für einfache Scoring-Aufgaben). Das Produktions-KAIA-Modell (`claude-sonnet-4-6`) und das Judge-Modell sind explizit getrennt, um Zirkelschlüsse zu vermeiden.
 
-`message_id` ist optional. Fehlender Wert wird als `null` persistiert.
+Judge-Calls sind bewusst serialisiert (nicht parallel): Haiku ist günstig, und Serialität verhindert Rate-Limits und kontrolliert die Kostenprogression. JSON-Fehler-Handling: Haiku schreibt trotz Instruktion manchmal Markdown-Fences um JSON; das Cleanup-Retry bereinigt eingebettete Newlines und retried den Parse-Aufruf.
 
-### 4.10.4 Meta-Reaktion bei stuck und unclear
+### 4.13.5 LLM-Simulation
 
-Eingehende Feedback-Signale vom Typ `stuck` und `unclear` lösen eine **KAIA-Meta-Reaktion** aus: KAIA generiert unmittelbar eine Klärungsfrage (Fragetyp 1 in der internen Klassifikation). Diese Reaktion folgt dem didaktischen Scaffolding-Prinzip (Wood, Bruner, & Ross, 1976): Das System erkennt ein Überforderungssignal und reagiert mit einer strukturierenden Intervention — nicht mit einer Antwort, sondern mit einer Frage, die den Lernenden dabei unterstützt, den Engpass selbst zu lokalisieren.
+**Persona-Simulator**: `claude-haiku-4-5-20251001` mit `temperature=0.7` und `max_tokens=200`. Der Simulator-Prompt beschreibt das Persona-Verhalten; ein Phasen-Hinweis (Frühphase S1–3, Mittelphase S4–6, Spätphase S7–10) passt das Verhalten der Simulation an die Studienarchitektur an.
 
-Wichtig: Diese Reaktion ist **kein Modus-Switch**. Der Adaptionsmechanismus (Hysterese-Logik) bleibt unberührt. Ein einzelner `stuck`-Klick bewirkt eine einmalige Klärungsfrage; er verändert nicht den Adaptionszustand der Session. Die Hysterese-Schwellen für tatsächliche Modus-Übergänge (vgl. Kapitel 3) bleiben unverändert. Damit wird verhindert, dass ein zufällig gesendetes Feedback-Signal das Systemverhalten nachhaltig verändert.
+**KAIA-Seite**: Bei Anthropic-Modellen wird `stream_response()` (volles KAIA-Prompt-System) verwendet; bei Non-Anthropic-Modellen wird `_call_kaia_direct()` mit einem vereinfachten Eval-Systemprompt eingesetzt, der provider-neutral formuliert ist und die Vergleichbarkeit zwischen Modellen sicherstellt.
 
-### 4.10.5 Aggregation in session_summary
+**Synthetische Nutzer**: Für jeden Eval-Persona-Lauf wird ein `User`-Datensatz mit `is_simulation=True` und zufälligem Suffix erzeugt. Diese Nutzer sind vollständig anonymisiert (`eval_p01_abc123@kaia-eval.internal`) und werden nach dem Eval-Run nicht gelöscht — ihre Sessions bilden die Eval-Datenbasis für Retest-Vergleiche.
 
-Transfer-Marker aus `session_feedback` werden am Sitzungsende in das Feld `session_summary.transfer_markers[]` aggregiert. Der Haiku-Extraktor erhält diese Marker explizit als Kontext, sodass die Formulierungen in `insight_for_next_session` auf die tatsächlich markierten Momente Bezug nehmen können.
+### 4.13.6 Eval-UI (Admin-Frontend)
 
-Die übrigen Feedback-Typen (`engagement`, `stuck`, `unclear`) werden nicht direkt in die Summary übernommen, stehen jedoch für die quantitative Auswertung im Rahmen der Pilotstudie zur Verfügung. Die Aggregation dieser Signale über alle Sessions eines Nutzers ermöglicht longitudinale Aussagen über Muster — z. B. ob bestimmte Themen oder Phasen systematisch mit `stuck`-Signalen assoziiert sind.
+- **Heatmap**: Farbkodierte Metrik-Scores pro Persona × Session; geflaggte Zellen (Score ≤ 1 oder M7-Treffer) werden rot markiert.
+- **Vergleichsmodus**: Zwei Modelle nebeneinander (z. B. claude-sonnet-4-6 vs. mistral-large-latest).
+- **Live-Log**: Echtzeit-Einblick in den Eval-Fortschritt.
+- **Cancel**: `DELETE /admin/eval/runs/{run_id}` ruft `asyncio.Task.cancel()` auf — sofortiger Stop beim nächsten `await` im Task.
+
+---
+
+## 4.14 Observability und Monitoring
+
+### 4.14.1 Sentry
+
+Sentry ist für Backend (`sentry-sdk[fastapi]`) und Frontend (`instrumentation-client.ts`) konfiguriert. Backend-Fehler werden mit Session-ID und User-ID angereichert; Frontend-Fehler enthalten den Router-Kontext. Konfiguration über `sentry_kaia_api` (Backend-DSN) und `NEXT_PUBLIC_SENTRY_DSN` (Frontend).
+
+### 4.14.2 Slack-Webhooks
+
+Der `notify()`-Aufruf in `observability/slack.py` sendet Benachrichtigungen für: neue Registrierungen, Admin-Freigaben, Session-Reports (Nutzerin meldet auffälliges KAIA-Verhalten), Bug-Reports über das BugReport-Widget, und Fehler-Eskalation bei kritischen LLM-Ausfällen.
+
+### 4.14.3 Strukturiertes Logging
+
+`structlog` mit JSON-Output ist im gesamten Backend aktiv. Alle relevanten Events sind mit Kontextfeldern versehen (session_id, user_id, model, token-counts, cost). Der `llm_response_complete`-Event protokolliert Input/Output-Tokens nach jedem KAIA-Call; `judge_scored` protokolliert Metrik, Score und Kosten nach jedem Judge-Call.
+
+### 4.14.4 Study-Lock und CI-Gates
+
+Der `STUDY_MODE`-Enum (`development`, `pilot`, `locked`) steuert das Systemverhalten. Im `locked`-Modus sind Prompt-Änderungen im Frontend gesperrt; der CI-Study-Lock-Guard in der GitHub-Actions-Pipeline blockiert Merges, die Prompt-Templates oder Schema-Migrationen berühren. Diese technische Sperre verhindert unbeabsichtigte Interventionen während der Datenerhebung.
+
+---
+
+## 4.15 Frontend-Architektur
+
+### 4.15.1 App Router und Routing-Gruppen
+
+Das Next.js 14 App Router-Frontend ist in drei Routing-Gruppen strukturiert:
+- `(public)/`: Landing Page, /wissenschaft, /architektur, /release-notes
+- `(auth)/`: Login, Registrierung, KI-Disclosure-Gate
+- `(app)/`: Chat, Onboarding, Survey (pre/post)
+- `admin/`: Dashboard, Users, Prompts, Eval, Kosten, Journey-Test, Daily-Log
+
+### 4.15.2 Chat-Frontend
+
+Das Chat-Interface implementiert:
+- **SSE-Stream-Reader**: `ReadableStream`-API, Decode-Buffer, Event-Parsing (`data: {...}`)
+- **`ChatDayBanner`**: "Session N von 10 · [Phasenhinweis]" — gibt der Nutzerin Orientierung im 10-Session-Bogen
+- **`ChatInfoPanel`**: Anleitung auf Abruf (Kollapsierbar) — erklärt KAIAs Arbeitsweise und die EMA-Signale
+- **`ChatReportModal`**: Melde-Funktion für auffälliges KAIA-Verhalten → Slack-Webhook
+- **Character-Selector**: Wahl des Prompt-Charakters (warm/herausfordernd/unberechenbar) im Eingabebereich
+- **Closure-State-Machine**: `idle → loading → awaiting_confirm → ended` steuert den Sitzungsabschluss-Flow (Closing-Bubble → Bestätigen oder Weiterschreiben → Session beenden)
+- **Tap-Targets**: Mindestgröße 44 px (WCAG 2.5.5)
+
+### 4.15.3 Admin-Bereich
+
+Das Admin-Dashboard umfasst: Health-Check-Anzeige, Kostentransparenz (llm_usage pro Nutzerin), User-Approval-Flow (Freischalten, Löschen, Modell-Zuweisen über `UserModelSelector`), Journey-Test mit Modell-Switcher, Prompt-Editor (live), Eval-Matrix mit Simulations-Starter, Release-Notes-Anzeige und Entwicklungs-Tagebuch.
+
+### 4.15.4 Auth-Flow im Frontend
+
+`tokenStore` (In-Memory, `window.__kaia_access_token`) hält den Access Token; `authFetch()` fügt den Bearer-Header automatisch an und handhabt Token-Refresh transparent. `apiLogout()` revoziert den Refresh-Token serverseitig und leert den Client-State.
+
+---
+
+## 4.16 Deployment und Infrastruktur
+
+### 4.16.1 Hetzner CX23 Helsinki
+
+Ein einzelner Cloud-Server (2 vCPU, 4 GB RAM, Hetzner CX23, Helsinki) hostet die gesamte KAIA-Infrastruktur. Die Entscheidung für einen EU-Serverstandort (Finnland, EU-Rechtsgebiet) ist DSGVO-konform und Schrems-II-unproblematisch. Kein Managed-Service außerhalb der EU für Datenverarbeitung.
+
+### 4.16.2 Docker Compose
+
+Zwei Compose-Dateien: `docker-compose.dev.yml` (lokale Entwicklung mit Hot-Reload) und `docker-compose.prod.yml` (Produktionsdeployment mit Caddy, PostgreSQL-Volume, Sentry-DSN). Caddy übernimmt TLS-Terminierung (Let's Encrypt), HTTP-zu-HTTPS-Redirect und Proxy zu FastAPI und Next.js.
+
+### 4.16.3 GitHub Actions CI
+
+Die CI-Pipeline prüft bei jedem Push auf `main` und `develop`:
+- **API**: ruff (Linting + Format-Check), mypy (Typprüfung), pip-audit (Dependency-Audit), pytest (Coverage ≥ 65 %)
+- **Web**: npm ci, npm audit, tsc --noEmit, eslint, next build
+- **Study-Lock Guard**: Separate Job, der bei `STUDY_MODE=locked` Prompt- und Schema-Änderungen blockiert
+
+Pre-Commit-Hooks: ruff, mypy; commitlint erzwingt das Conventional-Commits-Format mit Release-Note-Trailer.
+
+---
+
+## 4.17 Limitierungen und Ausblick
+
+### 4.17.1 pgvector-Nutzung
+
+Die `memory_chunks`-Tabelle mit IVFFLAT-Index ist implementiert, aber noch nicht aktiv in den Produktions-Gesprächspfad eingebunden. Cross-Session-Memory basiert aktuell ausschließlich auf den strukturierten `session_summary`-JSON-Feldern (symbolisches Gedächtnis), nicht auf semantischer Vektorsuche. Die Infrastruktur für semantisches Retrieval ist vorhanden; die Integration in den `_build_system_prompt()`-Pfad ist für eine spätere Iteration vorgesehen. Für die Pilotstudie mit ca. 20 Teilnehmenden und maximal 10 Sessions ist das symbolische Gedächtnis ausreichend und methodisch sauberer (keine Halluzinations-Risiken durch Retrieval).
+
+### 4.17.2 Conflict of Interest
+
+Die Forscherin ist gleichzeitig Entwicklerin und erste Testnutzerin des Systems. Das Risiko des Confirmation Bias — unbewusste Optimierung des Prompts auf die eigene Kommunikationsweise — wird durch die Crash-Persona-Simulation und die LLM-as-Judge-Evaluation strukturell begrenzt, aber nicht vollständig eliminiert. Dieser Conflict of Interest ist in der Thesis offen deklariert (vgl. Kapitel 6).
+
+### 4.17.3 Study-Mode-Transition
+
+Vor Studienstart ist `STUDY_MODE=pilot` zu setzen (Freigabe neuer Nutzer erlaubt, Prompt-Änderungen möglich); bei Beginn der Datenerhebung wechselt der Modus auf `STUDY_MODE=locked`. Dieser Übergang ist manuell und erfordert ein explizites Deployment. Eine automatische Transition auf Basis eines kalendarischen Studienstart-Datums ist nicht implementiert — bewusste Entscheidung für explizite Kontrolle.
 
 ---
 
@@ -367,22 +593,30 @@ Anderson, L. W., & Krathwohl, D. R. (Hrsg.). (2001). *A taxonomy for learning, t
 
 Anthropic. (2024). *Prompt engineering overview: Use XML tags to structure your prompts*. https://docs.anthropic.com/en/docs/build-with-claude/prompt-engineering/use-xml-tags
 
+Collins, A., Brown, J. S., & Newman, S. E. (1989). Cognitive apprenticeship: Teaching the crafts of reading, writing, and mathematics. In L. B. Resnick (Hrsg.), *Knowing, learning, and instruction: Essays in honor of Robert Glaser* (S. 453–494). Lawrence Erlbaum Associates.
+
 Csikszentmihalyi, M. (1990). *Flow: The psychology of optimal experience*. Harper & Row.
 
 Csikszentmihalyi, M., & Larson, R. (1987). Validity and reliability of the experience sampling method. *Journal of Nervous and Mental Disease, 175*(9), 526–536.
 
 Gagné, R. M. (1985). *The conditions of learning and theory of instruction* (4. Aufl.). Holt, Rinehart & Winston.
 
+Gollwitzer, P. M. (1999). Implementation intentions: Strong effects of simple plans. *American Psychologist, 54*(7), 493–503.
+
 Hevner, A. R., March, S. T., Park, J., & Ram, S. (2004). Design science in information systems research. *MIS Quarterly, 28*(1), 75–105.
 
 Lieberman, M. D., Eisenberger, N. I., Crockett, M. J., Tom, S. M., Pfeifer, J. H., & Way, B. M. (2007). Putting feelings into words: Affect labeling disrupts amygdala activity in response to affective stimuli. *Psychological Science, 18*(5), 421–428.
 
-Pressley, M., McDaniel, M. A., Turnure, J. E., Wood, E., & Ahmad, M. (1987). Generation and precision of elaboration: Effects on intentional and incidental learning. *Journal of Experimental Psychology: Learning, Memory, and Cognition, 13*(2), 291–300.
+Merrill, M. D. (2002). First principles of instruction. *Educational Technology Research and Development, 50*(3), 43–59.
+
+Pintrich, P. R., Smith, D. A. F., García, T., & McKeachie, W. J. (1991). *A manual for the use of the Motivated Strategies for Learning Questionnaire (MSLQ)* (Technical Report 91-B-004). University of Michigan.
+
+Pintrich, P. R., Smith, D. A. F., García, T., & McKeachie, W. J. (1993). Reliability and predictive validity of the Motivated Strategies for Learning Questionnaire (MSLQ). *Educational and Psychological Measurement, 53*(3), 801–813.
+
+Schwarzer, R., & Jerusalem, M. (1995). Generalized self-efficacy scale. In J. Weinman, S. Wright, & M. Johnston (Hrsg.), *Measures in health psychology: A user's portfolio. Causal and control beliefs* (S. 35–37). NFER-NELSON.
 
 Shiffman, S., Stone, A. A., & Hufford, M. R. (2008). Ecological momentary assessment. *Annual Review of Clinical Psychology, 4*, 1–32.
 
 Sweller, J. (1988). Cognitive load during problem solving: Effects on learning. *Cognitive Science, 12*(2), 257–285.
 
 Wood, D., Bruner, J. S., & Ross, G. (1976). The role of tutoring in problem solving. *Journal of Child Psychology and Psychiatry, 17*(2), 89–100.
-
-*[Weitere Quellen werden bei Fertigstellung ergänzt: LLM-Paper, Streaming-Protokolle, bcrypt-Spezifikation, pgvector-Dokumentation]*

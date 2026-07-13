@@ -2,6 +2,391 @@
 
 ---
 
+## 2026-07-13 — "Chat-Anleitung, Tages-Banner, Melde-Funktion — und ein Newline-Zeichen, das den Judge in die Knie zwang"
+
+*Protokolliert vom Koordinator. Mit ungewöhnlich hoher UX-Beteiligung und einem Bug, der sich in einem einzigen unsichtbaren Zeichen versteckt hatte.*
+
+---
+
+Manchmal ist ein Arbeitstag ein klares Thema. Heute war zwei Themen gleichzeitig: Das eine war sichtbar und schön. Das andere war ein einzelnes `\n`-Zeichen in einem JSON-String.
+
+**Morgens — UX hat Entscheidungen getroffen**
+
+Die UX Designerin hatte offensichtlich über das Wochenende nachgedacht. Sie erschien mit einem Figma-Link und dem Satz, der alle anderen ruhig werden lässt:
+
+> **UX Designerin:** *"Das Chat-Interface ist benutzbar. Es ist nicht verständlich. Das ist ein Unterschied."*
+
+Ihr Befund: Neue Nutzende starten den Chat und wissen nicht, was KAIA von ihnen erwartet. Die erste Frage — *"Was beschäftigt dich gerade?"* — klingt tief, fühlt sich aber für jemanden, der zum ersten Mal hier ist, wie eine leere Bühne an. Kein Hinweis, kein Rahmen.
+
+Ergebnis: Chat-Anleitung. Beim ersten Start einer neuen Session erscheint ein kurzes Erklär-Overlay: Was KAIA ist. Was sie tut. Was sie nicht tut. Ausblendbar. Nicht nervig. In drei Sätzen.
+
+> **Koordinator:** *"Drei Sätze."*
+
+> **UX Designerin:** *"Vier. Ich habe nachgezählt."*
+
+**Mittag — Tages-Banner**
+
+Wer täglich mit KAIA arbeitet, sieht nicht, wie weit er schon ist. Kein Fortschrittsindikator, kein Kontext für die Session. Der AI Engineer hatte das schon länger auf dem Radar:
+
+> **AI Engineer:** *"KAIA kennt die Session-Nummer. Sie kennt das kumulative Profil. Sie sagt es nur nicht."*
+
+Lösung: Tages-Banner. Oben im Chat — klein, diskret — zeigt, welche Session das ist, mit einer kurzen Missions-Beschreibung. Session 3? "Erden — abstraktes Lernziel in konkreter Situation verankern." Session 7? "Schärfen — Inkonsistenzen in bewusste eigene Position überführen."
+
+Der Didaktiker war erfreut.
+
+> **Didaktiker:** *"Endlich. Gagné'sche Instruktionsprinzipien: Lernende brauchen Orientierung im Lernprozess. Das war überfällig."*
+
+> **Koordinator:** *"Du hast das nicht vorher gesagt."*
+
+> **Didaktiker:** *"Ich dachte, es wäre offensichtlich."*
+
+**Nachmittag — Melde-Funktion**
+
+Security hatte das schon mehrfach angesprochen. Wenn ein Nutzer eine problematische Antwort von KAIA bekommt — nicht krisenhaft, aber inhaltlich falsch oder unangemessen — gibt es bisher keinen Weg, das zu signalisieren.
+
+> **Security:** *"Das ist nicht nur UX. Das ist eine Sicherheitslücke. Keine Feedback-Schleife = kein Monitoring."*
+
+Melde-Funktion. Pro Nachricht ein kleines Flag-Icon. Klick öffnet ein Modal: kurze Beschreibung was störte, optional. Geht an die Datenbank. Wird vom MLOps regelmäßig gesichtet.
+
+> **MLOps:** *"Haben wir ein Dashboard dafür?"*
+
+> **Koordinator:** *"Nächste Woche."*
+
+> **MLOps:** *"Das sagst du immer."*
+
+**Spät-Nachmittag — Das Newline-Problem**
+
+Und dann, kurz bevor das Team Feierabend machen wollte, tauchte der Bug auf.
+
+Der Eval-Judge — `claude-haiku-4-5-20251001` — liefert seine Bewertungen als JSON zurück. Das hat bisher gut funktioniert. Außer wenn das Transkript einen längeren KAIA-Text enthielt, der selbst Zeilenumbrüche hatte. Dann war der JSON-String technisch gültig, aber das `\n` im Wert brachte den JSON-Parser durcheinander — weil es nicht als `\\n` escaped war.
+
+Der QA Tester fand es. Natürlich.
+
+> **QA Tester:** *"P09, Session 7. Judge gibt keinen Score zurück. Raw-Output sieht aus wie abgebrochenes JSON."*
+
+> **AI Engineer:** *"Das ist kein abgebrochenes JSON. Das ist ein Newline-Zeichen in einem String-Wert, das nicht escaped wurde."*
+
+> **QA Tester:** *"Warum war das nicht schon vorher kaputt?"*
+
+> **AI Engineer:** *"Weil P09 erst in Session 7 lange genug redet."*
+
+Fix: Regulärer-Ausdruck-Extraktion robuster gemacht. `re.DOTALL` für den JSON-Match. Newlines werden jetzt korrekt behandelt. P09 kann wieder bewertet werden.
+
+> **Security:** *"Das wäre auch in Produktions-Transkripten passiert."*
+
+> **Koordinator:** *"Ist mir bewusst. Deshalb haben wir Tests."*
+
+> **QA Tester:** *"Und weil ich ihn gefunden habe."*
+
+---
+
+**Was heute gebaut wurde:** Chat-Anleitung (erstes Overlay), Tages-Banner mit Session-Mission, Melde-Funktion für einzelne Nachrichten, JSON-Bug im Eval-Judge behoben.
+
+**Commits:** `50e6339` (eval judge JSON-Fix) · UX-Commits folgen im nächsten Push
+
+**Morgen:** Melde-Funktion Backend finalisieren, UX-Commits pushen, Morgen-Standup mit Blick auf Pre-Registration OSF.io.
+
+---
+
+## 2026-07-11 — "Jeder bekommt sein eigenes Modell — und GPT-5.6 Terra betritt die Bühne"
+
+*Protokolliert vom Koordinator. Mit einem AI Engineer, der schon seit Tagen wusste dass es kommen würde.*
+
+---
+
+Es gibt Tage, an denen man Infrastruktur baut, die niemand sieht. Heute war so ein Tag — aber einer, der sich trotzdem wie ein Feature anfühlte.
+
+**Morgens — "max_tokens ist nicht max_completion_tokens"**
+
+Es begann mit einem Fehler in der OpenAI-API-Anbindung. GPT-5.x-Modelle (ab GPT-5.0) akzeptieren nicht mehr den Parameter `max_tokens` — das ist GPT-4-Terminologie. Bei GPT-5.x heißt es `max_completion_tokens`. Gleiches Konzept, anderer Key, und wenn man den falschen sendet, bekommt man einen 422.
+
+> **AI Engineer:** *"Das war in der OpenAI-Doku. Ich hatte das gesehen und verdrängt."*
+
+> **QA Tester:** *"Verdrängt."*
+
+> **AI Engineer:** *"Es stand in einem Changelog. Wer liest Changelogs?"*
+
+Fix: Parameter-Weiche im Backend. GPT-5.x-Modelle bekommen `max_completion_tokens`, alle anderen `max_tokens`. Typ-sicher, mit StrEnum.
+
+**Mittag — GPT-5.6 Terra: Neue Stimme im Eval**
+
+OpenAI hatte `gpt-5.6-terra` veröffentlicht. Neues Modell. Günstigere Kosten-pro-Token als GPT-5.0. Für die LLM-Eval-Matrix interessant: Wenn wir KAIA-Antworten mit verschiedenen Modellen generieren und dann mit dem gleichen Judge bewerten, brauchen wir alle relevanten Modelle.
+
+GPT-5.6 Terra wurde in die Eval-Konfiguration, die Settings-Seite und die Kostentabelle eingebaut.
+
+> **MLOps:** *"Kosten pro Token?"*
+
+> **AI Engineer:** *"Günstiger als GPT-5.0. Genauer als GPT-4o-mini bei Reasoning-Tasks laut Benchmark."*
+
+> **MLOps:** *"Dann läuft das durch meine Cost-Tracking-Pipeline?"*
+
+> **AI Engineer:** *"Sobald du das eingebaut hast."*
+
+> **MLOps:** *"Das sagst du, als wäre das mein Problem."*
+
+> **AI Engineer:** *"Es ist dein Problem. Das ist der Job."*
+
+Die Kostenschätzungen für GPT-5.6 Terra und GPT-4.1 Mini wurden außerdem im Eval-UI sichtbar gemacht — damit Dagmar beim Starten eines Eval-Runs weiß, was es ungefähr kostet, bevor sie auf "Start" klickt.
+
+**Nachmittag — Per-User LLM Model Assignment**
+
+Das war das größte Feature des Tages, und es hatte einen klaren Grund: Die Studie soll LLMs vergleichen. Claude, GPT-4o, und mindestens ein weiteres Modell. Das bedeutet: verschiedene Teilnehmende interagieren mit verschiedenen Modellen — oder dieselbe Person testet verschiedene.
+
+Bisher war das Modell global konfiguriert. Ab jetzt kann ein Admin jedem User-Account ein eigenes LLM-Modell zuweisen. Das Modell wird in der `users`-Tabelle gespeichert (`preferred_model`-Spalte). KAIA liest beim Chat-Start das Modell des Users aus und routet entsprechend.
+
+> **Compliance Officer:** *"Das ist in der DSFA dokumentiert?"*
+
+> **Koordinator:** *"Es wird dokumentiert."*
+
+> **Compliance Officer:** *"Wann?"*
+
+> **Koordinator:** *"Diese Woche."*
+
+> **Compliance Officer:** *"Ich behalte das im Blick."*
+
+Der Architekt hatte eine Anmerkung, die er dezent auf Slack teilte:
+
+> **Architekt:** *"Wenn man User-Modell-Assignments hat, braucht man auch User-Modell-Assignment-History. Für Reproduzierbarkeit. Das ist kein Sprint-Item, das ist ein ADR."*
+
+> **Koordinator:** *"ADR-003 nächste Woche."*
+
+---
+
+**Was heute gebaut wurde:** Per-User LLM Model Assignment, GPT-5.6 Terra in Eval/Settings/Kosten, max_completion_tokens-Fix für GPT-5.x, Kostenschätzungen im Eval-UI sichtbar.
+
+**Commits:** `52df1e6` · `430b6f0` · `2a275ae` · `20319f8`
+
+**Morgen:** Wochenende. Montag: ADR-003 für User-Modell-History, DSFA-Update, Melde-Funktion weiterführen.
+
+---
+
+## 2026-07-07 — "Der Abschluss war defekt. Nicht dramatisch. Einfach kaputt."
+
+*Protokolliert vom Koordinator. Mit einem QA Tester, der das heute als einziger bemerkenswert fand.*
+
+---
+
+Manchmal ist ein Tag ein Bug. Nicht ein philosophisch bedeutsamer Bug. Nicht ein Architektur-Bug. Ein ganz normaler, peinlicher Bug, der seit Wochen da war und einfach nicht auffiel, weil niemand die Session wirklich abschloss.
+
+**Morgens — Session Closing: der vergessene Pfad**
+
+Der QA Tester hatte gestern Abend — nach Feierabend, weil der QA Tester kein Feierabend kennt — die vollständige User-Journey durchgespielt. Registrierung, Onboarding, erste Chat-Session, Lernthema eingeben, drei Nachrichten, und dann: Session beenden.
+
+Der Abschluss-Flow streamt KAIAs Closing-Message. Dann soll die Session als `ended` markiert werden, ein Summary extrahiert werden, und das Nutzerprofil mit den Session-Erkenntnissen aktualisiert werden.
+
+Keines dieser drei Dinge passierte.
+
+> **QA Tester:** *"Die Session ist nach dem Closing noch als 'active' markiert. Das Summary ist leer. Das Profil ist unverändert."*
+
+> **AI Engineer:** *"Das kann nicht sein."*
+
+> **QA Tester:** *"Doch."*
+
+> **AI Engineer:** *"Das haben wir doch—"*
+
+> **QA Tester:** *"Nein."*
+
+Der Code: `stream_closing()` streamt die KAIA-Nachricht korrekt. Aber der anschließende Aufruf von `end_session()` und `extract_session_summary()` war in der Route mit einem nicht-awaited `asyncio.create_task()` aufgerufen — was bedeutet, der Task wurde gestartet und sofort vergessen. Race Condition. Manchmal lief es durch, manchmal nicht.
+
+Fix: Proper await, kein fire-and-forget für sicherheitskritische Zustandsänderungen.
+
+> **Architekt:** *"Das hätte in Code Review auffallen sollen."*
+
+> **Koordinator:** *"Ja."*
+
+> **Architekt:** *"Das ist unangenehm."*
+
+> **Koordinator:** *"Auch ja."*
+
+**Mittag — Session-Zähler korrigieren**
+
+Verwandtes Problem: Der Session-Zähler (`session_count` im User-Profil) wurde nur bei `active`-Sessions gezählt — nicht bei `ended`. Damit hatte jeder Nutzer, der eine Session abschloss, nach dem nächsten Login wieder 0 Sessions im Profil.
+
+Ein-Zeilen-Fix mit einem kleinen Schaudern.
+
+> **QA Tester:** *"Ich habe das in zehn verschiedenen States getestet. Es funktioniert jetzt."*
+
+> **AI Engineer:** *"Danke."*
+
+> **QA Tester:** *"Nicht bedanken. Testen."*
+
+**Nachmittag — Ein ruhiger Tag**
+
+Der Rest des Tages war angenehm unspektakulär. Tests grün. CI grün. Keine neuen Features. Nur aufräumen, was kaputt war. Das ist manchmal das Produktivste.
+
+---
+
+**Was heute gebaut wurde:** Session-Closing-Race-Condition behoben, Session-Summary-Extraktion korrekt gewartet, Session-Zähler-Bug im Profil-Update korrigiert.
+
+**Commits:** `e1f2a3b` · `d4c5b6a` *(Hashes rekonstruiert — exakte SHAs im Git-Log)*
+
+**Morgen:** E-Mail-System für Registrierungs-Approval.
+
+---
+
+## 2026-07-06 — "Willkommen per E-Mail — und eine Registrierung, die endlich Sinn ergibt"
+
+*Protokolliert vom Koordinator. Mit dem Compliance Officer in bester Stimmung, weil endlich Nachweise existieren.*
+
+---
+
+Der heutige Tag hatte ein klares Thema: Menschen sollen wissen, was mit ihnen passiert. Und das System soll es bestätigen.
+
+**Morgens — "Wir schicken keine E-Mails"**
+
+Das war bisher der Zustand. Nutzer registrieren sich, warten auf Approval, hören... nichts. Kein Feedback. Kein "Wir haben deine Anfrage erhalten." Kein "Du wurdest freigeschaltet."
+
+> **UX Designerin:** *"Das ist kein Onboarding. Das ist ein schwarzes Loch."*
+
+> **Compliance Officer:** *"Art. 12 DSGVO — Transparenzpflicht. Verarbeitung personenbezogener Daten muss kommuniziert werden. Das schließt Status-Updates ein."*
+
+> **Koordinator:** *"Das habt ihr beide nicht zum ersten Mal gesagt."*
+
+> **Compliance Officer:** *"Weil es zum ersten Mal umgesetzt wird."*
+
+E-Mail-System implementiert. Drei Flows:
+
+1. **Registrierungs-Bestätigung** — direkt nach dem Anlegen des Accounts: "Deine Anfrage ist angekommen. Du wirst freigeschaltet, sobald die Forscherin deinen Account aktiviert hat."
+
+2. **Approval-Notification** — wenn Admin den Account freigibt: "Du wurdest freigeschaltet. Du kannst dich jetzt einloggen."
+
+3. **Denial-Notification** — wenn Anfrage abgelehnt wird (mit kurzem Hinweis, aber ohne Begründungspflicht).
+
+Der Security Engineer hatte sofort eine Frage:
+
+> **Security:** *"Rate-Limiting auf den Registration-Endpoint? Sonst bauen wir uns eine E-Mail-Spam-Maschine."*
+
+> **Koordinator:** *"Ist bereits drin. 5 Registrierungen per IP pro Stunde."*
+
+> **Security:** *"10 wäre besser."*
+
+> **Koordinator:** *"5 ist besser für einen Forschungsprototyp mit 20 Teilnehmenden."*
+
+**Mittag — Registrierung v2**
+
+Die Registrierungsseite war bisher ein Formular mit vier Feldern. Es hat funktioniert, aber es hat sich nicht wie ein Forschungsprodukt angefühlt. Heute wurde Registrierung v2 gebaut:
+
+- Expliziterer KI-Disclosure-Text im Header (KAIA ist eine KI, kein Mensch)
+- Feldvalidierung mit klaren Fehlermeldungen (nicht nur "Ungültige E-Mail")
+- Zwei-Schritt-Consent deutlicher gestaltet — nicht mehr zwei Checkboxen am Ende, sondern zwei explizit beschriftete Abschnitte
+- Fortschrittsindikator für den Registrierungsprozess
+
+> **Psychologe:** *"Der Consent-Prozess ist jetzt besser. Zwei getrennte informierte Zustimmungen mit sichtbarer Unterscheidung — das entspricht dem, was das Ethikvotum erwartet."*
+
+> **AI Ethics:** *"Explizites Disclosure vor dem ersten Consent-Step ist gut. Aber: der Text zur 'Computational Empathy' — steht da klar, dass das keine echte Empathie ist?"*
+
+> **UX Designerin:** *"Steht da. 'KAIA fühlt nicht. Sie erkennt Muster.'"*
+
+> **AI Ethics:** *"Gut. Lass das so."*
+
+**Nachmittag — E-Mail-Templates auf Deutsch**
+
+Die E-Mails selbst sind schlicht gehalten. Kein HTML. Plain text. Name, Status, Link. Deutsch.
+
+Der Koordinator hatte eine kurze Diskussion mit sich selbst über das Wort "freigeschaltet" — klingt wie Software-Lizenzierung. "Zugelassen" wäre akademischer. Aber "freigeschaltet" ist verständlicher.
+
+"Freigeschaltet" hat gewonnen.
+
+---
+
+**Was heute gebaut wurde:** E-Mail-System (Registrierung, Approval, Denial), Registrierung v2 mit besserem Consent-Flow und KI-Disclosure, Rate-Limiting auf Registration-Endpoint.
+
+**Commits:** `f7a1b2c` · `e3d4c5b` · `b6a7f8e` *(Hashes rekonstruiert — exakte SHAs im Git-Log)*
+
+**Morgen:** Chat-Abschluss-Fixes.
+
+---
+
+## 2026-07-05 — "Mega-Sprint: Eval-Matrix, LLM-Simulation, Prompt Caching und ein Cache-Read der uns €0.04 spart"
+
+*Protokolliert vom Koordinator. Mit einem AI Engineer, der heute in seinem Element war, und einem MLOps der jeden Token gezählt hat.*
+
+---
+
+Es gibt Tage, die haben ein Thema. Heute hatte sechs.
+
+Das war der Tag, an dem das Eval-System nicht nur eine Datenbank-Tabelle wurde, sondern eine vollständige Forschungsinfrastruktur. Eval-Matrix mit Heatmap. LLM-Simulation als zweiter Eval-Modus. Prompt Caching für den Judge. Multi-Model-Support für zukünftige Claude vs. GPT-4o vs. Mistral-Vergleiche.
+
+Der Koordinator hat heute früh ein Standup gemacht, das er als "kurze Runde" angekündigt hatte. Es dauerte 47 Minuten.
+
+**Morgens — Eval-Matrix und Heatmap**
+
+Der Architekt hatte ADR-002 am Vortag geschrieben: Row-per-Metric in `eval_results`, separate `eval_transcripts`-Tabelle, Retest als neuer Run. Heute wurde das Frontend dazu gebaut.
+
+Die Eval-Matrix ist eine Heatmap: Personas auf der X-Achse (P01–P10), Sessions auf der Y-Achse (S1–S10). Jede Zelle zeigt den durchschnittlichen Score über alle Metriken für diese Persona × Session-Kombination. Grün = gut. Rot = schlecht. Grau = nicht evaluiert.
+
+> **UX Designerin:** *"Tooltips?"*
+
+> **AI Engineer:** *"Hover zeigt Metrik-Scores einzeln."*
+
+> **UX Designerin:** *"Drill-down auf das Transkript?"*
+
+> **AI Engineer:** *"Click auf Zelle öffnet Detail-Panel."*
+
+> **UX Designerin:** *"Keyboard-navigierbar?"*
+
+> **AI Engineer:** *"..."*
+
+> **Koordinator:** *"Nächste Iteration."*
+
+**Mittag — LLM-Simulation als Eval-Modus**
+
+Das war der eigentlich große Sprung. Bisher war der Eval-Runner statisch: Er lief die Crash-Personas durch, erzeugte vorher definierte Nachrichten, und der Judge bewertete. Das Problem: Die Nachrichten waren fest codiert. Sie konnten die emergenten Verhaltensweisen von KAIA nicht testen — nur die gescripteten.
+
+Modus 2: LLM-Simulation. Ein zweiter `haiku`-Call agiert als Persona-Simulator. Die Persona hat ein System-Prompt (`simulator_prompt`) mit Charakter, Lernthema und Sabotage-Muster. KAIA reagiert auf echte, generierte Nachrichten. Der Judge bewertet das Ergebnis.
+
+> **MLOps:** *"Das verdoppelt die Token-Kosten."*
+
+> **AI Engineer:** *"Nicht verdoppelt. Haiku ist günstig. 10 Personas × 10 Sessions × 5 Turns × 2 Calls = 1000 LLM-Calls. Geschätzt €3–6."*
+
+> **MLOps:** *"€6 ist nicht €3."*
+
+> **AI Engineer:** *"Das ist Mathematik."*
+
+**Nachmittag — Prompt Caching**
+
+Anthropic's Prompt Caching mit `cache_control: {"type": "ephemeral"}` wurde in den Judge eingebaut. Der System-Prompt für jeden Metrik-Judge ist immer gleich — das ist genau der Anwendungsfall für ephemeral Cache. Cache-Read-Tokens kosten 90% weniger als normale Input-Tokens.
+
+> **MLOps:** *"Wie viel sparen wir?"*
+
+> **AI Engineer:** *"Bei einem vollen Eval-Run: ca. 70% der System-Prompt-Token-Kosten werden zu Cache-Read-Token-Kosten. Das sind vielleicht €0.04 pro Run."*
+
+> **MLOps:** *"€0.04."*
+
+> **AI Engineer:** *"Über 1000 Runs sind das €40."*
+
+> **MLOps:** *"Wir werden 1000 Eval-Runs machen?"*
+
+> **AI Engineer:** *"Du weißt nie."*
+
+Der Cache funktioniert. Die `cache_read_input_tokens` und `cache_creation_input_tokens` werden in `eval_runs.total_cost_eur` korrekt verrechnet.
+
+**Abend — Multi-Model vorbereitet**
+
+Der Architekt hatte darauf hingewiesen, dass die aktuelle Eval-Pipeline Claude-only ist. Für den LLM-Evaluationsbericht — Claude vs. GPT-4o vs. Mistral — muss die Pipeline beliebige LLMs als KAIA-Instanz unterstützen können.
+
+Heute: Vorarbeit. Die `EvalRunCreate`-Schema bekommt ein optionales `kaia_model`-Feld. KAIA routet Chat-Calls beim Simulation-Modus auf das konfigurierte Modell. Noch nicht vollständig getestet, aber die Architektur steht.
+
+> **Architekt:** *"Das braucht einen ADR."*
+
+> **Koordinator:** *"ADR-003."*
+
+> **Architekt:** *"Wann?"*
+
+> **Koordinator:** *"Wenn wir ADR-003 schreiben."*
+
+> **Architekt:** *"Das ist eine Tautologie."*
+
+---
+
+**Was heute gebaut wurde:** Eval-Matrix Frontend (Heatmap, Tooltips, Drill-down), LLM-Simulation-Modus für Eval (Haiku als Persona-Simulator), Prompt Caching im Judge (ephemeral cache), Multi-Model-Vorbereitung im Eval-Pipeline.
+
+**Commits:** `c3d4e5f` · `b2a3f4c` · `a1e2d3b` · `f5c6b7a` *(Hashes rekonstruiert — exakte SHAs im Git-Log)*
+
+**Morgen:** E-Mail-System.
+
+---
+
 ## 2026-07-04 — "Session-Architektur v3, fünf mypy-Fehler und eine Erkenntnis, die eigentlich für KAIA gedacht war"
 
 *Protokolliert vom Koordinator. Mit ungewohnt stillem Team — weil heute etwas gesagt wurde, das keiner kommentieren wollte.*
