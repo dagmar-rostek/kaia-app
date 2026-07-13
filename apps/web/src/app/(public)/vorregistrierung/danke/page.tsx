@@ -15,7 +15,7 @@ export default function DankePage() {
         <h1 className="text-3xl font-bold tracking-tight">Du bist auf der Liste.</h1>
         <p className="text-muted-foreground leading-relaxed">
           Eine Bestätigungsmail ist unterwegs zu dir.
-          Am <strong className="text-foreground">16. Juli 2026</strong> geht es los —
+          Am <strong className="text-foreground">1. August 2026</strong> geht es los —
           dann meldest du dich richtig an und kannst direkt starten.
         </p>
       </div>
@@ -28,7 +28,7 @@ export default function DankePage() {
         <p className="font-medium text-foreground">Was passiert jetzt?</p>
         <ul className="space-y-1.5">
           <li>✉️ Du bekommst gleich eine Bestätigungsmail</li>
-          <li>📅 Am 16. Juli schreibt Dagmar dir persönlich</li>
+          <li>📅 Am 1. August schreibt Dagmar dir persönlich</li>
           <li>🚀 Du kannst dich dann registrieren und loslegen</li>
           <li>🎁 Als Dankeschön: Sonderkonditionen für Early Birds</li>
         </ul>

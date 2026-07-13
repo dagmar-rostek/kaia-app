@@ -15,7 +15,7 @@ def _confirmation_html(name: str, unsubscribe_token: str) -> str:
   <p style="color: #555; line-height: 1.6;">
     Hallo {name},<br><br>
     du hast dich für die KAIA-Pilotstudie vorregistriert.
-    Sobald die Studie am <strong>16. Juli 2026</strong> startet,
+    Sobald die Studie am <strong>1. August 2026</strong> startet,
     bekommst du eine E-Mail mit allem was du wissen musst.
   </p>
   <p style="color: #555; line-height: 1.6;">
@@ -56,7 +56,7 @@ async def send_confirmation(name: str, email: str, unsubscribe_token: str) -> No
         to=email,
         subject="Du bist auf der KAIA-Liste 🎉",
         html=_confirmation_html(name, unsubscribe_token),
-        text=f"Hallo {name}, du bist vorregistriert! Wir melden uns am 16. Juli 2026.",
+        text=f"Hallo {name}, du bist vorregistriert! Wir melden uns am 1. August 2026.",
     )
 
 

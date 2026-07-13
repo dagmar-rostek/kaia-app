@@ -10,7 +10,7 @@ import { StudyCountdown } from "@/components/StudyCountdown"
 export const metadata = {
   title: "Mitmachen — KAIA Pilotstudie",
   description:
-    "Werde Teil der KAIA-Pilotstudie: Ein KI-Lernbegleiter der sich an dich anpasst, dich begleitet statt belehrt — und dich das Lernen selbst lernen lässt. Start: 16. Juli 2026.",
+    "Werde Teil der KAIA-Pilotstudie: Ein KI-Lernbegleiter der sich an dich anpasst, dich begleitet statt belehrt — und dich das Lernen selbst lernen lässt. Start: 1. August 2026.",
 }
 
 // ── Helpers ────────────────────────────────────────────────────────────────────
@@ -82,7 +82,7 @@ export default function MitmachenPage() {
       {/* ── COUNTDOWN BANNER ── */}
       <section className="rounded-xl border border-border bg-muted/20 p-6 text-center space-y-4">
         <p className="text-sm font-medium">
-          Registrierung öffnet am <strong>16. Juli 2026</strong>
+          Registrierung öffnet am <strong>1. August 2026</strong>
         </p>
         <StudyCountdown label="Noch" />
         <p className="text-xs text-muted-foreground">
@@ -94,7 +94,7 @@ export default function MitmachenPage() {
       <section className="space-y-6 text-center">
         <div className="flex justify-center gap-2 flex-wrap">
           <Badge>Masterthesis · SRH Fernhochschule</Badge>
-          <Badge>Start: 16. Juli 2026</Badge>
+          <Badge>Start: 1. August 2026</Badge>
           <Badge>~20 Teilnehmende gesucht</Badge>
         </div>
 
@@ -464,7 +464,7 @@ export default function MitmachenPage() {
         <div className="space-y-2">
           <h2 className="text-2xl font-bold tracking-tight">Fast so weit.</h2>
           <p className="text-muted-foreground text-sm max-w-md mx-auto">
-            Die Registrierung ist geöffnet. Die Studie startet am <strong className="text-foreground">16. Juli 2026</strong>.
+            Die Registrierung ist geöffnet. Die Studie startet am <strong className="text-foreground">1. August 2026</strong>.
           </p>
         </div>
         <StudyCountdown label="Noch" />

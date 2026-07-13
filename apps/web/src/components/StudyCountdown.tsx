@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react"
 import { Clock } from "lucide-react"
 
-const STUDY_START = new Date("2026-07-16T00:00:00")
+const STUDY_START = new Date("2026-08-01T00:00:00")
 
 function pad(n: number) {
   return String(n).padStart(2, "0")
@@ -69,7 +69,7 @@ export function StudyCountdown({ label = "Registrierung öffnet in" }: { label?:
         ))}
       </div>
       <p className="text-xs text-muted-foreground text-center">
-        16. Juli 2026 · Studienstart
+        1. August 2026 · Studienstart
       </p>
     </div>
   )

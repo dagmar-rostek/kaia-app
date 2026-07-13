@@ -69,7 +69,7 @@ export default function Home() {
         </div>
 
         <p className="text-xs text-muted-foreground">
-          Studienstart: <strong className="text-foreground">16. Juli 2026</strong>
+          Studienstart: <strong className="text-foreground">1. August 2026</strong>
           {" · "}
           bereits eingeloggt?{" "}
           <Link href="/login" className="underline hover:text-foreground transition-colors">
