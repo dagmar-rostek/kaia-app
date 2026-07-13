@@ -266,6 +266,12 @@ export default function ChatPage() {
 
   const resetSession = useCallback((newChar?: Character) => {
     if (closureTimerRef.current) clearTimeout(closureTimerRef.current)
+    // End the current session on the backend before creating a new one.
+    // Without this, the old session stays open and get_active_session resumes it
+    // instead of the new one — causing the session counter to appear to go backwards.
+    if (sessionId) {
+      void authFetch(`${API_BASE}/api/v1/chat/sessions/${sessionId}/end`, { method: "POST" })
+    }
     if (newChar) setCharacter(newChar)
     setSessionId(null)
     setSessionNumber(null)
@@ -276,7 +282,7 @@ export default function ChatPage() {
     setResumed(false)
     setBannerDismissed(false)
     setOpenTrigger(t => t + 1)
-  }, [])
+  }, [sessionId])
 
   // ── Closure flow ──────────────────────────────────────────────────────────────
   // NOTE: endSession is declared before startClosure because startClosure

@@ -1,4 +1,4 @@
-from datetime import UTC
+from datetime import UTC, datetime
 
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -18,6 +18,27 @@ class ChatRepository:
         result = await self.db.execute(select(func.count()).where(ChatSession.user_id == user_id))
         return result.scalar_one()
 
+    async def _close_orphaned_empty_sessions(self, user_id: int) -> None:
+        """Close open sessions with no messages — created by resetSession without /end call.
+
+        Safety net: frontend already calls /end on reset, but this catches any
+        orphaned ghosts that slipped through (e.g. browser crash, old clients).
+        Without this, count_sessions would inflate and get_active_session would
+        resume a ghost instead of opening a fresh session.
+        """
+        result = await self.db.execute(
+            select(ChatSession)
+            .where(ChatSession.user_id == user_id, ChatSession.ended_at.is_(None))
+            .options(selectinload(ChatSession.messages))
+        )
+        orphans = result.scalars().all()
+        now = datetime.now(UTC)
+        for session in orphans:
+            if not session.messages:
+                session.ended_at = now
+        if any(not s.messages for s in orphans):
+            await self.db.commit()
+
     async def create_session(
         self,
         user_id: int,
@@ -25,6 +46,7 @@ class ChatRepository:
         daily_plan: str | None = None,
         active_goal_id: int | None = None,
     ) -> ChatSession:
+        await self._close_orphaned_empty_sessions(user_id)
         session_number = await self.count_sessions(user_id) + 1
         session = ChatSession(
             user_id=user_id,
