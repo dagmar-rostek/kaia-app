@@ -87,8 +87,8 @@ export function ChatInfoPanel({ open, onClose }: Props) {
               Die drei KAIA-Charaktere
             </h3>
             <p className="text-xs text-muted-foreground leading-relaxed">
-              Du kannst den Charakter jederzeit oben im Header wechseln — auch mitten in der Studie.
-              Eine neue Session startet dann mit dem neuen Charakter.
+              Du kannst den Gesprächston jederzeit unterhalb des Eingabefeldes wechseln.
+              Eine neue Session startet dann mit dem gewählten Ton.
             </p>
             <div className="space-y-2.5">
               {CHARACTER_INFO.map(c => (

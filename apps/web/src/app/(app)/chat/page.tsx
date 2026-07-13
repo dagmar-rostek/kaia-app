@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react"
 import { useRouter } from "next/navigation"
-import { AlertCircle, CheckCircle2, HelpCircle, LogOut, Loader2, Plus, Send } from "lucide-react"
+import { AlertCircle, CheckCircle2, HelpCircle, LogOut, Loader2, Send } from "lucide-react"
 import Link from "next/link"
 import { LegalFooter } from "@/components/LegalFooter"
 import { tokenStore, authFetch, apiLogout } from "@/lib/auth"
@@ -85,9 +85,9 @@ async function readSSEStream(
 // ── Chat page ─────────────────────────────────────────────────────────────────
 
 const CHARACTER_LABELS = {
-  warm:        "🌸 Warm",
-  challenging: "⚡ Herausfordernd",
-  wild:        "🎭 Überraschend",
+  warm:        "🌸 Begleitend",
+  challenging: "⚡ Konfrontierend",
+  wild:        "🎭 Perspektivwechselnd",
 } as const
 
 type Character = keyof typeof CHARACTER_LABELS
@@ -497,28 +497,6 @@ export default function ChatPage() {
           )}
         </div>
         <div className="flex items-center gap-1.5">
-          {(Object.keys(CHARACTER_LABELS) as Character[]).map(c => (
-            <button
-              key={c}
-              onClick={() => resetSession(c)}
-              disabled={closureState === "ended"}
-              className={`text-xs px-2.5 py-1.5 rounded-lg transition-colors disabled:opacity-40 ${
-                character === c
-                  ? "bg-foreground text-background"
-                  : "text-muted-foreground hover:text-foreground hover:bg-muted"
-              }`}
-            >
-              {CHARACTER_LABELS[c]}
-            </button>
-          ))}
-          <button
-            onClick={() => resetSession()}
-            className="p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
-            title="Neue Session starten"
-            aria-label="Neue Session starten"
-          >
-            <Plus className="h-4 w-4" />
-          </button>
           <button
             onClick={() => setShowInfoPanel(v => !v)}
             title="Hilfe & Anleitung"
@@ -713,6 +691,33 @@ export default function ChatPage() {
 
       {/* Input */}
       <div className="shrink-0 border-t border-border px-4 py-3">
+
+        {/* Character / tone selector */}
+        {closureState !== "ended" && (
+          <div className="max-w-2xl mx-auto flex items-center gap-2.5 mb-3">
+            <span className="text-[10px] text-muted-foreground/50 uppercase tracking-wide shrink-0">
+              Ton
+            </span>
+            <div className="flex gap-1.5 flex-wrap">
+              {(Object.keys(CHARACTER_LABELS) as Character[]).map(c => (
+                <button
+                  key={c}
+                  onClick={() => resetSession(c)}
+                  disabled={closureState === "ended"}
+                  title="Startet eine neue Session mit diesem Gesprächston"
+                  className={`text-xs px-2.5 py-1 rounded-lg transition-colors disabled:opacity-40 ${
+                    character === c
+                      ? "bg-foreground text-background"
+                      : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                  }`}
+                >
+                  {CHARACTER_LABELS[c]}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
         <div className="max-w-2xl mx-auto flex items-end gap-2">
           <textarea
             ref={textareaRef}
