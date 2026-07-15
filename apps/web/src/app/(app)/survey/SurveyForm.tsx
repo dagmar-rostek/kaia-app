@@ -1,8 +1,8 @@
 "use client"
 
-import { useState, useCallback, useMemo } from "react"
+import { useState, useCallback, useMemo, useEffect } from "react"
 import { useRouter } from "next/navigation"
-import { CheckCircle2, ChevronRight, AlertTriangle } from "lucide-react"
+import { CheckCircle2, ChevronRight, AlertTriangle, Sparkles, Heart, ArrowUp, ArrowDown, Minus, Printer } from "lucide-react"
 import { authFetch } from "@/lib/auth"
 
 // ── GSE items (Schwarzer & Jerusalem, 1995) ───────────────────────────────────
@@ -333,6 +333,243 @@ function GseCard({ score, isPost }: { score: number; isPost: boolean }) {
   )
 }
 
+// ── Pre/Post comparison row ────────────────────────────────────────────────────
+
+function ComparisonRow({
+  label, preScore, postScore, maxScore,
+}: {
+  label: string; preScore: number; postScore: number; maxScore: number
+}) {
+  const prePct = Math.round((preScore / maxScore) * 100)
+  const postPct = Math.round((postScore / maxScore) * 100)
+  const delta = postScore - preScore
+  const absD = Math.abs(delta).toFixed(2)
+  const DeltaIcon = delta > 0.04 ? ArrowUp : delta < -0.04 ? ArrowDown : Minus
+  const deltaColor = delta > 0.04
+    ? "text-emerald-600 dark:text-emerald-400"
+    : delta < -0.04
+      ? "text-amber-600 dark:text-amber-400"
+      : "text-muted-foreground"
+  const postBarColor = delta > 0.04
+    ? "bg-emerald-500"
+    : delta < -0.04
+      ? "bg-amber-500"
+      : "bg-blue-500"
+
+  return (
+    <div className="space-y-2 print:space-y-1">
+      <div className="flex items-center justify-between">
+        <span className="text-sm font-medium">{label}</span>
+        <span className={`flex items-center gap-0.5 text-sm font-bold tabular-nums ${deltaColor}`}>
+          <DeltaIcon className="h-3.5 w-3.5" />
+          {absD}
+        </span>
+      </div>
+      <div className="space-y-1">
+        <div className="flex items-center gap-2 text-xs text-muted-foreground">
+          <span className="w-14 shrink-0">Vorher</span>
+          <div className="flex-1 h-2 rounded-full bg-muted overflow-hidden">
+            <div className="h-full rounded-full bg-muted-foreground/30" style={{ width: `${prePct}%` }} />
+          </div>
+          <span className="w-9 text-right tabular-nums">{preScore.toFixed(2)}</span>
+        </div>
+        <div className="flex items-center gap-2 text-xs">
+          <span className="w-14 shrink-0 font-medium">Nachher</span>
+          <div className="flex-1 h-2 rounded-full bg-muted overflow-hidden">
+            <div className={`h-full rounded-full ${postBarColor}`} style={{ width: `${postPct}%` }} />
+          </div>
+          <span className="w-9 text-right tabular-nums font-semibold">{postScore.toFixed(2)}</span>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// ── Post-study celebration panel ──────────────────────────────────────────────
+
+interface SurveyResultsData {
+  pre: { mslq: MslqResult | null; gse: GseResult | null }
+  post: { mslq: MslqResult | null; gse: GseResult | null }
+}
+
+function PostCompletionPanel({ postMslqResult, postGseResult }: {
+  postMslqResult: MslqResult
+  postGseResult: GseResult
+}) {
+  const [comparison, setComparison] = useState<SurveyResultsData | null>(null)
+  const [loadingComparison, setLoadingComparison] = useState(true)
+
+  useEffect(() => {
+    authFetch("/api/v1/survey/results")
+      .then(r => r.json())
+      .then((data: SurveyResultsData) => setComparison(data))
+      .catch(() => {/* silently degrade — show current results only */})
+      .finally(() => setLoadingComparison(false))
+  }, [])
+
+  const preGse = comparison?.pre.gse
+  const preMslq = comparison?.pre.mslq
+  const hasComparison = !loadingComparison && preGse && preMslq
+
+  const subscaleKeys = Object.keys(postMslqResult.subscale_scores)
+
+  return (
+    <>
+      {/* Print styles — hide nav/header, keep comparison visible */}
+      <style>{`
+        @media print {
+          nav, header, [data-print-hide] { display: none !important; }
+          [data-print-show] { display: block !important; }
+          body { background: white !important; color: black !important; }
+          .print\\:break-before-page { break-before: page; }
+        }
+      `}</style>
+
+      <div className="max-w-2xl mx-auto px-4 py-10 space-y-8 print:py-4 print:space-y-4">
+
+        {/* ── Celebration header ── */}
+        <div data-print-hide className="text-center space-y-5 py-4">
+          <div className="relative inline-flex">
+            <div className="h-20 w-20 rounded-full bg-emerald-100 dark:bg-emerald-900/40 flex items-center justify-center">
+              <Sparkles className="h-10 w-10 text-emerald-500" />
+            </div>
+            <span className="absolute -top-1 -right-1 text-2xl">🎉</span>
+          </div>
+          <div className="space-y-2">
+            <h1 className="text-2xl font-bold tracking-tight">
+              Du hast es vollständig abgeschlossen.
+            </h1>
+            <p className="text-muted-foreground leading-relaxed max-w-sm mx-auto">
+              10 Sessions. Zwei Fragebögen. Eine vollständige Reise.
+              Das ist selten — und es macht einen echten Unterschied.
+            </p>
+          </div>
+        </div>
+
+        {/* ── Karma-Kasse ── */}
+        <div data-print-hide className="rounded-xl border border-amber-200 dark:border-amber-800 bg-linear-to-br from-amber-50 to-orange-50 dark:from-amber-950/30 dark:to-orange-950/30 p-6 space-y-3">
+          <div className="flex items-center gap-2">
+            <Heart className="h-5 w-5 text-amber-500 shrink-0" />
+            <p className="font-semibold text-amber-900 dark:text-amber-100">
+              Du hast auf die Karma-Kasse eingezahlt.
+            </p>
+          </div>
+          <p className="text-sm text-amber-800/90 dark:text-amber-200/80 leading-relaxed">
+            Jede Teilnahme an dieser Studie hilft zu verstehen, wie KI-gestützte Lernbegleitung
+            wirkt — ob sokratische Gesprächsführung Selbstwirksamkeit stärkt, ob es einen Unterschied
+            macht, mit welchem Modell man spricht. Das sind Fragen, die Bildung verändern können.
+            Du hast dazu beigetragen. Danke.
+          </p>
+        </div>
+
+        {/* ── Comparison section ── */}
+        <div className="space-y-5">
+          <div className="flex items-center justify-between">
+            <h2 className="text-base font-semibold">Dein Lernprofil — Vorher &amp; Nachher</h2>
+            {!loadingComparison && !hasComparison && (
+              <span className="text-xs text-muted-foreground">Vergleich nicht verfügbar</span>
+            )}
+          </div>
+
+          {loadingComparison && (
+            <div className="text-sm text-muted-foreground animate-pulse">Vergleichsdaten werden geladen…</div>
+          )}
+
+          {hasComparison && (
+            <div className="space-y-5 divide-y divide-border">
+              {/* GSE */}
+              <div className="space-y-2 pt-2 first:pt-0">
+                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+                  Allgemeine Selbstwirksamkeit (GSE)
+                  <span className="ml-1 font-normal normal-case">· Schwarzer &amp; Jerusalem, 1995 · Skala 1–4</span>
+                </p>
+                <ComparisonRow
+                  label="GSE Gesamtscore"
+                  preScore={preGse.total_score}
+                  postScore={postGseResult.total_score}
+                  maxScore={4}
+                />
+                <p className="text-xs text-muted-foreground">
+                  Normmittelwert dt. Erwachsenenstichprobe: 2,97 (SD 0,55)
+                </p>
+              </div>
+
+              {/* MSLQ subscales */}
+              <div className="space-y-4 pt-4">
+                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+                  Lernstrategien &amp; Motivation (MSLQ)
+                  <span className="ml-1 font-normal normal-case">· Pintrich et al., 1991/1993 · Skala 1–7</span>
+                </p>
+                {subscaleKeys.map(key => {
+                  const meta = SUBSCALE_META[key]
+                  if (!meta) return null
+                  const preScore = (preMslq.subscale_scores as Record<string, number>)[key] ?? 0
+                  const postScore = (postMslqResult.subscale_scores as Record<string, number>)[key] ?? 0
+                  return (
+                    <ComparisonRow
+                      key={key}
+                      label={meta.label}
+                      preScore={preScore}
+                      postScore={postScore}
+                      maxScore={7}
+                    />
+                  )
+                })}
+              </div>
+            </div>
+          )}
+
+          {/* Fallback: show post results only when no pre data */}
+          {!loadingComparison && !hasComparison && (
+            <div className="space-y-3">
+              <GseCard score={postGseResult.total_score} isPost />
+              {subscaleKeys.map(key => {
+                const meta = SUBSCALE_META[key]
+                if (!meta) return null
+                return (
+                  <ScoreCard
+                    key={key}
+                    score={(postMslqResult.subscale_scores as Record<string, number>)[key] ?? 0}
+                    max={7}
+                    level={mslqLevel((postMslqResult.subscale_scores as Record<string, number>)[key] ?? 0)}
+                    meta={meta}
+                    isPost
+                  />
+                )
+              })}
+            </div>
+          )}
+        </div>
+
+        <p className="text-xs text-muted-foreground leading-relaxed border-l-2 border-border pl-3">
+          Diese Werte sind Forschungsinstrumente, keine klinischen Diagnosen. Individuelle Scores
+          haben Messfehlerbandbreiten — für die Studie relevant ist die Prä-Post-Veränderung
+          auf Gruppenebene. Die Pfeile zeigen die Richtung deiner persönlichen Entwicklung.
+        </p>
+
+        {/* ── Download / Print ── */}
+        <div data-print-hide className="pt-2">
+          <button
+            onClick={() => window.print()}
+            className="flex items-center gap-2 bg-foreground text-background px-6 py-3 rounded-lg text-sm font-medium hover:opacity-90 transition-opacity"
+          >
+            <Printer className="h-4 w-4" />
+            Ergebnisse drucken / als PDF speichern
+          </button>
+          <p className="text-xs text-muted-foreground mt-2">
+            Im Browser-Druckdialog &bdquo;Als PDF speichern&ldquo; wählen, um eine Kopie zu behalten.
+          </p>
+        </div>
+
+        {/* ── Print header (only visible when printing) ── */}
+        <div data-print-show className="hidden print:block text-xs text-muted-foreground pt-4 border-t border-border">
+          KAIA-Studie — Persönliches Lernprofil · Masterthesis Dagmar Rostek, SRH Fernhochschule Riedlingen · Daten vertraulich
+        </div>
+      </div>
+    </>
+  )
+}
+
 function EvaluationPanel({ mslqResult, gseResult, measurementType, redirectTo }: {
   mslqResult: MslqResult
   gseResult: GseResult
@@ -480,6 +717,14 @@ export function SurveyForm({ measurementType, redirectTo }: Props) {
   // ── Evaluation ──────────────────────────────────────────────────────────────
 
   if (step === "done" && mslqResult && gseResult) {
+    if (measurementType === "post") {
+      return (
+        <PostCompletionPanel
+          postMslqResult={mslqResult}
+          postGseResult={gseResult}
+        />
+      )
+    }
     return (
       <EvaluationPanel
         mslqResult={mslqResult}

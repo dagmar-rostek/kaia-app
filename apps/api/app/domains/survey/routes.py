@@ -5,7 +5,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.deps import CurrentUser
 from app.db.session import get_db
 from app.domains.chat.repository import ChatRepository
-from app.domains.survey.models import GseResult, MslqResult
+from app.domains.survey.models import GseResult, MeasurementType, MslqResult
 from app.domains.survey.repository import SurveyRepository
 from app.domains.survey.schemas import (
     GseRead,
@@ -97,3 +97,31 @@ async def submit_gse(
     if body.measurement_type.value == "pre":
         background_tasks.add_task(maybe_create_learning_profile, user.id)
     return GseRead.model_validate(result)
+
+
+@router.get("/results")
+async def get_survey_results(
+    user: CurrentUser,
+    db: AsyncSession = Depends(get_db),  # noqa: B008
+) -> dict[str, dict[str, dict[str, object] | None]]:
+    """Return all available pre and post survey results for the authenticated user.
+
+    Used by the post-study completion screen to display the pre/post comparison.
+    Only available after study completion (post data must exist).
+    """
+    repo = SurveyRepository(db)
+    pre_mslq = await repo.get_mslq_result(user.id, MeasurementType.PRE)
+    pre_gse = await repo.get_gse_result(user.id, MeasurementType.PRE)
+    post_mslq = await repo.get_mslq_result(user.id, MeasurementType.POST)
+    post_gse = await repo.get_gse_result(user.id, MeasurementType.POST)
+
+    def _mslq(r: MslqResult | None) -> dict[str, object] | None:
+        return MslqRead.model_validate(r).model_dump(mode="json") if r else None
+
+    def _gse(r: GseResult | None) -> dict[str, object] | None:
+        return GseRead.model_validate(r).model_dump(mode="json") if r else None
+
+    return {
+        "pre": {"mslq": _mslq(pre_mslq), "gse": _gse(pre_gse)},
+        "post": {"mslq": _mslq(post_mslq), "gse": _gse(post_gse)},
+    }
