@@ -9,7 +9,9 @@
 
 ## Überblick
 
-Kapitel 5 dokumentiert den systematischen Vergleich der drei LLM-Provider (Anthropic Claude, OpenAI GPT, Mistral AI) hinsichtlich ihrer Eignung für KAIAs sokratischen Lernbegleitungskontext. Das Evaluationssystem ist seit Juni 2026 operativ und technisch vollständig implementiert. Der vorliegende Abschnitt beschreibt Evaluationsdesign, Methodik und technischen Aufbau; quantitative Vergleichsergebnisse werden nach Abschluss des vollständigen Pre-Studie-Eval-Zyklus ergänzt.
+Kapitel 5 dokumentiert den systematischen Vergleich der zwei LLM-Provider (Anthropic Claude, OpenAI GPT) hinsichtlich ihrer Eignung für KAIAs sokratischen Lernbegleitungskontext. Das Evaluationssystem ist seit Juni 2026 operativ und technisch vollständig implementiert. Der vorliegende Abschnitt beschreibt Evaluationsdesign, Methodik und technischen Aufbau; quantitative Vergleichsergebnisse werden nach Abschluss des vollständigen Pre-Studie-Eval-Zyklus ergänzt.
+
+**Anmerkung zur Modellauswahl:** Ein vorläufiger Empathie-Akzeptanztest (April 2026, N=20 Runs je Testfall) wurde für drei Kandidaten durchgeführt: ChatGPT, Claude und Mistral. Mistral wurde aufgrund sicherheitskritischer Befunde in US-18 (Diagnoseverweigerung: 65 % — 7/20 Runs mit quasi-klinischem Diagnoseverhalten) aus dem Studienscope ausgeschlossen. Die Hauptstudie vergleicht ausschließlich Claude Sonnet 4.6 und GPT-4o. Vollständige Testergebnisse und Begründung: Anhang L.
 
 Die Evaluation erfolgt vor Studienstart, da die Modellwahl für die Pilotstudie fixiert sein muss (Study-Lock, Kapitel 4.6). Gleichzeitig erlaubt das Eval-System einen kontinuierlichen Vergleich während der Studienlaufzeit — jede Per-User-Modellzuweisung ist in der Datenbank dokumentiert und jederzeit nachvollziehbar.
 
@@ -45,15 +47,15 @@ Für die LLM-Evaluation wurden sieben Modelle aus drei Anbietern in das Eval-Sys
 
 | Modell-ID | Anbieter | Klasse | Datenschutz | Primärzweck |
 |---|---|---|---|---|
-| `claude-sonnet-4-6` | Anthropic | Flaggschiff | DPA erforderlich, außerhalb EU möglich | KAIA-Primärmodell |
-| `claude-haiku-4-5-20251001` | Anthropic | Kosten-effizient | DPA erforderlich, außerhalb EU möglich | Judge + Simulator |
-| `gpt-4o` | OpenAI | Flaggschiff | US-Anbieter, DPA, Schrems-II | Eval-Kandidat |
-| `gpt-5.6-terra` | OpenAI | Aktuelles Flaggschiff | US-Anbieter, DPA, Schrems-II | Eval-Kandidat |
-| `gpt-4.1-mini` | OpenAI | Kosten-effizient | US-Anbieter, DPA, Schrems-II | Eval-Kandidat |
-| `mistral-large-latest` | Mistral AI | Flaggschiff | EU-Anbieter (Paris) | Eval-Kandidat |
-| `mistral-small-latest` | Mistral AI | Kosten-effizient | EU-Anbieter (Paris) | Eval-Kandidat |
+| `claude-sonnet-4-6` | Anthropic | Flaggschiff | DPA abgeschlossen, SCCs Module Two | KAIA-Primärmodell |
+| `claude-haiku-4-5-20251001` | Anthropic | Kosten-effizient | DPA abgeschlossen, SCCs Module Two | Judge + Simulator |
+| `gpt-4o` | OpenAI | Flaggschiff | US-Anbieter, DPA abgeschlossen, Schrems-II | Eval-Kandidat |
+| `gpt-5.6-terra` | OpenAI | Aktuelles Flaggschiff | US-Anbieter, DPA abgeschlossen, Schrems-II | Eval-Kandidat |
+| `gpt-4.1-mini` | OpenAI | Kosten-effizient | US-Anbieter, DPA abgeschlossen, Schrems-II | Eval-Kandidat |
+| ~~`mistral-large-latest`~~ | Mistral AI | Flaggschiff | EU-Anbieter (Paris) | **Ausgeschlossen** (April 2026, vgl. 5.2.5) |
+| ~~`mistral-small-latest`~~ | Mistral AI | Kosten-effizient | EU-Anbieter (Paris) | **Ausgeschlossen** (April 2026, vgl. 5.2.5) |
 
-**Modell-Pinning:** Für Reproduzierbarkeit und Studien-Compliance werden immer versionierte Model-IDs verwendet — nie generische Aliase wie `claude` oder `gpt-4`. Ausnahme: `mistral-large-latest` und `mistral-small-latest` verweisen auf Mistral-seitig gemanagte Versionen; ihre Versionsfixierung liegt im Ermessen des Anbieters und ist als Limitation zu deklarieren (Kapitel 5.7.4).
+**Modell-Pinning:** Für Reproduzierbarkeit und Studien-Compliance werden immer versionierte Model-IDs verwendet — nie generische Aliase wie `claude` oder `gpt-4`. Die Mistral-Aliase (`mistral-large-latest`, `mistral-small-latest`) sind als Limitation dokumentiert; sie verweisen auf Mistral-seitig gemanagte Versionen ohne garantierte Versionsbindung (vgl. Kapitel 5.7.4). Da Mistral aus dem Studienscope ausgeschlossen wurde, ist diese Limitation für die Hauptstudie nicht mehr relevant.
 
 ### 5.2.2 Anthropic Claude
 
@@ -67,11 +69,25 @@ Für die LLM-Evaluation wurden sieben Modelle aus drei Anbietern in das Eval-Sys
 
 ### 5.2.4 Mistral AI
 
-**Mistral Large** (`mistral-large-latest`) ist das Flaggschiff des EU-Anbieters Mistral AI (Paris, Frankreich). Aus datenschutzrechtlicher Sicht ist Mistral gegenüber US-Anbietern bevorzugt, da keine Schrems-II-Problematik besteht. Die API ist OpenAI-kompatibel; Mistral Large unterliegt strengen Rate Limits (~0,07 req/s), die durch exponentielles Backoff-Retry kompensiert werden. **Mistral Small** (`mistral-small-latest`) bietet als kostengünstigere EU-Variante einen weiteren Datenpunkt auf der Kosten-Qualitäts-Kurve.
+**Mistral Large** (`mistral-large-latest`) ist das Flaggschiff des EU-Anbieters Mistral AI (Paris, Frankreich). Aus datenschutzrechtlicher Sicht ist Mistral gegenüber US-Anbietern bevorzugt, da keine Schrems-II-Problematik besteht. Die API ist OpenAI-kompatibel; Mistral Large unterliegt strengen Rate Limits (~0,07 req/s). **Mistral Small** (`mistral-small-latest`) bietet als kostengünstigere EU-Variante einen weiteren Datenpunkt auf der Kosten-Qualitäts-Kurve.
 
-### 5.2.5 Modellauswahl für die Hauptstudie
+**Ausschluss aus dem Studienscope (April 2026):** Im Rahmen eines vorläufigen Empathie-Akzeptanztests (N=20 Runs je Testfall, 19 User Stories) zeigte Mistral sicherheitskritisches Verhalten in US-18 (Diagnoseverweigerung): In 7 von 20 Runs (35 %) produzierte das Modell quasi-klinische Diagnoseaussagen statt konsequenter Ablehnung. Da KAIA kein therapeutisches Werkzeug ist und die Zielgruppe durch solche Aussagen geschädigt werden könnte, wird Mistral aus dem Studienscope ausgeschlossen. Vollständige Testergebnisse: Anhang L.
 
-Die Pilotstudie (Studienstart 01.08.2026) implementiert einen Between-Subjects-Vergleich mit drei Flaggschiff-Modellen: **Claude Sonnet 4.6** (Anthropic), **GPT-4o** (OpenAI) und **Mistral Large** (Mistral AI). Diese Dreier-Auswahl repräsentiert drei qualitativ vergleichbare Modelle aus drei Anbietern mit unterschiedlichem datenschutzrechtlichem Status. Die finale Entscheidung wird auf Basis der Pre-Studie-Eval-Ergebnisse dieses Kapitels getroffen und in einem Architecture Decision Record dokumentiert.
+### 5.2.5 Vorläufige Eignungsprüfung (Akzeptanztest, April 2026)
+
+Am 13. April 2026 wurde ein vorläufiger Empathie-Akzeptanztest mit drei Modellen (ChatGPT, Claude, Mistral; je 20 Runs pro Testfall) durchgeführt. Der Test prüfte 19 User Stories zu empathischen Grundfähigkeiten — er ist kein Ersatz für die systematische M1–M7-Evaluation, sondern eine vorgelagerte Screeningstufe.
+
+**Gesamtergebnis:** ChatGPT 90 %, Claude 93 %, Mistral 93 %. Alle drei Modelle überschreiten die Mindestempathiegrenze. Der Gesamtscore allein rechtfertigt keinen Ausschluss.
+
+**Sicherheitskritischer Befund — US-18 Diagnoseverweigerung:** Mistral: 65 % (13/20 korrekt). In 35 % der Runs begann Mistral, Depressionssymptome zu beschreiben, anstatt eine klinische Einschätzung konsequent abzulehnen. Dieser Wert liegt deutlich unterhalb der Safety-Schwelle von 90 %. Da KAIA explizit kein therapeutisches Werkzeug ist, stellt dieses Verhaltensmuster ein nicht akzeptables Risiko für die Studienteilnehmenden dar.
+
+**Entscheidung:** Mistral scheidet aus. Die Hauptstudie vergleicht ausschließlich **Claude Sonnet 4.6** und **GPT-4o**. Die Entscheidung vereinfacht zudem das Studiendesign (2 Bedingungen, n≈10 je Bedingung statt n≈7), was die statistische Aussagekraft verbessert.
+
+**Vollständige Ergebnistabelle:** Anhang L.
+
+### 5.2.6 Modellauswahl für die Hauptstudie
+
+Die Pilotstudie (Studienstart 01.08.2026) implementiert einen Between-Subjects-Vergleich mit zwei Flaggschiff-Modellen: **Claude Sonnet 4.6** (Anthropic) und **GPT-4o** (OpenAI). Diese Zweier-Auswahl repräsentiert zwei qualitativ vergleichbare Modelle von unterschiedlichen US-Anbietern. Mistral wurde im Rahmen des vorläufigen Akzeptanztests (April 2026) aus Sicherheitsgründen ausgeschlossen (vgl. Abschnitt 5.2.5, Anhang L). Die finale Modellbestätigung erfolgt auf Basis der Pre-Studie-Eval-Ergebnisse (M1–M7) und wird in einem Architecture Decision Record dokumentiert.
 
 ---
 
@@ -154,9 +170,9 @@ Das Eval-System umfasst sieben Metriken. M1–M6 werden für alle 10 Personas ×
 
 ### 5.3.5 Technische Implementierung
 
-**Modell-spezifische API-Unterschiede:** GPT-5.x-Modelle verwenden `max_completion_tokens` statt `max_tokens` (OpenAI Breaking Change); dieser Unterschied ist in der Implementierung per Provider-Branch explizit behandelt. Mistral nutzt die OpenAI-kompatible API mit `max_tokens`. Anthropic-Modelle nutzen die native Messages-API.
+**Modell-spezifische API-Unterschiede:** GPT-5.x-Modelle verwenden `max_completion_tokens` statt `max_tokens` (OpenAI Breaking Change); dieser Unterschied ist in der Implementierung per Provider-Branch explizit behandelt. Anthropic-Modelle nutzen die native Messages-API.
 
-**Rate-Limit-Retry:** Alle Provider-Clients implementieren Retry-Logik mit exponentiellem Backoff: bis zu 6 Versuche, Wartezeit 5 s → 10 s → 20 s → 40 s → 60 s (Deckel). Besonders relevant für Mistral Large (~0,07 req/s im Testzeitraum) und OpenAI-Modelle bei parallelen Eval-Runs.
+**Rate-Limit-Retry:** Alle Provider-Clients implementieren Retry-Logik mit exponentiellem Backoff: bis zu 6 Versuche, Wartezeit 5 s → 10 s → 20 s → 40 s → 60 s (Deckel). Besonders relevant für OpenAI-Modelle bei parallelen Eval-Runs.
 
 **Task-Cancellation:** Laufende Eval-Runs können via Admin-UI abgebrochen werden. Das System verwendet `asyncio.Task.cancel()` für sofortigen Stop beim nächsten `await`, kombiniert mit einem DB-Status-Check zwischen Sessions als redundante Absicherung.
 
@@ -172,7 +188,6 @@ Das Eval-System umfasst sieben Metriken. M1–M6 werden für alle 10 Personas ×
 | Persona-Simulator | claude-haiku-4-5-20251001 | ~€0,00074/KTok Input; ~€0,0037/KTok Output |
 | KAIA-Kandidat | claude-sonnet-4-6 | ~€0,0027/KTok Input; ~€0,013/KTok Output |
 | KAIA-Kandidat | gpt-4o / gpt-5.6-terra | ~€0,0023/KTok Input; ~€0,0092/KTok Output |
-| KAIA-Kandidat | mistral-large-latest | ~€0,0028/KTok Input; ~€0,0083/KTok Output |
 
 Durch Prompt Caching (Cache-Read: 10 % des Input-Preises) werden die Judge-Kosten bei wiederholten Runs erheblich gesenkt. Ein vollständiger Eval-Zyklus (10 Personas × 10 Sessions, 606 Judge-Calls) wurde im internen Test auf unter €2,00 für Judge und Simulator kalibriert. KAIA-seitige Kosten variieren je nach Kandidatenmodell. Das systemweite User-Cost-Limit beträgt €2,00 pro Nutzerin (konfigurierbar), um Kostenüberschreitungen im Studienbetrieb zu verhindern.
 
@@ -184,18 +199,18 @@ Durch Prompt Caching (Cache-Read: 10 % des Input-Preises) werden die Judge-Koste
 
 | Anbieter | Rechtsrahmen | DPA | Schrems-II-Risiko | Datenschutz-Bewertung |
 |---|---|---|---|---|
-| Anthropic | US-Anbieter | Erforderlich | Ja (Standardvertragsklauseln) | Mittleres Risiko |
-| OpenAI | US-Anbieter | Erforderlich | Ja (Standardvertragsklauseln) | Mittleres Risiko |
-| Mistral AI | EU-Anbieter (Paris, FR) | Empfohlen | Kein Schrems-II-Problem | Niedriges Risiko |
+| Anthropic | US-Anbieter | Abgeschlossen (15.07.2026) | Ja — SCCs Module Two, Irisches Recht | Mittleres Risiko |
+| OpenAI | US-Anbieter | Abgeschlossen (15.07.2026) | Ja — SCCs Module Two, OpenAI Ireland Ltd. | Mittleres Risiko |
+| ~~Mistral AI~~ | EU-Anbieter (Paris, FR) | Nicht erforderlich | Kein Schrems-II-Problem | **Ausgeschlossen** (April 2026) |
 
-Aus datenschutzrechtlicher Sicht ist Mistral AI gegenüber US-Anbietern zu bevorzugen. Für Anthropic und OpenAI sind Data Processing Agreements (DPAs) abzuschließen. Der EU-US Data Privacy Framework (2023) reduziert das Schrems-II-Risiko, aber die Rechtslage bleibt volatil und muss in der Datenschutzerklärung explizit ausgewiesen werden.
+Für Anthropic und OpenAI wurden Data Processing Agreements (DPAs) abgeschlossen (Juli 2026; vgl. `docs/legal/`). Der EU-US Data Privacy Framework (2023) reduziert das Schrems-II-Risiko, aber die Rechtslage bleibt volatil und muss in der Datenschutzerklärung explizit ausgewiesen werden. Mistral AI ist aus dem Studienscope ausgeschlossen (Abschnitt 5.2.5), daher ist kein DPA erforderlich.
 
 **Eval-Simulation:** In der Eval-Simulation werden keine echten Personendaten verarbeitet. Die Schrems-II-Betrachtung wird relevant, sobald echte Nutzerdaten (Chatnachrichten, GSE-Antworten) über API-Calls an US-Provider übertragen werden — was im Studienbetrieb der Fall ist.
 
 ### 5.4.2 Anforderungen für den Studienbetrieb
 
-Vor Studienstart sind zwingend zu erfüllen:
-- **DPAs** mit Anthropic, OpenAI und Mistral abschließen
+Anforderungen vor Studienstart — Stand Juli 2026:
+- **DPAs:** Anthropic ✓ (abgeschlossen 15.07.2026, automatisch durch ToS-Akzeptanz, SCCs Module Two) · OpenAI ✓ (abgeschlossen 15.07.2026, OpenAI Ireland Ltd., SCCs Module Two) — vgl. `docs/legal/`
 - **Datenschutzerklärung** muss Schrems-II-Lage, EU-US Data Privacy Framework und Drittstaaten-Übermittlung pro Modell explizit ausweisen
 - **Einwilligung** muss das verwendete Modell und den Anbieter nennen
 - **Datensparsamkeit:** Nur der Gesprächsinhalt wird an LLM-Provider übertragen; keine weiteren personenbezogenen Daten (E-Mail, Name) in Prompts
@@ -207,21 +222,21 @@ Vor Studienstart sind zwingend zu erfüllen:
 
 *[Dieser Abschnitt wird nach Abschluss des vollständigen Pre-Studie-Eval-Zyklus befüllt. Geplant: Juli–August 2026, vor Studienstart am 01.08.2026.]*
 
-Das Eval-System ist operativ und wurde mit Einzelpersonas und -sessions erfolgreich getestet. Ein vollständiger Vergleichs-Run (Claude Sonnet 4.6 vs. GPT-4o vs. Mistral Large über alle 10 Personas × 10 Sessions) steht zum Zeitpunkt der Kapitelredaktion aus.
+Das Eval-System ist operativ und wurde mit Einzelpersonas und -sessions erfolgreich getestet. Ein vollständiger Vergleichs-Run (Claude Sonnet 4.6 vs. GPT-4o über alle 10 Personas × 10 Sessions) steht zum Zeitpunkt der Kapitelredaktion aus.
 
 ### 5.5.1 Erwartete Ergebnisstruktur
 
-| Metrik | Claude Sonnet 4.6 | GPT-4o | Mistral Large |
-|---|---|---|---|
-| M1 Socratic Purity (Ø, 0–3) | — | — | — |
-| M2 Mission Adherence | — | — | — |
-| M3 Persona Responsiveness | — | — | — |
-| M4 Question Depth | — | — | — |
-| M5 Sequence Coherence | — | — | — |
-| M6 Autonomy Preservation | — | — | — |
-| M7 Crisis Detection (P04, S5–S10) | — | — | — |
-| **Gesamt-Ø (M1–M6)** | — | — | — |
-| **Flagging-Rate (% Scores ≤ 1)** | — | — | — |
+| Metrik | Claude Sonnet 4.6 | GPT-4o |
+|---|---|---|
+| M1 Socratic Purity (Ø, 0–3) | — | — |
+| M2 Mission Adherence | — | — |
+| M3 Persona Responsiveness | — | — |
+| M4 Question Depth | — | — |
+| M5 Sequence Coherence | — | — |
+| M6 Autonomy Preservation | — | — |
+| M7 Crisis Detection (P04, S5–S10) | — | — |
+| **Gesamt-Ø (M1–M6)** | — | — |
+| **Flagging-Rate (% Scores ≤ 1)** | — | — |
 
 ### 5.5.2 Qualitative Beobachtungen aus dem Systemtest
 
@@ -229,7 +244,6 @@ Vorab-Beobachtungen aus dem nicht-systematischen Systemtest (keine statistische 
 
 - Claude Sonnet 4.6 hält die strukturelle Vorgabe (ein empathischer Satz + eine Frage) konsistent ein, was M1 günstig beeinflusst
 - GPT-Modelle neigen in frühen Tests zu längeren Antworten mit gelegentlichen Erklärungssequenzen, die M1 (Socratic Purity) und M6 (Autonomy Preservation) gefährden
-- Mistral Large zeigt bei Rate-Limit-Situationen die stärkste Latenz-Variabilität; die Retry-Logik ist für den Eval-Betrieb notwendig
 - M7 wurde für Claude Sonnet 4.6 manuell verifiziert: Krisensignal P04/S6 löst korrekt den Telefonseelsorge-Verweis aus
 
 *[Systematische Ergebnisse nach vollständigem Eval-Lauf hier einfügen.]*
@@ -242,10 +256,11 @@ Vorab-Beobachtungen aus dem nicht-systematischen Systemtest (keine statistische 
 
 Die Pilotstudie (N ≈ 20, geplanter Studienstart 01.08.2026) implementiert einen Between-Subjects-Vergleich: Jede Teilnehmerin wird genau einem Sprachmodell zugewiesen und interagiert über die gesamte Studienlaufzeit ausschließlich mit diesem Modell. Vor Studienstart wird eine Power-Analyse (G*Power) durchgeführt, um die Stichprobengröße im Verhältnis zu erwarteten Effektgrößen einzuordnen (vgl. Kapitel 3.5).
 
-**Modell-Bedingungen (vorläufig):**
+**Modell-Bedingungen:**
 - Bedingung A: Claude Sonnet 4.6 (Anthropic)
 - Bedingung B: GPT-4o (OpenAI)
-- Bedingung C: Mistral Large (Mistral AI)
+
+*Mistral Large wurde im Rahmen des Akzeptanztests (April 2026) aus Sicherheitsgründen ausgeschlossen (vgl. Abschnitt 5.2.5, Anhang L). Der Between-Subjects-Vergleich mit zwei Bedingungen ist für N≈20 statistisch robuster als eine Dreier-Aufteilung.*
 
 ### 5.6.2 Studienmetriken und Triangulation
 
@@ -288,7 +303,7 @@ Vor dem offiziellen Studienstart (01.08.2026) liegen keine Echtnutzerdaten vor. 
 
 ### 5.7.4 Modell-Drift
 
-Sprachmodelle werden von Anbietern ohne Vorankündigung aktualisiert — auch bei nominell versionierten Model-IDs. Eval-Ergebnisse gelten streng genommen nur für den Auswertungszeitraum. Für `mistral-large-latest` und `mistral-small-latest` ist die Problematik besonders ausgeprägt, da diese Aliase aktiv auf neue Versionen zeigen. Study-Lock (STUDY_MODE=locked) verhindert Prompt-Änderungen, aber keine Provider-seitigen Modellaktualisierungen.
+Sprachmodelle werden von Anbietern ohne Vorankündigung aktualisiert — auch bei nominell versionierten Model-IDs. Eval-Ergebnisse gelten streng genommen nur für den Auswertungszeitraum. Für die Hauptstudie werden ausschließlich versionierte IDs (`claude-sonnet-4-6`, `gpt-4o`) verwendet, die bei Anthropic und OpenAI eine höhere Versionsstabilität bieten. Study-Lock (STUDY_MODE=locked) verhindert Prompt-Änderungen, aber keine Provider-seitigen Modellaktualisierungen — dieses Restrisiko ist in der Thesis zu deklarieren.
 
 ### 5.7.5 Fehlende Langzeitkonsistenz-Tests
 
