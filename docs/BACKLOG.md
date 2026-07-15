@@ -19,7 +19,7 @@
 ### DSGVO
 - [ ] **Separate Einwilligungserklärung** — Dokument für Forschungsteilnahme (≠ DSGVO-Consent): Studienzweck, Risiken, Freiwilligkeit, Right-to-Withdraw mit Datenlöschung
 - [x] **DPA Anthropic** ✅ Erledigt 15. Juli 2026 — DPA war bei API-Vertragsschluss automatisch akzeptiert (Commercial ToS). SCCs Module Two (controller→processor), irisches Recht. PDF: `docs/legal/anthropic_dpa_2026-07-15.pdf`
-- [ ] **DPA OpenAI** ⚠️ Frist: 18. Juli 2026 — 1. In [platform.openai.com](https://platform.openai.com) → Settings → Privacy → "Data Processing Addendum" akzeptieren (Checkbox + PDF-Download). 5 Minuten, selbst-servicebar.
+- [x] **DPA OpenAI** ✅ Erledigt 15. Juli 2026 — Bestätigung von OpenAI Privacy Team erhalten. DPA: https://openai.com/policies/data-processing-addendum/ — E-Mail archiviert: `docs/legal/openai_dpa_confirmation_2026-07-15.txt` · PDF noch speichern: `docs/legal/openai_dpa_2026-07-15.pdf`
 - [x] **DPA Mistral** ~~entfällt~~ — Mistral wird nach Pre-Test nicht in die Studie aufgenommen (Empathiequalität unzureichend). LLM-Eval: nur Anthropic Claude + OpenAI.
 - [ ] **Schrems-II-Dokumentation** — SCCs für US-Datenübermittlung in Datenschutzerklärung
 - [ ] **Datenschutzerklärung** auf kaia.rostek-dagmar.eu (Art. 13/14 DSGVO-konform)

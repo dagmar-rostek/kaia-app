@@ -1,0 +1,18 @@
+OpenAI DPA Confirmation Email
+Received: 2026-07-15
+
+---
+
+Hi Dagmar,
+Thank you for your message. You can access OpenAI's Data Processing Addendum at this link: https://openai.com/policies/data-processing-addendum/
+
+Our DPA outlines how OpenAI processes and protects personal data, including details on GDPR compliance and related privacy commitments.
+
+Best regards,
+Drey
+OpenAI Privacy Team
+https://openai.com/de-DE/policies/data-processing-addendum/
+
+---
+
+TODO: DPA-Seite als PDF speichern → docs/legal/openai_dpa_2026-07-15.pdf
