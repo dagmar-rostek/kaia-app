@@ -363,8 +363,9 @@ def _session_mission_block(session_number: int) -> tuple[str, str, str, str]:
 _SESSION_CLOSING_TRIGGERS: dict[int, str] = {
     1: (
         "[Gesprächsende — stelle jetzt genau eine Abschlussfrage. "
-        "Fokus S1 (Ankern): Was sieht die lernende Person jetzt klarer, das vorher noch unscharf war? "
-        "Orientierung: 'Was hast du heute entdeckt, das du vor diesem Gespräch noch nicht so klar benennen konntest?' "
+        "Fokus S1 (Ankern, Bloom 1-2): Was sieht die lernende Person jetzt klarer als am Anfang des Gesprächs? "
+        "Orientierung: 'Was siehst du nach diesem Gespräch klarer als vorher — wenn sich überhaupt etwas verschoben hat?' "
+        "Der Zusatz 'wenn sich überhaupt etwas verschoben hat' ist wichtig: er macht 'nichts Konkretes' zu einer validen Antwort. "
         "Keine Bewertung, kein Lob, keine Zusammenfassung. Maximal zwei Sätze.]"
     ),
     2: (
