@@ -511,16 +511,19 @@ export default function ChatPage() {
           >
             <HelpCircle className="h-4 w-4" />
           </button>
-          {sessionId && (
-            <button
-              onClick={() => setShowReportModal(true)}
-              title="KAIA melden — wenn sich KAIA seltsam verhält oder etwas Unangemessenes schreibt"
-              aria-label="KAIA-Verhalten melden"
-              className="p-1.5 rounded-lg text-muted-foreground hover:text-amber-500 hover:bg-muted transition-colors"
-            >
-              <AlertCircle className="h-4 w-4" />
-            </button>
-          )}
+          <button
+            onClick={() => sessionId && setShowReportModal(true)}
+            disabled={!sessionId}
+            title={sessionId ? "KAIA melden — wenn sich KAIA seltsam verhält oder etwas Unangemessenes schreibt" : "Melden ist möglich, sobald eine Session aktiv ist"}
+            aria-label="KAIA-Verhalten melden"
+            className={`p-1.5 rounded-lg transition-colors ${
+              sessionId
+                ? "text-muted-foreground hover:text-amber-500 hover:bg-muted"
+                : "text-muted-foreground/25 cursor-not-allowed"
+            }`}
+          >
+            <AlertCircle className="h-4 w-4" />
+          </button>
           <button
             onClick={() => void handleLogout()}
             title="Abmelden"

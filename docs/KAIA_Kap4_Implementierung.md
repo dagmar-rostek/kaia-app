@@ -418,7 +418,7 @@ Der Journey-Guard verhindert, dass Nutzende Sessions starten, bevor sie die Vora
 
 Ein zentrales methodisches Problem bei der Entwicklung LLM-basierter Systeme ist die fehlende formale Spezifikation für "guten" Output: Es gibt keine allgemeine mathematische Funktion, die misst, ob ein sokratisch-empathischer Lernbegleiter seinen Auftrag erfüllt. Die Güte eines Systemprompts ist kontextabhängig, nutzerspezifisch und lässt sich nicht vollständig vor der Nutzung evaluieren. Dies stellt einen fundamentalen Unterschied zu klassischer Software-Entwicklung dar, in der Korrektheit durch Tests formal verifizierbar ist.
 
-Die Entwicklung des KAIA-Systemprompts folgt daher einem **iterativen Feldforschungs-Ansatz**: Die Forscherin interagiert selbst mit dem System, beobachtet das Verhalten, formuliert Hypothesen über Prompt-Schwächen und Verbesserungen und revidiert den Prompt — in direkter Anlehnung an den Design-Evaluate-Revise-Zyklus von Hevner et al. (2004). KAIA_PROMPT_V3_WARM ist die aktive Version; V2 wird als Eval-Regressions-Baseline vorgehalten.
+Die Entwicklung des KAIA-Systemprompts folgt daher einem **iterativen Feldforschungs-Ansatz**: Die Forscherin interagiert selbst mit dem System, beobachtet das Verhalten, formuliert Hypothesen über Prompt-Schwächen und Verbesserungen und revidiert den Prompt — in direkter Anlehnung an den Design-Evaluate-Revise-Zyklus von Hevner et al. (2004). KAIA_PROMPT_V4_WARM ist die aktive Version (Stand: 15.07.2026); V3 wird als Eval-Regressions-Baseline vorgehalten.
 
 ### 4.12.2 Technische Infrastruktur für Prompt-Iteration
 
@@ -442,6 +442,16 @@ Der Prompt-Editor (`/admin/prompts`) ermöglicht:
 | **Autonomie-Erhalt** | Gibt KAIA keine Ratschläge oder versteckten Instruktionen (M6)? |
 
 Diese Kriterien werden sowohl in den eigenen Testsessions der Forscherin als auch in formalisierter Form im LLM-Evaluationsbericht (Kapitel 5) angewendet.
+
+### 4.12.4 Pilotbefund: Prompt-Überspezifikation und das Typ-5-Loop-Problem
+
+Im Zuge der Pilotnutzung vor Studienbeginn wurde ein strukturelles Problem in `KAIA_PROMPT_V3_WARM` identifiziert: KAIA generierte wiederholt dieselbe Erste-Schritt-Frage (Fragetyp 5) in aufeinanderfolgenden Turns, anstatt die Bloom-Progression voranzutreiben. Die Analyse ergab, dass Fragetyp 5 an vier separaten Stellen des Prompts hartkodiert war: im Onboarding-Flow, im Session-Einstieg (ERSTER-SCHRITT-LOOP), in der Fragetyp-Taxonomie und im Phase-3-Abschluss. Unter dem 80-Wort-Constraint und bei aktivem `abschluss`-Signal im Thinking-Block wählt das Modell deterministisch den niedrigkomplexesten sicheren Completion-Pfad: Typ 5. Das Ergebnis ist horizontales Looping auf Bloom-Stufe 1–2 statt taxonomischer Progression.
+
+Gleichzeitig wurde beobachtet, dass der Wild-Charakter ("Perspektivwechsel") von Testnutzerinnen als sokratischer erlebt wurde als der strukturierte Warm-Charakter. Diese Wahrnehmung ist real und didaktisch erklärbar: Metaphern, Analogien und Koans erzeugen kognitive Überraschung und Rahmenbrechung — was Gadamers (1960) Konzept der Horizontverschmelzung entspricht und auf Bloom-Stufen 4–5 operiert. Im Unterschied zu Warms prozedurisierten Fragetypen verlangt der Wild-Prompt echtes Generieren statt Klassifizieren-und-Ausführen.
+
+Wichtig für die Thesis-Terminologie: Was Testnutzerinnen als "sokratischer" wahrnahmen, ist philosophisch kein Sokrates im strengen Elenchos-Sinne, sondern eine Öffnungsform, die dem Zen-Koan näher steht. Beide Formen sind didaktisch legitim — aber die Eval-Metriken M1–M7 sind an der Elenchos-Definition kalibriert; ein Moduswechsel hätte die gesamte Eval-Infrastruktur invalidiert.
+
+**Designentscheidung v4 (15.07.2026):** Der Wild-Charakter wird nicht als Primärmodus eingesetzt. Ausschlaggebende Argumente: (1) Unzureichende Crisis-Detection — Wild verfügt nur über eine einzeilige Krisennotiz, Warm v3/v4 über ein zweistufiges Boundary-Protokoll mit Rupture-Repair; (2) fehlende Session-Sequenzierung — ohne Session-Missionen und Bloom-Progression entfällt der didaktische Zehner-Bogen; (3) Reproduzierbarkeit — "kalkuliert disruptiv" erhöht die Inter-Session-Varianz und gefährdet die Prä/Post-Validität. Stattdessen implementiert `KAIA_PROMPT_V4_WARM` drei chirurgische Korrekturen: (a) Thinking-Check #10 gegen Typ-5-Looping, (b) De-Prozeduralisierung des Phase-3-Abschlusses (Typ-5 oder Koan/Analogie nach Kontext), (c) explizite Lizenz für Analogie/Koan im Charakter-Abschnitt.
 
 ---
 
