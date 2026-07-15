@@ -1,0 +1,25 @@
+Anthropic DPA Confirmation Email
+Received: 2026-07-15
+
+---
+
+Hi Dagmar,
+
+Good news — our Data Processing Addendum (DPA) with Standard Contractual Clauses (SCCs) is already in place for your Claude API use.
+
+When you accepted our Commercial Terms of Service for the API, you automatically accepted our DPA as well. It's incorporated directly into those terms and covers GDPR requirements, including Article 28.
+
+You can view the full DPA here: https://www.anthropic.com/legal/data-processing-addendum
+
+The DPA includes EU Standard Contractual Clauses for international data transfers, which is particularly relevant for your research since you're deploying on EU servers. It establishes us as the data processor and you as the data controller, and covers all the key obligations under GDPR — including sub-processor management, breach notification, data subject rights, and security measures.
+
+For additional compliance resources, you can also visit our Trust Center at https://trust.anthropic.com/, where you'll find our compliance certificates and other documentation.
+
+---
+
+Notes:
+- DPA effective: 24. Februar 2025
+- SCCs: Module Two (controller to processor), governed by law of Ireland
+- Subprocessors list: https://www.anthropic.com/subprocessors
+- Breach notification: within 48 hours (G.1)
+- Data deletion: within 30 days of termination (H.1)
