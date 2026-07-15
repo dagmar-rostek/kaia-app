@@ -17,7 +17,7 @@ export default function DatenschutzPage() {
       <div className="space-y-2">
         <h1 className="text-3xl font-bold tracking-tight">Datenschutzerklärung</h1>
         <p className="text-sm text-muted-foreground">
-          Stand: Juni 2026 · Gültig für die KAIA-Pilotstudie im Rahmen einer Masterthesis
+          Stand: Juli 2026 · Gültig für die KAIA-Pilotstudie im Rahmen einer Masterthesis
           an der SRH Fernhochschule
         </p>
       </div>
@@ -119,17 +119,18 @@ export default function DatenschutzPage() {
         </p>
         <p>
           <strong className="text-foreground">LLM-Anbieter:</strong> Für die KI-Verarbeitung
-          werden Sprachmodelle von Anthropic (Claude), OpenAI (GPT-4o) und Mistral AI eingesetzt.
+          werden Sprachmodelle von Anthropic (Claude) und OpenAI (GPT-4o) eingesetzt.
           Chat-Inhalte werden an diese Dienste übermittelt. Die Nutzung erfolgt nur mit
-          abgeschlossenen Auftragsverarbeitungsverträgen (Data Processing Agreements).
+          abgeschlossenen Auftragsverarbeitungsverträgen (Data Processing Agreements, DPAs),
+          die beide Anbieter abgeschlossen haben.
         </p>
         <div className="rounded-lg border border-amber-500/30 bg-amber-500/5 p-3 text-xs">
-          <p className="font-medium text-amber-700 dark:text-amber-400">Hinweis zu US-Anbietern</p>
+          <p className="font-medium text-amber-700 dark:text-amber-400">Hinweis zu US-Anbietern (Schrems II)</p>
           <p className="mt-1">Anthropic und OpenAI haben ihren Sitz in den USA. Die Übermittlung
-          erfolgt auf Basis von Standardvertragsklauseln (SCCs) gemäß Art. 46 DSGVO.
-          Angesichts des Schrems-II-Urteils wird in der Datenschutzerklärung und der
-          Teilnahmevereinbarung explizit auf diesen Umstand hingewiesen. Mistral AI
-          hat seinen Sitz in der EU (Paris, Frankreich).</p>
+          von Chat-Inhalten in die USA erfolgt auf Basis von Standardvertragsklauseln (SCCs)
+          gemäß Art. 46 Abs. 2 lit. c DSGVO. Auf diesen Umstand wird in der
+          Teilnahmevereinbarung explizit hingewiesen. Teilnehmende können der Verarbeitung
+          jederzeit widersprechen (Art. 21 DSGVO).</p>
         </div>
         <p>
           <strong className="text-foreground">Fehler-Monitoring:</strong> Technische Fehler
