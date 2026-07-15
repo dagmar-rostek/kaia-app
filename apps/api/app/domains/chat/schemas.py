@@ -37,6 +37,7 @@ class SessionWithMessages(SessionResponse):
 
 class MessageCreate(BaseModel):
     content: str
+    is_final_exchange: bool = False
 
     @field_validator("content")
     @classmethod

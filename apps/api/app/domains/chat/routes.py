@@ -141,7 +141,14 @@ async def send_message(
         raise HTTPException(status_code=409, detail="Session ist bereits beendet.")
 
     return StreamingResponse(
-        stream_response(db, session, body.content, debug=debug, model_override=user.kaia_model),
+        stream_response(
+            db,
+            session,
+            body.content,
+            debug=debug,
+            model_override=user.kaia_model,
+            is_final_exchange=body.is_final_exchange,
+        ),
         media_type="text/event-stream",
         headers={
             "Cache-Control": "no-cache",

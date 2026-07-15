@@ -539,6 +539,7 @@ async def stream_response(
     user_content: str,
     debug: bool = False,
     model_override: str | None = None,
+    is_final_exchange: bool = False,
 ) -> AsyncGenerator[str, None]:
     """Core SSE generator: crisis check → prompt → LLM → strip → persist → log."""
     repo = ChatRepository(db)
@@ -555,6 +556,15 @@ async def stream_response(
     history = await repo.get_messages(session.id)
     user_turn_count = sum(1 for m in history if str(m.role) == "user")
     system_prompt = await _build_system_prompt(db, repo, session, user_turns=user_turn_count)
+
+    if is_final_exchange:
+        system_prompt += (
+            "\n\n## FINALER AUSTAUSCH — Pflicht-Instruktion\n"
+            "Der Lernende hat nach der Abschlussfrage noch eine letzte Antwort gegeben. "
+            "Antworte mit einer echten, warmen Anerkennung — maximal zwei Sätze. "
+            "KEINE neue Frage. KEIN Impuls. KEIN Ratschlag. "
+            "Die Session wird danach automatisch beendet. Das ist der letzte Satz."
+        )
 
     api_messages = [{"role": str(m.role), "content": m.content} for m in history if m.content]
 

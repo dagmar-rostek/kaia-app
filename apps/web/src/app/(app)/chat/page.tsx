@@ -433,7 +433,7 @@ export default function ChatPage() {
       const res = await authFetch(`${API_BASE}/api/v1/chat/sessions/${sid}/messages`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ content: userContent }),
+        body: JSON.stringify({ content: userContent, is_final_exchange: closureExchanges >= 1 }),
       })
       if (!res.ok) {
         const body = await res.json().catch(() => ({ detail: "Unbekannter Fehler" })) as { detail: string }
