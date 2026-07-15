@@ -8,7 +8,7 @@
 
 ## Überblick
 
-Kapitel 6 beschreibt Design, Durchführung und — soweit zum aktuellen Zeitpunkt möglich — die geplanten Auswertungsschritte der explorativen Pilotstudie mit KAIA. Die methodische Grundlage entspricht dem Studienprotokoll (v2.0, docs/STUDIENPROTOKOLL.md), das vor Studienbeginn auf OSF.io vorregistriert wird. Die Datenerhebung beginnt am 1. August 2026 und endet am 29. August 2026.
+Kapitel 6 beschreibt Design, Durchführung und — soweit zum aktuellen Zeitpunkt möglich — die geplanten Auswertungsschritte der explorativen Pilotstudie mit KAIA. Die methodische Grundlage entspricht dem Studienprotokoll (v2.0, docs/STUDIENPROTOKOLL.md). Die Datenerhebung beginnt am 1. August 2026 und endet am 29. August 2026.
 
 ---
 
@@ -65,10 +65,9 @@ Die Pilotstudie ist bewusst unterpowert. Bei d = 0.5 (mittlerer Effekt nach Cohe
 Die Forscherin ist gleichzeitig Entwicklerin von KAIA und potenzielle Kommerzialisiererin des Systems. Dieser dreifache Interessenkonflikt (Forscherin — Entwicklerin — Kommerzinteressentin) wird offen deklariert und ist ein methodisch bedeutsames Merkmal dieser Studie, das ihre gesamte epistemische Reichweite begrenzt.
 
 **Maßnahmen zur Bias-Minimierung:**
-1. Vorregistrierung der Hypothesen auf OSF.io vor Datensicht (Publikations-Bias-Kontrolle)
-2. Standardisiertes Outcome-Maß (GSE-Skala) mit etablierten, unabhängig validierten Gütekriterien
-3. Anonymisierte Dateneingabe im System — kein direkter Kontakt zwischen Forscherin und Teilnehmenden während der Fragebogenerhebung
-4. Expliziter Hinweis in der Einwilligungserklärung auf die Erwünschtheit ehrlicher, auch negativer Rückmeldungen
+1. Standardisiertes Outcome-Maß (GSE-Skala) mit etablierten, unabhängig validierten Gütekriterien
+2. Anonymisierte Dateneingabe im System — kein direkter Kontakt zwischen Forscherin und Teilnehmenden während der Fragebogenerhebung
+3. Expliziter Hinweis in der Einwilligungserklärung auf die Erwünschtheit ehrlicher, auch negativer Rückmeldungen
 5. Zurückhaltende und explizit selbstkritische Ergebnisinterpretation gemäß APA 7 Reporting Standards
 
 **Social-Desirability-Bias:** Die Rekrutierung aus dem persönlichen Netzwerk der Forscherin begünstigt systematische Verzerrung durch soziale Erwünschtheit strukturell. Teilnehmende könnten Selbstberichte unbewusst an wahrgenommenen Erwartungen der Forscherin ausrichten. Dieser Bias ist durch die technischen Maßnahmen in Punkt 3 und 4 lediglich reduziert, nicht eliminiert. Eine zusätzliche Skala zur sozialen Erwünschtheit (Stöber, 1999) wird für die Pilotierung nicht eingesetzt, um den Fragebogenumfang nicht weiter zu erhöhen; die damit verbundene Einschränkung wird in Abschnitt 6.10 vollständig ausgewiesen.
@@ -212,8 +211,7 @@ Die Forscherin ist gleichzeitig Entwicklerin von KAIA und potenzielle Kommerzial
 
 | Datum | Meilenstein | Status (13.07.2026) |
 |---|---|---|
-| Laufend | Vorregistrierung auf OSF.io (Hypothesen, Messmodell, Auswertungsplan) | In Bearbeitung |
-| Laufend | DPAs abschließen (Anthropic, OpenAI, Mistral) | In Bearbeitung |
+| Laufend | DPAs abgeschlossen (Anthropic, OpenAI) | Abgeschlossen ✓ |
 | **28. Juli 2026** | **Study-Lock: Prompt-Freeze** — keine Prompt- oder Schema-Änderungen ab diesem Datum | Geplant |
 | **1. August 2026** | **Studienstart** — Registrierung, KI-Disclosure, Multi-Step-Consent, Prä-Befragung (MSLQ + GSE) + erste Sessions möglich | Geplant |
 | 1. August – 29. August 2026 | Aktive Studienphase (4 Wochen, max. 1 Session pro Tag) | Geplant |
@@ -222,7 +220,7 @@ Die Forscherin ist gleichzeitig Entwicklerin von KAIA und potenzielle Kommerzial
 | September – Oktober 2026 | Datenauswertung, qualitative Analyse, Ergebniskapitel | Geplant |
 | **1. September 2026** | **Abgabe Masterthesis** (SRH Fernhochschule Riedlingen) | Deadline |
 
-**Kritischer Hinweis (Stand 13. Juli 2026):** Die Studie hat noch NICHT begonnen. Zwei kritische Voraussetzungen sind noch offen: (1) vollständige OSF-Vorregistrierung, (2) abgeschlossene DPAs mit allen drei LLM-Anbietern. Ohne Abschluss beider Punkte vor dem 28. Juli 2026 verschiebt sich der Studienstart. Eine Verschiebung des Starttermins über den 8. August 2026 hinaus würde den Thesis-Abgabetermin gefährden.
+**Kritischer Hinweis (Stand 15. Juli 2026):** Die Studie hat noch NICHT begonnen. DPAs mit Anthropic und OpenAI sind abgeschlossen. Offene kritische Voraussetzungen: Datenschutzerklärung, Impressum, Password-Reset-Flow, Postgres-Backup, Study-Lock. Ohne Abschluss dieser Punkte vor dem 28. Juli 2026 verschiebt sich der Studienstart. Eine Verschiebung über den 8. August 2026 hinaus würde den Thesis-Abgabetermin gefährden.
 
 ---
 
@@ -233,7 +231,7 @@ Die Forscherin ist gleichzeitig Entwicklerin von KAIA und potenzielle Kommerzial
 ```
 Datum                Aktivität
 ─────────────────────────────────────────────────────────────────────
-Vor Studie           Vorregistrierung OSF.io | DPAs abschließen
+Vor Studie           DPAs abgeschlossen (Anthropic, OpenAI) ✓
 28. Juli 2026        Study-Lock: Prompt-Freeze
 1. August 2026       Registrierung | KI-Disclosure | Multi-Step-Consent
                      MSLQ Prä (30 Items, ≈ 10 Min.) + GSE Prä (10 Items, ≈ 5 Min.)
@@ -280,7 +278,7 @@ Die technische Infrastruktur ermöglicht eine per-User-Modell-Zuweisung. Für di
 
 ---
 
-## 6.7 Hypothesen (vorregistriert auf OSF.io)
+## 6.7 Hypothesen
 
 **H1 (primär, gerichtet):** Die GSE nach vier Wochen KAIA-Nutzung ist signifikant höher als vor der Nutzung (Wilcoxon-Vorzeichenrangtest, α = .05, zweiseitig).
 

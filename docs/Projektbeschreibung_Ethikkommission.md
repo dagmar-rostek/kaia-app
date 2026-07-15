@@ -58,7 +58,7 @@ Alle Daten werden pseudonymisiert auf einem Hetzner-Server in Helsinki (EU) gesp
 
 **Freiwilligkeit:** Die Teilnahme ist vollständig freiwillig und kann jederzeit ohne Angabe von Gründen beendet werden.
 
-**Interessenkonflikt:** Die Forscherin ist gleichzeitig Entwicklerin des untersuchten Systems und potenzielle Kommerzialisiererin. Dieser Interessenkonflikt wird in der Thesis offen deklariert. Gegenmaßnahmen: Vorregistrierung der Hypothesen auf OSF.io vor Datensicht, standardisiertes Messinstrument mit etablierten Gütekriterien.
+**Interessenkonflikt:** Die Forscherin ist gleichzeitig Entwicklerin des untersuchten Systems und potenzielle Kommerzialisiererin. Dieser Interessenkonflikt wird in der Thesis offen deklariert. Gegenmaßnahmen: standardisiertes Messinstrument mit etablierten Gütekriterien, explizite Deklaration im Positionality Statement der Thesis.
 
 ---
 

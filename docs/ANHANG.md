@@ -395,8 +395,6 @@ Die vollständige Fassung des Studienprotokolls ist als `docs/STUDIENPROTOKOLL.m
 
 ### F.2 Hypothesen
 
-Die Hypothesen werden vor Beginn der Datenerhebung auf OSF.io vorregistriert (Termin: bis 28. Juli 2026).
-
 - **H1 (primär, gerichtet):** Die GSE-Werte sind nach vier Wochen KAIA-Nutzung (Post) signifikant höher als vor der Nutzung (Prä).
 - **H2 (explorativ):** Es besteht ein positiver Zusammenhang zwischen Nutzungshäufigkeit (Anzahl Sessions) und GSE-Prä-Post-Differenz.
 - **H3 (explorativ, methodisch):** LLM-Analyse-Indikatoren aus Transkripten konvergieren mit GSE-Selbstaussagen über die Studienlaufzeit.
@@ -452,8 +450,7 @@ Server: Hetzner CX23, Helsinki (EU). DPAs: Anthropic, OpenAI, Mistral (USA-Trans
 | Meilenstein | Geplant |
 |---|---|
 | Ethikvotum-Antrag | Bis 06.06.2026 (eingereicht) |
-| Pre-Registration OSF.io | Bis 28.07.2026 |
-| DPAs abgeschlossen | Bis 28.07.2026 |
+| DPAs abgeschlossen (Anthropic, OpenAI) | Abgeschlossen ✓ |
 | Study-Lock aktiviert | 28.07.2026 |
 | Pilotstudie Start | 01.08.2026 |
 | Pilotstudie Ende | 29.08.2026 |
@@ -461,7 +458,7 @@ Server: Hetzner CX23, Helsinki (EU). DPAs: Anthropic, OpenAI, Mistral (USA-Trans
 
 ### F.8 Interessenkonflikt
 
-Die Forscherin ist gleichzeitig Entwicklerin des untersuchten Systems und potenzielle Kommerzialisiererin. Zur Bias-Reduktion werden eingesetzt: standardisiertes Messinstrument (GSE), vorregistrierte Hypothesen (OSF.io) und explizite Deklaration des Interessenkonflikts im Positionality Statement der Thesis.
+Die Forscherin ist gleichzeitig Entwicklerin des untersuchten Systems und potenzielle Kommerzialisiererin. Zur Bias-Reduktion werden eingesetzt: standardisiertes Messinstrument (GSE) und explizite Deklaration des Interessenkonflikts im Positionality Statement der Thesis.
 
 ---
 

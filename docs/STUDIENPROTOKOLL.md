@@ -16,7 +16,7 @@
 **E-Mail:** Dagmar.Rostek@stud.mobile-university.de  
 **Betreuung:** [Name der Thesis-Betreuerin/des Thesis-Betreuers]
 
-**Interessenkonflikt:** Die Forscherin ist gleichzeitig Entwicklerin des untersuchten Systems und potenzielle Kommerzialisiererin. Dieser Interessenkonflikt wird in der Thesis explizit deklariert. Zur Reduktion von Bias werden standardisierte Messinstrumente (GSE-Skala) und vorregistrierte Hypothesen (OSF.io, vor Datensicht) eingesetzt.
+**Interessenkonflikt:** Die Forscherin ist gleichzeitig Entwicklerin des untersuchten Systems und potenzielle Kommerzialisiererin. Dieser Interessenkonflikt wird in der Thesis explizit deklariert. Zur Reduktion von Bias werden standardisierte Messinstrumente (GSE-Skala) eingesetzt.
 
 ---
 
@@ -43,9 +43,7 @@ Ergänzende Forschungsfrage 2 (hinzugefügt 10.06.2026): *Verändert sich das Fl
 
 ---
 
-## 3. Hypothesen (für Pre-Registration OSF.io)
-
-Diese Hypothesen werden vor Beginn der Datenerhebung auf OSF.io registriert.
+## 3. Hypothesen
 
 **H1 (primär, gerichtet):**  
 Die allgemeine Selbstwirksamkeitserwartung der Teilnehmenden, gemessen mit der GSE-Skala (Schwarzer & Jerusalem, 1995), ist nach vier Wochen KAIA-Nutzung (Post-Messung) signifikant höher als vor der Nutzung (Prä-Messung).
@@ -223,8 +221,7 @@ Bei wiederholten Krisen-Treffern für eine Benutzer-ID wird die Forscherin via S
 | Meilenstein | Geplant |
 |---|---|
 | Ethikvotum Antrag einreichen | **Diese Woche** — spätestens 06.06.2026 |
-| Pre-Registration OSF.io | Bis 28.07.2026 (vor Datensicht) |
-| DPAs Anthropic/OpenAI/Mistral abgeschlossen | Bis 28.07.2026 |
+| DPAs Anthropic/OpenAI abgeschlossen | Abgeschlossen ✓ |
 | Study-Lock aktivieren | 28.07.2026 |
 | **Pilotstudie START** | **1. August 2026** |
 | Pilotstudie ENDE (4 Wochen) | 29. August 2026 |

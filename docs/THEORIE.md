@@ -239,7 +239,7 @@ Die vorliegende Arbeit ist im Paradigma des Design Science Research (DSR; Hevner
 
 Hevner et al. (2004) formulieren sieben Richtlinien für DSR-konformes Forschen, die für KAIA anwendbar sind: Das Artefakt (KAIA) muss einen Beitrag zu einem relevanten Problem leisten; es muss rigoros entwickelt und evaluiert werden; es muss einen wissenschaftlichen Beitrag leisten, der über die Systemimplementierung hinausgeht; die Forschungsmethoden müssen stringent sein; die Forschung muss in bestehende Wissensbasen eingebettet sein; die Artefaktentwicklung ist iterativ; und die Ergebnisse müssen an relevante Stakeholder kommuniziert werden.
 
-Für die vorliegende Studie ergibt sich eine zweistufige Forschungslogik: KAIA wird als Artefakt entwickelt (Kapitel 4), dann in einer explorativen Pilotstudie evaluiert (Kapitel 6), wobei technische Eigenschaften (LLM-Evaluation) und nutzerseitige Wirkungen (GSE-, MSLQ-Veränderung) untersucht werden. Der DSR-Rahmen macht den Conflict of Interest explizit behandlungsbedürftig: Die Forscherin ist gleichzeitig Entwicklerin und potenzielle Kommerzialisiererin. Dieser Aspekt wird im Methodenkapitel durch das Positionality Statement sowie durch die Pre-Registrierung der Hypothesen auf OSF.io adressiert.
+Für die vorliegende Studie ergibt sich eine zweistufige Forschungslogik: KAIA wird als Artefakt entwickelt (Kapitel 4), dann in einer explorativen Pilotstudie evaluiert (Kapitel 6), wobei technische Eigenschaften (LLM-Evaluation) und nutzerseitige Wirkungen (GSE-, MSLQ-Veränderung) untersucht werden. Der DSR-Rahmen macht den Conflict of Interest explizit behandlungsbedürftig: Die Forscherin ist gleichzeitig Entwicklerin und potenzielle Kommerzialisiererin. Dieser Aspekt wird im Methodenkapitel durch das Positionality Statement adressiert.
 
 ---
 
@@ -253,7 +253,7 @@ Die in den vorangegangenen Abschnitten dargestellten Theorien sind nicht additiv
 
 **Die Messung:** Die GSE (Schwarzer & Jerusalem, 1995) misst den globalen motivationalen Outcome (allgemeine Selbstwirksamkeit). Das MSLQ (Pintrich et al., 1991, 1993) misst proximate Mediatoren (Lernmotivation, Elaborationsstrategien). Gemeinsam ermöglichen beide Instrumente eine Analyse, ob sich durch KAIA-Nutzung nicht nur die globale Überzeugung verschiebt, sondern auch die lernstrategischen Mechanismen, über die dieser Effekt vermutlich vermittelt wird.
 
-**Die Hypothesen** werden vor Beginn der Datenerhebung auf OSF.io registriert:
+**Die Hypothesen** der Studie lauten:
 
 - **H1:** Die allgemeine Selbstwirksamkeitserwartung (GSE; Schwarzer & Jerusalem, 1995) ist nach vier Wochen KAIA-Nutzung signifikant höher als vor der Nutzung (gerichtet, Wilcoxon-Vorzeichenrangtest, α = .05).
 - **H2:** Es besteht ein positiver Zusammenhang zwischen Nutzungshäufigkeit und Veränderung der Selbstwirksamkeitserwartung (ungerichtet, Spearman-Rho).

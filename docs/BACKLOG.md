@@ -111,7 +111,6 @@
 ## 🟡 PRE-STUDY — Vor Hauptstudie
 
 ### Methodik (kein Code)
-- [ ] **Pre-Registrierung auf OSF.io** — Hypothesen, Analyseplan, Stichprobengröße, Misserfolgskriterien
 - [ ] **Power-Analyse** — G*Power, d=0.3, 80% Power → n berechnen
 - [ ] **Lern-SWE-Skala ergänzen** — Bereichsspezifische Selbstwirksamkeit zusätzlich zur GSE
 - [ ] **Statistischer Analyseplan** — Welche Tests, Assumptions, Confounder-Kontrolle — vor Datensicht
