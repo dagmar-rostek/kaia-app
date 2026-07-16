@@ -36,6 +36,27 @@ export async function apiLogin(email: string, password: string): Promise<void> {
   tokenStore.set(data.access_token)
 }
 
+export async function apiForgotPassword(email: string): Promise<void> {
+  await fetch(`${API}/v1/auth/forgot-password`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email }),
+  })
+  // Always resolves — 204 regardless of whether email exists (no enumeration)
+}
+
+export async function apiResetPassword(token: string, password: string): Promise<void> {
+  const res = await fetch(`${API}/v1/auth/reset-password`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ token, password }),
+  })
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({})) as { detail?: string }
+    throw new Error(err.detail ?? 'Passwort zurücksetzen fehlgeschlagen.')
+  }
+}
+
 export async function apiLogout(): Promise<void> {
   const token = tokenStore.get()
   await fetch(`${API}/v1/auth/logout`, {

@@ -6,8 +6,19 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.deps import CurrentUser
 from app.db.session import get_db
-from app.domains.users.repository import RefreshTokenRepository, UserRepository
-from app.domains.users.schemas import LoginRequest, RegisterRequest, TokenResponse, UserRead
+from app.domains.users.repository import (
+    PasswordResetTokenRepository,
+    RefreshTokenRepository,
+    UserRepository,
+)
+from app.domains.users.schemas import (
+    ForgotPasswordRequest,
+    LoginRequest,
+    RegisterRequest,
+    ResetPasswordRequest,
+    TokenResponse,
+    UserRead,
+)
 from app.domains.users.service import AuthError, AuthService
 
 log = structlog.get_logger()
@@ -19,7 +30,11 @@ _SESSION_COOKIE = "kaia_session"
 
 
 def _auth_service(db: Annotated[AsyncSession, Depends(get_db)]) -> AuthService:
-    return AuthService(UserRepository(db), RefreshTokenRepository(db))
+    return AuthService(
+        UserRepository(db),
+        RefreshTokenRepository(db),
+        PasswordResetTokenRepository(db),
+    )
 
 
 def _set_refresh_cookie(response: Response, raw_token: str) -> None:
@@ -108,6 +123,26 @@ async def logout(
     await svc.logout(current_user.id)
     response.delete_cookie(key=_COOKIE_NAME, path=_COOKIE_PATH)
     response.delete_cookie(key=_SESSION_COOKIE, path="/")
+
+
+@router.post("/forgot-password", status_code=204)
+async def forgot_password(
+    data: ForgotPasswordRequest,
+    svc: Annotated[AuthService, Depends(_auth_service)],
+) -> None:
+    """Sends a password-reset link by email. Always returns 204 (no user enumeration)."""
+    await svc.forgot_password(data.email)
+
+
+@router.post("/reset-password", status_code=204)
+async def reset_password(
+    data: ResetPasswordRequest,
+    svc: Annotated[AuthService, Depends(_auth_service)],
+) -> None:
+    try:
+        await svc.reset_password(data.token, data.password)
+    except AuthError as e:
+        raise HTTPException(e.status_code, e.message) from e
 
 
 @router.post("/disclosure-ack", status_code=204)

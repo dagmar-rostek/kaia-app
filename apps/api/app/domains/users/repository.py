@@ -3,7 +3,13 @@ from datetime import UTC, datetime
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.domains.users.models import RefreshToken, User, UserLearningProfile, UserStatus
+from app.domains.users.models import (
+    PasswordResetToken,
+    RefreshToken,
+    User,
+    UserLearningProfile,
+    UserStatus,
+)
 
 
 class UserRepository:
@@ -84,6 +90,26 @@ class RefreshTokenRepository:
         for token in result.scalars().all():
             token.revoked_at = now
             token.revoke_reason = reason
+        await self._db.commit()
+
+
+class PasswordResetTokenRepository:
+    def __init__(self, db: AsyncSession) -> None:
+        self._db = db
+
+    async def create(self, token: PasswordResetToken) -> PasswordResetToken:
+        self._db.add(token)
+        await self._db.commit()
+        await self._db.refresh(token)
+        return token
+
+    async def get_by_hash(self, token_hash: str) -> PasswordResetToken | None:
+        result = await self._db.execute(
+            select(PasswordResetToken).where(PasswordResetToken.token_hash == token_hash)
+        )
+        return result.scalar_one_or_none()
+
+    async def save(self, token: PasswordResetToken) -> None:
         await self._db.commit()
 
 

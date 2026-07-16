@@ -123,6 +123,51 @@ async def send_account_approved(username: str, email: str) -> None:
     )
 
 
+def _password_reset_html(username: str, reset_url: str) -> str:
+    return f"""
+<div style="font-family: sans-serif; max-width: 520px; margin: 0 auto; color: #1a1a1a;">
+  <h2 style="font-size: 22px; font-weight: 700; margin-bottom: 8px;">
+    Passwort zurücksetzen
+  </h2>
+  <p style="color: #555; line-height: 1.6;">
+    Hallo {username},<br><br>
+    du hast eine Anfrage zum Zurücksetzen deines Passworts gestellt.
+    Klicke auf den Button, um ein neues Passwort zu vergeben.
+    Der Link ist <strong>1 Stunde</strong> gültig.
+  </p>
+  <div style="margin: 28px 0;">
+    <a href="{reset_url}"
+       style="display: inline-block; background: #1a1a1a; color: #fff;
+              text-decoration: none; padding: 12px 28px; border-radius: 8px;
+              font-size: 14px; font-weight: 600;">
+      Passwort zurücksetzen →
+    </a>
+  </div>
+  <p style="color: #999; font-size: 13px; line-height: 1.6;">
+    Falls du diese Anfrage nicht gestellt hast, kannst du diese E-Mail ignorieren.
+    Dein Passwort bleibt unverändert.
+  </p>
+  <hr style="border: none; border-top: 1px solid #eee; margin: 24px 0;">
+  <p style="font-size: 12px; color: #999;">
+    Fragen? <a href="mailto:{settings.admin_email}" style="color: #999;">{settings.admin_email}</a>
+  </p>
+</div>
+"""
+
+
+async def send_password_reset(username: str, email: str, raw_token: str) -> None:
+    reset_url = f"{BASE_URL}/passwort-reset/{raw_token}"
+    await send_email(
+        to=email,
+        subject="KAIA — Passwort zurücksetzen",
+        html=_password_reset_html(username, reset_url),
+        text=(
+            f"Hallo {username}, setze dein Passwort zurück: {reset_url}\n"
+            "Der Link ist 1 Stunde gültig."
+        ),
+    )
+
+
 async def send_study_start(username: str, email: str) -> None:
     await send_email(
         to=email,

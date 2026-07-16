@@ -1,3 +1,4 @@
+import secrets
 from datetime import UTC, datetime, timedelta
 
 import structlog
@@ -11,9 +12,17 @@ from app.core.security import (
     new_token_family,
     verify_password,
 )
-from app.domains.users.emails import send_account_approved, send_registration_confirmation
-from app.domains.users.models import RefreshToken, User, UserStatus
-from app.domains.users.repository import RefreshTokenRepository, UserRepository
+from app.domains.users.emails import (
+    send_account_approved,
+    send_password_reset,
+    send_registration_confirmation,
+)
+from app.domains.users.models import PasswordResetToken, RefreshToken, User, UserStatus
+from app.domains.users.repository import (
+    PasswordResetTokenRepository,
+    RefreshTokenRepository,
+    UserRepository,
+)
 from app.domains.users.schemas import RegisterRequest
 from app.observability.slack import notify
 
@@ -30,14 +39,19 @@ class AuthError(Exception):
         super().__init__(message)
 
 
+_RESET_TOKEN_TTL_HOURS = 1
+
+
 class AuthService:
     def __init__(
         self,
         user_repo: UserRepository,
         token_repo: RefreshTokenRepository,
+        reset_repo: PasswordResetTokenRepository | None = None,
     ) -> None:
         self._users = user_repo
         self._tokens = token_repo
+        self._resets = reset_repo
 
     async def register(self, data: RegisterRequest, ip: str | None = None) -> User:
         if await self._users.get_by_email(data.email):
@@ -173,6 +187,49 @@ class AuthService:
     async def logout(self, user_id: int) -> None:
         await self._tokens.revoke_all_for_user(user_id, "logout")
         log.info("user_logged_out", user_id=user_id)
+
+    async def forgot_password(self, email: str) -> None:
+        """Sends a reset link by email. Always returns silently — no user enumeration."""
+        if self._resets is None:
+            raise AuthError("Password-Reset nicht verfügbar.", 500)
+        user = await self._users.get_by_email(email)
+        if not user or user.status in (UserStatus.DELETED, UserStatus.SUSPENDED):
+            return  # No enumeration — same response for unknown/suspended emails
+        raw_token = secrets.token_urlsafe(48)
+        token_hash = hash_token(raw_token)
+        now = datetime.now(UTC)
+        reset_token = PasswordResetToken(
+            user_id=user.id,
+            token_hash=token_hash,
+            expires_at=now + timedelta(hours=_RESET_TOKEN_TTL_HOURS),
+        )
+        await self._resets.create(reset_token)
+        log.info("password_reset_requested", user_id=user.id)
+        await send_password_reset(user.username, user.email, raw_token)
+
+    async def reset_password(self, raw_token: str, new_password: str) -> None:
+        if self._resets is None:
+            raise AuthError("Password-Reset nicht verfügbar.", 500)
+        token_hash = hash_token(raw_token)
+        stored = await self._resets.get_by_hash(token_hash)
+        if not stored:
+            raise AuthError("Ungültiger oder abgelaufener Link.", 400)
+        now = datetime.now(UTC)
+        if stored.used_at is not None:
+            raise AuthError("Dieser Link wurde bereits verwendet.", 400)
+        if stored.expires_at < now:
+            raise AuthError("Ungültiger oder abgelaufener Link.", 400)
+        stored.used_at = now
+        await self._resets.save(stored)
+        user = await self._users.get_by_id(stored.user_id)
+        if not user or user.status in (UserStatus.DELETED, UserStatus.SUSPENDED):
+            raise AuthError("Konto nicht verfügbar.", 400)
+        user.password_hash = hash_password(new_password)
+        user.failed_login_count = 0
+        user.locked_until = None
+        await self._users.save(user)
+        await self._tokens.revoke_all_for_user(user.id, "password_reset")
+        log.info("password_reset_completed", user_id=user.id)
 
     async def acknowledge_disclosure(self, user: User) -> User:
         user.ki_disclosure_seen_at = datetime.now(UTC)

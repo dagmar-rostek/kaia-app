@@ -107,3 +107,12 @@ class ConsentUpdate(BaseModel):
     """DSGVO Art. 7 (3) — Widerruf ist jederzeit möglich."""
 
     consent_analytics: bool
+
+
+class ForgotPasswordRequest(BaseModel):
+    email: EmailStr
+
+
+class ResetPasswordRequest(BaseModel):
+    token: str
+    password: _Password

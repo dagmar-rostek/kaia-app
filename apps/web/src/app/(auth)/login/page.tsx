@@ -114,12 +114,19 @@ export default function LoginPage() {
           )}
         </button>
 
-        <p className="text-center text-xs text-muted-foreground">
-          Noch kein Account?{" "}
-          <Link href="/registrierung" className="underline text-foreground hover:no-underline">
-            Jetzt registrieren
-          </Link>
-        </p>
+        <div className="text-center space-y-2">
+          <p className="text-xs text-muted-foreground">
+            <Link href="/passwort-vergessen" className="underline hover:text-foreground transition-colors">
+              Passwort vergessen?
+            </Link>
+          </p>
+          <p className="text-xs text-muted-foreground">
+            Noch kein Account?{" "}
+            <Link href="/registrierung" className="underline text-foreground hover:no-underline">
+              Jetzt registrieren
+            </Link>
+          </p>
+        </div>
       </form>
     </div>
   )
