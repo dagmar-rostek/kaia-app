@@ -62,9 +62,14 @@ class SurveyRepository:
         return obj
 
     async def get_session_count(self, user_id: int) -> int:
-        # Uses raw table name to avoid cross-domain model import
+        # Count only sessions with at least one message — empty orphaned sessions
+        # (abandoned before any message was sent) must not count toward the 10-session limit.
         r = await self.db.execute(
-            text("SELECT COUNT(*) FROM chat_sessions WHERE user_id = :uid"),
+            text(
+                "SELECT COUNT(*) FROM chat_sessions cs"
+                " WHERE cs.user_id = :uid"
+                " AND EXISTS (SELECT 1 FROM messages m WHERE m.session_id = cs.id)"
+            ),
             {"uid": user_id},
         )
         return r.scalar() or 0

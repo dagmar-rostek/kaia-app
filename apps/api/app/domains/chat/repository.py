@@ -15,7 +15,11 @@ class ChatRepository:
     # ── Sessions ──────────────────────────────────────────────────────────────
 
     async def count_sessions(self, user_id: int) -> int:
-        result = await self.db.execute(select(func.count()).where(ChatSession.user_id == user_id))
+        # Count only sessions that contain at least one message — orphaned empty sessions
+        # (created by resetSession without messages) must not inflate the session number.
+        result = await self.db.execute(
+            select(func.count()).where(ChatSession.user_id == user_id, ChatSession.messages.any())
+        )
         return result.scalar_one()
 
     async def _close_orphaned_empty_sessions(self, user_id: int) -> None:
