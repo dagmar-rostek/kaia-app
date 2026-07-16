@@ -15,6 +15,7 @@ from app.domains.chat.schemas import (
     SessionCreate,
     SessionReport,
     SessionResponse,
+    SessionSummaryResponse,
     SessionWithMessages,
 )
 from app.domains.chat.service import (
@@ -220,6 +221,42 @@ async def end_session(
         # Extract session summary in background — feeds cross-session memory
         background_tasks.add_task(extract_session_summary, session_id)
     return SessionResponse.model_validate(session)
+
+
+@router.get("/sessions/{session_id}/summary", response_model=SessionSummaryResponse)
+async def get_session_summary(
+    session_id: int,
+    user: CurrentUser,
+    db: AsyncSession = Depends(get_db),  # noqa: B008
+) -> SessionSummaryResponse:
+    """Return the post-session meta-reflection summary (JSON extracted by Haiku after end).
+
+    Returns ready=False while the background extraction has not completed yet.
+    Poll after session end with a short delay.
+    """
+    import json  # noqa: PLC0415
+
+    repo = ChatRepository(db)
+    session = await repo.get_session(session_id, user.id)
+    if not session:
+        raise HTTPException(status_code=404, detail="Session nicht gefunden.")
+    if not session.session_summary:
+        return SessionSummaryResponse(session_id=session_id, ready=False)
+    try:
+        data = json.loads(session.session_summary)
+    except (json.JSONDecodeError, TypeError):
+        return SessionSummaryResponse(session_id=session_id, ready=False)
+    return SessionSummaryResponse(
+        session_id=session_id,
+        ready=True,
+        mood=data.get("mood"),
+        topics=data.get("topics", []),
+        strengths_observed=data.get("strengths_observed") or None,
+        friction_points=data.get("friction_points") or None,
+        first_step=data.get("first_step") or None,
+        strongest_quote=data.get("strongest_quote") or None,
+        insight_for_next_session=data.get("insight_for_next_session") or None,
+    )
 
 
 @router.post(

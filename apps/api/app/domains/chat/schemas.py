@@ -93,5 +93,20 @@ class SessionReport(BaseModel):
     reason: str | None = None
 
 
+# ── Session Summary ───────────────────────────────────────────────────────────
+
+
+class SessionSummaryResponse(BaseModel):
+    session_id: int
+    mood: str | None = None
+    topics: list[str] = []
+    strengths_observed: str | None = None
+    friction_points: str | None = None
+    first_step: str | None = None
+    strongest_quote: str | None = None
+    insight_for_next_session: str | None = None
+    ready: bool = False  # False when summary not yet generated
+
+
 # Update forward ref
 SessionWithMessages.model_rebuild()

@@ -36,6 +36,18 @@ interface SessionData {
   messages?: ApiMessage[]
 }
 
+interface SessionSummary {
+  session_id: number
+  ready: boolean
+  mood?: string | null
+  topics: string[]
+  strengths_observed?: string | null
+  friction_points?: string | null
+  first_step?: string | null
+  strongest_quote?: string | null
+  insight_for_next_session?: string | null
+}
+
 // Closure state machine:
 //   idle            → normal chat
 //   loading         → /closing SSE in flight
@@ -119,6 +131,7 @@ export default function ChatPage() {
   const [showInfoPanel,    setShowInfoPanel]    = useState(false)
   const [bannerDismissed, setBannerDismissed] = useState(false)
   const [showReportModal,  setShowReportModal]  = useState(false)
+  const [sessionSummary,   setSessionSummary]   = useState<SessionSummary | null>(null)
   // Derived: show banner only when no user message sent yet AND not manually dismissed
   const showDayBanner = !bannerDismissed && !messages.some(m => m.role === "user")
 
@@ -281,6 +294,7 @@ export default function ChatPage() {
     setClosureExchanges(0)
     setResumed(false)
     setBannerDismissed(false)
+    setSessionSummary(null)
     setOpenTrigger(t => t + 1)
   }, [sessionId])
 
@@ -298,6 +312,21 @@ export default function ChatPage() {
 
     setClosureState("ended")
   }, [sessionId])
+
+  // Fetch session summary 5s after session ends (Haiku extraction runs as background task)
+  useEffect(() => {
+    if (closureState !== "ended" || !sessionId) return
+    const timer = setTimeout(async () => {
+      try {
+        const res = await authFetch(`${API_BASE}/api/v1/chat/sessions/${sessionId}/summary`)
+        if (res.ok) {
+          const data = await res.json() as SessionSummary
+          if (data.ready) setSessionSummary(data)
+        }
+      } catch { /* best-effort */ }
+    }, 5000)
+    return () => clearTimeout(timer)
+  }, [closureState, sessionId])
 
   const startClosure = useCallback(async () => {
     if (!sessionId || closureState !== "idle" || loading) return
@@ -648,17 +677,60 @@ export default function ChatPage() {
 
           {/* Session ended notice */}
           {closureState === "ended" && (
-            <div
-              className="text-center text-xs text-muted-foreground/60 py-2"
-              aria-live="assertive"
-            >
-              Session beendet.{" "}
-              <button
-                onClick={() => resetSession()}
-                className="underline underline-offset-2 hover:text-foreground transition-colors"
-              >
-                Neue Session starten
-              </button>
+            <div className="space-y-4 py-4" aria-live="assertive">
+              <p className="text-center text-xs text-muted-foreground/60">
+                Session beendet.{" "}
+                <button
+                  onClick={() => resetSession()}
+                  className="underline underline-offset-2 hover:text-foreground transition-colors"
+                >
+                  Neue Session starten
+                </button>
+              </p>
+
+              {sessionSummary && (
+                <div className="rounded-xl border border-border/50 bg-muted/30 p-4 space-y-3 text-sm">
+                  <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+                    Reflexion dieser Session
+                  </p>
+
+                  {sessionSummary.mood && (
+                    <p className="flex items-center gap-2">
+                      <span className="text-muted-foreground text-xs">Stimmung</span>
+                      <span className={`text-xs rounded-full px-2 py-0.5 font-medium ${
+                        sessionSummary.mood === "positiv"   ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400" :
+                        sessionSummary.mood === "frustriert" ? "bg-red-500/10 text-red-600 dark:text-red-400" :
+                        "bg-muted text-muted-foreground"
+                      }`}>
+                        {sessionSummary.mood}
+                      </span>
+                    </p>
+                  )}
+
+                  {sessionSummary.topics.length > 0 && (
+                    <div className="flex flex-wrap gap-1.5">
+                      {sessionSummary.topics.map(t => (
+                        <span key={t} className="text-xs rounded-full bg-muted px-2.5 py-0.5 text-muted-foreground border border-border/50">
+                          {t}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+
+                  {sessionSummary.strongest_quote && (
+                    <blockquote className="border-l-2 border-border pl-3 italic text-muted-foreground text-xs leading-relaxed">
+                      &ldquo;{sessionSummary.strongest_quote}&rdquo;
+                    </blockquote>
+                  )}
+
+                  {sessionSummary.first_step && (
+                    <div className="space-y-0.5">
+                      <p className="text-xs text-muted-foreground">Nächster Schritt</p>
+                      <p className="text-xs leading-relaxed">{sessionSummary.first_step}</p>
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
           )}
 
