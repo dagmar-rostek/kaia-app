@@ -678,15 +678,31 @@ export default function ChatPage() {
           {/* Session ended notice */}
           {closureState === "ended" && (
             <div className="space-y-4 py-4" aria-live="assertive">
-              <p className="text-center text-xs text-muted-foreground/60">
-                Session beendet.{" "}
-                <button
-                  onClick={() => resetSession()}
-                  className="underline underline-offset-2 hover:text-foreground transition-colors"
-                >
-                  Neue Session starten
-                </button>
-              </p>
+              {sessionNumber === 10 ? (
+                <div className="rounded-xl border border-border/60 bg-muted/40 p-5 space-y-3 text-center">
+                  <p className="font-medium text-sm">Du hast alle 10 Sessions abgeschlossen.</p>
+                  <p className="text-xs text-muted-foreground leading-relaxed">
+                    Danke — das war eine echte Zusammenarbeit. Jetzt fehlt noch der Abschluss-Fragebogen,
+                    damit die Studie komplett ist. Das dauert ca. 5 Minuten.
+                  </p>
+                  <Link
+                    href="/survey/post"
+                    className="inline-block mt-2 rounded-lg bg-foreground text-background px-5 py-2.5 text-sm font-medium hover:opacity-90 transition-opacity"
+                  >
+                    Zum Abschluss-Fragebogen →
+                  </Link>
+                </div>
+              ) : (
+                <p className="text-center text-xs text-muted-foreground/60">
+                  Session beendet.{" "}
+                  <button
+                    onClick={() => resetSession()}
+                    className="underline underline-offset-2 hover:text-foreground transition-colors"
+                  >
+                    Neue Session starten
+                  </button>
+                </p>
+              )}
 
               {sessionSummary && (
                 <div className="rounded-xl border border-border/50 bg-muted/30 p-4 space-y-3 text-sm">
