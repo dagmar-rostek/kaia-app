@@ -59,6 +59,11 @@ const MSLQ_ITEMS_RAW: MslqItem[] = [
   { num: 76, subscale: "Metakognition",           text: "Beim Lernen versuche ich herauszufinden, welche Konzepte mir noch unklar sind." },
   { num: 78, subscale: "Metakognition",           text: "Ich setze mir Lernziele, um meine Aktivitäten in jeder Lerneinheit zu steuern." },
   { num: 79, subscale: "Metakognition",           text: "Wenn mir etwas unklar bleibt, sorge ich dafür, dass ich es im Nachgang kläre." },
+  // Control of Learning Beliefs (Pintrich et al., 1991, items 2/9/18/25)
+  { num: 2,  subscale: "Kontrollüberzeugungen",   text: "Wenn ich auf die richtige Weise lerne, werde ich die Inhalte meines Lernthemas wirklich verstehen." },
+  { num: 9,  subscale: "Kontrollüberzeugungen",   text: "Wenn ich etwas in meinem Lernthema nicht verstehe, liegt das an mir — ich hätte mich besser vorbereiten können." },
+  { num: 18, subscale: "Kontrollüberzeugungen",   text: "Wenn ich mich genug anstrenge, werde ich auch schwierige Inhalte meines Lernthemas durchdringen." },
+  { num: 25, subscale: "Kontrollüberzeugungen",   text: "Wenn ich Inhalte nicht beherrsche, liegt das daran, dass ich mich nicht ausreichend angestrengt habe." },
 ]
 
 const MSLQ_LABELS: [string, string] = ["Trifft gar nicht zu", "Trifft vollständig zu"]
@@ -239,6 +244,22 @@ const SUBSCALE_META: Record<string, SubscaleMeta> = {
       hoch: isPost
         ? "Starke metakognitive Selbstregulation am Ende — du weißt, was du weißt und was nicht."
         : "Gute Ausgangslage: hohe Metakognition. KAIA kann anspruchsvollere Selbstreflexionsfragen nutzen.",
+    }[l]),
+  },
+  control_of_learning: {
+    label: "Kontrollüberzeugungen für Lernen",
+    itemCount: 4,
+    description: "Ob du glaubst, dass deine eigene Anstrengung und Lernstrategie wirklich einen Unterschied machen — dass du das Steuer in der Hand hast. Anders als Selbstwirksamkeit ('Kann ich das?') fragt dieses Konstrukt: 'Liegt es an mir?' (Pintrich et al., 1991).",
+    meaning: (l, isPost) => ({
+      niedrig: isPost
+        ? "Niedrige Lernkontrollüberzeugung am Ende — du schreibst Lernerfolg eher äußeren Faktoren zu. Schaue, ob sich das gegenüber dem Ausgangswert verändert hat."
+        : "Du schreibst Lernresultate weniger dir selbst zu — eher dem Stoff, dem System oder dem Zufall. KAIAs sokratische Haltung zielt darauf ab, Erfolgserlebnisse durch eigene Einsicht zu erzeugen.",
+      mittel: isPost
+        ? "Mittlere Lernkontrollüberzeugung — vergleiche mit dem Ausgangswert für Veränderungsrichtung."
+        : "Mittlere Kontrollüberzeugung. Du siehst dich teils als Gestalter, teils als Reagierenden. KAIA arbeitet daran, eigene Einsichten zu stärken.",
+      hoch: isPost
+        ? "Starke Lernkontrollüberzeugung am Ende — du weißt, dass dein Einsatz den Unterschied macht."
+        : "Gute Ausgangslage: du bist überzeugt, dass Lernerfolg von dir abhängt. Das ist die ideale Haltung für aktive Auseinandersetzung mit KAIA.",
     }[l]),
   },
 }
@@ -741,6 +762,8 @@ export function SurveyForm({ measurementType, redirectTo }: Props) {
     const isPost = measurementType === "post"
     return (
       <div className="max-w-2xl mx-auto px-4 py-12 space-y-8">
+
+        {/* Header */}
         <div className="space-y-3">
           <div className="text-xs text-muted-foreground uppercase tracking-wide font-medium">
             {isPost ? "Abschlussbefragung" : "Eingangsbefragung"}
@@ -750,29 +773,67 @@ export function SurveyForm({ measurementType, redirectTo }: Props) {
           </h1>
           <p className="text-muted-foreground leading-relaxed">
             {isPost
-              ? "Du hast mindestens 10 Sessions mit KAIA abgeschlossen. Dieser kurze Fragebogen erfasst, wie sich deine Lernstrategien und deine Selbstwirksamkeit verändert haben."
-              : "Bevor du mit KAIA startest, beantworten wir kurz: Wie gehst du bisher ans Lernen heran? Das dauert ca. 8–10 Minuten."}
+              ? "Du hast mindestens 10 Sessions mit KAIA abgeschlossen. Jetzt schauen wir gemeinsam, was sich verändert hat — in deinen Lernstrategien, deiner Selbstwirksamkeit und deiner Überzeugung, das Steuer beim Lernen in der Hand zu haben."
+              : "Bevor du mit KAIA startest, machen wir eine kurze Bestandsaufnahme. Wie gehst du ans Lernen heran? Was glaubst du, was funktioniert? Das dauert ca. 12 Minuten — und lohnt sich."}
           </p>
         </div>
 
+        {/* Warum + Was du davon hast */}
+        {!isPost && (
+          <div className="rounded-lg border border-border p-5 space-y-4 text-sm">
+            <p className="font-medium text-foreground">Warum dieser Fragebogen?</p>
+            <p className="text-muted-foreground leading-relaxed">
+              KAIA ist kein generisches Chatbot-System. Dein Lernprofil — Motivation, Strategien, Selbstwirksamkeit — fließt direkt in die Art ein, wie KAIA mit dir arbeitet. Je ehrlicher deine Antworten, desto besser kann KAIA auf dich eingehen.
+            </p>
+            <div className="border-t border-border pt-4 space-y-2">
+              <p className="font-medium text-foreground">Was du davon hast</p>
+              <ul className="space-y-2 text-muted-foreground">
+                <li className="flex items-start gap-2">
+                  <span className="text-foreground mt-0.5">→</span>
+                  <span>Direkt nach dem Fragebogen siehst du dein persönliches Lernprofil mit Erklärung zu jeder Dimension.</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-foreground mt-0.5">→</span>
+                  <span>Nach Abschluss der Studie erhältst du eine detaillierte Gegenüberstellung: Vorher vs. Nachher — konkret und lesbar.</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-foreground mt-0.5">→</span>
+                  <span>Deine Antworten werden nie bewertet. Es gibt kein Richtig oder Falsch — nur dein tatsächlicher Ausgangspunkt.</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+        )}
+
+        {isPost && (
+          <div className="rounded-lg border border-border p-5 space-y-3 text-sm">
+            <p className="font-medium text-foreground">Was dich am Ende erwartet</p>
+            <p className="text-muted-foreground leading-relaxed">
+              Sobald du diesen Fragebogen abgeschlossen hast, siehst du deine vollständige Entwicklung — alle Messdimensionen im Vergleich Vorher vs. Nachher, mit Erklärung was sich verändert hat und was das bedeutet.
+            </p>
+          </div>
+        )}
+
+        {/* Was dich erwartet */}
         <div className="rounded-lg border border-border p-5 space-y-3 text-sm text-muted-foreground">
           <p className="font-medium text-foreground">Was dich erwartet</p>
           <div className="space-y-1.5">
-            <div className="flex items-center gap-2"><span className="text-foreground font-medium w-6">30</span><span>Aussagen zu Lernstrategien und Motivation (7-stufige Skala)</span></div>
+            <div className="flex items-center gap-2"><span className="text-foreground font-medium w-6">34</span><span>Aussagen zu Lernstrategien, Motivation und Lernkontrolle (7-stufige Skala)</span></div>
             <div className="flex items-center gap-2"><span className="text-foreground font-medium w-6">10</span><span>Aussagen zur allgemeinen Selbstwirksamkeit (4-stufige Skala)</span></div>
-            <div className="flex items-center gap-2"><span className="text-foreground font-medium w-6">~8</span><span>Minuten Gesamtzeit</span></div>
+            <div className="flex items-center gap-2"><span className="text-foreground font-medium w-6">~12</span><span>Minuten Gesamtzeit</span></div>
           </div>
         </div>
 
+        {/* DSGVO */}
         <div className="rounded-lg border border-amber-200 dark:border-amber-800 bg-amber-50 dark:bg-amber-950/30 p-4 text-sm text-amber-800 dark:text-amber-200">
-          Deine Antworten werden nur für die Masterthesis-Studie verwendet und nicht mit Dritten geteilt. Du hast jederzeit das Recht auf Auskunft und Löschung (DSGVO Art. 15–17).
+          Deine Antworten werden ausschließlich für die Masterthesis-Studie verwendet und nicht mit Dritten geteilt. Du hast jederzeit das Recht auf Auskunft und Löschung (DSGVO Art. 15–17).
         </div>
 
         <button
           onClick={() => setStep("mslq")}
           className="flex items-center gap-2 bg-foreground text-background px-6 py-3 rounded-lg text-sm font-medium hover:opacity-90 transition-opacity"
         >
-          Jetzt starten
+          {isPost ? "Abschlussbefragung starten" : "Jetzt starten"}
           <ChevronRight className="h-4 w-4" />
         </button>
       </div>
