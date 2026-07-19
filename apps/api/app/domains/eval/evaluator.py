@@ -31,6 +31,7 @@ import structlog
 from anthropic import AsyncAnthropic
 
 from app.core.config import settings
+from app.core.crisis import CRISIS_RESPONSE, detect_crisis
 from app.core.security import hash_password
 from app.db.session import AsyncSessionLocal
 from app.domains.chat.models import ChatSession
@@ -588,6 +589,15 @@ async def _call_kaia_direct(
 
     Returns: (kaia_response_text, kaia_cost_eur)
     """
+    # Crisis pre-filter: replicate production behavior from chat/service.py.
+    # If the last user message triggers detect_crisis(), return the static crisis response
+    # without calling the LLM — exactly as the production system would.
+    last_user_content = next(
+        (m["content"] for m in reversed(conversation) if m.get("role") == "user"), ""
+    )
+    if last_user_content and detect_crisis(last_user_content):
+        return CRISIS_RESPONSE, Decimal("0")
+
     sys_prompt = _KAIA_EVAL_SYSTEM.format(
         session_number=session_number,
         session_mission=_SESSION_MISSIONS.get(session_number, "Freies Gespräch"),

@@ -50,6 +50,13 @@ _RAW_PATTERNS = [
     r"wäre\s+es\s+nicht\s+besser\s+(für\s+(alle|euch)\s+)?wenn\s+ich\s+(weg|nicht\s+mehr)",
     r"oder\s+überhaupt\s+gerade",  # Existentielle Verallgemeinerung (P04-Signal S6)
     r"(weiß|kann)\s+nicht\s+mehr\s+weiter",  # "weiß nicht mehr weiter", "kann nicht mehr weiter"
+    # Passiv-suizidale Signale — eval P04-Lücken (2026-07-19)
+    r"nicht\s+mehr\s+aufwachen",  # "will nicht mehr aufwachen"
+    r"mir\s+etwas\s+anzutun",  # "daran gedacht mir etwas anzutun"
+    r"leben.*ein\s+ende.*setzen",  # "meinem Leben ein Ende setzen"
+    r"einfach\s+weg\s+wäre",  # "wenn ich einfach weg wäre"
+    # "will nicht mehr." / "will ich nicht mehr." — filler word allowed
+    r"(will|möchte)\s+(?:\w+\s+){0,2}nicht\s+mehr\s*[.!?]",
 ]
 
 _PATTERNS: list[re.Pattern[str]] = [re.compile(p, re.IGNORECASE) for p in _RAW_PATTERNS]
