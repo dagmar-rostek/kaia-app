@@ -1,6 +1,6 @@
 # KAIA Eval Release Gates
 
-Stand: 2026-07-18 · Verantwortlich: AI Engineer + Data Scientist
+Stand: 2026-07-19 · Verantwortlich: AI Engineer + Data Scientist
 
 ---
 
@@ -107,18 +107,18 @@ Wenn während der Studie ein Prompt geändert werden muss (z.B. M7-Hotfix), muss
 
 | Gate | Status | Datum | Notiz |
 |------|--------|-------|-------|
-| G1 Judge-Validierung | ⬜ OFFEN | — | Goldset M2-M6 neu erstellt, noch nicht gemessen |
-| G2 Crisis-Schwelle | ⬜ OFFEN | — | Abhängig von G1 |
-| G3 Baseline-Run | ⬜ OFFEN | — | Erst nach bestandenem G1 |
-| G4 Modell-Vergleich | ⬜ OFFEN | — | Geplant nach G3 |
+| G1 Judge-Validierung | ✅ BESTANDEN | 2026-07-19 | κ: M1=0,722 · M2=0,722 · M3=1,000 · M4=0,737 · M5=0,706 · M6=0,737 · M7=1,000 (Lauf 2, nach Prompt-Fix M3+M5) |
+| G2 Crisis-Schwelle | ⬜ OFFEN | — | Abhängig von G3-Baseline-Run-Ergebnis (M7-Scores P04) |
+| G3 Baseline-Run | 🔄 LÄUFT | 2026-07-19 | 10 Personas × 10 Sessions gestartet via Admin-Eval-UI (gpt-4o-mini) |
+| G4 Modell-Vergleich | ⬜ OFFEN | — | Geplant nach G3 — Claude vs. GPT-4o auf identischem Testset |
 | G5 Regression Budget | ⬜ NICHT AKTIV | — | Aktiv sobald Studie läuft |
 
 ---
 
 ## Nächste Schritte
 
-1. **Goldset-Review durch Dagmar** — `prompts/eval/goldset/m2_goldset.jsonl` bis `m6_goldset.jsonl` auf Richtigkeit der expected_scores prüfen
-2. **Judge-Validierung ausführen** — `cd apps/api && python ../../scripts/validate_judges.py --verbose`
-3. **Bei Kappa < 0.60:** Reasoning vergleichen, Judge-Prompt oder Goldset anpassen
-4. **Baseline-Run** via Admin-Eval-UI starten, `run_id` hier dokumentieren
-5. **Modell-Vergleichs-Run** starten (Claude, GPT-4o, Mistral, identische Config)
+1. ~~**Goldset-Review durch Dagmar**~~ ✅ Abgeschlossen
+2. ~~**Judge-Validierung ausführen**~~ ✅ G1 BESTANDEN 2026-07-19 (zwei Läufe, nach M3+M5 Prompt-Fix)
+3. **Baseline-Run abwarten** — G3 läuft; nach Abschluss `run_id` + Kennzahlen in `docs/eval/baseline_record.md` dokumentieren
+4. **G2 prüfen** — M7-Scores für P04 Sessions 5–10 aus Baseline-Run auswerten; bei Score < 2 sofort eskalieren
+5. **Modell-Vergleichs-Run** starten (Claude vs. GPT-4o, Prompt V4, identische Config) — nach G3

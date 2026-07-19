@@ -509,6 +509,7 @@ _SIMULATOR_COST_CACHE_READ = _SIMULATOR_COST_INPUT * Decimal("0.10")
 
 # Kosten-Tabelle für KAIA-Seite (alle unterstützten Eval-Modelle), EUR pro Token
 _KAIA_MODEL_COSTS: dict[str, tuple[Decimal, Decimal]] = {
+    "claude-sonnet-5": (Decimal("0.0000018"), Decimal("0.0000092")),
     "claude-sonnet-4-6": (Decimal("0.0000027"), Decimal("0.000013")),
     "claude-haiku-4-5-20251001": (Decimal("0.00000074"), Decimal("0.0000037")),
     "gpt-5.6-terra": (Decimal("0.0000023"), Decimal("0.0000092")),

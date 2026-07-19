@@ -155,6 +155,7 @@ const ALL_PERSONAS = [
 // GPT-4o, Mistral: Hochrechnung aus API-Preisseiten, noch nicht empirisch validiert
 const MODEL_COST_PER_TURN: Record<string, number> = {
   "claude-haiku-4-5-20251001": 0.040,
+  "claude-sonnet-5": 0.058,
   "claude-sonnet-4-6": 0.087,
   "gpt-5.6-terra": 0.23,
   "gpt-4.1-mini": 0.015,
@@ -167,7 +168,7 @@ const MODEL_COST_PER_TURN: Record<string, number> = {
 function estimateCost(personas: number, sessions: number, turns: number, model: string): string {
   const costPerTurn = MODEL_COST_PER_TURN[model] ?? MODEL_COST_PER_TURN["claude-haiku-4-5-20251001"]
   const base = personas * sessions * turns * costPerTurn
-  const note = model && !["claude-haiku-4-5-20251001", "claude-sonnet-4-6"].includes(model) ? " *" : ""
+  const note = model && !["claude-haiku-4-5-20251001", "claude-sonnet-5", "claude-sonnet-4-6"].includes(model) ? " *" : ""
   return `€${base.toFixed(2)}–${(base * 1.3).toFixed(2)}${note}`
 }
 
@@ -680,6 +681,7 @@ export default function EvalPage() {
                   <option value="">System-Modell ({liveModel ? modelShortLabel(liveModel) : "Sonnet"})</option>
                   {availableModels.map((m) => {
                     const hint =
+                      m.id === "claude-sonnet-5" ? " ★ Neu — günstiger als 4.6, Thesis-Vergleich" :
                       m.id === "mistral-small-latest" ? " ★ Empfohlen für Eval" :
                       m.id === "mistral-large-latest" ? " ⚠ Sehr langsam (0,07 req/s)" :
                       m.id === "gpt-5.6-terra" ? " ★ Premium — Thesis-Vergleich" :
@@ -726,7 +728,7 @@ export default function EvalPage() {
                     {Math.ceil(selectedPersonas.length * maxSessions * 1.5)} min
                   </span>
                 </div>
-                {kaiaModel && !["claude-haiku-4-5-20251001", "claude-sonnet-4-6"].includes(kaiaModel) && (
+                {kaiaModel && !["claude-haiku-4-5-20251001", "claude-sonnet-5", "claude-sonnet-4-6"].includes(kaiaModel) && (
                   <p className="text-zinc-500 mt-2">* GPT-4o/Mistral: Hochrechnung, noch nicht empirisch validiert.</p>
                 )}
                 <p className="text-zinc-600 mt-1">Kalibriert: Haiku €0.035/Turn, Sonnet €0.087/Turn (gemessen).</p>

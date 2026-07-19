@@ -17,6 +17,7 @@ MAX_TOKENS = 3000  # final_answer (~300) + reasoning buffer; valid for Sonnet an
 
 _COST_TABLE: dict[str, tuple[Decimal, Decimal]] = {
     # (input_per_token_eur, output_per_token_eur)
+    "claude-sonnet-5": (Decimal("0.0000018"), Decimal("0.0000092")),
     "claude-sonnet-4-6": (Decimal("0.0000027"), Decimal("0.000013")),
     "claude-haiku-4-5-20251001": (Decimal("0.00000074"), Decimal("0.0000037")),
     "gpt-4o": (Decimal("0.0000022"), Decimal("0.0000088")),

@@ -24,6 +24,7 @@ router = APIRouter(
 # ── Verfügbare Modelle ────────────────────────────────────────────────────────
 
 _ALL_MODELS = [
+    {"id": "claude-sonnet-5", "label": "Claude Sonnet 5", "provider": "anthropic"},
     {"id": "claude-sonnet-4-6", "label": "Claude Sonnet 4.6", "provider": "anthropic"},
     {"id": "claude-haiku-4-5-20251001", "label": "Claude Haiku 4.5", "provider": "anthropic"},
     {"id": "gpt-5.6-terra", "label": "GPT-5.6 Terra", "provider": "openai"},
