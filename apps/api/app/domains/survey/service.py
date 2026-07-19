@@ -30,6 +30,7 @@ SUBSCALE_ITEMS: dict[str, list[int]] = {
     "intrinsic_goal": [1, 16, 22, 24],
     "elaboration": [53, 62, 64, 67, 69, 81],
     "metacognitive_sr": [33, 36, 41, 44, 54, 55, 56, 57, 61, 76, 78, 79],
+    "control_of_learning": [2, 9, 18, 25],
 }
 REVERSE_ITEMS = {33, 57}
 

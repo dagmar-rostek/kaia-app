@@ -79,7 +79,7 @@ Vor jedem Merge in den Main-Branch wurden folgende 13 Qualitäts-Gates systemati
 
 ### B.1 Instrument und Quellengrundlage
 
-Die vorliegende Adaption basiert auf dem *Motivated Strategies for Learning Questionnaire* (MSLQ; Pintrich et al., 1991, 1993). Das MSLQ ist ein etabliertes Selbstberichtsinstrument zur Erfassung von Lernmotivation und Lernstrategien bei Studierenden und Erwachsenen in Lernsituationen. Das Originalinstrument umfasst 81 Items auf 15 Subskalen; für KAIA wurden vier theoretisch begründete Subskalen mit insgesamt 30 Items adaptiert.
+Die vorliegende Adaption basiert auf dem *Motivated Strategies for Learning Questionnaire* (MSLQ; Pintrich et al., 1991, 1993). Das MSLQ ist ein etabliertes Selbstberichtsinstrument zur Erfassung von Lernmotivation und Lernstrategien bei Studierenden und Erwachsenen in Lernsituationen. Das Originalinstrument umfasst 81 Items auf 15 Subskalen; für KAIA wurden fünf theoretisch begründete Subskalen mit insgesamt 34 Items adaptiert.
 
 **Quellenangaben:**
 - Pintrich, P. R., Smith, D. A. F., Garcia, T., & McKeachie, W. J. (1991). *A manual for the use of the Motivated Strategies for Learning Questionnaire (MSLQ)* (ERIC-Report ED338122). University of Michigan, National Center for Research to Improve Postsecondary Teaching and Learning.
@@ -170,6 +170,18 @@ Die vorliegende Adaption basiert auf dem *Motivated Strategies for Learning Ques
 **MSLQ-IV-7:** Ich stelle mir beim Lernen eigene Fragen, um Wissenslücken zu identifizieren.
 
 **MSLQ-IV-8:** Wenn ich Argumente lese, prüfe ich, ob die Belege die Schlussfolgerungen wirklich stützen.
+
+#### Subskala V: Kontrollüberzeugungen für Lernen (4 Items)
+
+*(Erfasst, ob Lernende glauben, dass ihr eigenes Handeln — Anstrengung und Lernstrategiewahl — maßgeblich über Lernerfolg entscheidet. Misst lernspezifische internale Attribution, nicht generalisierte Kontrollüberzeugung. Unterscheidet sich von Subskala II [Selbstwirksamkeit]: II fragt "Kann ich das?", V fragt "Macht mein Verhalten einen Unterschied?". Originalitems 2, 9, 18, 25 aus Pintrich et al., 1991; α = .68 im Original.)*
+
+**MSLQ-V-1:** Wenn ich auf die richtige Weise lerne, werde ich die Lerninhalte, mit denen ich mich beschäftige, wirklich verstehen.
+
+**MSLQ-V-2:** Es liegt an mir, wenn ich Lerninhalte nicht verstehe oder nicht meistere — ich hätte mich besser vorbereiten können.
+
+**MSLQ-V-3:** Wenn ich mich genug anstrenge, werde ich auch schwierige Lerninhalte verstehen.
+
+**MSLQ-V-4:** Wenn ich Lerninhalte nicht beherrsche, liegt das daran, dass ich mich nicht ausreichend angestrengt habe.
 
 ### B.4 Auswertungshinweise
 

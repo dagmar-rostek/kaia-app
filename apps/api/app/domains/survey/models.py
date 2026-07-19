@@ -70,7 +70,7 @@ class ConsentLog(Base):
 class MslqResult(Base):
     """MSLQ measurement result (Pintrich et al., 1991/1993).
 
-    4 subscales, 30 items, 7-point Likert. Items stored as JSONB
+    5 subscales, 34 items, 7-point Likert. Items stored as JSONB
     {str(item_number): raw_score}. Subscale scores are server-computed means.
 
     DSGVO: Qualifies as psychological data (Art. 9) — explicit consent required.
@@ -82,10 +82,10 @@ class MslqResult(Base):
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), index=True)
     measurement_type: Mapped[MeasurementType] = mapped_column(String(10))
 
-    # {str(item_number): raw_score (1–7)} — 30 items
+    # {str(item_number): raw_score (1–7)} — 34 items
     items: Mapped[dict[str, Any]] = mapped_column(JSONB)
 
-    # Server-computed: {subscale_key: mean_score} — 4 subscales
+    # Server-computed: {subscale_key: mean_score} — 5 subscales
     subscale_scores: Mapped[dict[str, Any]] = mapped_column(JSONB)
 
     created_at: Mapped[datetime] = mapped_column(server_default=func.now())

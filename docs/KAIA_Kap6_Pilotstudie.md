@@ -2,7 +2,7 @@
 
 > **Stand:** 13. Juli 2026 · **Version:** 0.9-DRAFT
 > **Reviewer:** Psychologe · Compliance · Data Scientist · Discovery Researcher
-> **Status:** Vollständige Überarbeitung — Messmodell finalisiert (MSLQ 30 Items + GSE 10 Items + EMA 4 Typen); FKS aus Messmodell entfernt; Studienstart korrigiert (1. August 2026); Timeline-Sektion erstellt; Limitationen eigenständig ausgegliedert. Studie hat noch NICHT begonnen (Stand: 13. Juli 2026).
+> **Status:** Vollständige Überarbeitung — Messmodell finalisiert (MSLQ 34 Items + GSE 10 Items + EMA 4 Typen); FKS aus Messmodell entfernt; Studienstart korrigiert (1. August 2026); Timeline-Sektion erstellt; Limitationen eigenständig ausgegliedert. Studie hat noch NICHT begonnen (Stand: 13. Juli 2026).
 
 ---
 
@@ -79,7 +79,7 @@ Die Forscherin ist gleichzeitig Entwicklerin von KAIA und potenzielle Kommerzial
 ### 6.3.1 Motivierte Lernstrategien — MSLQ (Kurzversion, Prä-Messung)
 
 **Instrument:** Motivated Strategies for Learning Questionnaire, KAIA-Kurzversion (Pintrich, Smith, Garcia & McKeachie, 1991, 1993)
-**Fassung:** 30-Item-Adaptation mit 4 Subskalen, dokumentiert in docs/STUDIENPROTOKOLL.md
+**Fassung:** 34-Item-Adaptation mit 5 Subskalen, dokumentiert in docs/STUDIENPROTOKOLL.md
 **Skalierung:** 7-stufige Likert-Skala (1 = gar nicht zutreffend, 7 = sehr zutreffend)
 **Erhebungszeitpunkt:** Einmalig als Prä-Messung vor der ersten Session; kein Post-MSLQ
 
@@ -87,10 +87,11 @@ Die Forscherin ist gleichzeitig Entwicklerin von KAIA und potenzielle Kommerzial
 
 | Subskala | Konstrukt | Items (Adaptation) | α (Original) |
 |---|---|---|---|
-| Intrinsische Zielorientierung | Motivation durch Interesse, Verstehen und Kompetenzentwicklung | ≈ 6–8 | .74 (Pintrich et al., 1993) |
-| Selbstwirksamkeit für Lernen und Leistung | Überzeugung, Lernaufgaben erfolgreich bewältigen zu können | ≈ 8 | .93 (Pintrich et al., 1993) |
-| Lernstrategien (Elaboration) | Aktive Verknüpfung neuen Wissens mit vorhandenen Wissensstrukturen | ≈ 8 | .76 (Pintrich et al., 1993) |
-| Kognitive Verarbeitungstiefe | Tiefenorientierte Informationsverarbeitung, kritisches Denken | ≈ 6–8 | .80 (Pintrich et al., 1993) |
+| Intrinsische Zielorientierung | Motivation durch Interesse, Verstehen und Kompetenzentwicklung | 4 | .74 (Pintrich et al., 1993) |
+| Selbstwirksamkeit für Lernen und Leistung | Überzeugung, Lernaufgaben erfolgreich bewältigen zu können | 8 | .93 (Pintrich et al., 1993) |
+| Lernstrategien (Elaboration) | Aktive Verknüpfung neuen Wissens mit vorhandenen Wissensstrukturen | 10 | .76 (Pintrich et al., 1993) |
+| Kognitive Verarbeitungstiefe | Tiefenorientierte Informationsverarbeitung, kritisches Denken | 8 | .80 (Pintrich et al., 1993) |
+| **Kontrollüberzeugungen für Lernen** | Glaube, dass Anstrengung und Lernstrategien den Lernerfolg bestimmen (internale Attribution) | 4 | .68 (Pintrich et al., 1993) |
 
 **Gütekriterien (Originalinstrument):**
 - Interne Konsistenz: Cronbachs α zwischen .62 und .93 je Subskala (Pintrich et al., 1993)
@@ -100,7 +101,7 @@ Die Forscherin ist gleichzeitig Entwicklerin von KAIA und potenzielle Kommerzial
 - Lizenzbedingungen: MSLQ ist frei verfügbar für Forschungszwecke (keine kommerziellen Lizenzkosten; Pintrich et al., 1991); Quellenangabe Pflicht
 
 **Kritische psychometrische Einschränkungen der KAIA-Adaptation:**
-Die in KAIA eingesetzte 30-Item-Version ist eine Selektion und Kurzung des 81-Item-Originalinstruments. Für diese Adaptation liegt keine eigenständige Validierungsstudie vor. Die Gütekriterien des Originalinstruments sind nicht automatisch auf eine gekürzte Version übertragbar (Stanton, Sinar, Balzer & Smith, 2002). Bei Kürzungen können Faktorstruktur, Reliabilität und Validität erheblich von der Originalversion abweichen. Die Subskalen-Cronbachs-Alphas werden aus den erhobenen Pilotdaten post-hoc berechnet und transparent berichtet. Sollten die internen Konsistenzwerte unter α = .70 fallen, ist die Aussagekraft der Subskalen-Scores stark eingeschränkt.
+Die in KAIA eingesetzte 34-Item-Version ist eine Selektion und Kurzung des 81-Item-Originalinstruments. Für diese Adaptation liegt keine eigenständige Validierungsstudie vor. Die Gütekriterien des Originalinstruments sind nicht automatisch auf eine gekürzte Version übertragbar (Stanton, Sinar, Balzer & Smith, 2002). Bei Kürzungen können Faktorstruktur, Reliabilität und Validität erheblich von der Originalversion abweichen. Die Subskalen-Cronbachs-Alphas werden aus den erhobenen Pilotdaten post-hoc berechnet und transparent berichtet. Sollten die internen Konsistenzwerte unter α = .70 fallen, ist die Aussagekraft der Subskalen-Scores stark eingeschränkt.
 
 **Funktionen in dieser Studie:**
 - Deskriptive Stichprobencharakterisierung: Lernmotivationsprofil der Teilnehmenden zu Studieneintritt
@@ -234,7 +235,7 @@ Datum                Aktivität
 Vor Studie           DPAs abgeschlossen (Anthropic, OpenAI) ✓
 28. Juli 2026        Study-Lock: Prompt-Freeze
 1. August 2026       Registrierung | KI-Disclosure | Multi-Step-Consent
-                     MSLQ Prä (30 Items, ≈ 10 Min.) + GSE Prä (10 Items, ≈ 5 Min.)
+                     MSLQ Prä (34 Items, ≈ 12 Min.) + GSE Prä (10 Items, ≈ 5 Min.)
                      Erste Session möglich
 1.–29. August 2026   Strukturierte KAIA-Nutzung
                        Mindest-Sessions: 3 (Auswertbarkeitsgrenze)
@@ -263,7 +264,7 @@ Nach Studie          Auswertung | 6-Monate-Löschfrist beginnt
 **Mindestvorgabe für Auswertbarkeit:** Mindestens 3 abgeschlossene Chat-Sessions innerhalb der 4 Wochen. Teilnehmende mit weniger als 3 Sessions werden als Dropout klassifiziert und im Intent-to-Treat-Reporting ausgewiesen. Für die Verlaufsanalyse der EMA-Daten sind mindestens 5 Sessions erforderlich; der Zielwert von 10 Sessions ermöglicht erst eine sinnvoll interpretierbare Zeitreihe.
 
 **Zeitaufwand für Teilnehmende (Schätzung):**
-MSLQ Prä (10 Min.) + GSE Prä/Post (2 × 5 Min.) + Sessions 1–2 (2 × 25 Min.) + Sessions 3–10 (8 × 12 Min.) = 10 + 10 + 50 + 96 = **ca. 166 Minuten ≈ 2,75 Stunden** über 4 Wochen.
+MSLQ Prä (12 Min.) + GSE Prä/Post (2 × 5 Min.) + Sessions 1–2 (2 × 25 Min.) + Sessions 3–10 (8 × 12 Min.) = 12 + 10 + 50 + 96 = **ca. 168 Minuten ≈ 2,8 Stunden** über 4 Wochen.
 
 **Keine inhaltlichen Vorgaben:** Teilnehmende wählen selbst, welche Lernthemen sie mit KAIA bearbeiten. Das entspricht dem explorativen Charakter der Studie und der ökologischen Validität des Feldeinsatzes. Die Heterogenität der Lernthemen wird als Confounder dokumentiert.
 
