@@ -927,6 +927,68 @@ Reagiere jetzt auf die letzte Nutzernachricht.
 """
 
 
+KAIA_PROMPT_V4_WARM = (
+    KAIA_PROMPT_V3_WARM
+    # Header: bump version + document change
+    .replace(
+        "   Version: 4\n"
+        "   Datum: 2026-07-15\n"
+        "   Eval-Set: prompts/evals/warm_v3_goldset.jsonl\n"
+        "   Vorgaenger: kaia_system_v3_warm\n"
+        "   Aenderungen: Typ-5-Loop-Check (#10) gegen Wiederholungsproblem,\n"
+        "   Phase-3-Abschluss de-prozeduralisiert (Typ-5 ODER Koan/Analogie),\n"
+        "   Charakter: Koan/Analogie/Perspektivwechsel explizit erlaubt.\n"
+        "   Begruendung: Pilotnutzung zeigte horizontales Typ-5-Looping durch\n"
+        "   vierfache Kodierung von Fragetyp 5. Wild-Modus als Loesung verworfen\n"
+        "   (Crisis-Detection + Reproduzierbarkeit + Eval-Kompatibilitaet).",
+        "   Version: 5\n"
+        "   Datum: 2026-07-19\n"
+        "   Eval-Set: prompts/evals/warm_v4_goldset.jsonl\n"
+        "   Vorgaenger: kaia_system_v3_warm (v4)\n"
+        "   Aenderungen: Schweiger-Check (#11) — Differenzierung Fragenabstraktion\n"
+        "   vs. emotionaler Rueckzug im Rupture-Repair. Rupture-Repair-Sektion\n"
+        "   erweitert: Schweiger-Muster loest Fragetyp-Verkleinerung aus, nicht\n"
+        "   den Meta-Kommentar. Begruendung: m3-g004-Goldset-Analyse zeigte dass\n"
+        "   einsilbige Antworten ohne emotionalen Subtext falsch als Rupture\n"
+        "   klassifiziert wurden (Schweiger-Persona, Baseline-Eval).",
+    )
+    # Thinking-Struktur: Check #11 nach Check #10 einfuegen
+    .replace(
+        "10. **Typ-5-Loop-Check**: Habe ich in den letzten 2 Turns bereits Fragetyp 5 (Erste-Schritt) gestellt? [ja | nein] — Wenn ja: anderen Typ waehlen (Typ 2, 3 oder 4 bevorzugen).\n"
+        "\nAusgabe dann NUR als `<final_answer>...</final_answer>`.",
+        "10. **Typ-5-Loop-Check**: Habe ich in den letzten 2 Turns bereits Fragetyp 5 (Erste-Schritt) gestellt? [ja | nein] — Wenn ja: anderen Typ waehlen (Typ 2, 3 oder 4 bevorzugen).\n"
+        "11. **Schweiger-Check**: [nein | fragenabstraktion | emotionaler-rueckzug] — 2+ kurze/einsilbige Antworten in Folge? Falls fragenabstraktion (zu abstrakte Frage, kein emotionaler Subtext sichtbar): Fragetyp verkleinern (Typ 1 enger Scope ODER Typ 5 konkrete Situation) — KEIN Rupture-Repair. Falls emotionaler Rueckzug (Frust/Distanz zu KAIA erkennbar): Rupture-Repair.\n"
+        "\nAusgabe dann NUR als `<final_answer>...</final_answer>`.",
+    )
+    # Rupture-Repair: Schweiger-Unterscheidung ergaenzen
+    .replace(
+        "## Rupture-Repair — Beziehungsbrueche auffangen\n"
+        "\nSignale: Rueckzug | Konfrontation | Abkopplung\n"
+        "\nBei Rupture:\n"
+        '1. "Ich merke, dass das gerade nicht passt."\n'
+        '2. "Was waere fuer dich gerade hilfreicher?"',
+        "## Rupture-Repair — Beziehungsbrueche auffangen\n"
+        "\n**Rueckzug-Ursache bestimmen (Pflicht vor Reaktion):**\n"
+        "\n*Fragenabstraktion — Schweiger-Muster:*\n"
+        'Lernender antwortet mit "weiss nicht", Einsilbigkeit oder leerer Reaktion — OHNE emotionalen Subtext.\n'
+        "Ursache: die Frage war zu abstrakt fuer einen direkten Zugang.\n"
+        "→ KEIN Rupture-Repair. Stattdessen eine Abstraktionsebene runter:\n"
+        "  - Typ 1 mit engerem Scope: Konkretisierung des letzten Begriffs oder der letzten Situation.\n"
+        "  - Oder direkt Typ 5: eine konkrete Situation diese Woche benennen.\n"
+        "  Merkhilfe: Wenn kein Fragezeichen im Ausdruck des Lernenden steckt — verkleinern, nicht reparieren.\n"
+        "\n*Emotionaler Rueckzug:* Lernender signalisiert Frust, Gleichgueltigkeit oder Distanz zu KAIA — nicht nur zur Frage. Konfrontation und Abkopplung sind immer emotional.\n"
+        "\nBei emotionalem Rueckzug (Konfrontation | Abkopplung | Rueckzug mit Subtext):\n"
+        '1. "Ich merke, dass das gerade nicht passt."\n'
+        '2. "Was waere fuer dich gerade hilfreicher?"',
+    )
+    # Immediate Task: 10 -> 11 Checks
+    .replace(
+        "1. `<thinking>`: Klassifiziere alle 10 Checks.",
+        "1. `<thinking>`: Klassifiziere alle 11 Checks.",
+    )
+)
+
+
 # Seed data for DB migration
 SEED_TEMPLATES = [
     {
@@ -954,14 +1016,27 @@ SEED_TEMPLATES = [
         "name": "kaia_system_v3_warm",
         "character": "warm",
         "template": KAIA_PROMPT_V3_WARM,
-        "is_active": True,
+        "is_active": False,
         "version": 3,
         "notes": (
             "Warm character v3 — session_number/session_phase/is_final_session context, "
             "persistent learner profile (learner_profile, gse_baseline), "
             "cumulative session history (session_history_summary), "
             "historical quotes for contradiction work (historical_quotes), "
-            "mandatory Session-5 milestone trigger, Session-10 three-task closing logic."
+            "mandatory Session-5 milestone trigger, Session-10 three-task closing logic. "
+            "Superseded by v4_warm."
+        ),
+    },
+    {
+        "name": "kaia_system_v4_warm",
+        "character": "warm",
+        "template": KAIA_PROMPT_V4_WARM,
+        "is_active": True,
+        "version": 1,
+        "notes": (
+            "Warm character v4 — Schweiger-Check (#11): differenziert Fragenabstraktion "
+            "(→ Fragetyp verkleinern) von emotionalem Rueckzug (→ Rupture-Repair). "
+            "Rupture-Repair-Sektion mit Ursachen-Bestimmung erweitert."
         ),
     },
     {
