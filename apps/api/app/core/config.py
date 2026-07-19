@@ -51,7 +51,7 @@ class Settings(BaseSettings):
 
     # Studie
     study_mode: StudyMode = StudyMode.DEVELOPMENT
-    max_cost_per_user_eur: float = 3.0  # überschreibbar via MAX_COST_PER_USER_EUR in .env
+    max_cost_per_user_eur: float = 5.0  # überschreibbar via MAX_COST_PER_USER_EUR in .env
 
 
 settings = Settings()
