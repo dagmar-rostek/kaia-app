@@ -146,6 +146,22 @@ Der Judge gibt strukturiertes JSON aus: `{"score": 0–3, "reasoning": "...", "f
 
 **JSON-Robustheit:** LLMs betten gelegentlich literale Zeilenumbrüche in JSON-Strings ein, was Standard-Parser bricht. Das Eval-System verwendet einen zweistufigen Parse-Algorithmus: (1) direktes `json.loads()`; (2) bei `JSONDecodeError` Bereinigung via `re.sub(r"[\n\r\t]", " ", ...)` und erneuter Parse-Versuch; (3) bei weiterhin fehlschlagendem Parse: Fallback mit `score=None` und `flagged=True`.
 
+### 5.3.4 Judge-Validierung: Goldset und Cohen's Kappa
+
+Ein LLM-as-Judge-System ist methodisch nur dann thesis-würdig, wenn die Übereinstimmung zwischen Judge-Urteil und menschlichem Urteil empirisch belegt ist. Für jeden der sieben Judge-Prompts (M1–M7) wurde daher ein **Goldset** aus annotierten Beispiel-Transkripten erstellt und eine **Interrater-Reliabilitätsprüfung** durchgeführt.
+
+**Goldset-Konstruktion:** Pro Metrik wurden fünf synthetische Transkripte manuell konstruiert, die das vollständige Scoring-Spektrum (0, 1, 2, 3) abdecken. Jeder Eintrag enthält: Transkript (KAIA × Persona), Session-Kontext, Persona-Archetype, erwarteten Score (menschliches Urteil der Forscherin) und eine Annotationsbegründung (`reasoning_hint`). Die Goldsets sind versioniert unter `prompts/eval/goldset/*_goldset.jsonl` gespeichert (sieben Dateien, insgesamt 35 annotierte Einträge für M1–M7).
+
+**Annotationsprozess:** Die Forscherin hat alle Goldset-Scores anhand der definierten Scoring-Rubriken (Abschnitt I.1–I.7 im Anhang) vergeben. Vorgeschlagene Scores wurden durch kritische Prüfung gegen die Metriken überprüft und ggf. korrigiert. Die annotierten Goldsets bilden den **menschlichen Gold-Standard** für die Judge-Validierung.
+
+**Validierungsmethode:** Das Validierungsskript `scripts/validate_judges.py` führt alle Judge-Prompts gegen die Goldset-Einträge aus und vergleicht Judge-Score (Haiku) mit erwartetem Score (Mensch). Als Übereinstimmungsmaß wird **Cohen's Kappa** (Cohen, 1960) berechnet:
+
+$$\kappa = \frac{p_o - p_e}{1 - p_e}$$
+
+wobei $p_o$ die beobachtete Übereinstimmung und $p_e$ die zufällig erwartete Übereinstimmung bezeichnet. Das Maß ist für ordinale Daten (0–3) geeignet und berücksichtigt die Chance-Korrektur (vgl. Landis & Koch, 1977).
+
+**Release-Gate:** Ein Judge-Prompt gilt erst dann als validiert und thesis-würdig, wenn $\kappa \geq 0{,}60$ (Richtwert: "gut", Landis & Koch, 1977). Prompts mit $\kappa < 0{,}60$ werden überarbeitet (Rubrik-Schärfung, Goldset-Erweiterung) und erneut geprüft. Für M7 (Crisis Detection) gilt dieselbe Kappa-Schwelle zusätzlich zur absoluten Sicherheitsschwelle (Score ≥ 2 auf allen P04-Krisensessions). Die vollständige Release-Gate-Spezifikation ist in `docs/eval/RELEASE_GATES.md` dokumentiert (vgl. Anhang M).
+
 ### 5.3.4 Evaluationsmetriken M1–M7
 
 Das Eval-System umfasst sieben Metriken. M1–M6 werden für alle 10 Personas × 10 Sessions ausgeführt (600 Judge-Calls). M7 (Crisis Detection) wird ausschließlich für Persona P04 (Krisenfall) ab Session 5 ausgeführt, wenn ein graduiertes Krisensignal erwartet wird (6 weitere Judge-Calls). **Gesamt: 606 Judge-Calls pro vollständigem Eval-Zyklus**.
@@ -289,9 +305,9 @@ Der kritischste methodische Einwand betrifft den **In-House-Judge-Bias**: Als Ju
 Mitigationsmaßnahmen:
 - Strukturierte, metrikspezifische Judge-Prompts mit Ankerbeispielen minimieren subjektiven Bewertungsspielraum
 - Score-Overrides durch Admin-Interface ermöglichen manuelle Korrekturen (dokumentiert und versioniert)
-- Geplante Rater-Validierung: Stichprobenhafte manuelle Bewertung (n ≥ 30 Persona × Session) zur Kalibrierung der automatischen Scores
+- **Goldset-Validierung mit Cohen's Kappa:** Vor dem ersten Studien-Run wurde ein menschlich annotiertes Goldset (35 Einträge, je 5 pro Metrik M1–M7) erstellt. Die Forscherin bewertete Beispiel-Transkripte anhand der Scoring-Rubriken und vergab erwartete Scores (0–3). Anschließend wurde Cohen's Kappa zwischen Judge-Scores (Haiku) und menschlichen Scores gemessen. Nur Judge-Prompts mit $\kappa \geq 0{,}60$ wurden als Eval-Instrument zugelassen (Release Gate G1). Das vollständige Validierungsprotokoll, die Goldset-Einträge und die Kappa-Berechnung sind in **Anhang M** dokumentiert.
 
-Die automatischen Eval-Ergebnisse werden als ergänzende, nicht als alleinige Grundlage für die Modellwahl kommuniziert.
+Die automatischen Eval-Ergebnisse werden als ergänzende, nicht als alleinige Grundlage für die Modellwahl kommuniziert. Der Self-Enhancement Bias ist im Evaluationsbericht (Kapitel 5.6) als offene Limitation deklariert; die Goldset-Validierung adressiert ihn teilweise, kann ihn aber nicht vollständig ausschließen, da die menschliche Annotatorin (Forscherin) nicht verblindet gegenüber dem Judge-Modell war.
 
 ### 5.7.2 Synthetische Personas als Validitätsbegrenzung
 
