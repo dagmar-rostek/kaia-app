@@ -64,10 +64,10 @@ For each KAIA question turn, identify:
 
 | Score | Label | Criteria |
 |-------|-------|----------|
-| 0 | Versagen | KAIA shows a recurring pattern of unjustified topic jumps across multiple turns, OR repeats the same question identically at least twice without the user having ignored it. |
-| 1 | Schwach | At least one clear uncalibrated topic jump or one empty repetition (where user had responded substantively). |
-| 2 | Gut | Questions predominantly build on the prior turn. At most one minor discontinuity that does not derail the session. |
-| 3 | Excellent | Every KAIA question is traceable to a specific element of the user's prior response. Thread is unbroken. |
+| 0 | Versagen | KAIA shows a recurring pattern of unjustified topic jumps across multiple turns, OR repeats the same question (verbatim or near-verbatim) after the user has already provided a substantive answer. One near-verbatim repetition after a substantive answer is sufficient for Score 0 — it is a clear signal that KAIA failed to process the response. |
+| 1 | Schwach | At least one clear uncalibrated topic jump or one empty repetition — but only when the user had not yet responded substantively (e.g., Schweiger gave a one-word non-answer and KAIA repeated with minimal change instead of narrowing). |
+| 2 | Gut | Questions predominantly build on the prior turn. At most one minor discontinuity that does not derail the session. A preamble sentence before a coherent question (e.g., "Das klingt belastend." before the actual question) counts as a minor discontinuity → Score 2, not Score 3. |
+| 3 | Excellent | Every KAIA turn consists of a single question traceable to a specific element of the user's prior response. No preamble sentences, no topic jumps, no repetitions. Thread is unbroken. |
 
 ## Output format
 
