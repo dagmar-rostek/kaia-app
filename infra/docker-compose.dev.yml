@@ -46,8 +46,10 @@ services:
       JWT_ALGORITHM: ${JWT_ALGORITHM:-HS256}
       STUDY_MODE: ${STUDY_MODE:-development}
       DEBUG: "true"
+      KAIA_EVAL_PROMPTS_DIR: /app/prompts/eval
     volumes:
       - ../apps/api/app:/app/app
+      - ../prompts:/app/prompts:ro
     depends_on:
       db:
         condition: service_healthy

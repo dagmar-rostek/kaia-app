@@ -3,5 +3,10 @@ WORKDIR /app
 COPY pyproject.toml .
 RUN pip install --no-cache-dir --upgrade pip && \
     pip install --no-cache-dir ".[dev]"
+# alembic/ und alembic.ini werden für Migrationen benötigt
+COPY alembic/ ./alembic/
+COPY alembic.ini .
+COPY entrypoint.sh .
+RUN chmod +x entrypoint.sh
 # app/ wird via Volume gemountet – Änderungen lösen --reload aus
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload", "--workers", "1"]
+CMD ["sh", "-c", "alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload --workers 1"]
