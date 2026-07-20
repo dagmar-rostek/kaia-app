@@ -32,10 +32,13 @@ Relevante theoretische Grundlagen:
 - Flow-Theorie und optimale Aktivierung (Teigen, 1994; Oliveira & Hamari, 2024)
 - Computational Empathy (Decety & Jackson, 2004)
 - Kalyuga's (2007) Befunde zur Instruktionsredundanz
+- Knowing-Doing Gap (Pfeffer & Sutton, 2000): Das systematische Auseinanderfallen von Wissen und Handeln als primäres Zielgruppenproblem
+- Intention-Behavior Gap (Sheeran, 2002): Verhaltensintentionen erklären nur ~28% der Verhaltensvarianz
+- Implementation Intentions als KDG-Schlussmechanismus (Gollwitzer, 1999; Gollwitzer & Sheeran, 2006)
 
 ### Forschungsfrage
 
-*Inwieweit beeinflusst die Nutzung eines sokratisch konfigurierten KI-Lernbegleiters (KAIA) über einen Zeitraum von vier Wochen die allgemeine Selbstwirksamkeitserwartung von Lernenden?*
+„*Inwieweit unterstützt ein sokratisch konfigurierter KI-Lernbegleiter (KAIA) Menschen dabei, vorhandenes Wissen in konkretes Alltagshandeln zu überführen (Knowing-Doing Gap; Pfeffer & Sutton, 2000) — und in welchem Ausmaß steigt dabei die allgemeine Selbstwirksamkeitserwartung?*"
 
 Ergänzende Forschungsfrage 1: *Welche Konvergenz oder Divergenz zeigt sich zwischen der subjektiven Selbstwahrnehmung (GSE-Skala) und der KI-basierten Fremdwahrnehmung aus Gesprächstranskripten?*
 
@@ -52,7 +55,7 @@ Die allgemeine Selbstwirksamkeitserwartung der Teilnehmenden, gemessen mit der G
 Es besteht ein positiver Zusammenhang zwischen der Häufigkeit der KAIA-Nutzung (Anzahl Sessions) und der Veränderung der Selbstwirksamkeitserwartung (Prä-Post-Differenz).
 
 **H3 (explorativ, methodisch):**  
-Die durch LLM-Analyse aus Gesprächstranskripten abgeleiteten Indikatoren für Handlungskontrolle und Problemlösezuversicht konvergieren über die Studienlaufzeit mit den GSE-Selbstaussagen der Teilnehmenden.
+Die durch LLM-Analyse aus Gesprächstranskripten abgeleiteten Indikatoren für Handlungskontrolle und Problemlösezuversicht **sowie konkrete Umsetzungshandlungen (first_step-Felder aus Session-Summaries)** konvergieren über die Studienlaufzeit mit den GSE-Selbstaussagen und signalisieren eine Schließung des Knowing-Doing Gaps.
 
 **H4 (explorativ, ergänzend, hinzugefügt 10.06.2026):**  
 Das Flow-Erleben, gemessen mit der Flow-Kurzskala (FKS; Rheinberg et al., 2003), verändert sich über die vier Messzeitpunkte (nach Session 2, 5, 8, 10) und korreliert positiv mit der GSE-Prä-Post-Differenz.
@@ -114,7 +117,7 @@ Das Flow-Erleben, gemessen mit der Flow-Kurzskala (FKS; Rheinberg et al., 2003),
 - Volljährig (≥ 18 Jahre)
 - Deutschsprachig (Muttersprache oder vergleichbare Kompetenz)
 - Zugang zu einem Computer oder Tablet mit Internetverbindung
-- Aktuelle Lernsituation (Studium, Weiterbildung, berufliches Lernen)
+- Aktuelle Lernsituation (Studium, Weiterbildung, berufliches Lernen) **bei der grundlegendes Vorwissen zum gewählten Thema vorhanden ist und die primäre Herausforderung in der Umsetzung liegt** (kein reiner Wissensneustart erforderlich)
 - Schriftliche informierte Einwilligung vor Studienstart
 
 **Ausschlusskriterien:**

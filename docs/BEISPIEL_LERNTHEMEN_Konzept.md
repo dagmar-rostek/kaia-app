@@ -1,7 +1,6 @@
 # Beispiel-Lernthemen für KAIA
 
-> Für Teilnehmende ohne eigenes Lernthema — erscheinen im Onboarding als drei auswählbare Startpunkte.  
-> Jedes Thema bekommt: KAIA-sokratische Adaptation + 3 Charakterversionen (Warm/Herausfordernd/Wild) + Outcome-Formulierungsdialog.
+> Für Teilnehmende, die noch kein konkretes Lernthema mitbringen. **Wichtig:** Diese Themen sind für Menschen, die bereits grundlegendes Wissen in diesem Bereich haben — und scheitern daran, es im Alltag umzusetzen. Wer das Thema von Null aufbauen möchte, findet bei KAIA keinen Wissensvermittler, sondern einen Umsetzungsbegleiter.
 
 ---
 
@@ -16,6 +15,10 @@ Inhalte:
 - Feedbackgespräche
 - Ich-Botschaften, Perspektivwechsel, Deeskalation
 
+Typischer KDG-Fall: „Ich kenne GFK seit Jahren, habe Bücher gelesen und Seminare besucht. Aber wenn mein Chef wieder seine Anmerkungen macht, reagiere ich sofort mit Verteidigung — genau das, was ich eigentlich nicht will."
+
+Outcome-Beispiel: „Ich möchte in dieser Woche konkret ein Konfliktgespräch mit einem Vorgehen führen, das ich danach als wertschätzend empfinde."
+
 Rollenspiel-Konzept (Heinz/Michael) bleibt erhalten — KAIA moderiert sokratisch statt instruktional.
 
 ---
@@ -28,7 +31,9 @@ Inhalte:
 - KI-generierte Outputs kritisch bewerten
 - Architektur- und Designentscheidungen durch KI verstehen
 
-Outcome-Beispiel: "Ich möchte einschätzen können, was KI-Tools für meine Arbeit leisten können — und wo ich selbst denken muss."
+Typischer KDG-Fall: „Ich weiß, dass ich KI-Tools effizienter nutzen könnte. Ich hab es ein paarmal probiert. Aber im Alltag greife ich trotzdem wieder auf alte Arbeitsweisen zurück und nutze KI kaum systematisch."
+
+Outcome-Beispiel: „Ich möchte in dieser Woche konkret ein KI-Tool für eine meiner regulären Aufgaben einsetzen — und danach entscheiden, ob ich es behalte oder nicht."
 
 ---
 
@@ -41,7 +46,9 @@ Inhalte:
 - Mitarbeitergespräche führen
 - Entscheidungen treffen unter Unsicherheit
 
-Outcome-Beispiel: "Ich möchte meinem Team klarer delegieren und wissen wann ich loslassen soll."
+Typischer KDG-Fall: „Ich weiß, was gute Delegation bedeutet, und ich habe es in Führungsseminaren durchgespielt. In der Praxis delegiere ich trotzdem kaum, weil 'es schneller geht, wenn ich es selbst mache.'"
+
+Outcome-Beispiel: „Ich möchte in dieser Woche konkret eine Aufgabe an jemanden aus meinem Team delegieren — mit klarem Briefing und ohne sie danach zu übernehmen."
 
 ---
 

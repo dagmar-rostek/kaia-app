@@ -7,9 +7,10 @@ import { authFetch } from "@/lib/auth"
 
 // ── GSE items (Schwarzer & Jerusalem, 1995) ───────────────────────────────────
 
+// Validierter Originalwortlaut: Schwarzer & Jerusalem (1995)
 const GSE_ITEMS_RAW = [
-  "Wenn sich Schwierigkeiten auftürmen, bin ich sicher, dass ich damit fertig werde.",
-  "Wenn jemand gegen mich vorgeht, finde ich Mittel und Wege, um mein Ziel zu bekommen.",
+  "Wenn sich Widerstände auftun, finde ich Mittel und Wege, mich durchzusetzen.",
+  "Die Lösung schwieriger Probleme gelingt mir immer, wenn ich mich darum bemühe.",
   "Es bereitet mir keine Schwierigkeiten, meine Absichten und Ziele zu verwirklichen.",
   "In unerwarteten Situationen weiß ich immer, wie ich mich verhalten soll.",
   "Auch bei überraschenden Ereignissen glaube ich, dass ich gut mit ihnen umgehen kann.",
@@ -17,7 +18,7 @@ const GSE_ITEMS_RAW = [
   "Was auch immer passiert, ich werde schon klarkommen.",
   "Für jedes Problem kann ich eine Lösung finden.",
   "Wenn eine neue Sache auf mich zukommt, weiß ich, wie ich damit umgehen kann.",
-  "Wenn ich mit einem Problem konfrontiert werde, habe ich meist mehrere Ideen, wie ich damit fertig werde.",
+  "Wenn ein Problem auftaucht, kann ich es aus eigener Kraft meistern.",
 ]
 
 // ── MSLQ items (Pintrich et al., 1991 — KAIA-Adaptation) ─────────────────────
@@ -25,11 +26,13 @@ const GSE_ITEMS_RAW = [
 type MslqItem = { num: number; text: string; subscale: string }
 
 const MSLQ_ITEMS_RAW: MslqItem[] = [
-  // Intrinsic Goal Orientation
-  { num: 1,  subscale: "Zielorientierung",        text: "Ich bevorzuge Lerninhalte, die mich wirklich herausfordern, weil ich dabei Neues lerne." },
-  { num: 16, subscale: "Zielorientierung",        text: "Ich beschäftige mich lieber mit Inhalten, die meine Neugier wecken — auch wenn sie schwieriger sind." },
-  { num: 22, subscale: "Zielorientierung",        text: "Das Befriedigendste beim Lernen ist für mich, etwas wirklich in der Tiefe zu verstehen." },
-  { num: 24, subscale: "Zielorientierung",        text: "Ich wähle Lernwege, bei denen ich am meisten lerne — auch wenn sie aufwändiger sind." },
+  // KDG-Skala (Wissen-Handeln-Lücke) — exploratorisch; ersetzt MSLQ Intrinsische Zielorientierung
+  // Entwickelt für KAIA-Studie, angelehnt an Pfeffer & Sutton (2000) / Gollwitzer (1999)
+  { num: 101, subscale: "KDG",                    text: "Zwischen dem, was ich über mein Lernthema weiß, und dem, was ich im Alltag tatsächlich anders mache, liegt eine spürbare Lücke." },
+  { num: 102, subscale: "KDG",                    text: "Ich habe konkrete Vorstellungen davon, wann und wo ich das Gelernte in der Praxis einsetzen werde." },
+  { num: 103, subscale: "KDG",                    text: "Ich bin zuversichtlich, das Gelernte nicht nur zu verstehen, sondern es auch wirklich in meinem Verhalten anzuwenden." },
+  { num: 104, subscale: "KDG",                    text: "Wenn ich erkenne, was ich verändern müsste, komme ich auch tatsächlich ins Handeln." },
+  { num: 105, subscale: "KDG",                    text: "Auch wenn die Umsetzung unbequem oder aufwändig ist, halte ich an dem fest, was ich mir vorgenommen habe." },
   // Self-Efficacy
   { num: 5,  subscale: "Selbstwirksamkeit",       text: "Ich bin überzeugt, dass ich mein Lernthema wirklich durchdringen kann." },
   { num: 6,  subscale: "Selbstwirksamkeit",       text: "Ich bin sicher, dass ich auch schwierige Inhalte meines Lernthemas verstehen kann." },
@@ -198,20 +201,20 @@ const SUBSCALE_META: Record<string, SubscaleMeta> = {
         : "Gute Ausgangslage: hohe lernbezogene Überzeugung. KAIA kann dieses Fundament für tieferes Explorieren nutzen.",
     }[l]),
   },
-  intrinsic_goal: {
-    label: "Intrinsische Zielorientierung",
-    itemCount: 4,
-    description: "Ob du lernst, um das Thema wirklich zu verstehen und zu können — oder primär für externe Ziele (Noten, Anerkennung). Hohe intrinsische Motivation geht empirisch mit tieferer Verarbeitung und nachhaltigerem Lernen einher (Pintrich, 2003).",
+  kdg: {
+    label: "Wissen-Handeln-Lücke (exploratorisch)",
+    itemCount: 5,
+    description: "Ob du wahrnimmst, dass eine Lücke zwischen deinem Wissen und deinem tatsächlichen Handeln besteht — und ob du zuversichtlich bist, diese Lücke zu schließen. Exploratorische Skala (nicht validiert), entwickelt für die KAIA-Pilotstudie angelehnt an Pfeffer & Sutton (2000) und Gollwitzer (1999).",
     meaning: (l, isPost) => ({
       niedrig: isPost
-        ? "Intrinsische Motivation blieb niedrig — prüfe, ob das Lernthema ausreichend persönliche Relevanz hatte."
-        : "Eher extrinsische Orientierung. KAIA arbeitet bewusst sokratisch, um latente Neugier zu aktivieren und das Thema mit eigenen Fragen zu verknüpfen.",
+        ? "Geringe wahrgenommene Wissen-Handeln-Lücke am Ende — entweder hat KAIA geholfen diese zu schließen, oder sie war von Beginn an klein."
+        : "Gering ausgeprägte Wahrnehmung einer Umsetzungslücke. KAIA prüft in Session 1, wo diese Lücke konkret liegt.",
       mittel: isPost
-        ? "Mittlere intrinsische Motivation — schaue, ob sich etwas gegenüber dem Ausgangswert verschoben hat."
-        : "Gemischte Motivation. KAIAs Fragen zielen darauf ab, den Verstehenswunsch über externe Ziele zu stellen.",
+        ? "Mittlere Wissen-Handeln-Lücke am Ende — vergleiche mit dem Ausgangswert für die Veränderungsrichtung."
+        : "Mittlere Umsetzungslücke als Ausgangspunkt. Das ist typisch: Wissen ist vorhanden, der Weg ins Handeln noch nicht.",
       hoch: isPost
-        ? "Hohe intrinsische Motivation am Ende — das deutet auf echtes Engagement mit dem Lernthema hin."
-        : "Starker Einstieg: du lernst, weil du verstehen willst. Das ist die ideale Ausgangslage für sokratischen Dialog.",
+        ? "Starke Umsetzungsorientierung am Ende — du siehst den Weg vom Wissen ins Tun klar vor dir."
+        : "Starke Ausgangsorientierung auf Umsetzung. Das ist KAIAs Kerndomäne — du bist genau an der richtigen Stelle.",
     }[l]),
   },
   elaboration: {
@@ -591,67 +594,44 @@ function PostCompletionPanel({ postMslqResult, postGseResult }: {
   )
 }
 
-function EvaluationPanel({ mslqResult, gseResult, measurementType, redirectTo }: {
-  mslqResult: MslqResult
-  gseResult: GseResult
-  measurementType: "pre" | "post"
-  redirectTo: string
-}) {
+// Pre-survey completion: NO scores shown (response bias prevention — Psychologe, 2026-07)
+function PreCompletionPanel({ redirectTo }: { redirectTo: string }) {
   const router = useRouter()
-  const isPost = measurementType === "post"
-
   return (
     <div className="max-w-2xl mx-auto px-4 py-10 space-y-6">
       <div className="space-y-2">
         <div className="flex items-center gap-2">
           <CheckCircle2 className="h-5 w-5 text-emerald-500 shrink-0" />
-          <h1 className="text-xl font-semibold">
-            {isPost ? "Abschlussbefragung gespeichert" : "Eingangsbefragung gespeichert"}
-          </h1>
+          <h1 className="text-xl font-semibold">Eingangsbefragung gespeichert</h1>
         </div>
-        <p className="text-sm text-muted-foreground">
-          {isPost
-            ? "Deine Messwerte wurden gespeichert. Hier ist dein Abschlussprofil — vergleiche es mit deiner Eingangsmessung, sobald die Studie ausgewertet wird."
-            : "Deine Ausgangswerte sind gesichert. Sie bilden die Vergleichsbasis für die Auswertung nach 10 Sessions mit KAIA."}
+        <p className="text-sm text-muted-foreground leading-relaxed">
+          Deine Ausgangswerte sind gesichert. Nach Abschluss der Studie — nach mindestens 10 Sessions — wirst du deine vollständige Entwicklung sehen: Vorher vs. Nachher in allen Messdimensionen.
         </p>
       </div>
 
-      {/* GSE */}
-      <GseCard score={gseResult.total_score} isPost={isPost} />
-
-      {/* MSLQ subscales */}
-      <div className="space-y-3">
-        <div className="flex items-center justify-between">
-          <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
-            Lernstrategien & Motivation (MSLQ)
-          </p>
-          <span className="text-xs text-muted-foreground">Pintrich et al., 1991/1993</span>
-        </div>
-        {Object.entries(mslqResult.subscale_scores).map(([key, score]) => {
-          const meta = SUBSCALE_META[key]
-          if (!meta) return null
-          return (
-            <ScoreCard
-              key={key}
-              score={score}
-              max={7}
-              level={mslqLevel(score)}
-              meta={meta}
-              isPost={isPost}
-            />
-          )
-        })}
+      <div className="rounded-lg border border-border p-5 space-y-3 text-sm text-muted-foreground">
+        <p className="font-medium text-foreground">Wie geht es weiter?</p>
+        <ul className="space-y-2">
+          <li className="flex items-start gap-2">
+            <span className="text-foreground mt-0.5 shrink-0">→</span>
+            <span>Du kannst jetzt mit KAIA starten — dein Lernprofil fließt direkt in die Begleitung ein.</span>
+          </li>
+          <li className="flex items-start gap-2">
+            <span className="text-foreground mt-0.5 shrink-0">→</span>
+            <span>Mindestens 10 Sessions über 4 Wochen — à mind. 5 Minuten.</span>
+          </li>
+          <li className="flex items-start gap-2">
+            <span className="text-foreground mt-0.5 shrink-0">→</span>
+            <span>Danach erscheint der Abschlussfragebogen automatisch.</span>
+          </li>
+        </ul>
       </div>
-
-      <p className="text-xs text-muted-foreground text-center px-4">
-        Diese Werte sind Forschungsinstrumente, keine klinischen Diagnosen. Individuelle Werte haben große Messfehlerbandbreiten — für die Studie relevant ist die Prä-Post-Veränderung auf Gruppenebene.
-      </p>
 
       <button
         onClick={() => router.push(redirectTo)}
         className="flex items-center gap-2 bg-foreground text-background px-6 py-3 rounded-lg text-sm font-medium hover:opacity-90 transition-opacity"
       >
-        {isPost ? "Zur Übersicht →" : "Zu KAIA →"}
+        Zu KAIA →
       </button>
     </div>
   )
@@ -746,14 +726,7 @@ export function SurveyForm({ measurementType, redirectTo }: Props) {
         />
       )
     }
-    return (
-      <EvaluationPanel
-        mslqResult={mslqResult}
-        gseResult={gseResult}
-        measurementType={measurementType}
-        redirectTo={redirectTo}
-      />
-    )
+    return <PreCompletionPanel redirectTo={redirectTo} />
   }
 
   // ── Intro ──────────────────────────────────────────────────────────────────
@@ -790,11 +763,11 @@ export function SurveyForm({ measurementType, redirectTo }: Props) {
               <ul className="space-y-2 text-muted-foreground">
                 <li className="flex items-start gap-2">
                   <span className="text-foreground mt-0.5">→</span>
-                  <span>Direkt nach dem Fragebogen siehst du dein persönliches Lernprofil mit Erklärung zu jeder Dimension.</span>
+                  <span>Dein Lernprofil fließt direkt in die Art ein, wie KAIA mit dir arbeitet — je ehrlicher deine Antworten, desto besser die Begleitung.</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <span className="text-foreground mt-0.5">→</span>
-                  <span>Nach Abschluss der Studie erhältst du eine detaillierte Gegenüberstellung: Vorher vs. Nachher — konkret und lesbar.</span>
+                  <span>Nach Abschluss der Studie erhältst du eine vollständige Gegenüberstellung: Vorher vs. Nachher in allen Dimensionen.</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <span className="text-foreground mt-0.5">→</span>
@@ -818,7 +791,7 @@ export function SurveyForm({ measurementType, redirectTo }: Props) {
         <div className="rounded-lg border border-border p-5 space-y-3 text-sm text-muted-foreground">
           <p className="font-medium text-foreground">Was dich erwartet</p>
           <div className="space-y-1.5">
-            <div className="flex items-center gap-2"><span className="text-foreground font-medium w-6">34</span><span>Aussagen zu Lernstrategien, Motivation und Lernkontrolle (7-stufige Skala)</span></div>
+            <div className="flex items-center gap-2"><span className="text-foreground font-medium w-6">35</span><span>Aussagen zu Lernstrategien, Motivation und Umsetzungsorientierung (7-stufige Skala)</span></div>
             <div className="flex items-center gap-2"><span className="text-foreground font-medium w-6">10</span><span>Aussagen zur allgemeinen Selbstwirksamkeit (4-stufige Skala)</span></div>
             <div className="flex items-center gap-2"><span className="text-foreground font-medium w-6">~12</span><span>Minuten Gesamtzeit</span></div>
           </div>

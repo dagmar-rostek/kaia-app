@@ -3,20 +3,20 @@
 import { useState, useRef, useEffect } from "react"
 import Link from "next/link"
 import { Eye, EyeOff, Check, Loader2 } from "lucide-react"
+import { useTopicEval } from "@/hooks/useTopicEval"
+import { TopicEvalFeedback } from "@/components/TopicEvalFeedback"
 
 const TOPIC_SUGGESTIONS = [
-  "Zeitmanagement",
   "Führung & Mitarbeitergespräche",
-  "Kommunikation & Präsentation",
-  "Entscheidungen unter Unsicherheit",
+  "Kritische Feedbackgespräche",
   "Konfliktgespräche",
+  "Delegieren",
+  "Kommunikation & Präsentation",
+  "Storytelling",
+  "Entscheidungen unter Unsicherheit",
   "Vertrieb & Überzeugung",
   "Selbstorganisation",
-  "Wissenschaftliches Schreiben",
-  "Python / Programmieren",
-  "Statistik verstehen",
-  "Prüfungsvorbereitung",
-  "Storytelling",
+  "Zeitblöcke einhalten",
 ]
 
 const API = process.env.NEXT_PUBLIC_API_URL ?? "/api"
@@ -103,6 +103,8 @@ export default function RegistrierungPage() {
   const [generalError, setGeneralError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
   const [done, setDone] = useState(false)
+
+  const { state: evalState, evaluate: evalTopic, reset: resetEval } = useTopicEval()
 
   const consentDataRef = useRef<HTMLInputElement>(null)
   const consentResearchRef = useRef<HTMLInputElement>(null)
@@ -403,21 +405,23 @@ export default function RegistrierungPage() {
         {/* Lernthema */}
         <div className="space-y-2">
           <label htmlFor="learning_topic" className="text-sm font-medium">
-            Was möchtest du mit KAIA lernen?
+            Wobei soll KAIA dich begleiten?
           </label>
           <p className="text-xs text-muted-foreground">
-            KAIA begleitet dich vier Wochen bei einem Thema. Schreib es auf — so konkret oder offen wie du willst.
+            Etwas, das du schon kennst oder verstehst — aber noch nicht wirklich in deinem Alltag lebst.
           </p>
           <input
             id="learning_topic"
             type="text"
             value={learningTopic}
-            onChange={e => setLearningTopic(e.target.value)}
-            placeholder="z. B. Führung, Zeitmanagement, Python …"
+            onChange={e => { setLearningTopic(e.target.value); resetEval() }}
+            onBlur={e => evalTopic(e.target.value)}
+            placeholder="z. B. Kritische Feedbackgespräche, die ich immer wieder aufschiebe"
             disabled={loading}
             maxLength={500}
             className="w-full rounded-lg border border-border bg-background px-4 py-3 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring disabled:opacity-60"
           />
+          <TopicEvalFeedback state={evalState} />
           <div className="flex flex-wrap gap-1.5 pt-0.5">
             {TOPIC_SUGGESTIONS.map(s => (
               <button

@@ -27,6 +27,7 @@ Die in Kapitel 2 entwickelten Theorien ergeben sechs operative Designanforderung
 4. **Ressourcenwahrnehmung stärken** — nicht Anforderungen reduzieren, sondern wahrgenommene Handlungsfähigkeit aufbauen (Bandura, 1997; Lazarus, 1993)
 5. **Selbstregulation unterstützen** — explizite Ziele und ein Fortschrittsrahmen fördern Selbstwirksamkeit und Metakognition (Zimmermann, 2000; Locke & Latham, 1990)
 6. **Transparent kommunizieren** — KAIA ist eine KI; computational empathy ist nicht echtes Mitgefühl (Decety & Jackson, 2004)
+7. **Wissen in Handeln überführen** — Der Knowing-Doing Gap (Pfeffer & Sutton, 2000) ist das Kernproblem der KAIA-Zielgruppe: nicht fehlendes Wissen, sondern fehlende Umsetzung. Sheerans (2002) Intention-Behavior Gap-Forschung zeigt, dass zwischen Absicht und Verhalten systematische Lücken entstehen. KAIAs Primäraufgabe ist die Überbrückung dieser Lücke — durch Implementation Intentions (Gollwitzer, 1999), den Erster-Schritt-Loop und die konsequente Verankerung jeder Session in konkreten Alltagssituationen.
 
 Diese sechs Anforderungen strukturieren das Rahmenwerk in vier Komponenten.
 
@@ -186,6 +187,8 @@ Abschlussfrage: *"Was würdest du jemandem erklären, der nicht dabei war?"* Die
 
 ### 3.3.7 Erster-Schritt-Loop: Der GSE-Aufbau-Mechanismus
 
+Der Erster-Schritt-Loop ist KAIAs operative Antwort auf den Knowing-Doing Gap (Pfeffer & Sutton, 2000). Pfeffer und Sutton zeigen, dass Wissen allein nicht zu Handeln führt — die Lücke zwischen Wissen und Tun entsteht durch fehlende konkrete Handlungsplanung, Komplexitätsvermeidung und mangelnde situative Verankerung. Sheerans (2002) Meta-Analyse zum Intention-Behavior Gap belegt, dass starke Verhaltensintentionen durchschnittlich nur 28% der Verhaltensvarianz erklären. Der Loop transformiert abstrakte Lernintentionen in spezifische, situativ verankerte Handlungsschritte.
+
 #### 3.3.7.1 Konzeptuelle Trias: Lernziel — Lernschritt — Erfolgskriterium
 
 Das Session-Design von KAIA operiert auf drei konzeptuell zu trennenden Ebenen, die in der bisherigen Lernzieldiskussion häufig undifferenziert behandelt werden (Anderson & Krathwohl, 2001; Knowles, 1975):
@@ -338,6 +341,7 @@ Bevor die Lernroadmap angelegt wird, durchläuft die lernende Person einen optio
 1. **Nicht presumieren** — KAIA nimmt nie von vornherein an, das Genannte sei "nur" ein Mittel.
 2. **Abbrechbar** — Das Probing ist optional. *"Ich möchte einfach anfangen"* ist eine valide Antwort.
 3. **Keine Tiefendiagnose** — Maximal 2–3 Fragen. KAIA darf nicht in therapeutisches Terrain gehen.
+4. **KDG-Check vor Vertiefung** — Im Probing wird früh erkundet, ob das Thema bereits kognitiv bekannt ist und die Hürde in der Umsetzung liegt. Wenn ja, verändert sich der Einstieg: KAIA fragt nicht 'Was möchtest du verstehen?' sondern 'In welcher konkreten Situation ist dir zuletzt passiert, dass du wusstest was zu tun wäre — und es nicht getan hast?'
 
 ### 3.4.1 Funktion und theoretische Begründung
 

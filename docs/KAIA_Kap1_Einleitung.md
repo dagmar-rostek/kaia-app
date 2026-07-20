@@ -16,7 +16,7 @@ Hinzu kommt die Rolle des subjektiven Stresserlebens. Lazarus (1993) zeigt in se
 
 Schließlich ist die Frage der Empathie in KI-Systemen zu stellen. Decety und Jackson (2004) unterscheiden zwischen affektiver und kognitiver Empathie; was in KI-Systemen erzeugt werden kann, ist eine form von *computational empathy* — die modellierte Repräsentation emotionaler Zustände als Grundlage adaptiver Reaktionen. Ob und unter welchen Bedingungen diese Form der Empathie in tutoriellen Systemen lernförderlich wirkt, ist empirisch weitgehend ungeklärt.
 
-Vor diesem Hintergrund entstand KAIA (Kinetic AI Agent) — ein empathischer KI-Lernbegleiter, der sokratische Gesprächsführung mit neuroadaptiver Personalisierung verbindet. KAIA stellt keine Antworten bereit, sondern führt Lernende durch gezielte Fragen zur eigenen Erkenntnis. Das Designziel ist nicht Instruktion, sondern die Aktivierung metakognitiver Prozesse. Ob und in welchem Maß dieses Konzept gelingt, ist die empirische Kernfrage dieser Arbeit.
+Vor diesem Hintergrund entstand KAIA (Kinetic AI Agent) — ein empathischer KI-Lernbegleiter, der eine spezifische Lücke adressiert: den **Knowing-Doing Gap** (Pfeffer & Sutton, 2000). Menschen scheitern im Lernkontext selten daran, dass ihnen Wissen fehlt — sie scheitern daran, vorhandenes Wissen in konkretes Alltagshandeln zu überführen (Sheeran, 2002: Intention-Behavior Gap). KAIA ist nicht für den Wissensaufbau von Null konzipiert. KAIA begleitet Menschen, die bereits wissen, was sie tun sollten, und genau dort nicht handeln. Die sokratische Gesprächsführung aktiviert latentes Vorwissen; Implementation Intentions (Gollwitzer, 1999) überführen Erkenntnisse in konkrete Handlungsschritte.
 
 ---
 
@@ -27,7 +27,7 @@ Aus der skizzierten Problemstellung ergeben sich drei aufeinander aufbauende For
 **FF1 — Sokratische KI-Begleitung ohne Autonomieverlust:**  
 Wie kann ein KI-Lernbegleiter sokratische Gesprächsführung operationalisieren, ohne die Lernautonomie der Nutzenden zu reduzieren?
 
-Diese Frage adressiert das didaktische Kernproblem: Sokratik bedeutet, dass Erkenntnisse durch den Lernenden selbst entstehen — ein KI-System, das diesen Prozess zu stark vorstrukturiert, widerspricht dem Prinzip methodisch. Die Arbeit untersucht, welche Interaktionsarchitektur (drei konfigurierbare Charaktermodi: Begleitend, Konfrontierend, Perspektivwechselnd), welches Prompt-Design und welche Session-Sequenzierung dieses Gleichgewicht herzustellen vermögen.
+Diese Frage adressiert das didaktische Kernproblem: Sokratik bedeutet, dass Erkenntnisse durch den Lernenden selbst entstehen — ein KI-System, das diesen Prozess zu stark vorstrukturiert, widerspricht dem Prinzip methodisch. Die Arbeit untersucht, welche Interaktionsarchitektur (drei konfigurierbare Charaktermodi: Begleitend, Konfrontierend, Perspektivwechselnd), welches Prompt-Design und welche Session-Sequenzierung dieses Gleichgewicht herzustellen vermögen. Die Arbeit untersucht, wie sokratische Begleitung spezifisch den Intention-Behavior Gap (Sheeran, 2002) überbrückt: nicht durch Wissensvermittlung, sondern durch Handlungsplanung und Reflexion auf vorhandenes, nicht umgesetztes Wissen.
 
 **FF2 — Neuroadaptive Personalisierung unter DSGVO-Bedingungen:**  
 Welche Formen neuroadaptiver Personalisierung sind in einem DSGVO-konformen System technisch umsetzbar und für Lernende akzeptabel?
@@ -94,6 +94,8 @@ Die folgenden Abgrenzungen sind für das Verständnis dieser Arbeit konstitutiv:
 **Kein repräsentatives Experiment.** Die Pilotstudie mit N ≈ 20 Personen aus dem persönlichen Netzwerk der Forscherin ermöglicht keine statistisch generalisierbaren Kausalaussagen. Eine Stichprobengröße dieser Größenordnung erlaubt keine ausreichende statistische Power für inferenzstatistische Schlüsse; die Ergebnisse sind als explorativ zu verstehen. Power-Analysen (G*Power) dienen der Vorbereitung einer Folgestudie, nicht der Validierung der vorliegenden.
 
 **Kein vollständiges adaptives Tutorsystem.** KAIA implementiert keine automatisierte Leistungsdiagnose, keine domänenspezifische Wissensbasis und kein vollständiges Intelligent Tutoring System (ITS) im Sinne von Vanlehn (2011). Die Personalisierung basiert auf motivationalen Profilen (MSLQ) und semantischem Gedächtnis; eine kompetenzdiagnostische Modellierung des Lernenden findet nicht statt.
+
+**Kein Wissensvermittlungssystem.** KAIA ist nicht für den Aufbau von Fachwissen konzipiert. Zielgruppe sind Menschen mit vorhandenem Wissen in einem Lernbereich, das im Alltag nicht konsequent umgesetzt wird (Knowing-Doing Gap; Pfeffer & Sutton, 2000). Wer grundlegendes Domänenwissen erst erwerben muss, ist nicht KAIAs primäre Zielgruppe.
 
 **Kein generisches Mehrsprachensystem.** KAIA ist explizit für den deutschsprachigen Einsatz konfiguriert. Englischsprachige Nutzung ist bis zum Abschluss der Thesis nicht vorgesehen; alle Prompts, Benutzeroberflächen und Studienunterlagen sind in deutscher Sprache verfasst.
 

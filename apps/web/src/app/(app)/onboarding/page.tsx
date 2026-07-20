@@ -4,13 +4,15 @@ import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { Map, ArrowRight, Loader2 } from "lucide-react"
 import { authFetch } from "@/lib/auth"
+import { useTopicEval } from "@/hooks/useTopicEval"
+import { TopicEvalFeedback } from "@/components/TopicEvalFeedback"
 
 const EXAMPLES = [
-  "Python-Grundlagen für mein erstes Data-Science-Projekt",
-  "Grundbegriffe der Verhaltensökonomie verstehen",
-  "Spanisch — Konversation für meinen Urlaub",
-  "Stochastik für mein Statistik-Modul im Studium",
-  "Grundlagen der Fotografie und Bildkomposition",
+  "Kritische Feedbackgespräche, die ich immer wieder aufschiebe",
+  "Besser delegieren — ich weiß wie's geht, tue es aber nicht",
+  "Konflikte im Team ansprechen statt auszusitzen",
+  "Überzeugender präsentieren, obwohl ich die Methoden kenne",
+  "Prioritäten setzen — die Theorie kenne ich, die Praxis fehlt",
 ]
 
 export default function OnboardingPage() {
@@ -18,6 +20,7 @@ export default function OnboardingPage() {
   const [topic, setTopic] = useState("")
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const { state: evalState, evaluate: evalTopic, reset: resetEval } = useTopicEval()
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -50,11 +53,11 @@ export default function OnboardingPage() {
               <Map className="h-8 w-8 text-muted-foreground" />
             </div>
           </div>
-          <h1 className="text-2xl font-bold tracking-tight">Was möchtest du lernen?</h1>
+          <h1 className="text-2xl font-bold tracking-tight">Woran arbeitest du — obwohl du weißt wie es geht?</h1>
           <p className="text-muted-foreground text-sm leading-relaxed max-w-sm mx-auto">
-            KAIA begleitet dich vier Wochen bei einem Thema deiner Wahl.
-            Schreib auf, womit du dich in dieser Zeit beschäftigen möchtest —
-            so konkret oder offen wie du willst.
+            KAIA begleitet dich vier Wochen bei einem Thema, das du schon
+            kennst oder verstehst — aber noch nicht wirklich in deinem Alltag lebst.
+            Nicht für Einsteiger. Für Menschen, die den Schritt vom Wissen ins Tun gehen wollen.
           </p>
         </div>
 
@@ -62,21 +65,23 @@ export default function OnboardingPage() {
         <form onSubmit={handleSubmit} className="space-y-5">
           <div className="space-y-2">
             <label className="text-sm font-medium" htmlFor="topic">
-              Dein Lernthema
+              Dein Thema
             </label>
             <textarea
               id="topic"
               value={topic}
-              onChange={e => setTopic(e.target.value)}
+              onChange={e => { setTopic(e.target.value); resetEval() }}
+              onBlur={e => evalTopic(e.target.value)}
               maxLength={500}
               rows={3}
-              placeholder="z. B. Python-Grundlagen für mein erstes Data-Science-Projekt"
+              placeholder="z. B. Kritische Feedbackgespräche, die ich immer wieder aufschiebe"
               className="w-full rounded-lg border border-border bg-background px-4 py-3 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring resize-none"
               disabled={loading}
             />
             <p className="text-xs text-muted-foreground text-right">
               {topic.length}/500
             </p>
+            <TopicEvalFeedback state={evalState} />
           </div>
 
           {/* Examples */}

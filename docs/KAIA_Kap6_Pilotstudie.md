@@ -35,7 +35,7 @@ Die fehlende Kontrollgruppe ist systematisch begründet: Bei N ≈ 20 Teilnehmen
 **Einschlusskriterien:**
 - Volljährig (≥ 18 Jahre)
 - Deutschsprachig (Muttersprache oder vergleichbare Kompetenz C1+)
-- Aktive Lernsituation zum Zeitpunkt der Teilnahme (Studium, berufliche Weiterbildung, selbstorganisiertes Lernen)
+- Aktive Lernsituation zum Zeitpunkt der Teilnahme (Studium, berufliche Weiterbildung, selbstorganisiertes Lernen) **bei der grundlegendes Vorwissen zum gewählten Thema vorhanden ist und die primäre Herausforderung in der Umsetzung liegt** (Knowing-Doing Gap; Pfeffer & Sutton, 2000). Reine Wissensneueinsteiger ohne Bezug zum Thema sind nicht die primäre Zielgruppe.
 - Zugang zu Computer oder Tablet mit stabiler Internetverbindung
 - Schriftliche informierte Einwilligung (Multi-Step-Consent; s. 6.4.1)
 
@@ -155,6 +155,8 @@ Innerhalb jeder Session stehen Teilnehmenden vier diskrete Feedback-Marker zur V
 
 **Triangulation:** Qualitative Befunde aus Transkripten und Summaries werden mit den quantitativen EMA- und GSE-Daten trianguliert, um widersprüchliche Muster sichtbar zu machen.
 
+Im Erfahrungsbericht am Studienende (optional) wird explizit erfragt: 'Gab es Bereiche, in denen du durch KAIA etwas in deinen Alltag übertragen hast, das vorher wissenstheoretisch klar, aber praktisch nicht umgesetzt war?' Diese qualitative Frage operationalisiert den KDG-Effekt ohne standardisiertes Instrument.
+
 ### 6.3.5 Nutzungsstatistiken (Kovariaten)
 
 Sofern `consent_analytics = true`: Anzahl abgeschlossener Sessions, Gesamtnutzungsdauer, Zeitpunkte der Nutzung. Werden als deskriptive Kovariaten in explorative Analysen einbezogen und ermöglichen die Beschreibung der Nutzungsintensität.
@@ -256,6 +258,8 @@ Nach Studie          Auswertung | 6-Monate-Löschfrist beginnt
 - Evidenzanker definieren: "Woran würdest du merken, dass du es wirklich verstanden hast?"
 - Lerntyp-Routing, Standortbestimmung
 
+**KDG-Exploration als expliziter Bestandteil:** KAIA fragt früh, was die Person bereits über das Thema weiß und in welchen Situationen sie weiß, was zu tun wäre, es aber nicht tut. Dieser KDG-Spiegel bildet die Grundlage für alle Folge-Sessions.
+
 **Sessions 3–10: Micro-Sessions (ca. 10–15 Minuten)**
 - Cross-Session-Memory übernimmt Kontextaufbau (kein erneutes Onboarding)
 - Erster-Schritt-Loop: Rückbezug auf Lernschritt + Evidenzanker-Abgleich
@@ -290,6 +294,8 @@ Die technische Infrastruktur ermöglicht eine per-User-Modell-Zuweisung. Für di
 **H3 (explorativ, konstruktiv):** Die MSLQ-Selbstwirksamkeits-Subskala korreliert positiv mit der GSE-Prä-Messung (Konstruktkonvergenz; Spearman-Rho). Diese Hypothese dient ausschließlich der Plausibilitätsprüfung der MSLQ-Kurzversion — ein substantieller Zusammenhang zwischen zwei Selbstwirksamkeitsskalen ist theoretisch zu erwarten (Bandura, 1997).
 
 **H4 (explorativ, prozessbezogen):** Die relative Häufigkeit von `transfer_marker`- und `wow`-EMA-Signalen (positive Indikatoren) nimmt über die Studienlaufzeit im Verhältnis zu `stuck`- und `unclear`-Signalen (Distress-Indikatoren) zu. Diese Hypothese wird ausschließlich deskriptiv ausgewertet.
+
+**H5 (explorativ, KDG-spezifisch):** Die subjektiv wahrgenommene Häufigkeit, mit der Teilnehmende das Lernthema im Alltag aktiv anwenden, steigt über die Studienlaufzeit (Selbstbericht am Studienende im Vergleich zu Session 1). Diese Hypothese wird ausschließlich deskriptiv ausgewertet und dient der direkten Operationalisierung des Knowing-Doing Gaps.
 
 ---
 

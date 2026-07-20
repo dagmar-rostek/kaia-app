@@ -10,7 +10,7 @@ import { StudyCountdown } from "@/components/StudyCountdown"
 export const metadata = {
   title: "Mitmachen — KAIA Pilotstudie",
   description:
-    "Werde Teil der KAIA-Pilotstudie: Ein KI-Lernbegleiter der sich an dich anpasst, dich begleitet statt belehrt — und dich das Lernen selbst lernen lässt. Start: 1. August 2026.",
+    "Werde Teil der KAIA-Pilotstudie: Ein KI-Begleiter für das Wissen, das du schon hast — aber noch nicht wirklich lebst. Vom Verstehen ins Tun. Start: 1. August 2026.",
 }
 
 // ── Helpers ────────────────────────────────────────────────────────────────────
@@ -99,16 +99,15 @@ export default function MitmachenPage() {
         </div>
 
         <h1 className="text-4xl font-bold tracking-tight leading-tight">
-          Eine KI, die dich{" "}
-          <span className="italic">begleitet</span>{" "}
-          statt belehrt.
+          Du weißt es bereits.{" "}
+          <span className="italic">Jetzt lebst du es auch.</span>
         </h1>
 
         <p className="text-lg text-muted-foreground leading-relaxed max-w-xl mx-auto">
-          KAIA erklärt nicht — sie fragt, unterstützt, fordert heraus.
-          Immer passend zu dem, wo du gerade stehst.
-          Erlebe einen neuen Ansatz des Lernens und hilf dabei,
-          ihn wissenschaftlich zu verstehen.
+          KAIA ist nicht für Einsteiger. KAIA ist für Menschen, die Methoden
+          kennen, Workshops hinter sich haben, Bücher gelesen haben —
+          aber im Alltag trotzdem nicht umsetzen, was sie wissen.
+          Diesen Gap schließt KAIA: vom Verstehen ins Tun.
         </p>
 
         <div className="flex flex-col sm:flex-row gap-3 justify-center pt-2">
@@ -135,24 +134,23 @@ export default function MitmachenPage() {
         </div>
 
         <p className="text-sm text-muted-foreground leading-relaxed">
-          Die meisten KI-Tools liefern Antworten.
-          KAIA tut das nicht — nicht weil sie keine hätte,
-          sondern weil Wissen das du selbst erarbeitest
-          tiefer sitzt und länger hält.
+          Kennst du das? Du warst in Workshops, hast Bücher gelesen, verstehst
+          die Prinzipien — aber Delegieren, Feedbackgespräche führen,
+          Konflikte direkt ansprechen passiert im Alltag trotzdem nicht.
+          Das ist keine Schwäche. Das ist das größte ungelöste Problem
+          beim Lernen: der Gap zwischen Wissen und Tun.
         </p>
 
         <p className="text-sm text-muted-foreground leading-relaxed">
-          Was KAIA stattdessen tut, lässt sich kaum beschreiben ohne es
-          ein bisschen zu verderben. Es hat mit Fragen zu tun.
-          Mit dem Moment kurz bevor eine Erkenntnis entsteht.
-          Und mit der Fähigkeit zu spüren, wo du gerade stehst —
-          und was dich einen Schritt weiterbringt.
+          KAIA stellt Fragen — sokratisch, konsequent, ohne Ratschläge.
+          Fragen, die dich zwingen, selbst zu durchdenken was dich wirklich aufhält.
+          Was zwischen Verstehen und konsequentem Handeln steht.
         </p>
 
         <p className="text-sm text-muted-foreground leading-relaxed">
-          Manche Teilnehmenden finden es am Anfang ungewohnt.
-          Manche finden es überraschend ehrlich.
-          Fast alle finden es anders als erwartet.
+          Das erfordert etwas: Du musst ein Thema mitbringen, das du schon kennst.
+          Kein Wissenserwerb von Null — das kann KAIA nicht.
+          Aber den Schritt vom Wissen ins Tun: dafür ist KAIA gemacht.
         </p>
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
@@ -226,22 +224,25 @@ export default function MitmachenPage() {
             accent
           >
             <p>
-              Du wählst ein Thema, mit dem du dich in den nächsten Wochen beschäftigen möchtest —
-              und legst dir eine kleine persönliche Lernroadmap an.{" "}
-              <strong className="text-foreground">Alles ist möglich:</strong>{" "}
-              ein Studienfach, ein Berufsprojekt, eine Sprache, ein Konzept, ein Buch.
+              Du wählst ein Thema — etwas, das du schon kennst oder verstehst,
+              aber noch nicht konsequent in deinem Alltag lebst.{" "}
+              <strong className="text-foreground">Konkrete Beispiele:</strong>{" "}
+              Feedbackgespräche die du immer wieder aufschiebst, besser delegieren
+              obwohl du weißt wie es geht, Konflikte direkt ansprechen, überzeugender
+              präsentieren, Zeitblöcke wirklich einhalten.
             </p>
             <p>
-              In der Roadmap trägst du ein, was du erreichen möchtest — und verfolgst
+              Du trägst ein, was du erreichen möchtest — und verfolgst
               deinen Fortschritt selbst. KAIA schlägt dir nichts vor und bewertet dich nicht.
               Du bist der Maßstab für dich.
             </p>
             <div className="rounded-lg bg-muted/40 border border-border p-3 text-xs space-y-1">
-              <p className="font-medium text-foreground">Warum eine Roadmap?</p>
+              <p className="font-medium text-foreground">Wichtig: Kein Neueinsteiger-Thema</p>
               <p className="text-muted-foreground">
-                Wer sich ein klares Ziel setzt, lernt nachweislich besser — nicht weil
-                das Ziel der Antrieb ist, sondern weil es dir hilft zu merken, wann du
-                vorankommst. Die Roadmap gehört dir, nicht KAIA.
+                KAIA funktioniert nicht für &bdquo;Ich will Python lernen&ldquo; oder &bdquo;Ich will
+                Spanisch für den Urlaub üben&ldquo; — das wäre Wissenserwerb von Null.
+                KAIA ist für den Schritt danach: wenn das Wissen schon da ist,
+                aber die Umsetzung fehlt.
               </p>
             </div>
           </StepCard>
@@ -329,12 +330,12 @@ export default function MitmachenPage() {
         <div className="space-y-3">
           {[
             {
-              title: "Lernen lernen — nicht nur Inhalte",
-              desc: "KAIA trainiert nicht dein Wissen, sondern deine Fähigkeit, selbst weiterzudenken. Das ist etwas, das du auf jedes zukünftige Lernprojekt übertragen kannst.",
+              title: "Wissen endlich in Wirkung bringen",
+              desc: "Du verlässt diese vier Wochen nicht mit mehr Theorie — sondern mit konkreten ersten Schritten, die du wirklich gemacht hast. Das ist der Unterschied.",
             },
             {
-              title: "Eine Lernroadmap, die dir gehört",
-              desc: "Du baust dir über die vier Wochen eine persönliche Lernstruktur auf — mit Zielen, die du selbst gesetzt hast, und Fortschritt, den nur du bewertest.",
+              title: "Verstehen, was dich aufhält",
+              desc: "KAIA hilft dir zu erkennen, was zwischen Wissen und Handeln steckt. Oft ist es nicht fehlendes Wissen — sondern etwas anderes, das erst durch Fragen sichtbar wird.",
             },
             {
               title: "Selbstkenntnis mitnehmen",
@@ -367,15 +368,16 @@ export default function MitmachenPage() {
           <h2 className="text-lg font-semibold">Wer kann mitmachen?</h2>
         </div>
         <p className="text-sm text-muted-foreground">
-          Kein Vorwissen nötig. Du musst nicht gut im Lernen sein —
-          im Gegenteil: Wer das Gefühl hat, noch nicht so gut lernen zu können,
-          ist genau die richtige Person für diese Studie.
+          Du brauchst kein technisches Vorwissen — aber du solltest ein Thema
+          mitbringen, das du bereits kennst oder verstehst und endlich umsetzen willst.
+          KAIA ist am stärksten für Menschen, die schon wissen was sie tun sollten,
+          es aber im Alltag nicht tun.
         </p>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           {[
             { ok: true,  text: "Volljährig (18+)" },
             { ok: true,  text: "Deutschsprachig" },
-            { ok: true,  text: "Gerade am Lernen — Studium, Job, Hobby" },
+            { ok: true,  text: "Hast ein Thema — und weißt eigentlich wie es geht" },
             { ok: true,  text: "Zugang zu Computer oder Tablet" },
             { ok: true,  text: "~2–3 Stunden Kapazität über 4 Wochen" },
             { ok: false, text: "Aktuell in psychiatrischer Behandlung wegen einer Krise" },

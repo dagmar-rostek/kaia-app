@@ -18,8 +18,8 @@ export default function Home() {
           </h1>
 
           <p className="text-xl text-muted-foreground max-w-md mx-auto leading-relaxed">
-            Ein KI-Lernbegleiter der keine Antworten liefert.
-            Absichtlich.
+            Für das Wissen, das du schon hast —
+            aber noch nicht lebst.
           </p>
         </div>
 
@@ -28,13 +28,13 @@ export default function Home() {
           {[
             {
               icon: Brain,
-              title: "Sokrates, aber digital",
-              desc: "KAIA fragt zurück. Nicht weil sie keine Antworten hätte — sondern weil deine eigenen die besseren sind.",
+              title: "Vom Wissen ins Tun",
+              desc: "Du kennst die Methoden. Du warst in den Workshops. Aber im Alltag passiert es nicht. Genau hier setzt KAIA an.",
             },
             {
               icon: MessageSquare,
-              title: "Kein Dozent. Kein Tutorial.",
-              desc: "Kein Lernplan der von oben vorgegeben wird. Kein Feedback das nach Schulnoten riecht.",
+              title: "Fragen statt Erklären",
+              desc: "KAIA gibt keine Antworten — KAIA fragt zurück. Sokratisch, konsequent, auf den Punkt.",
             },
             {
               icon: FlaskConical,

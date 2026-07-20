@@ -60,15 +60,15 @@ def test_compute_scores_partial_items() -> None:
     items = {str(n): 5 for n in SUBSCALE_ITEMS["self_efficacy"]}
     scores = compute_subscale_scores(items)
     assert scores.get("self_efficacy") == pytest.approx(5.0)
-    assert "intrinsic_goal" not in scores
+    assert "kdg" not in scores
 
 
 def test_compute_scores_rounds_to_three_decimals() -> None:
-    items = {str(n): 3 for n in SUBSCALE_ITEMS["intrinsic_goal"]}
-    items[str(SUBSCALE_ITEMS["intrinsic_goal"][0])] = 4
+    items = {str(n): 3 for n in SUBSCALE_ITEMS["kdg"]}
+    items[str(SUBSCALE_ITEMS["kdg"][0])] = 4
     scores = compute_subscale_scores(items)
-    assert "intrinsic_goal" in scores
-    assert len(str(scores["intrinsic_goal"]).split(".")[-1]) <= 3
+    assert "kdg" in scores
+    assert len(str(scores["kdg"]).split(".")[-1]) <= 3
 
 
 # ── get_journey_state ─────────────────────────────────────────────────────────

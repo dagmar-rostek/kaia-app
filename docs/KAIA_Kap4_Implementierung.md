@@ -246,9 +246,9 @@ Eine der zentralen Architekturentscheidungen (ADR-007) ist die Einführung eines
 
 | Session | Mission | Dominanter Typ |
 |---|---|---|
-| 1 | Ankern — Lernmotiv vom Oberflächenziel trennen, latentes Vorwissen zugänglich machen (Anamnesis) | Typ 6 (Anamnese) |
+| 1 | Ankern — Lernmotiv vom Oberflächenziel trennen, latentes Vorwissen zugänglich machen (Anamnesis) **und KDG-Status klären: Handelt es sich um fehlendes Wissen oder um vorhandenes Wissen, das nicht umgesetzt wird?** | Typ 6 (Anamnese) |
 | 2 | Kartieren — Vorannahmen explizit machen und präzisieren | Typ 1 (Klärung) |
-| 3 | Erden — abstraktes Lernziel in konkreter Situation verankern (situiertes Lernen) | Typ 4 (Systemisch) |
+| 3 | Erden — abstraktes Lernziel in konkreter Situation verankern (situiertes Lernen) **und Knowing-Doing Gap situativ sichtbar machen: 'In welcher konkreten Situation hast du gewusst, was zu tun wäre, und es trotzdem nicht getan?'** | Typ 4 (Systemisch) |
 | 4 | Ausprobieren — Erster-Schritt-Loop, Implementation Intention (Gollwitzer) | Typ 5 (Erste-Schritt) |
 | 5 | Spiegel — Halbzeit-Reflexion, eigene kognitive Entwicklung sichtbar machen | Typ 2 (Hypothetisch als Spiegel) |
 | 6 | Reiben — Elenchos: Inkonsistenzen aus Vorsessions konfrontieren | Typ 3 (Widerspruch) |
@@ -440,6 +440,7 @@ Der Prompt-Editor (`/admin/prompts`) ermöglicht:
 | **Missions-Treue** | Entspricht der dominante Fragetyp der Sessionsaufgabe (M2 in der Eval-Matrix)? |
 | **Persona-Responsivität** | Reagiert KAIA erkennbar auf das individuelle Kommunikationsmuster (M3)? |
 | **Autonomie-Erhalt** | Gibt KAIA keine Ratschläge oder versteckten Instruktionen (M6)? |
+| **KDG-Treue** | Setzt KAIA bei Teilnehmenden mit vorhandenem Wissen Erklärungen aus und wechselt direkt in den Handlungs-Begleitungsmodus? Verhält sich KAIA als Umsetzungsbegleiter, nicht als Wissensvermittler? |
 
 Diese Kriterien werden sowohl in den eigenen Testsessions der Forscherin als auch in formalisierter Form im LLM-Evaluationsbericht (Kapitel 5) angewendet.
 

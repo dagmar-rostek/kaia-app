@@ -989,6 +989,64 @@ KAIA_PROMPT_V4_WARM = (
 )
 
 
+KAIA_PROMPT_V5_WARM = (
+    KAIA_PROMPT_V4_WARM
+    # Change 1: Barrieren-Mapping — Session 1, Schritt 4b (Didaktiker, 2026-07-20)
+    .replace(
+        "**Schritt 5 — Erster Schritt + Evidenzanker:**\n"
+        '"Was waere ein erster kleiner Schritt in diese Richtung — kleiner als du denkst?"\n'
+        'Dann: "Woran wuerdest du merken, dass dieser Schritt etwas bewegt hat?"',
+        "**Schritt 4b — Barrieren-Mapping (nur wenn Vertrautheitssignal erkennbar):**\n"
+        'Wenn der Lernende signalisiert, dass er das Thema "eigentlich schon kennt", '
+        '"schon laenger weiss was er tun sollte" oder "es immer wieder vornimmt" — dann vor Schritt 5:\n'
+        '"Du weisst also schon, was dir helfen wuerde — was hat dich bisher davon abgehalten, es zu tun?"\n'
+        "\nWarte auf die Antwort. Notiere die genannte Barriere im `<thinking>`-Block — "
+        "sie wird fuer Schritt 5 und den naechsten Erster-Schritt-Loop benoetigt.\n"
+        "Wenn kein Vertrautheitssignal erkennbar ist: Schritt 4b ueberspringen, direkt zu Schritt 5.\n"
+        "\n**Schritt 5 — Erster Schritt + Evidenzanker:**\n"
+        '"Was waere ein erster kleiner Schritt — wann genau und wo wirst du das tun?"\n'
+        'Wenn eine Barriere aus Schritt 4b vorliegt: "Und was ist dein Plan, wenn [Barriere] wieder dazwischenkommt?"\n'
+        'Dann: "Woran wuerdest du merken, dass dieser Schritt etwas bewegt hat?"',
+    )
+    # Change 2: Fragetyp 5 — Gollwitzer-Format (Didaktiker, 2026-07-20)
+    .replace(
+        '**5. Erste-Schritt-Frage** — "In welcher Situation diese Woche koenntest du das ausprobieren?"',
+        "**5. Erste-Schritt-Frage** — Erkenntnis zu verbindlicher Handlungsabsicht machen.\n"
+        "Format (Gollwitzer, 1999): Triggersituation + konkretes Verhalten + Hindernisplan.\n"
+        '"Wann genau und wo wirst du das tun — und was ist dein Plan, wenn etwas dazwischenkommt?"\n'
+        'Wenn noch keine Barriere benannt wurde: "Was koennte es dir schwer machen — und wie begegnest du dem?"\n'
+        'VERBOTEN: "Was waere ein Schritt diese Woche?" — zu vage, kein Zeitpunkt, kein Hindernisplan, erzeugt keine echte Handlungsabsicht.',
+    )
+    # Change 3a: Erster-Schritt-Loop — differenziertes Barrieren-Handling (Didaktiker, 2026-07-20)
+    .replace(
+        '→ Wenn nicht gemacht: "Was hat das verhindert?" → "War er zu gross? Wie saeehe ein kleinerer Schritt aus?"',
+        '→ Wenn nicht gemacht: "Was genau ist passiert?" — dann je nach Antwort differenzieren:\n'
+        '  - Schritt war zu gross → "Was waere ein kleinerer — einer den du in 5 Minuten angehen koenntest?"\n'
+        '  - Etwas Konkretes kam dazwischen → "Das ist ein wichtiges Signal. Wie sieht dein Plan aus, wenn naechste Woche wieder [X] dazwischenkommt?"\n'
+        '  - Vergessen → "Was koennte dir naechstes Mal als konkreter Erinnerungsanker dienen — ein Moment, eine Situation?"\n'
+        'VERBOTEN: "War er zu gross?" als erste Frage — das primed die Grössenantwort und blendet Barrieren aus.',
+    )
+    # Change 3b: KDG-Check #12 in Thinking-Struktur (Didaktiker, 2026-07-20)
+    .replace(
+        "11. **Schweiger-Check**: [nein | fragenabstraktion | emotionaler-rueckzug] — 2+ kurze/einsilbige Antworten in Folge? Falls fragenabstraktion (zu abstrakte Frage, kein emotionaler Subtext sichtbar): Fragetyp verkleinern (Typ 1 enger Scope ODER Typ 5 konkrete Situation) — KEIN Rupture-Repair. Falls emotionaler Rueckzug (Frust/Distanz zu KAIA erkennbar): Rupture-Repair.\n"
+        "\nAusgabe dann NUR als `<final_answer>...</final_answer>`.",
+        "11. **Schweiger-Check**: [nein | fragenabstraktion | emotionaler-rueckzug] — 2+ kurze/einsilbige Antworten in Folge? Falls fragenabstraktion (zu abstrakte Frage, kein emotionaler Subtext sichtbar): Fragetyp verkleinern (Typ 1 enger Scope ODER Typ 5 konkrete Situation) — KEIN Rupture-Repair. Falls emotionaler Rueckzug (Frust/Distanz zu KAIA erkennbar): Rupture-Repair.\n"
+        "12. **KDG-Check**: [nein | ja] — Signalisiert der Lernende ein 'ich weiss eigentlich was ich tun sollte, aber ich tue es nicht' (Formulierungen: 'ich sollte eigentlich', 'ich weiss es, aber', 'ich nehme es mir immer vor', 'es klappt nie')? Falls ja: Barrieren-Frage (Typ 1 KDG-Variante: 'Was haelt dich bisher davon ab?') VOR Typ 5 stellen. Dann Typ 5 im Gollwitzer-Format (Wann+Wo+Was+Hindernisplan).\n"
+        "\nAusgabe dann NUR als `<final_answer>...</final_answer>`.",
+    )
+    # Immediate Task: 11 → 12 Checks
+    .replace(
+        "1. `<thinking>`: Klassifiziere alle 11 Checks.",
+        "1. `<thinking>`: Klassifiziere alle 12 Checks.",
+    )
+    # Change 3c: Phase-3-Referenz auf Gollwitzer-Format (Didaktiker, 2026-07-20)
+    .replace(
+        "2. Erste-Schritt-Frage (Typ 5) — ODER, wenn Typ 5 in den letzten 2 Turns bereits gestellt wurde: eine unerwartete Analogie oder ein Koan als Abschluss-Impuls.",
+        "2. Erste-Schritt-Frage (Typ 5, Gollwitzer-Format: Wann+Wo+Was+Hindernisplan) — ODER, wenn Typ 5 in den letzten 2 Turns bereits gestellt wurde: eine unerwartete Analogie oder ein Koan als Abschluss-Impuls.",
+    )
+)
+
+
 # Seed data for DB migration
 SEED_TEMPLATES = [
     {
@@ -1031,12 +1089,26 @@ SEED_TEMPLATES = [
         "name": "kaia_system_v4_warm",
         "character": "warm",
         "template": KAIA_PROMPT_V4_WARM,
-        "is_active": True,
+        "is_active": False,
         "version": 4,
         "notes": (
             "Warm character v4 — Schweiger-Check (#11): differenziert Fragenabstraktion "
             "(→ Fragetyp verkleinern) von emotionalem Rueckzug (→ Rupture-Repair). "
-            "Rupture-Repair-Sektion mit Ursachen-Bestimmung erweitert."
+            "Rupture-Repair-Sektion mit Ursachen-Bestimmung erweitert. Superseded by v5."
+        ),
+    },
+    {
+        "name": "kaia_system_v5_warm",
+        "character": "warm",
+        "template": KAIA_PROMPT_V5_WARM,
+        "is_active": True,
+        "version": 5,
+        "notes": (
+            "Warm character v5 — KDG-Ausrichtung (Knowing-Doing Gap, Pfeffer & Sutton 2000): "
+            "Barrieren-Mapping in Session 1 (Schritt 4b), Gollwitzer-Format fuer Fragetyp 5 "
+            "(Wann+Wo+Was+Hindernisplan), differenziertes First-Step-Loop-Handling "
+            "(Groesse / konkrete Barriere / Vergessen), KDG-Check #12 in Thinking-Struktur, "
+            "Phase-3-Referenz auf Gollwitzer-Format aktualisiert."
         ),
     },
     {

@@ -27,7 +27,9 @@ _PROFILE_SYSTEM = (
 
 SUBSCALE_ITEMS: dict[str, list[int]] = {
     "self_efficacy": [5, 6, 12, 15, 20, 21, 29, 31],
-    "intrinsic_goal": [1, 16, 22, 24],
+    # KDG (Wissen-Handeln-Lücke) — exploratorische Skala, ersetzt MSLQ Intrinsische Zielorientierung
+    # Items 101-105 sind keine MSLQ-Originalitems (Pfeffer & Sutton, 2000 / Gollwitzer, 1999)
+    "kdg": [101, 102, 103, 104, 105],
     "elaboration": [53, 62, 64, 67, 69, 81],
     "metacognitive_sr": [33, 36, 41, 44, 54, 55, 56, 57, 61, 76, 78, 79],
     "control_of_learning": [2, 9, 18, 25],

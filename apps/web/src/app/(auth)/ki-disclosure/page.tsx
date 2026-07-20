@@ -62,10 +62,12 @@ export default function KiDisclosurePage() {
               <h2 className="text-sm font-semibold">Wie KAIA funktioniert</h2>
             </div>
             <p className="text-sm text-muted-foreground leading-relaxed">
-              KAIA begleitet dich beim Lernen durch sokratische Fragen — es gibt dir
-              keine Antworten vor, sondern hilft dir, eigene Lösungen zu entwickeln.
-              KAIA erinnert sich an frühere Gespräche. Diese Erinnerungen werden
-              pseudonymisiert gespeichert und nach Studienende gelöscht.
+              KAIA begleitet dich dabei, vom Wissen ins Tun zu kommen — durch
+              sokratische Fragen, nicht durch Antworten oder Ratschläge. KAIA ist
+              am stärksten, wenn du etwas schon kennst oder verstehst, aber es
+              im Alltag noch nicht wirklich lebst. KAIA erinnert sich an frühere
+              Gespräche. Diese Erinnerungen werden pseudonymisiert gespeichert
+              und nach Studienende gelöscht.
             </p>
           </div>
 
