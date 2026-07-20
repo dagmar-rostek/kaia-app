@@ -1,4 +1,4 @@
-# Kapitel 2 — Theoretischer Hintergrund
+# Kapitel 2 — Theoretische Grundlagen
 
 > **Stand:** 13. Juli 2026 · **Version:** 2.0  
 > **Reviewer:** Psychologe (2.3, 2.7, 2.8) ✓ · Didaktiker (2.1, 2.2, 2.4–2.6, 2.9, 2.13) · AI Engineer (2.11) · Architect (2.14)  

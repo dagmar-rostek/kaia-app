@@ -1,12 +1,12 @@
 # Kapitel 1 — Einleitung
 
-**Version:** 1.0  
-**Stand:** 13. Juli 2026  
-**Geplanter Umfang:** ca. 2.200 Wörter
+**Version:** 2.0  
+**Stand:** 20. Juli 2026  
+**Geplanter Umfang:** ca. 2.500 Wörter
 
 ---
 
-## 1.1 Motivation und Problemstellung
+## 1.1 Forschungslücke und Spannungsfelder
 
 Die Verbreitung großer Sprachmodelle (Large Language Models, LLMs) hat in den vergangenen drei Jahren eine neue Phase in der Diskussion über KI-gestützte Bildungstechnologien eingeleitet. Systeme wie ChatGPT (OpenAI, 2022), Khanmigo (Khan Academy, 2023) oder Google Gemini werden zunehmend als tutorielle Begleiter im Selbststudium eingesetzt — häufig ohne empirische Validierung ihrer pädagogischen Wirksamkeit und ohne hinreichende Berücksichtigung datenschutzrechtlicher Anforderungen, wie sie die Datenschutz-Grundverordnung (DSGVO) und der EU-AI-Act (European Parliament, 2024) stellen (Holmes et al., 2022; Zawacki-Richter et al., 2019).
 
@@ -14,13 +14,25 @@ Die lernpsychologische Forschung verweist dabei auf ein grundlegendes Spannungsf
 
 Hinzu kommt die Rolle des subjektiven Stresserlebens. Lazarus (1993) zeigt in seiner kognitiv-transaktionalen Stresstheorie, dass nicht objektive Anforderungen, sondern deren subjektive Bewertung — die kognitive Appraisal-Sequenz — das Stresserleben und damit das Lernverhalten determinieren. Ein Lernbegleiter, der situative Stresszustände ignoriert und rein inhaltsgetrieben operiert, verfehlt damit einen wesentlichen Einflusskanal auf Lernerfolg und Motivation. Teigen (1994) ergänzt mit dem Yerkes-Dodson-Prinzip, dass sowohl Unter- als auch Überforderung den Lerntransfer hemmen; ein optimal kalibriertes Aktivierungsniveau ist Voraussetzung für nachhaltiges Lernen.
 
-Schließlich ist die Frage der Empathie in KI-Systemen zu stellen. Decety und Jackson (2004) unterscheiden zwischen affektiver und kognitiver Empathie; was in KI-Systemen erzeugt werden kann, ist eine form von *computational empathy* — die modellierte Repräsentation emotionaler Zustände als Grundlage adaptiver Reaktionen. Ob und unter welchen Bedingungen diese Form der Empathie in tutoriellen Systemen lernförderlich wirkt, ist empirisch weitgehend ungeklärt.
+Schließlich ist die Frage der Empathie in KI-Systemen zu stellen. Decety und Jackson (2004) unterscheiden zwischen affektiver und kognitiver Empathie; was in KI-Systemen erzeugt werden kann, ist eine Form von *computational empathy* — die modellierte Repräsentation emotionaler Zustände als Grundlage adaptiver Reaktionen. Ob und unter welchen Bedingungen diese Form der Empathie in tutoriellen Systemen lernförderlich wirkt, ist empirisch weitgehend ungeklärt.
 
 Vor diesem Hintergrund entstand KAIA (Kinetic AI Agent) — ein empathischer KI-Lernbegleiter, der eine spezifische Lücke adressiert: den **Knowing-Doing Gap** (Pfeffer & Sutton, 2000). Menschen scheitern im Lernkontext selten daran, dass ihnen Wissen fehlt — sie scheitern daran, vorhandenes Wissen in konkretes Alltagshandeln zu überführen (Sheeran, 2002: Intention-Behavior Gap). KAIA ist nicht für den Wissensaufbau von Null konzipiert. KAIA begleitet Menschen, die bereits wissen, was sie tun sollten, und genau dort nicht handeln. Die sokratische Gesprächsführung aktiviert latentes Vorwissen; Implementation Intentions (Gollwitzer, 1999) überführen Erkenntnisse in konkrete Handlungsschritte.
 
+### Terminologische Grundlagen dieser Arbeit
+
+Zwei Begriffe des Titels sind für das Verständnis dieser Arbeit terminologisch zu präzisieren, da sie in unterschiedlichen Kontexten unterschiedliche Bedeutungen tragen.
+
+**Zum Begriff „neuroadaptiv":** In dieser Arbeit bezeichnet „neuroadaptiv" — entsprechend dem im Exposé eingeführten Systemkonzept (Exposé §§ 1.7 und 1.9) — den vom System aus der Gesprächshistorie abgeleiteten und in der Session-Summary gespeicherten kognitiv-affektiven Zustandsmodus der Nutzenden. Der Begriff ist nicht im neurowissenschaftlichen Sinne zu verstehen; es werden keine physiologischen Parameter erhoben. „Neuroadaptivität" meint die Fähigkeit des Systems, sein Prompt-Verhalten adaptiv an den aus dem Gespräch erschlossenen kognitiv-affektiven Zustand anzupassen — theoretisch fundiert in der Yerkes-Dodson-Kurve (Teigen, 1994), der kognitiv-transaktionalen Stresstheorie (Lazarus, 1993) und der Selbstwirksamkeitstheorie (Bandura, 1997). Dieser Modus ist ein technisches Systemkonstrukt, das nach jeder Session als Prompt-Parameter gespeichert wird und die Kalibrierung der nächsten Session beeinflusst. Eine ausführliche Konzeptualisierung findet sich in Kapitel 3.3 und 3.4.
+
+**Zum Begriff „Lernbegleitung" und seiner Reichweite:** Der Begriff „Lernbegleitung" wird in dieser Arbeit weit und explizit auf die höheren Stufen des Lernzyklus bezogen: KAIA adressiert nicht primär die Wissensaneignungs- und Verstehensebene (Bloom-Stufen 1–3; Anderson & Krathwohl, 2001), sondern die Ebenen Anwendung, Analyse, Synthese und Bewertung (Bloom-Stufen 4–6). Konkret meint „Lernbegleitung" hier die Begleitung des Transfers von der deklarativen Wissensebene in die Handlungsebene — die Überwindung des Knowing-Doing Gap (Pfeffer & Sutton, 2000). Diese Präzisierung schränkt den Begriff nicht ein, sondern verortet ihn: Nicht das Lernen von Neuem, sondern das Umsetzen des bereits Erlernten ist KAIAs Domäne.
+
 ---
 
-## 1.2 Forschungsfragen
+## 1.2 Zielsetzung und Forschungsfragen
+
+Aus der in Abschnitt 1.1 skizzierten Forschungslücke leiten sich die Zielsetzung dieser Arbeit und die drei zentralen Forschungsfragen ab. Im Sinne des Design Science Research-Paradigmas (Hevner et al., 2004) sind Zielsetzung und Forschungsfragen keine unabhängigen Elemente, sondern aufeinander bezogene Komponenten eines Entwurfs-Erkenntnis-Zyklus.
+
+### 1.2.1 Forschungsfragen
 
 Aus der skizzierten Problemstellung ergeben sich drei aufeinander aufbauende Forschungsfragen:
 
@@ -39,9 +51,7 @@ Welches der evaluierten großen Sprachmodelle zeigt unter kontrollierten Bedingu
 
 Diese Frage zielt auf den systematischen Vergleich von sieben Sprachmodellen: Claude Sonnet 4.6 und Claude Haiku 4.5 (Anthropic), GPT-4o, GPT-5.6 Terra und GPT-4.1 mini (OpenAI) sowie Mistral Large und Mistral Small (Mistral AI). Die Evaluation erfolgt über eine Crash-Persona-Simulation mit zehn definierten Testpersönlichkeiten sowie eine strukturierte Eval-Matrix mit vier Metriken. Der Vergleich schließt eine Bewertung der datenschutzrechtlichen Eignung der Anbieter für einen EU-Einsatzkontext ein.
 
----
-
-## 1.3 Zielsetzung
+### 1.2.2 Zielsetzung
 
 Ziel dieser Arbeit ist die Entwicklung, Implementierung und explorative Evaluation eines sokratisch konfigurierten KI-Lernbegleiters (KAIA) nach den Prinzipien des Design Science Research (Hevner et al., 2004). Im Mittelpunkt stehen drei komplementäre Ziele:
 
@@ -53,6 +63,26 @@ Drittens die Durchführung einer explorativen Pilotstudie (N ≈ 20) mit Prä/Po
 
 ---
 
+## 1.3 Aufbau der Arbeit
+
+Die vorliegende Arbeit gliedert sich in sieben Kapitel und folgt der im Exposé vorgeschlagenen und mit dem Betreuer abgestimmten Gliederung (Exposé § 1.10). Das Exposé sah fünf inhaltliche Kapitel vor; die tatsächliche Umsetzung hat Kapitel 4 (Methodisches Vorgehen) in drei thematisch fokussierte Detaildokumente ausdifferenziert, die gemeinsam dieses Kapitel bilden. Diese Erweiterung ist in Übereinstimmung mit dem SRH-Leitfaden für Masterarbeiten, der ausdrücklich vorsieht, begründete Abweichungen vom Exposé zu dokumentieren.
+
+**Kapitel 1** legt die Forschungslücke, die Zielsetzung, die drei Forschungsfragen und den Aufbau der Arbeit dar. Es klärt die terminologischen Grundlagen (§ 1.1, Begriffsklärung zu „neuroadaptiv" und „Lernbegleitung"), beschreibt das DSR-Forschungsparadigma und deklariert den Interessenkonflikt.
+
+**Kapitel 2 — Theoretische Grundlagen** erarbeitet die wissenschaftlichen Fundamente: selbstreguliertes Lernen und Selbstwirksamkeitserwartung (Bandura, 1997; Schwarzer & Jerusalem, 1995), motivationale Lernstrategien (MSLQ; Pintrich et al., 1991, 1993), sokratische Didaktik, Stress und kognitive Bewertung (Lazarus, 1993), computational empathy (Decety & Jackson, 2004), Flow-Kalibrierung (Oliveira & Hamari, 2024) sowie aktuelle Forschung zu LLMs im Bildungskontext. Das Kapitel entspricht Exposé-Kapitel 2.
+
+**Kapitel 3 — Konzeption** dokumentiert den konzeptionellen Entwurf des KAIA-Systems: Designanforderungen aus den drei wissenschaftlichen Spannungsfeldern, Minimum Viable Architecture, textbasierte Zustandserkennung, sokratische Adaptionslogik und Flow-Kalibrierung, Gedächtnis-Layer (pgvector) sowie Compliance-Design (DSGVO-Artt. 15–21, EU AI Act). Das Kapitel entspricht Exposé-Kapitel 3.
+
+**Kapitel 4 — Methodisches Vorgehen** umfasst das gesamte methodische Vorgehen der Arbeit, gegliedert in drei thematische Dokumente: (4a) den technischen Implementierungsbericht des Prototyps einschließlich DSR-Rahmung und Tech-Stack; (4b) den ausführlichen LLM-Evaluationsbericht (§ 4.2.1: Crash-Persona-Simulation, Eval-Matrix, Modellvergleich); sowie (4c) das Studiendesign und Pilotstudie-Protokoll (§§ 4.2.3–4.4: Stichprobe, Messinstrumente, Datenerhebung, Auswertungsverfahren). Das Kapitel entspricht Exposé-Kapitel 4; die Aufteilung in Detaildokumente trägt dem Umfang des DSR-Artefakts Rechnung.
+
+**Kapitel 5 — Ergebnisse** stellt die empirischen Befunde der Pilotstudie dar: technische Validierung des Systems, GSE Prä/Post-Messung und thematische Analyse der abschließenden Interviews. Das Kapitel wird nach Studienabschluss (geplant: 29. August 2026) fertiggestellt. Das Kapitel entspricht Exposé-Kapitel 5.
+
+**Kapitel 6 — Diskussion** reflektiert die Ergebnisse vor dem Hintergrund der theoretischen Grundlagen, beantwortet die drei Forschungsfragen, diskutiert Limitationen (darunter den Interessenkonflikt, die Stichprobengröße und die terminologischen Grenzen des „neuroadaptiven" Ansatzes) und leitet Implikationen für Forschung und Praxis ab. Das Kapitel entspricht Exposé-Kapitel 6.
+
+**Kapitel 7 — Fazit und Ausblick** fasst die Erkenntnisse der Arbeit zusammen und skizziert den Weg zu einer Hauptstudie. Das Kapitel entspricht Exposé-Kapitel 7.
+
+---
+
 ## 1.4 Methodik: Design Science Research
 
 Die Arbeit folgt dem Paradigma des Design Science Research (DSR) nach Hevner et al. (2004). DSR verbindet die Konstruktion eines nützlichen Artefakts mit der Gewinnung wissenschaftlichen Wissens über seine Gestaltungsprinzipien. Im Gegensatz zu rein explanativer Forschung steht beim DSR die Frage im Vordergrund: Wie muss ein System beschaffen sein, um in einem definierten Kontext wirksam zu sein?
@@ -61,31 +91,13 @@ Für KAIA bedeutet dies konkret die Umsetzung der drei DSR-Zyklen nach Hevner (2
 
 - **Relevance Cycle:** Die Anforderungen entstammen der lernpsychologischen Forschung zu Selbstregulation, Stresserleben und Selbstwirksamkeit sowie dem praktischen Bedarf nach DSGVO-konformen KI-Tutorsystemen im deutschsprachigen Hochschulraum.
 - **Design Cycle:** Iterative Entwicklung des KAIA-Prototyps über mehrere Versionen der Session-Architektur. Die dritte Version (Session-Architektur v3) implementiert persistente Nutzerprofile auf MSLQ-Basis, kumulatives semantisches Gedächtnis (pgvector) und ein versioniertes Prompt-Management-System mit Jinja2-Templates.
-- **Rigor Cycle:** Theoretische Fundierung in Lernpsychologie (Lazarus, 1993; Kalyuga, 2007; Teigen, 1994), Didaktik (sokratische Methode, Bloom'sche Taxonomie), Empathieforschung (Decety & Jackson, 2004) und Flow-Theorie (Oliveira & Hamari, 2024).
+- **Rigor Cycle:** Theoretische Fundierung in Lernpsychologie (Lazarus, 1993; Kalyuga, 2007; Teigen, 1994), Didaktik (sokratische Methode, Bloom'sche Taxonomie; Anderson & Krathwohl, 2001), Empathieforschung (Decety & Jackson, 2004) und Flow-Theorie (Oliveira & Hamari, 2024).
 
 Das DSR-Paradigma ist für diese Arbeit besonders geeignet, weil der Forschungsgegenstand — ein neuartiges KI-Lernsystem — nicht a priori existiert, sondern erst durch den Entwurfsprozess konstituiert wird. Erkenntnisse entstehen iterativ aus Entwurf, Implementierung, Test und Reflexion; die Trennung zwischen Forschung und Entwicklung ist dabei strukturell aufgehoben, nicht methodisch ignoriert.
 
 ---
 
-## 1.5 Aufbau der Arbeit
-
-Die vorliegende Arbeit gliedert sich in sechs Kapitel.
-
-**Kapitel 1** legt die Problemstellung, die drei Forschungsfragen und die methodischen Grundlagen dar und deklariert den Interessenkonflikt.
-
-**Kapitel 2** erarbeitet die wissenschaftlichen Grundlagen: selbstreguliertes Lernen und Selbstwirksamkeitserwartung (Bandura, 1997; Schwarzer & Jerusalem, 1995), motivationale Lernstrategien (MSLQ; Pintrich et al., 1991, 1993), sokratische Didaktik, Stress und kognitive Bewertung (Lazarus, 1993), computational empathy (Decety & Jackson, 2004), Flow-Kalibrierung (Oliveira & Hamari, 2024) sowie aktuelle Forschung zu LLMs im Bildungskontext.
-
-**Kapitel 3** dokumentiert Entwurf und technische Realisierung des KAIA-Systems: Komponentenarchitektur (FastAPI-Backend, PostgreSQL 16 mit pgvector, Next.js-14-Frontend, Hosting auf Hetzner Cloud Helsinki), Session-Architektur v3, das dreigliedrige Charaktersystem, Prompt-Management, neuroadaptive Personalisierungslogik, DSGVO-Umsetzung (Multi-Step-Consent, KI-Disclosure, DSGVO-Artt. 15–21) und Eval-Infrastruktur.
-
-**Kapitel 4** beschreibt Methodik und Ergebnisse des systematischen LLM-Modellvergleichs auf Basis der Crash-Persona-Simulation (zehn Testpersonas) und der Eval-Matrix (vier Metriken: Empathie, sokratische Qualität, Konsistenz, Crisis-Detection-Sicherheit).
-
-**Kapitel 5** stellt Design, Durchführung und Ergebnisse der explorativen Pilotstudie vor: Rekrutierung, Stichprobenbeschreibung, Studienprotokoll (Studienstart 1. August 2026, Studienende 29. August 2026, mindestens drei Sessions über vier Wochen), Erhebungsinstrumente, deskriptive Statistik und erste Befundmuster.
-
-**Kapitel 6** reflektiert die Ergebnisse vor dem Hintergrund der theoretischen Grundlagen, diskutiert Limitationen, zieht methodische Schlussfolgerungen und skizziert den Weg zu einer Hauptstudie.
-
----
-
-## 1.6 Abgrenzung
+## 1.5 Abgrenzung
 
 Die folgenden Abgrenzungen sind für das Verständnis dieser Arbeit konstitutiv:
 
@@ -103,7 +115,7 @@ Die folgenden Abgrenzungen sind für das Verständnis dieser Arbeit konstitutiv:
 
 ---
 
-## 1.7 Interessenkonflikt
+## 1.6 Interessenkonflikt
 
 Die Verfasserin dieser Arbeit ist gleichzeitig in drei Rollen tätig: als **Entwicklerin** des Systems, als **Forscherin** der Pilotstudie und als **potenzielle Kommerzialisiererin** einer späteren Produktversion. Dieser dreifache Interessenkonflikt ist in Übereinstimmung mit den Standards wissenschaftlicher Integrität (Deutsche Forschungsgemeinschaft, 2022) offenzulegen und zu reflektieren.
 
@@ -119,6 +131,8 @@ Die Doppelrolle Entwicklerin/Forscherin bringt methodische Risiken mit sich: Con
 
 ## Literaturverzeichnis (Kapitel 1)
 
+Anderson, L. W., & Krathwohl, D. R. (Hrsg.). (2001). *A taxonomy for learning, teaching, and assessing: A revision of Bloom's educational objectives*. Longman.
+
 Bandura, A. (1997). *Self-efficacy: The exercise of control*. Freeman.
 
 Decety, J., & Jackson, P. L. (2004). The functional architecture of human empathy. *Behavioral and Cognitive Neuroscience Reviews*, *3*(2), 71–100. https://doi.org/10.1177/1534582304267187
@@ -126,6 +140,8 @@ Decety, J., & Jackson, P. L. (2004). The functional architecture of human empath
 Deutsche Forschungsgemeinschaft. (2022). *Leitlinien zur Sicherung guter wissenschaftlicher Praxis* (2. Aufl.). DFG. https://doi.org/10.5281/zenodo.6472827
 
 European Parliament. (2024). *Regulation (EU) 2024/1689 of the European Parliament and of the Council of 13 June 2024 laying down harmonised rules on artificial intelligence (Artificial Intelligence Act)*. Official Journal of the European Union.
+
+Gollwitzer, P. M. (1999). Implementation intentions: Strong effects of simple plans. *American Psychologist*, *54*(7), 493–503. https://doi.org/10.1037/0003-066X.54.7.493
 
 Hevner, A. R. (2007). A three cycle view of design science research. *Scandinavian Journal of Information Systems*, *19*(2), 87–92.
 
@@ -139,11 +155,15 @@ Lazarus, R. S. (1993). From psychological stress to the emotions: A history of c
 
 Oliveira, W., & Hamari, J. (2024). Flow in educational gamification: A systematic review. *Computers & Education*, *213*, 104998. https://doi.org/10.1016/j.compedu.2024.104998
 
+Pfeffer, J., & Sutton, R. I. (2000). *The knowing-doing gap: How smart companies turn knowledge into action*. Harvard Business School Press.
+
 Pintrich, P. R., Smith, D. A. F., Garcia, T., & McKeachie, W. J. (1991). *A manual for the use of the Motivated Strategies for Learning Questionnaire (MSLQ)* (ERIC Document Reproduction Service No. ED338122). University of Michigan.
 
 Pintrich, P. R., Smith, D. A. F., Garcia, T., & McKeachie, W. J. (1993). Reliability and predictive validity of the Motivated Strategies for Learning Questionnaire (MSLQ). *Educational and Psychological Measurement*, *53*(3), 801–813. https://doi.org/10.1177/0013164493053003024
 
 Schwarzer, R., & Jerusalem, M. (1995). Generalized Self-Efficacy Scale. In J. Weinman, S. Wright & M. Johnston (Hrsg.), *Measures in health psychology: A user's portfolio. Causal and control beliefs* (S. 35–37). NFER-Nelson.
+
+Sheeran, P. (2002). Intention-behavior relations: A conceptual and empirical review. *European Review of Social Psychology*, *12*(1), 1–36. https://doi.org/10.1080/14792772143000003
 
 Teigen, K. H. (1994). Yerkes-Dodson: A law for all seasons. *Theory & Psychology*, *4*(4), 525–547. https://doi.org/10.1177/0959354394044004
 

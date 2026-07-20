@@ -1,4 +1,4 @@
-# Kapitel 6 — Pilotstudie und Evaluation
+# Kapitel 4, Abschnitte 4.2.3–4.4 — Studiendesign und Pilotstudie
 
 > **Stand:** 13. Juli 2026 · **Version:** 0.9-DRAFT
 > **Reviewer:** Psychologe · Compliance · Data Scientist · Discovery Researcher

@@ -1,4 +1,4 @@
-# Kapitel 4 — Technische Implementierung
+# Kapitel 4 — Methodisches Vorgehen
 
 > **Stand:** 13. Juli 2026 · **Version:** 1.0  
 > **Reviewer:** Architect · Security · MLOps  

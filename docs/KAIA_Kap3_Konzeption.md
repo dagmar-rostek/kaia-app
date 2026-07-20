@@ -1,4 +1,4 @@
-# Kapitel 3 — Konzeptionelles Rahmenwerk
+# Kapitel 3 — Konzeption
 
 > **Stand:** 13. Juli 2026 · **Version:** 2.0-DRAFT  
 > **Reviewer:** Psychologe (3.2, 3.3) ✓ · AI Engineer (3.3–3.6, 3.7–3.9) ✓ · Didaktiker (3.3–3.5) ✓ · Architect ✓  
