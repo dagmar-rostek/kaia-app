@@ -1032,7 +1032,7 @@ SEED_TEMPLATES = [
         "character": "warm",
         "template": KAIA_PROMPT_V4_WARM,
         "is_active": True,
-        "version": 1,
+        "version": 4,
         "notes": (
             "Warm character v4 — Schweiger-Check (#11): differenziert Fragenabstraktion "
             "(→ Fragetyp verkleinern) von emotionalem Rueckzug (→ Rupture-Repair). "
