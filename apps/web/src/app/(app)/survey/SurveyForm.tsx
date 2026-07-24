@@ -742,12 +742,12 @@ export function SurveyForm({ measurementType, redirectTo }: Props) {
             {isPost ? "Abschlussbefragung" : "Eingangsbefragung"}
           </div>
           <h1 className="text-2xl font-semibold tracking-tight">
-            {isPost ? "Wie hat sich dein Lernen verändert?" : "Wie lernst du bisher?"}
+            {isPost ? "Wie weit ist dein Wissen in die Praxis gegangen?" : "Wie weit bringst du dein Wissen in die Praxis?"}
           </h1>
           <p className="text-muted-foreground leading-relaxed">
             {isPost
-              ? "Du hast mindestens 10 Sessions mit KAIA abgeschlossen. Jetzt schauen wir gemeinsam, was sich verändert hat — in deinen Lernstrategien, deiner Selbstwirksamkeit und deiner Überzeugung, das Steuer beim Lernen in der Hand zu haben."
-              : "Bevor du mit KAIA startest, machen wir eine kurze Bestandsaufnahme. Wie gehst du ans Lernen heran? Was glaubst du, was funktioniert? Das dauert ca. 12 Minuten — und lohnt sich."}
+              ? "Du hast mindestens 10 Sessions mit KAIA abgeschlossen. Jetzt schauen wir gemeinsam, was sich verändert hat — wie nah du deinem Wissen im Alltag tatsächlich gekommen bist, und ob sich deine Überzeugung, den Schritt vom Wissen ins Tun zu schaffen, verändert hat."
+              : "Bevor du mit KAIA startest, machen wir eine Bestandsaufnahme. Nicht was du weißt — sondern wie gut es dir bisher gelingt, dein Wissen auch wirklich anzuwenden. Das dauert ca. 12 Minuten."}
           </p>
         </div>
 
@@ -756,7 +756,7 @@ export function SurveyForm({ measurementType, redirectTo }: Props) {
           <div className="rounded-lg border border-border p-5 space-y-4 text-sm">
             <p className="font-medium text-foreground">Warum dieser Fragebogen?</p>
             <p className="text-muted-foreground leading-relaxed">
-              KAIA ist kein generisches Chatbot-System. Dein Lernprofil — Motivation, Strategien, Selbstwirksamkeit — fließt direkt in die Art ein, wie KAIA mit dir arbeitet. Je ehrlicher deine Antworten, desto besser kann KAIA auf dich eingehen.
+              KAIA begleitet den Transfer — den Schritt vom Wissen ins Handeln. Dieser Fragebogen erfasst deinen Ausgangspunkt: Wie groß ist die Lücke zwischen dem, was du weißt, und dem, was du tatsächlich tust? Und wie sehr glaubst du daran, dass du sie schließen kannst? Je ehrlicher deine Antworten, desto besser kann KAIA dort ansetzen, wo es bei dir wirklich hakt.
             </p>
             <div className="border-t border-border pt-4 space-y-2">
               <p className="font-medium text-foreground">Was du davon hast</p>
