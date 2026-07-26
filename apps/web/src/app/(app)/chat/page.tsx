@@ -706,9 +706,14 @@ export default function ChatPage() {
 
               {sessionSummary && (
                 <div className="rounded-xl border border-border/50 bg-muted/30 p-4 space-y-3 text-sm">
-                  <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
-                    Reflexion dieser Session
-                  </p>
+                  <div className="space-y-1">
+                    <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+                      Reflexion dieser Session
+                    </p>
+                    <p className="text-xs text-muted-foreground/70 leading-relaxed">
+                      KAIA hat das Gespräch im Hintergrund ausgewertet — was war das Thema, wie war die Stimmung, was hat sich bewegt.
+                    </p>
+                  </div>
 
                   {sessionSummary.mood && (
                     <p className="flex items-center gap-2">
