@@ -53,7 +53,7 @@ def _approval_html(username: str) -> str:
     </a>
   </div>
   <p style="color: #555; line-height: 1.6; font-size: 13px;">
-    Die Studie läuft über <strong>3 Wochen</strong> mit mindestens
+    Die Studie läuft über <strong>3 Wochen</strong> mit genau
     <strong>10 Sessions</strong>. Du kannst selbst bestimmen, wann du startest —
     am besten bald, damit du alle Sessions entspannt verteilen kannst.
   </p>

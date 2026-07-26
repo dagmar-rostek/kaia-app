@@ -183,7 +183,7 @@ export default function MitmachenPage() {
           <h2 className="text-2xl font-bold tracking-tight">Wie läuft die Teilnahme ab?</h2>
           <p className="text-muted-foreground text-sm">
             Fünf Schritte — insgesamt ca. <strong className="text-foreground">2–3 Stunden über 3 Wochen</strong>.
-            Du entscheidest wann und wie lange — mindestens 10 Sessions à mind. 5 Minuten.
+            Du entscheidest wann und wie lange — genau 10 Sessions à mind. 5 Minuten.
           </p>
         </div>
 

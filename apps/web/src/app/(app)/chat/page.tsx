@@ -104,6 +104,19 @@ const CHARACTER_LABELS = {
 
 type Character = keyof typeof CHARACTER_LABELS
 
+const SESSION_NAMES: Record<number, string> = {
+  1: "Ankern",
+  2: "Kartieren",
+  3: "Erden",
+  4: "Ausprobieren",
+  5: "Spiegel",
+  6: "Reiben",
+  7: "Schärfen",
+  8: "Übergeben",
+  9: "Konsolidieren",
+  10: "Loslassen",
+}
+
 // Inactivity timeout after closure bubble appears (10 min)
 const CLOSURE_TIMEOUT_MS = 10 * 60 * 1000
 
@@ -694,9 +707,12 @@ export default function ChatPage() {
           <span className="text-border/60 select-none">|</span>
           <span className="font-semibold tracking-tight">KAIA</span>
           {sessionNumber !== null && (
-            <span className="text-xs text-muted-foreground">
-              Session {sessionNumber} von 10
-            </span>
+            <div className="flex flex-col leading-tight">
+              <span className="text-sm font-medium">
+                Session {sessionNumber}{SESSION_NAMES[sessionNumber] ? ` — ${SESSION_NAMES[sessionNumber]}` : ""}
+              </span>
+              <span className="text-[10px] text-muted-foreground/50 leading-none">von 10</span>
+            </div>
           )}
         </div>
         <div className="flex items-center gap-1.5">
@@ -950,10 +966,10 @@ export default function ChatPage() {
             <div className="space-y-4 py-4" aria-live="assertive">
               {sessionNumber === 10 ? (
                 <div className="rounded-xl border border-border/60 bg-muted/40 p-5 space-y-3 text-center">
-                  <p className="font-medium text-sm">Du hast alle 10 Sessions abgeschlossen.</p>
+                  <p className="font-medium text-sm">10 Gespräche — fertig.</p>
                   <p className="text-xs text-muted-foreground leading-relaxed">
-                    Danke — das war eine echte Zusammenarbeit. Jetzt fehlt noch der Abschluss-Fragebogen,
-                    damit die Studie komplett ist. Das dauert ca. 5 Minuten.
+                    Das war keine kleine Sache. Jetzt fehlt noch der Abschluss-Fragebogen —
+                    5 Minuten, dann ist die Studie komplett.
                   </p>
                   <Link
                     href="/survey/post"
@@ -963,14 +979,32 @@ export default function ChatPage() {
                   </Link>
                 </div>
               ) : (
-                <p className="text-center text-xs text-muted-foreground/60">
-                  Session beendet.{" "}
-                  <button
-                    onClick={() => resetSession()}
-                    className="underline underline-offset-2 hover:text-foreground transition-colors"
-                  >
-                    Neue Session starten
-                  </button>
+                <>
+                  {sessionNumber === 3 && (
+                    <p className="text-center text-[11px] text-muted-foreground/40 pb-1">
+                      — Einstiegsphase abgeschlossen —
+                    </p>
+                  )}
+                  {sessionNumber === 5 && (
+                    <p className="text-center text-[11px] text-muted-foreground/40 pb-1">
+                      — Halbzeit —
+                    </p>
+                  )}
+                  <p className="text-center text-xs text-muted-foreground/60">
+                    Session beendet.{" "}
+                    <button
+                      onClick={() => resetSession()}
+                      className="underline underline-offset-2 hover:text-foreground transition-colors"
+                    >
+                      Neue Session starten
+                    </button>
+                  </p>
+                </>
+              )}
+
+              {!sessionSummary && (
+                <p className="text-center text-xs text-muted-foreground/40 pt-1">
+                  Einen Moment — KAIA fasst zusammen.
                 </p>
               )}
 

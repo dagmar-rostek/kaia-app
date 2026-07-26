@@ -2,14 +2,21 @@
 
 import { X } from "lucide-react"
 
+const SESSION_HINTS: Record<number, string> = {
+  1:  "Ankern — heute lernen du und KAIA euch kennen.",
+  2:  "Kartieren — was weißt du schon, ohne es gewusst zu haben?",
+  3:  "Erden — hier wird das Abstrakte konkret.",
+  4:  "Ausprobieren — was hast du seit letzter Session tatsächlich gemacht?",
+  5:  "Spiegel — Halbzeit. Schau zurück, bevor es weiter geht.",
+  6:  "Reiben — KAIA stellt jetzt die unbequemen Fragen.",
+  7:  "Schärfen — was glaubst du wirklich?",
+  8:  "Übergeben — KAIA tritt zurück. Du übernimmst.",
+  9:  "Konsolidieren — vorletzte Session. Was bleibt?",
+  10: "Loslassen — letzte Session. Danach bist du auf dich gestellt.",
+}
+
 function getJourneyHint(sessionNumber: number): string {
-  if (sessionNumber === 1) return "Erste Session — KAIA lernt dich kennen."
-  if (sessionNumber <= 3) return "Einstiegsphase — lass dich auf KAIAs Fragen ein."
-  if (sessionNumber <= 7) return "Hauptphase — bleib dran, auch wenn es unbequem wird."
-  if (sessionNumber === 8) return "Langsam Richtung Abschluss — was hat sich verändert?"
-  if (sessionNumber === 9) return "Vorletzte Session — fast geschafft."
-  if (sessionNumber === 10) return "Letzte Session — danach folgt die Post-Befragung."
-  return ""
+  return SESSION_HINTS[sessionNumber] ?? ""
 }
 
 interface Props {

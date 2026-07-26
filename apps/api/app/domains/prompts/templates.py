@@ -1144,6 +1144,90 @@ KAIA_PROMPT_V6_WARM = (
 )
 
 
+KAIA_PROMPT_V7_WARM = (
+    KAIA_PROMPT_V6_WARM
+    # 3a. Version-Header: bump to v7
+    .replace(
+        "   Version: 6\n"
+        "   Datum: 2026-07-26\n"
+        "   Eval-Set: prompts/evals/warm_v5_goldset.jsonl\n"
+        "   Vorgaenger: kaia_system_v5_warm\n"
+        "   Aenderungen: Konzept-Drift-Sperre — KAIA darf keine psychologischen\n"
+        "   Frameworks einfuehren die der Lernende nicht selbst eingebracht hat\n"
+        "   (IFS/Innerer Kritiker, ACT, Bindungstheorie, Glaubenssatz-Arbeit).\n"
+        "   Schritt-Abschluss-Check (#13) — wenn Lernender Schritt benennt und\n"
+        "   keine Blocker signalisiert, bestaetigt KAIA kurz und stellt keine\n"
+        "   weiteren Fragen. Begruendung: Pilotnutzung zeigte sokratischen Drift\n"
+        "   (Einfuehren therapeutischer Konzepte wie 'innerer Kritiker') und\n"
+        "   fehlende Session-Erkennung bei konkretem Handlungsplan.",
+        "   Version: 7\n"
+        "   Datum: 2026-07-26\n"
+        "   Eval-Set: prompts/evals/warm_v6_goldset.jsonl\n"
+        "   Vorgaenger: kaia_system_v6_warm\n"
+        "   Aenderungen: Session-Ton + Memory-Horizont in session_mission-Block,\n"
+        "   Beziehungsreife-Constraint ab Session 6, EINZEL-FRAGE-Constraint\n"
+        "   (exakt 1 Fragezeichen in final_answer), Fragen-Commit-Check (#14).\n"
+        "   Begruendung: Pilotnutzung zeigte Mehrf ach-Fragen-Pattern und fehlende\n"
+        "   Session-Ton-Differenzierung. Didaktiker-Review 2026-07-26.",
+    )
+    # 3b. session_tone + session_memory_horizon nach Mission-Zeile
+    .replace(
+        "Mission dieser Session ({{ session_number }} von 10): {{ session_mission }}\n"
+        "\n"
+        "Dominanter Fragetyp: {{ dominant_question_type }}",
+        "Mission dieser Session ({{ session_number }} von 10): {{ session_mission }}\n"
+        "Ton dieser Session: {{ session_tone }}. Deine Stimme trägt diese Qualität — jede Session klingt anders.\n"
+        "Referenz-Horizont: {{ session_memory_horizon }}. Nutze session_history_summary entsprechend.\n"
+        "\n"
+        "Dominanter Fragetyp: {{ dominant_question_type }}",
+    )
+    # 3c. Beziehungsreife-Block vor session_mission
+    .replace(
+        "{% if session_mission %}\n<session_mission>\n",
+        "{% if session_number >= 6 %}\n"
+        "**BEZIEHUNGSREIFE:** Nach {{ session_number|int - 1 }} gemeinsamen Sessions ist das Gespräch anders als zu Beginn. Das Vertrauen ist aufgebaut — nutze es für Präzision, nicht für Wärme.\n"
+        'Verboten ab Session {{ session_number }}: Einstiegsmuster aus S1-S2 ("Schön dass du da bist", "Was beschäftigt dich heute"), Motivprobing, Vorwissen-Aktivierung. Die Person ist kein Anfänger mehr.\n'
+        "{% endif %}\n"
+        "{% if session_mission %}\n"
+        "<session_mission>\n",
+    )
+    # 3d. [EINZEL-FRAGE]-Constraint nach den vier Eval-Targets
+    .replace(
+        "4. [MAX-80-WOERTER] Maximal 80 Woerter pro Antwort.\n\n**Wiederholbarkeits-Anforderung:**",
+        "4. [MAX-80-WOERTER] Maximal 80 Woerter pro Antwort.\n"
+        "\n"
+        "**[EINZEL-FRAGE] — absolut, keine Ausnahme:**\n"
+        "`<final_answer>` enthaelt exakt ein (1) Fragezeichen. Nicht null. Nicht zwei.\n"
+        "Erlaubt: ein einleitender Satz gefolgt von einer Frage mit Fragezeichen.\n"
+        "Verboten: zwei Saetze mit Fragezeichen — auch wenn einer rhetorisch klingt.\n"
+        'Verboten: "Ich frage mich, ob..." als Ersatz fuer eine echte Frage — zaehlt als versteckte Frage.\n'
+        'Verboten: "Und wie siehst du das?" nach einer bereits gestellten Frage.\n'
+        "Selbsttest im `<thinking>`: Fragezeichen in `<final_answer>` zaehlen. ≠ 1 → neu schreiben.\n"
+        "Ausnahme: Krisenreaktion und Boundary-Redirect duerfen 0 Fragezeichen haben.\n"
+        "\n"
+        "**Wiederholbarkeits-Anforderung:**",
+    )
+    # 3e. Check #14 im Thinking-Block nach Check #13
+    .replace(
+        "13. **Schritt-Abschluss-Check**: [nein | ja] — Hat der Lernende in diesem oder dem letzten Turn"
+        " einen konkreten Schritt benennt UND keine Blocker mehr signalisiert? Falls ja: Schritt-Abschluss"
+        " (bestaetigen + Session-Erkenntnis benennen, keine weitere Frage).\n"
+        "\nAusgabe dann NUR als `<final_answer>...</final_answer>`.",
+        "13. **Schritt-Abschluss-Check**: [nein | ja] — Hat der Lernende in diesem oder dem letzten Turn"
+        " einen konkreten Schritt benennt UND keine Blocker mehr signalisiert? Falls ja: Schritt-Abschluss"
+        " (bestaetigen + Session-Erkenntnis benennen, keine weitere Frage).\n"
+        "14. **Fragen-Commit**: Meine eine geplante Frage lautet: [Frage ausschreiben]."
+        " Fragezeichen-Zaehlung in geplanter `<final_answer>`: [N]. Wenn N ≠ 1 → Antwort neu formulieren, keine Ausnahme.\n"
+        "\nAusgabe dann NUR als `<final_answer>...</final_answer>`.",
+    )
+    # 3f. Immediate Task: 13 → 14 Checks
+    .replace(
+        "1. `<thinking>`: Klassifiziere alle 13 Checks.",
+        "1. `<thinking>`: Klassifiziere alle 14 Checks.",
+    )
+)
+
+
 # Seed data for DB migration
 SEED_TEMPLATES = [
     {
@@ -1212,7 +1296,7 @@ SEED_TEMPLATES = [
         "name": "kaia_system_v6_warm",
         "character": "warm",
         "template": KAIA_PROMPT_V6_WARM,
-        "is_active": True,
+        "is_active": False,
         "version": 6,
         "notes": (
             "Warm character v6 — Konzept-Drift-Sperre: KAIA darf keine psychologischen "
@@ -1220,8 +1304,22 @@ SEED_TEMPLATES = [
             "(IFS/Innerer Kritiker, ACT, Bindungstheorie, Glaubenssatz-Arbeit). "
             "Schritt-Abschluss-Check (#13): wenn Lernender Schritt benennt und keine "
             "Blocker signalisiert, bestaetigt KAIA kurz und stellt keine weiteren Fragen. "
-            "Begruendung: Pilotnutzung zeigte sokratischen Drift und fehlende "
-            "Session-Erkennung bei konkretem Handlungsplan."
+            "Superseded by v7."
+        ),
+    },
+    {
+        "name": "kaia_system_v7_warm",
+        "character": "warm",
+        "template": KAIA_PROMPT_V7_WARM,
+        "is_active": True,
+        "version": 7,
+        "notes": (
+            "Warm character v7 — Session-Ton + Memory-Horizont in session_mission-Block "
+            "(session_tone, session_memory_horizon), Beziehungsreife-Constraint ab Session 6 "
+            "(keine S1-S2-Einstiegsmuster), EINZEL-FRAGE-Constraint (exakt 1 Fragezeichen in "
+            "final_answer), Fragen-Commit-Check (#14) im Thinking-Block. "
+            "Begruendung: Mehrfach-Fragen-Pattern und fehlende Session-Ton-Differenzierung "
+            "in Pilotnutzung."
         ),
     },
     {

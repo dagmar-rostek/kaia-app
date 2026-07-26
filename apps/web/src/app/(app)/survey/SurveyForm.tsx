@@ -605,7 +605,7 @@ function PreCompletionPanel({ redirectTo }: { redirectTo: string }) {
           <h1 className="text-xl font-semibold">Eingangsbefragung gespeichert</h1>
         </div>
         <p className="text-sm text-muted-foreground leading-relaxed">
-          Deine Ausgangswerte sind gesichert. Nach Abschluss der Studie — nach mindestens 10 Sessions — wirst du deine vollständige Entwicklung sehen: Vorher vs. Nachher in allen Messdimensionen.
+          Deine Ausgangswerte sind gesichert. Nach Abschluss der Studie — nach genau 10 Sessions — wirst du deine vollständige Entwicklung sehen: Vorher vs. Nachher in allen Messdimensionen.
         </p>
       </div>
 
@@ -746,7 +746,7 @@ export function SurveyForm({ measurementType, redirectTo }: Props) {
           </h1>
           <p className="text-muted-foreground leading-relaxed">
             {isPost
-              ? "Du hast mindestens 10 Sessions mit KAIA abgeschlossen. Jetzt schauen wir gemeinsam, was sich verändert hat — wie nah du deinem Wissen im Alltag tatsächlich gekommen bist, und ob sich deine Überzeugung, den Schritt vom Wissen ins Tun zu schaffen, verändert hat."
+              ? "Du hast alle 10 Sessions mit KAIA abgeschlossen. Jetzt schauen wir gemeinsam, was sich verändert hat — wie nah du deinem Wissen im Alltag tatsächlich gekommen bist, und ob sich deine Überzeugung, den Schritt vom Wissen ins Tun zu schaffen, verändert hat."
               : "Bevor du mit KAIA startest, machen wir eine Bestandsaufnahme. Nicht was du weißt — sondern wie gut es dir bisher gelingt, dein Wissen auch wirklich anzuwenden. Das dauert ca. 12 Minuten."}
           </p>
         </div>

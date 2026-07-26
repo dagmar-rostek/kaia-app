@@ -345,13 +345,55 @@ KAIA: "Was bleibt offen — und wer außer dir könnte das weiterführen?"
 }
 
 
-def _session_mission_block(session_number: int) -> tuple[str, str, str, str]:
-    """Return (mission, dominant_type, forbidden_types, few_shots) for the given session."""
+_SESSION_NAMES: dict[int, str] = {
+    1: "Ankern",
+    2: "Kartieren",
+    3: "Erden",
+    4: "Ausprobieren",
+    5: "Spiegel",
+    6: "Reiben",
+    7: "Schärfen",
+    8: "Übergeben",
+    9: "Konsolidieren",
+    10: "Loslassen",
+}
+
+_SESSION_TONES: dict[int, str] = {
+    1: "einladend — die Person kommt an",
+    2: "suchend — gemeinsam kartieren",
+    3: "verankert — konkret, nicht abstrakt",
+    4: "drängend — aus Reflexion in Aktion",
+    5: "spiegelnd — Abstand zur eigenen Entwicklung",
+    6: "scharf — Elenchos, kein Trost",
+    7: "fordernd — keine Ausweichmanöver",
+    8: "loslassend — KAIA zieht sich zurück",
+    9: "ruhig-tief — Destillation",
+    10: "offen-still — Raum ohne Steuerung",
+}
+
+_SESSION_MEMORY_HORIZONS: dict[int, str] = {
+    1: "keine Vorgeschichte",
+    2: "Session 1",
+    3: "Sessions 1-2",
+    4: "Session 3 (Schritt-Fokus)",
+    5: "Sessions 1-4 (Halbzeit-Ueberblick)",
+    6: "Sessions 1-5 (historische Zitate aktivieren)",
+    7: "Session 6 (Elenchos-Material verarbeiten)",
+    8: "Sessions 1-7 (Transfer-Fokus)",
+    9: "Sessions 1-8 (Gesamt-Destillation)",
+    10: "Sessions 1-9 (vollstaendig, aber nicht retrospektiv)",
+}
+
+
+def _session_mission_block(session_number: int) -> tuple[str, str, str, str, str, str]:
+    """Return (mission, dominant_type, forbidden_types, few_shots, tone, memory_horizon)."""
     return (
         _SESSION_MISSIONS.get(session_number, ""),
         _DOMINANT_QUESTION_TYPES.get(session_number, ""),
         _FORBIDDEN_QUESTION_TYPES.get(session_number, ""),
         _SESSION_FEW_SHOTS.get(session_number, ""),
+        _SESSION_TONES.get(session_number, ""),
+        _SESSION_MEMORY_HORIZONS.get(session_number, ""),
     )
 
 
@@ -454,6 +496,144 @@ META_TRIGGERS = {
 # ── Shared prompt builder ─────────────────────────────────────────────────────
 
 
+def _build_opening_trigger(
+    session_number: int,
+    last_first_step: str,
+    insight_for_next_session: str,
+    last_session_observation: str,
+    historical_quotes: list[tuple[int, str]],
+    learning_topic: str,
+) -> str:
+    """Session-specific opening trigger with memory anchor and single-question enforcement."""
+    if session_number == 1:
+        topic_part = f" Das Thema: {learning_topic}." if learning_topic else ""
+        return (
+            "[Gesprächsstart Session 1 — begrüsse die Person kurz und herzlich. "
+            "Erkläre in 2-3 Sätzen das Wesentliche: 10 Sessions, eine pro Tag, "
+            "3 Wochen Zeit."
+            + topic_part
+            + " Am Ende ein kurzes Abschlussgespräch mit der Forscherin — "
+            "du antwortest auf Fragen, genauso wie hier. "
+            "Dann stelle genau eine erste sokratische Einstiegsfrage — einladend, offen, ohne Wertung. "
+            "Exakt ein Fragezeichen in deiner Antwort, kein weiteres.]"
+        )
+
+    # Memory anchor: KAIA kennt den Schritt, öffnet aber mit offener Retrieval-Frage (Psychologe-Prinzip)
+    if last_first_step:
+        anchor = (
+            f"Du weisst: der letzte vereinbarte Schritt war '{last_first_step}'. "
+            f"Oeffne NICHT damit — stelle zuerst eine offene Frage was seit dem letzten Gespraech passiert ist. "
+            f"Greife den Schritt erst auf nachdem die Person geantwortet hat."
+        )
+    elif insight_for_next_session:
+        anchor = (
+            f"Aus der letzten Session traegst du mit: '{insight_for_next_session}'. "
+            f"Formuliere als eigene Beobachtung oder Frage — kein 'In der letzten Session hast du gesagt...'."
+        )
+    elif last_session_observation:
+        anchor = (
+            f"Deine Beobachtung aus dem letzten Gespraech: '{last_session_observation}'. "
+            f"Nutze sie als natuerlichen Einstieg ohne sie als 'Beobachtung' zu bezeichnen."
+        )
+    else:
+        anchor = (
+            "Kein spezifisches Memory aus der letzten Session vorhanden. "
+            "Steige offen ein: 'Was ist dir seit unserem letzten Gespraeach durch den Kopf gegangen?'"
+        )
+
+    if session_number == 6:
+        if historical_quotes:
+            earliest = historical_quotes[0]
+            quote_note = (
+                f"Verfuegbare historische Zitate, u.a. Session {earliest[0]}: '{earliest[1]}'. "
+                "Fuer Elenchos: zitiere das Eigene der Person, nicht deine Interpretation."
+            )
+        else:
+            quote_note = (
+                "Keine historischen Zitate verfuegbar — nutze Beobachtungen aus session_history_summary. "
+                "Formuliere als 'In unseren Gespraechen habe ich bemerkt...' ohne Quelle zu benennen."
+            )
+        return (
+            "[Gesprächsstart Session 6 — Mission: Reiben. Elenchos beginnt. "
+            f"{anchor} "
+            f"{quote_note} "
+            "Diese Session klingt anders: schärfer, präziser als S2–S5. "
+            "Beginne mit einer kurzen Beobachtung die einen Widerspruch andeutet — ohne ihn aufzudecken. "
+            "Dann stelle genau eine Widerspruchsfrage (Typ 3). "
+            "Exakt ein Fragezeichen in deiner Antwort, kein weiteres.]"
+        )
+
+    session_bodies: dict[int, str] = {
+        2: (
+            "[Gesprächsstart Session 2 — Mission: Kartieren. "
+            f"{anchor} "
+            "Beginne mit einer kurzen genuinen Reflexion was dich aus Session 1 noch beschäftigt "
+            "— als eigene Beobachtung, kein 'Du hast gesagt...'. "
+            "Dann stelle genau eine Klärungsfrage (Typ 1). "
+            "Exakt ein Fragezeichen in deiner Antwort, kein weiteres.]"
+        ),
+        3: (
+            "[Gesprächsstart Session 3 — Mission: Erden. "
+            f"{anchor} "
+            "Diese Session verankert das Lernziel in einer echten Situation des Alltags. "
+            "Beginne mit einer kurzen Reflexion. "
+            "Dann stelle genau eine systemische Frage (Typ 4): In welcher konkreten Situation ändert sich was? "
+            "Exakt ein Fragezeichen in deiner Antwort, kein weiteres.]"
+        ),
+        4: (
+            "[Gesprächsstart Session 4 — Mission: Ausprobieren. "
+            f"{anchor} "
+            "Kein langer Monolog. Sofort zur Sache — der Schritt ist das Zentrum dieser Session. "
+            "Stelle genau eine Frage über was konkret passiert ist (oder nicht). "
+            "Exakt ein Fragezeichen in deiner Antwort, kein weiteres.]"
+        ),
+        5: (
+            "[Gesprächsstart Session 5 — Mission: Spiegel. Halbzeit. "
+            f"{anchor} "
+            "Beginne mit dem Schritt-Loop falls last_first_step gesetzt — "
+            "die Halbzeit-Reflexionsfrage kommt erst nach 2-3 Turns der Arbeitsphase, nicht als Eröffnung. "
+            "Genau eine Frage. Exakt ein Fragezeichen, kein weiteres.]"
+        ),
+        7: (
+            "[Gesprächsstart Session 7 — Mission: Schärfen. "
+            f"{anchor} "
+            "Diese Session fragt nach Überzeugung, nicht nach Wissen. "
+            "Beginne mit einer kurzen Reflexion was sich nach Session 6 noch bewegt hat. "
+            "Dann stelle genau eine hypothetische Frage (Typ 2) die eine Position fordert. "
+            "Exakt ein Fragezeichen in deiner Antwort, kein weiteres.]"
+        ),
+        8: (
+            "[Gesprächsstart Session 8 — Mission: Übergeben. KAIA gibt Steuerung ab. "
+            f"{anchor} "
+            "Beginne mit einer konkreten Beobachtung über Entwicklung — nicht lobend, sondern beobachtend. "
+            "Dann stelle genau eine systemische Transferfrage (Typ 4): Was wird anders ohne Begleitung? "
+            "Exakt ein Fragezeichen in deiner Antwort, kein weiteres.]"
+        ),
+        9: (
+            "[Gesprächsstart Session 9 — Mission: Konsolidieren. Vorletzte Session. "
+            f"{anchor} "
+            "Ton: ruhig, tiefer als S6-S7. Stelle eine genuine Frage die das Lernen als Ganzes andeutet. "
+            "Genau eine Meta-Frage über die Person als Lernende. "
+            "Exakt ein Fragezeichen in deiner Antwort, kein weiteres.]"
+        ),
+        10: (
+            "[Gesprächsstart Session 10 — Letzte Session. Mission: Loslassen. "
+            f"{anchor} "
+            "Kein Rückblick. Kein Aktionsplan. Kein Schritt (Typ 5). Kein Widerspruch (Typ 3). "
+            "Eine einzige Frage die nach vorne zeigt: Was gehört der Person jetzt? "
+            "Exakt ein Fragezeichen in deiner Antwort, kein weiteres.]"
+        ),
+    }
+    return session_bodies.get(
+        session_number,
+        (
+            "[Gesprächsstart — beginne mit einer kurzen genuinen Reflexion, "
+            "dann stelle genau eine Eröffnungsfrage. "
+            "Exakt ein Fragezeichen in deiner Antwort, kein weiteres.]"
+        ),
+    )
+
+
 def _compute_session_phase(session_number: int) -> str:
     if session_number <= 3:
         return "early"
@@ -501,8 +681,8 @@ async def _build_system_prompt(
         if session.session_number >= 6:
             historical_quotes = await load_historical_quotes(db, session.user_id, session.id)
 
-    mission, dominant_type, forbidden_types, few_shots = _session_mission_block(
-        session.session_number
+    mission, dominant_type, forbidden_types, few_shots, session_tone, memory_horizon = (
+        _session_mission_block(session.session_number)
     )
     ctx = PromptContext(
         user_name=user_name,
@@ -526,6 +706,8 @@ async def _build_system_prompt(
         dominant_question_type=dominant_type,
         forbidden_question_types=forbidden_types,
         session_few_shots=few_shots,
+        session_tone=session_tone,
+        session_memory_horizon=memory_horizon,
     )
     character = CharacterMode(session.character)
     raw_template = await get_active_template(db, character)
@@ -613,15 +795,30 @@ async def stream_opening(
 ) -> AsyncGenerator[str, None]:
     """Generate KAIA's opening message for a fresh session (no user message stored)."""
     repo = ChatRepository(db)
-    system_prompt = await _build_system_prompt(db, repo, session)
+
+    # Load cross-session context separately for trigger building
+    last_step, last_observation, insight = "", "", ""
+    historical_quotes: list[tuple[int, str]] = []
+    learning_topic = ""
     if session.session_number > 1:
-        trigger = (
-            "[Gesprächsstart — du hast seit der letzten Session über dieses Gespräch nachgedacht. "
-            "Beginne mit dem was du trägst — als eigene Reflexion, nicht als Protokoll-Wiedergabe. "
-            "Dann stelle deine Eröffnungsfrage.]"
+        last_step, last_observation, insight = await load_previous_session_fields(
+            db, repo, session.user_id, session.id
         )
-    else:
-        trigger = "[Gesprächsstart — stelle deine Eröffnungsfrage.]"
+        if session.session_number >= 6:
+            historical_quotes = await load_historical_quotes(db, session.user_id, session.id)
+    user = await repo.get_user(session.user_id)
+    if user:
+        learning_topic = user.learning_topic or ""
+
+    system_prompt = await _build_system_prompt(db, repo, session)
+    trigger = _build_opening_trigger(
+        session.session_number,
+        last_step,
+        insight,
+        last_observation,
+        historical_quotes,
+        learning_topic,
+    )
 
     try:
         (

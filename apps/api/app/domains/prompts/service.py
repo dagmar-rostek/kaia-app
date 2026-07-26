@@ -59,6 +59,8 @@ class PromptContext:
     dominant_question_type: str = ""
     forbidden_question_types: str = ""
     session_few_shots: str = ""
+    session_tone: str = ""  # z.B. "scharf — Elenchos, kein Trost"
+    session_memory_horizon: str = ""  # z.B. "Sessions 1-5 (historische Zitate aktivieren)"
 
 
 def _session_phase(session_number: int) -> str:
@@ -99,6 +101,8 @@ def render_prompt(template_str: str, ctx: PromptContext) -> str:  # noqa: PLR091
             dominant_question_type=ctx.dominant_question_type,
             forbidden_question_types=ctx.forbidden_question_types,
             session_few_shots=ctx.session_few_shots,
+            session_tone=ctx.session_tone,
+            session_memory_horizon=ctx.session_memory_horizon,
         )
     except TemplateError:
         # If Jinja2 rendering fails, return the raw template — better than crashing
