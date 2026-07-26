@@ -15,6 +15,7 @@ const EXAMPLES = [
   "Prioritäten setzen — die Theorie kenne ich, die Praxis fehlt",
   "Klare Grenzen setzen — ich weiß wie es geht, tue es aber nicht",
   "Souverän bleiben in Konflikten, obwohl ich meine Reaktionsmuster kenne",
+  "Englisch sprechen, obwohl ich weiß, dass mein Niveau reicht",
 ]
 
 export default function OnboardingPage() {
