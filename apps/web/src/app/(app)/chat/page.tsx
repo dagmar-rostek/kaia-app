@@ -295,6 +295,7 @@ export default function ChatPage() {
     setResumed(false)
     setBannerDismissed(false)
     setSessionSummary(null)
+    userTurnCountRef.current = 0
     setOpenTrigger(t => t + 1)
   }, [sessionId])
 
