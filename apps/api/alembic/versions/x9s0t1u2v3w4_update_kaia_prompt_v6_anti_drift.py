@@ -31,14 +31,12 @@ def upgrade() -> None:
         sa.text("UPDATE prompt_templates SET is_active = false WHERE name = 'kaia_system_v5_warm'")
     )
 
-    # Insert v6 — skip if already exists (idempotent)
+    # Delete existing v6 if present (idempotent), then insert fresh
+    conn.execute(sa.text("DELETE FROM prompt_templates WHERE name = 'kaia_system_v6_warm'"))
     conn.execute(
         sa.text(
-            "INSERT INTO prompt_templates (name, character, template, is_active, version, notes, created_at, updated_at) "
-            "VALUES (:name, :character, :template, :is_active, :version, :notes, NOW(), NOW()) "
-            "ON CONFLICT (name) DO UPDATE SET "
-            "template = EXCLUDED.template, is_active = EXCLUDED.is_active, "
-            "version = EXCLUDED.version, notes = EXCLUDED.notes, updated_at = NOW()"
+            "INSERT INTO prompt_templates (name, character, template, is_active, version, notes, created_at) "
+            "VALUES (:name, :character, :template, :is_active, :version, :notes, NOW())"
         ),
         {
             "name": "kaia_system_v6_warm",
