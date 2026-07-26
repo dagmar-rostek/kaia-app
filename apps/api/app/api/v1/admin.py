@@ -224,14 +224,14 @@ async def get_costs(db: Annotated[AsyncSession, Depends(get_db)]) -> dict[str, A
 
     per_session = await db.execute(
         text(
-            "SELECT s.session_number, u.username, "
+            "SELECT s.session_number, u.username, s.started_at, "
             "SUM(l.cost_eur) AS cost_eur, "
             "SUM(l.input_tokens) AS input_tokens, "
             "SUM(l.output_tokens) AS output_tokens "
             "FROM llm_usage l "
             "JOIN chat_sessions s ON s.id = l.session_id "
             "JOIN users u ON u.id = l.user_id "
-            "GROUP BY s.id, s.session_number, u.username "
+            "GROUP BY s.id, s.session_number, u.username, s.started_at "
             "ORDER BY s.id DESC LIMIT 50"
         )
     )

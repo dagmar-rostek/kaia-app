@@ -34,7 +34,7 @@ const LLM_ROWS: CostRow[] = [
 interface LiveCosts {
   total_eur: number
   by_model: { model: string; provider: string; input_tokens: number; output_tokens: number; cost_eur: number; sessions: number }[]
-  recent_sessions: { session_number: number; username: string; cost_eur: number; input_tokens: number; output_tokens: number }[]
+  recent_sessions: { session_number: number; username: string; started_at: string | null; cost_eur: number; input_tokens: number; output_tokens: number }[]
 }
 
 async function fetchLiveCosts(): Promise<LiveCosts | null> {
@@ -133,16 +133,22 @@ export default async function KostenPage() {
             <p className="text-sm text-muted-foreground px-1">Noch keine Sessions mit Kosten-Tracking.</p>
           ) : (
             <div className="rounded-lg border border-border divide-y divide-border overflow-x-auto">
-              <div className="grid grid-cols-4 px-4 py-2 text-xs font-medium text-muted-foreground bg-muted/30">
+              <div className="grid grid-cols-5 px-4 py-2 text-xs font-medium text-muted-foreground bg-muted/30">
                 <span>Nutzer</span>
                 <span>Session #</span>
+                <span>Datum</span>
                 <span>Token</span>
                 <span className="text-right">Kosten</span>
               </div>
               {live.recent_sessions.map((s, i) => (
-                <div key={i} className="grid grid-cols-4 px-4 py-2.5 text-sm items-center">
+                <div key={i} className="grid grid-cols-5 px-4 py-2.5 text-sm items-center">
                   <span className="font-mono text-xs text-muted-foreground">{s.username}</span>
                   <span>#{s.session_number}</span>
+                  <span className="text-xs text-muted-foreground tabular-nums">
+                    {s.started_at
+                      ? new Date(s.started_at).toLocaleString("de-DE", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" })
+                      : "—"}
+                  </span>
                   <span className="text-xs text-muted-foreground">
                     {((s.input_tokens + s.output_tokens) / 1000).toFixed(1)}k
                   </span>
