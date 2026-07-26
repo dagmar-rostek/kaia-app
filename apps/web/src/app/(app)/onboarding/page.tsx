@@ -13,6 +13,8 @@ const EXAMPLES = [
   "Konflikte im Team ansprechen statt auszusitzen",
   "Überzeugender präsentieren, obwohl ich die Methoden kenne",
   "Prioritäten setzen — die Theorie kenne ich, die Praxis fehlt",
+  "Klare Grenzen setzen — ich weiß wie es geht, tue es aber nicht",
+  "Souverän bleiben in Konflikten, obwohl ich meine Reaktionsmuster kenne",
 ]
 
 export default function OnboardingPage() {
