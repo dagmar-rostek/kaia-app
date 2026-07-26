@@ -11,11 +11,11 @@ const EXAMPLES = [
   "Kritische Feedbackgespräche, die ich immer wieder aufschiebe",
   "Besser delegieren — ich weiß wie's geht, tue es aber nicht",
   "Konflikte im Team ansprechen statt auszusitzen",
-  "Überzeugender präsentieren, obwohl ich die Methoden kenne",
-  "Prioritäten setzen — die Theorie kenne ich, die Praxis fehlt",
-  "Klare Grenzen setzen — ich weiß wie es geht, tue es aber nicht",
-  "Souverän bleiben in Konflikten, obwohl ich meine Reaktionsmuster kenne",
-  "Englisch sprechen, obwohl ich weiß, dass mein Niveau reicht",
+  "Beim Präsentieren die Methoden nutzen, die ich eigentlich kenne",
+  "Prioritäten setzen — ich weiß wie es geht, tue es aber nicht",
+  "Nein sagen fällt mir schwer — obwohl ich weiß, dass ich es sollte",
+  "In Konflikten eskaliere ich — obwohl ich meine Reaktionsmuster kenne",
+  "Englisch sprechen vermeide ich — obwohl ich weiß, dass mein Niveau reicht",
 ]
 
 export default function OnboardingPage() {
