@@ -252,8 +252,7 @@ export default function ChatPage() {
           const body = (raw.detail ?? raw) as { code?: string; redirect?: string }
           if (body.redirect) { router.replace(body.redirect); return }
           if (body.code === "study_completed") {
-            setError("Die Studie ist abgeschlossen. Danke für deine Teilnahme!")
-            setLoading(false)
+            router.replace("/abschluss")
             return
           }
         }
@@ -276,8 +275,7 @@ export default function ChatPage() {
           const body = (raw.detail ?? raw) as { code?: string; redirect?: string }
           if (body.redirect) { router.replace(body.redirect); return }
           if (body.code === "study_completed") {
-            setError("Die Studie ist abgeschlossen. Danke für deine Teilnahme!")
-            setLoading(false)
+            router.replace("/abschluss")
             return
           }
         }
