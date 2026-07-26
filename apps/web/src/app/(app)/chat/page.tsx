@@ -150,6 +150,14 @@ export default function ChatPage() {
   const [nameInput,      setNameInput]      = useState("")
   const [nameSaving,     setNameSaving]     = useState(false)
 
+  // Topic confirmation — one-time opportunity in session 1 before opening stream
+  const [topicStep,      setTopicStep]      = useState(false)
+  const [topicInput,     setTopicInput]     = useState("")
+  const [topicSaving,    setTopicSaving]    = useState(false)
+  const [learningTopic,  setLearningTopic]  = useState("")
+  // Fired after topic is confirmed — triggers the opening SSE stream
+  const [openStreamTrigger, setOpenStreamTrigger] = useState(0)
+
   // Daily limit
   const [dailyLimitMsg,  setDailyLimitMsg]  = useState<string | null>(null)
   const [nextAvailableAt, setNextAvailableAt] = useState<string | null>(null)
@@ -210,11 +218,16 @@ export default function ChatPage() {
       setNextAvailableAt(null)
 
       try {
-        // 0. Fetch user profile to get preferred_name (needed for name step + prompt context)
+        // 0. Fetch user profile to get preferred_name + learning_topic
+        let storedLearningTopic = ""
         const meRes = await authFetch(`${API_BASE}/api/v1/users/me`)
         if (meRes.ok) {
-          const meData = await meRes.json() as { preferred_name?: string | null }
+          const meData = await meRes.json() as {
+            preferred_name?: string | null
+            learning_topic?: string | null
+          }
           const name = meData.preferred_name ?? null
+          storedLearningTopic = meData.learning_topic ?? ""
           setPreferredName(name)
           if (!name) {
             setNameStep(true)
@@ -296,6 +309,16 @@ export default function ChatPage() {
         const sid = sessData.id
         setSessionId(sid)
         setSessionNumber(sessData.session_number)
+
+        // Session 1: pause before opening stream — show topic confirmation first
+        if (sessData.session_number === 1) {
+          setLearningTopic(storedLearningTopic)
+          setTopicInput(storedLearningTopic)
+          setTopicStep(true)
+          setLoading(false)
+          return
+        }
+
         setMessages([{ id: streamId, role: "assistant", content: "", streaming: true }])
 
         const openRes = await authFetch(`${API_BASE}/api/v1/chat/sessions/${sid}/opening`, {
@@ -349,6 +372,74 @@ export default function ChatPage() {
     }
   }, [nameInput])
 
+  const confirmTopic = useCallback(async () => {
+    if (!sessionId) return
+    setTopicSaving(true)
+    try {
+      const trimmed = topicInput.trim()
+      if (trimmed && trimmed !== learningTopic) {
+        const res = await authFetch(`${API_BASE}/api/v1/users/me/topic`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ learning_topic: trimmed }),
+        })
+        // 409 = already locked (shouldn't happen here, but handle gracefully)
+        if (!res.ok && res.status !== 409) throw new Error(String(res.status))
+        if (res.ok) setLearningTopic(trimmed)
+      }
+      setTopicStep(false)
+      setOpenStreamTrigger(t => t + 1)
+    } catch {
+      /* best-effort — proceed to opening stream regardless */
+      setTopicStep(false)
+      setOpenStreamTrigger(t => t + 1)
+    } finally {
+      setTopicSaving(false)
+    }
+  }, [sessionId, topicInput, learningTopic])
+
+  // Stream opening message after topic is confirmed (session 1 only)
+  useEffect(() => {
+    if (openStreamTrigger === 0 || !sessionId) return
+    let cancelled = false
+    const streamId = `a-open-s1-${Date.now()}`
+
+    const run = async () => {
+      if (cancelled) return
+      setLoading(true)
+      setMessages([{ id: streamId, role: "assistant", content: "", streaming: true }])
+      try {
+        const openRes = await authFetch(`${API_BASE}/api/v1/chat/sessions/${sessionId}/opening`, {
+          method: "POST",
+        })
+        if (!openRes.ok) throw new Error("Opening fehlgeschlagen")
+        await readSSEStream(
+          openRes,
+          (content) => {
+            if (!cancelled) setMessages(prev => prev.map(m =>
+              m.id === streamId ? { ...m, content: m.content + content } : m
+            ))
+          },
+          () => {
+            if (!cancelled) setMessages(prev => prev.map(m =>
+              m.id === streamId ? { ...m, streaming: false } : m
+            ))
+          },
+        )
+      } catch (e) {
+        if (!cancelled) {
+          setMessages([])
+          setError(e instanceof Error ? e.message : "Verbindungsfehler")
+        }
+      } finally {
+        if (!cancelled) setLoading(false)
+      }
+    }
+
+    void run()
+    return () => { cancelled = true }
+  }, [openStreamTrigger, sessionId])
+
   const resetSession = useCallback((newChar?: Character) => {
     if (closureTimerRef.current) clearTimeout(closureTimerRef.current)
     // End the current session on the backend before creating a new one.
@@ -386,19 +477,23 @@ export default function ChatPage() {
     setClosureState("ended")
   }, [sessionId])
 
-  // Fetch session summary 5s after session ends (Haiku extraction runs as background task)
+  // Poll for session summary after session ends — retry at 5s, 15s, 30s
+  // Haiku extraction runs as background task and may take >5s to complete
   useEffect(() => {
     if (closureState !== "ended" || !sessionId) return
-    const timer = setTimeout(async () => {
-      try {
-        const res = await authFetch(`${API_BASE}/api/v1/chat/sessions/${sessionId}/summary`)
-        if (res.ok) {
-          const data = await res.json() as SessionSummary
-          if (data.ready) setSessionSummary(data)
-        }
-      } catch { /* best-effort */ }
-    }, 5000)
-    return () => clearTimeout(timer)
+    const sid = sessionId
+    const timers = [5000, 15000, 30000].map(delay =>
+      setTimeout(async () => {
+        try {
+          const res = await authFetch(`${API_BASE}/api/v1/chat/sessions/${sid}/summary`)
+          if (res.ok) {
+            const data = await res.json() as SessionSummary
+            if (data.ready) setSessionSummary(data)
+          }
+        } catch { /* best-effort */ }
+      }, delay)
+    )
+    return () => timers.forEach(clearTimeout)
   }, [closureState, sessionId])
 
   const startClosure = useCallback(async () => {
@@ -676,8 +771,55 @@ export default function ChatPage() {
         </div>
       )}
 
+      {/* Topic confirmation screen — session 1 only, between name and opening stream */}
+      {topicStep && !nameStep && (
+        <div className="flex-1 flex items-center justify-center px-4">
+          <div className="w-full max-w-sm space-y-6">
+            <div className="rounded-2xl bg-muted px-5 py-4 text-sm leading-relaxed space-y-3">
+              <p>
+                Gleich geht es los — aber kurz noch etwas Wichtiges.
+              </p>
+              <p>
+                Die nächsten <strong>10 Sessions</strong> drehen sich alle um genau ein Thema:
+                deinen Lerntransfer rund um das, was du unten siehst. Das Thema bleibt für alle Sessions fest.
+              </p>
+              <p className="text-muted-foreground">
+                Das ist deine <strong>einzige Chance</strong>, es jetzt noch zu ändern — nach dieser ersten Session
+                ist es dauerhaft gesperrt.
+              </p>
+            </div>
+            <div className="space-y-3">
+              <label className="text-xs text-muted-foreground uppercase tracking-wider px-1">
+                Dein Thema
+              </label>
+              <textarea
+                autoFocus
+                value={topicInput}
+                onChange={e => setTopicInput(e.target.value)}
+                maxLength={500}
+                rows={3}
+                disabled={topicSaving}
+                className="w-full rounded-xl border border-border bg-muted/40 px-4 py-3 text-sm placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-foreground/20 disabled:opacity-50 resize-none"
+              />
+              <button
+                onClick={() => void confirmTopic()}
+                disabled={topicSaving || !topicInput.trim()}
+                className="w-full rounded-xl bg-foreground text-background px-4 py-3 text-sm font-medium hover:opacity-90 transition-opacity disabled:opacity-40 disabled:cursor-not-allowed"
+              >
+                {topicSaving
+                  ? "Einen Moment…"
+                  : topicInput.trim() !== learningTopic
+                    ? "Thema übernehmen und starten"
+                    : "Passt so — los geht's"
+                }
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Daily limit screen */}
-      {dailyLimitMsg && !nameStep && (
+      {dailyLimitMsg && !nameStep && !topicStep && (
         <div className="flex-1 flex items-center justify-center px-4">
           <div className="w-full max-w-sm space-y-4 text-center">
             <div className="rounded-2xl bg-muted px-5 py-4 text-sm leading-relaxed text-left">
@@ -701,7 +843,7 @@ export default function ChatPage() {
       )}
 
       {/* Ton-Selector — direkt über dem Chat */}
-      {!nameStep && !dailyLimitMsg && sessionId && closureState !== "ended" && (
+      {!nameStep && !topicStep && !dailyLimitMsg && sessionId && closureState !== "ended" && (
         <div className="shrink-0 border-b border-border/40 px-4 py-2">
           <div className="max-w-2xl mx-auto flex items-center gap-2.5">
             <span className="text-[10px] text-muted-foreground/50 uppercase tracking-wide shrink-0">
@@ -729,7 +871,7 @@ export default function ChatPage() {
       )}
 
       {/* Messages */}
-      {!nameStep && !dailyLimitMsg && <div
+      {!nameStep && !topicStep && !dailyLimitMsg && <div
         className="flex-1 overflow-y-auto px-4 py-6"
         aria-live="polite"
         aria-label="Chat-Verlauf"
@@ -897,7 +1039,7 @@ export default function ChatPage() {
       </div>}
 
       {/* Feedback buttons — EMA signals, sticky above input */}
-      {!nameStep && !dailyLimitMsg && sessionId && closureState !== "ended" && messages.length > 1 && (
+      {!nameStep && !topicStep && !dailyLimitMsg && sessionId && closureState !== "ended" && messages.length > 1 && (
         <div
           className="shrink-0 border-t border-border/40 px-4 pt-2 pb-1.5"
           role="group"
@@ -951,7 +1093,7 @@ export default function ChatPage() {
       )}
 
       {/* Input */}
-      {!nameStep && !dailyLimitMsg && <div className="shrink-0 border-t border-border px-4 py-3">
+      {!nameStep && !topicStep && !dailyLimitMsg && <div className="shrink-0 border-t border-border px-4 py-3">
 
         <div className="max-w-2xl mx-auto flex items-end gap-2">
           <textarea

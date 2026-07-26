@@ -1,6 +1,7 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, Response
+from fastapi import APIRouter, Depends, HTTPException, Response
+from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.deps import CurrentUser
@@ -56,6 +57,16 @@ async def update_topic(
     current_user: CurrentUser,
     db: Annotated[AsyncSession, Depends(get_db)],
 ) -> UserRead:
+    # Topic is locked after the first session ends — one-time change window only
+    result = await db.execute(
+        text("SELECT COUNT(*) FROM chat_sessions WHERE user_id = :uid AND ended_at IS NOT NULL"),
+        {"uid": current_user.id},
+    )
+    if (result.scalar() or 0) > 0:
+        raise HTTPException(
+            status_code=409,
+            detail="Das Thema kann nach der ersten Session nicht mehr geändert werden.",
+        )
     current_user.learning_topic = data.learning_topic
     current_user.onboarding_complete = True
     await db.commit()
