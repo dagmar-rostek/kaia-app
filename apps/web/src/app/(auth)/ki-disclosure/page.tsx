@@ -3,7 +3,7 @@
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
-import { api } from "@/lib/api"
+import { authFetch } from "@/lib/auth"
 import { Brain, Shield, AlertTriangle, Eye, CheckCircle2 } from "lucide-react"
 
 export default function KiDisclosurePage() {
@@ -15,7 +15,12 @@ export default function KiDisclosurePage() {
     setLoading(true)
     setError(null)
     try {
-      await api.post("/v1/auth/disclosure-ack", {})
+      const res = await authFetch("/api/v1/auth/disclosure-ack", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({}),
+      })
+      if (!res.ok) throw new Error(String(res.status))
       router.push("/onboarding")
     } catch {
       setError("Fehler beim Speichern. Bitte versuche es erneut.")
