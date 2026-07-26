@@ -24,6 +24,7 @@ _env = Environment(loader=BaseLoader(), autoescape=False, undefined=_SilentUndef
 class PromptContext:
     # Basic user context
     user_name: str = ""
+    preferred_name: str = ""
     learning_topic: str = ""
 
     # Session position
@@ -78,6 +79,7 @@ def render_prompt(template_str: str, ctx: PromptContext) -> str:  # noqa: PLR091
         tmpl = _env.from_string(template_str)
         return tmpl.render(
             user_name=ctx.user_name,
+            preferred_name=ctx.preferred_name,
             learning_topic=ctx.learning_topic,
             is_first_session=ctx.is_first_session,
             is_final_session=ctx.is_final_session,

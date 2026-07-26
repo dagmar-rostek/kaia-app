@@ -62,6 +62,9 @@ class User(Base):
     # LLM-Modell-Zuweisung (null = globales System-Modell)
     kaia_model: Mapped[str | None] = mapped_column(String(100), nullable=True)
 
+    # Preferred name for KAIA to address the user (separate from username, allows pseudonymity)
+    preferred_name: Mapped[str | None] = mapped_column(String(50), nullable=True)
+
     # Simulation flag — marks test/research users, never real participants
     is_simulation: Mapped[bool] = mapped_column(Boolean, default=False)
     simulation_run: Mapped[str | None] = mapped_column(String(100), nullable=True)

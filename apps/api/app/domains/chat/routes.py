@@ -1,3 +1,6 @@
+from datetime import UTC, datetime, timedelta
+from zoneinfo import ZoneInfo
+
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Query, status
 from fastapi.responses import StreamingResponse
 from sqlalchemy import text
@@ -68,6 +71,31 @@ async def create_session(
                     "code": "cost_limit_reached",
                     "spent_eur": round(total_cost, 4),
                     "limit_eur": settings.max_cost_per_user_eur,
+                },
+            )
+    # Daily limit — max 1 session per user per calendar day (Europe/Berlin timezone)
+    # Skip for simulation users
+    if not getattr(user, "is_simulation", False):
+        berlin = ZoneInfo("Europe/Berlin")
+        now_berlin = datetime.now(berlin)
+        day_start = now_berlin.replace(hour=0, minute=0, second=0, microsecond=0)
+        day_end = day_start + timedelta(days=1)
+        day_start_utc = day_start.astimezone(UTC)
+        day_end_utc = day_end.astimezone(UTC)
+        existing_today = await db.execute(
+            text(
+                "SELECT COUNT(*) FROM chat_sessions "
+                "WHERE user_id = :uid AND started_at >= :start AND started_at < :end"
+            ),
+            {"uid": user.id, "start": day_start_utc, "end": day_end_utc},
+        )
+        if (existing_today.scalar() or 0) >= 1:
+            next_midnight_berlin = day_end
+            raise HTTPException(
+                status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+                detail={
+                    "code": "daily_limit_reached",
+                    "next_available_at": next_midnight_berlin.isoformat(),
                 },
             )
     session = await repo.create_session(

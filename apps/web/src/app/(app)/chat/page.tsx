@@ -107,6 +107,17 @@ type Character = keyof typeof CHARACTER_LABELS
 // Inactivity timeout after closure bubble appears (10 min)
 const CLOSURE_TIMEOUT_MS = 10 * 60 * 1000
 
+const DAILY_LIMIT_MESSAGES = [
+  "KAIA macht Pause. Lerntransfer braucht Zeit zum Setzen — das ist keine Entschuldigung, das ist Neurobiologie.",
+  "Eine Session pro Tag, das war die Abmachung. Und Abmachungen hält man, auch wenn man selbst sie getroffen hat.",
+  "Dein Gehirn verarbeitet das gerade im Hintergrund. Störe es nicht.",
+  "Zu viel KAIA auf einmal ist wie zu viel von allem auf einmal. Gut dosiert wirkt es besser.",
+  "Das war's für heute. Schlaf drüber — das ist keine Ausrede, das ist Wissenschaft.",
+  "KAIA hat heute Feierabend. Du auch. Das ist kein Bug.",
+  "Nächste Runde: ab 0:00 Uhr. Bis dahin: echtes Leben machen.",
+  "21 Tage, 10 Sessions, unendlich viele Erkenntnisse. Der Plan war nie, alles heute zu klären.",
+]
+
 export default function ChatPage() {
   const router = useRouter()
 
@@ -132,6 +143,16 @@ export default function ChatPage() {
   const [bannerDismissed, setBannerDismissed] = useState(false)
   const [showReportModal,  setShowReportModal]  = useState(false)
   const [sessionSummary,   setSessionSummary]   = useState<SessionSummary | null>(null)
+
+  // Name collection — first-time ask before session 1
+  const [preferredName,  setPreferredName]  = useState<string | null>(null)
+  const [nameStep,       setNameStep]       = useState(false)
+  const [nameInput,      setNameInput]      = useState("")
+  const [nameSaving,     setNameSaving]     = useState(false)
+
+  // Daily limit
+  const [dailyLimitMsg,  setDailyLimitMsg]  = useState<string | null>(null)
+  const [nextAvailableAt, setNextAvailableAt] = useState<string | null>(null)
   // Derived: show banner only when no user message sent yet AND not manually dismissed
   const showDayBanner = !bannerDismissed && !messages.some(m => m.role === "user")
 
@@ -185,8 +206,23 @@ export default function ChatPage() {
       setClosureState("idle")
       setClosureExchanges(0)
       setResumed(false)
+      setDailyLimitMsg(null)
+      setNextAvailableAt(null)
 
       try {
+        // 0. Fetch user profile to get preferred_name (needed for name step + prompt context)
+        const meRes = await authFetch(`${API_BASE}/api/v1/users/me`)
+        if (meRes.ok) {
+          const meData = await meRes.json() as { preferred_name?: string | null }
+          const name = meData.preferred_name ?? null
+          setPreferredName(name)
+          if (!name) {
+            setNameStep(true)
+            setLoading(false)
+            return
+          }
+        }
+
         // 1. Check for an existing open session
         const activeRes = await authFetch(`${API_BASE}/api/v1/chat/sessions/active`)
 
@@ -222,6 +258,13 @@ export default function ChatPage() {
           }
         }
 
+        // 1b. Check preferred_name — ask before first session if not set
+        if (!preferredName) {
+          setNameStep(true)
+          setLoading(false)
+          return
+        }
+
         // 2. No active session — create a new one
         const sessRes = await authFetch(`${API_BASE}/api/v1/chat/sessions`, {
           method: "POST",
@@ -234,6 +277,17 @@ export default function ChatPage() {
           if (body.redirect) { router.replace(body.redirect); return }
           if (body.code === "study_completed") {
             setError("Die Studie ist abgeschlossen. Danke für deine Teilnahme!")
+            setLoading(false)
+            return
+          }
+        }
+        if (sessRes.status === 429) {
+          const raw = await sessRes.json().catch(() => ({}))
+          const body = (raw.detail ?? raw) as { code?: string; next_available_at?: string }
+          if (body.code === "daily_limit_reached") {
+            const idx = Math.floor(Math.random() * DAILY_LIMIT_MESSAGES.length)
+            setDailyLimitMsg(DAILY_LIMIT_MESSAGES[idx])
+            setNextAvailableAt(body.next_available_at ?? null)
             setLoading(false)
             return
           }
@@ -276,6 +330,26 @@ export default function ChatPage() {
     void run()
     return () => { cancelled = true }
   }, [openTrigger, character])
+
+  const submitName = useCallback(async () => {
+    const trimmed = nameInput.trim()
+    if (!trimmed) return
+    setNameSaving(true)
+    try {
+      const res = await authFetch(`${API_BASE}/api/v1/users/me/name`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ preferred_name: trimmed }),
+      })
+      if (!res.ok) throw new Error(String(res.status))
+      setPreferredName(trimmed)
+      setNameStep(false)
+      setNameSaving(false)
+      setOpenTrigger(t => t + 1)  // re-run mount effect to start session
+    } catch {
+      setNameSaving(false)
+    }
+  }, [nameInput])
 
   const resetSession = useCallback((newChar?: Character) => {
     if (closureTimerRef.current) clearTimeout(closureTimerRef.current)
@@ -573,8 +647,63 @@ export default function ChatPage() {
         />
       )}
 
+      {/* Name collection screen — shown before first session if preferred_name is null */}
+      {nameStep && (
+        <div className="flex-1 flex items-center justify-center px-4">
+          <div className="w-full max-w-sm space-y-6">
+            <div className="rounded-2xl bg-muted px-5 py-4 text-sm leading-relaxed">
+              Bevor wir anfangen — wie darf ich dich ansprechen? Wir werden eine Weile miteinander unterwegs sein.
+            </div>
+            <div className="space-y-3">
+              <input
+                autoFocus
+                type="text"
+                value={nameInput}
+                onChange={e => setNameInput(e.target.value)}
+                onKeyDown={e => { if (e.key === "Enter") void submitName() }}
+                maxLength={50}
+                placeholder="Dein Name oder Spitzname"
+                disabled={nameSaving}
+                className="w-full rounded-xl border border-border bg-muted/40 px-4 py-3 text-sm placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-foreground/20 disabled:opacity-50"
+              />
+              <button
+                onClick={() => void submitName()}
+                disabled={nameSaving || !nameInput.trim()}
+                className="w-full rounded-xl bg-foreground text-background px-4 py-3 text-sm font-medium hover:opacity-90 transition-opacity disabled:opacity-40 disabled:cursor-not-allowed"
+              >
+                {nameSaving ? "Einen Moment…" : "Los geht's"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Daily limit screen */}
+      {dailyLimitMsg && !nameStep && (
+        <div className="flex-1 flex items-center justify-center px-4">
+          <div className="w-full max-w-sm space-y-4 text-center">
+            <div className="rounded-2xl bg-muted px-5 py-4 text-sm leading-relaxed text-left">
+              {dailyLimitMsg}
+            </div>
+            {nextAvailableAt && (
+              <p className="text-xs text-muted-foreground">
+                Nächste Session ab{" "}
+                <span className="font-medium text-foreground">
+                  {new Date(nextAvailableAt).toLocaleString("de-DE", {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                    day: "2-digit",
+                    month: "2-digit",
+                  })} Uhr
+                </span>
+              </p>
+            )}
+          </div>
+        </div>
+      )}
+
       {/* Ton-Selector — direkt über dem Chat */}
-      {sessionId && closureState !== "ended" && (
+      {!nameStep && !dailyLimitMsg && sessionId && closureState !== "ended" && (
         <div className="shrink-0 border-b border-border/40 px-4 py-2">
           <div className="max-w-2xl mx-auto flex items-center gap-2.5">
             <span className="text-[10px] text-muted-foreground/50 uppercase tracking-wide shrink-0">
@@ -602,7 +731,7 @@ export default function ChatPage() {
       )}
 
       {/* Messages */}
-      <div
+      {!nameStep && !dailyLimitMsg && <div
         className="flex-1 overflow-y-auto px-4 py-6"
         aria-live="polite"
         aria-label="Chat-Verlauf"
@@ -712,7 +841,10 @@ export default function ChatPage() {
                       Reflexion dieser Session
                     </p>
                     <p className="text-xs text-muted-foreground/70 leading-relaxed">
-                      KAIA hat das Gespräch im Hintergrund ausgewertet — was war das Thema, wie war die Stimmung, was hat sich bewegt.
+                      {preferredName
+                        ? `${preferredName}, KAIA hat das Gespräch im Hintergrund ausgewertet — was war das Thema, wie war die Stimmung, was hat sich bewegt.`
+                        : "KAIA hat das Gespräch im Hintergrund ausgewertet — was war das Thema, wie war die Stimmung, was hat sich bewegt."
+                      }
                     </p>
                   </div>
 
@@ -764,10 +896,10 @@ export default function ChatPage() {
 
           <div ref={bottomRef} />
         </div>
-      </div>
+      </div>}
 
       {/* Feedback buttons — EMA signals, sticky above input */}
-      {sessionId && closureState !== "ended" && messages.length > 1 && (
+      {!nameStep && !dailyLimitMsg && sessionId && closureState !== "ended" && messages.length > 1 && (
         <div
           className="shrink-0 border-t border-border/40 px-4 pt-2 pb-1.5"
           role="group"
@@ -821,7 +953,7 @@ export default function ChatPage() {
       )}
 
       {/* Input */}
-      <div className="shrink-0 border-t border-border px-4 py-3">
+      {!nameStep && !dailyLimitMsg && <div className="shrink-0 border-t border-border px-4 py-3">
 
         <div className="max-w-2xl mx-auto flex items-end gap-2">
           <textarea
@@ -862,7 +994,7 @@ export default function ChatPage() {
         <p className="text-xs text-muted-foreground/40 max-w-2xl mx-auto mt-1.5">
           Enter senden · Shift+Enter neue Zeile
         </p>
-      </div>
+      </div>}
 
       <LegalFooter />
 

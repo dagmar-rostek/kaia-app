@@ -474,6 +474,7 @@ async def _build_system_prompt(
 
     user = await repo.get_user(session.user_id)
     user_name = user.username if user else ""
+    preferred_name = (user.preferred_name or "") if user else ""
     learning_topic = user.learning_topic or "" if user else ""
 
     is_first = session.session_number == 1
@@ -505,6 +506,7 @@ async def _build_system_prompt(
     )
     ctx = PromptContext(
         user_name=user_name,
+        preferred_name=preferred_name,
         learning_topic=learning_topic,
         is_first_session=is_first,
         is_final_session=is_final,

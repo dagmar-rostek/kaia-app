@@ -42,6 +42,7 @@ class UserRead(BaseModel):
     ki_disclosure_seen_at: datetime | None
     learning_topic: str | None = None
     kaia_model: str | None = None
+    preferred_name: str | None = None
     created_at: datetime
 
     model_config = {"from_attributes": True}
@@ -49,6 +50,10 @@ class UserRead(BaseModel):
 
 class TopicUpdate(BaseModel):
     learning_topic: str = Field(max_length=500)
+
+
+class NameUpdate(BaseModel):
+    preferred_name: str = Field(min_length=1, max_length=50)
 
 
 class UserApprove(BaseModel):

@@ -9,6 +9,7 @@ from app.domains.users.repository import RefreshTokenRepository, UserRepository
 from app.domains.users.schemas import (
     ConsentUpdate,
     DeleteRequest,
+    NameUpdate,
     TopicUpdate,
     UserExport,
     UserRead,
@@ -57,6 +58,18 @@ async def update_topic(
 ) -> UserRead:
     current_user.learning_topic = data.learning_topic
     current_user.onboarding_complete = True
+    await db.commit()
+    await db.refresh(current_user)
+    return UserRead.model_validate(current_user)
+
+
+@router.patch("/me/name")
+async def update_name(
+    data: NameUpdate,
+    current_user: CurrentUser,
+    db: Annotated[AsyncSession, Depends(get_db)],
+) -> UserRead:
+    current_user.preferred_name = data.preferred_name.strip()
     await db.commit()
     await db.refresh(current_user)
     return UserRead.model_validate(current_user)
