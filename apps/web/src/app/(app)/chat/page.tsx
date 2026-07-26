@@ -418,7 +418,7 @@ export default function ChatPage() {
         setError(e instanceof Error ? e.message : "Verbindungsfehler")
       } finally {
         setLoading(false)
-        textareaRef.current?.focus()
+        setTimeout(() => textareaRef.current?.focus(), 0)
       }
     }
   }, [sessionId, loading, closureState, lastKaiaMessageId])
@@ -486,7 +486,7 @@ export default function ChatPage() {
       setError(e instanceof Error ? e.message : "Verbindungsfehler")
     } finally {
       setLoading(false)
-      textareaRef.current?.focus()
+      setTimeout(() => textareaRef.current?.focus(), 0)
     }
 
     // After 1 post-closure exchange, end the session — no second closing round
