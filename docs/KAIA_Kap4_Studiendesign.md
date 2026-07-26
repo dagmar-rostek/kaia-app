@@ -2,13 +2,13 @@
 
 > **Stand:** 13. Juli 2026 · **Version:** 0.9-DRAFT
 > **Reviewer:** Psychologe · Compliance · Data Scientist · Discovery Researcher
-> **Status:** Vollständige Überarbeitung — Messmodell finalisiert (MSLQ 34 Items + GSE 10 Items + EMA 4 Typen); FKS aus Messmodell entfernt; Studienstart korrigiert (1. August 2026); Timeline-Sektion erstellt; Limitationen eigenständig ausgegliedert. Studie hat noch NICHT begonnen (Stand: 13. Juli 2026).
+> **Status:** Vollständige Überarbeitung — Messmodell finalisiert (MSLQ 34 Items + GSE 10 Items + EMA 4 Typen); FKS aus Messmodell entfernt; Studienstart korrigiert (8. August 2026); Timeline-Sektion erstellt; Limitationen eigenständig ausgegliedert. Studie hat noch NICHT begonnen (Stand: 13. Juli 2026).
 
 ---
 
 ## Überblick
 
-Kapitel 6 beschreibt Design, Durchführung und — soweit zum aktuellen Zeitpunkt möglich — die geplanten Auswertungsschritte der explorativen Pilotstudie mit KAIA. Die methodische Grundlage entspricht dem Studienprotokoll (v2.0, docs/STUDIENPROTOKOLL.md). Die Datenerhebung beginnt am 1. August 2026 und endet am 29. August 2026.
+Kapitel 6 beschreibt Design, Durchführung und — soweit zum aktuellen Zeitpunkt möglich — die geplanten Auswertungsschritte der explorativen Pilotstudie mit KAIA. Die methodische Grundlage entspricht dem Studienprotokoll (v2.0, docs/STUDIENPROTOKOLL.md). Die Datenerhebung beginnt am 8. August 2026 und endet am 1. September 2026.
 
 ---
 
@@ -115,7 +115,7 @@ Die in KAIA eingesetzte 34-Item-Version ist eine Selektion und Kurzung des 81-It
 **Instrument:** General Self-Efficacy Scale, deutschsprachige Originalversion (Schwarzer & Jerusalem, 1995)
 **Items:** 10 (Beispielitem: "Wenn ich mit einem Problem konfrontiert werde, habe ich meist mehrere Ideen, wie ich damit fertig werde.")
 **Skalierung:** 4-stufige Likert-Skala (1 = stimmt nicht, 4 = stimmt genau)
-**Erhebungszeitpunkte:** Prä-Messung (vor erster Session, ab 1. August 2026) und Post-Messung (29. August – 5. September 2026)
+**Erhebungszeitpunkte:** Prä-Messung (vor erster Session, ab 8. August 2026) und Post-Messung (1. – 5. September 2026)
 
 **Gütekriterien (Originalinstrument):**
 - Interne Konsistenz: Cronbachs α = .80–.90 in zahlreichen Validierungsstudien (N > 1.000; Schwarzer & Jerusalem, 1995)
@@ -216,10 +216,10 @@ Die Forscherin ist gleichzeitig Entwicklerin von KAIA und potenzielle Kommerzial
 |---|---|---|
 | Laufend | DPAs abgeschlossen (Anthropic, OpenAI) | Abgeschlossen ✓ |
 | **28. Juli 2026** | **Study-Lock: Prompt-Freeze** — keine Prompt- oder Schema-Änderungen ab diesem Datum | Geplant |
-| **1. August 2026** | **Studienstart** — Registrierung, KI-Disclosure, Multi-Step-Consent, Prä-Befragung (MSLQ + GSE) + erste Sessions möglich | Geplant |
-| 1. August – 29. August 2026 | Aktive Studienphase (4 Wochen, max. 1 Session pro Tag) | Geplant |
-| **29. August 2026** | **Studienende** — letzte Session, Studienphase abgeschlossen | Geplant |
-| 29. August – 5. September 2026 | Post-Befragung (GSE Post, 10 Items); optionaler Erfahrungsbericht | Geplant |
+| **8. August 2026** | **Studienstart** — Registrierung, KI-Disclosure, Multi-Step-Consent, Prä-Befragung (MSLQ + GSE) + erste Sessions möglich | Geplant |
+| 1. August – 1. September 2026 | Aktive Studienphase (3 Wochen, max. 1 Session pro Tag) | Geplant |
+| **1. September 2026** | **Studienende** — letzte Session, Studienphase abgeschlossen | Geplant |
+| 1. – 5. September 2026 | Post-Befragung (GSE Post, 10 Items); optionaler Erfahrungsbericht | Geplant |
 | September – Oktober 2026 | Datenauswertung, qualitative Analyse, Ergebniskapitel | Geplant |
 | **1. September 2026** | **Abgabe Masterthesis** (SRH Fernhochschule Riedlingen) | Deadline |
 
@@ -236,15 +236,15 @@ Datum                Aktivität
 ─────────────────────────────────────────────────────────────────────
 Vor Studie           DPAs abgeschlossen (Anthropic, OpenAI) ✓
 28. Juli 2026        Study-Lock: Prompt-Freeze
-1. August 2026       Registrierung | KI-Disclosure | Multi-Step-Consent
+8. August 2026       Registrierung | KI-Disclosure | Multi-Step-Consent
                      MSLQ Prä (34 Items, ≈ 12 Min.) + GSE Prä (10 Items, ≈ 5 Min.)
                      Erste Session möglich
-1.–29. August 2026   Strukturierte KAIA-Nutzung
+1.–1. September 2026   Strukturierte KAIA-Nutzung
                        Mindest-Sessions: 3 (Auswertbarkeitsgrenze)
                        Ziel-Sessions: 10 (für Verlaufsanalyse erforderlich)
                        Max. 1 Session pro Tag
                        EMA-Marker kontinuierlich verfügbar
-29. August 2026      Letzte mögliche Session | Studienende
+1. September 2026      Letzte mögliche Session | Studienende
 29. Aug.–5. Sep.     GSE Post (10 Items, ≈ 5 Min.) | optionaler Erfahrungsbericht
 Nach Studie          Auswertung | 6-Monate-Löschfrist beginnt
 ```
@@ -265,10 +265,10 @@ Nach Studie          Auswertung | 6-Monate-Löschfrist beginnt
 - Erster-Schritt-Loop: Rückbezug auf Lernschritt + Evidenzanker-Abgleich
 - EMA-Marker kontinuierlich nutzbar
 
-**Mindestvorgabe für Auswertbarkeit:** Mindestens 3 abgeschlossene Chat-Sessions innerhalb der 4 Wochen. Teilnehmende mit weniger als 3 Sessions werden als Dropout klassifiziert und im Intent-to-Treat-Reporting ausgewiesen. Für die Verlaufsanalyse der EMA-Daten sind mindestens 5 Sessions erforderlich; der Zielwert von 10 Sessions ermöglicht erst eine sinnvoll interpretierbare Zeitreihe.
+**Mindestvorgabe für Auswertbarkeit:** Mindestens 3 abgeschlossene Chat-Sessions innerhalb der 3 Wochen. Teilnehmende mit weniger als 3 Sessions werden als Dropout klassifiziert und im Intent-to-Treat-Reporting ausgewiesen. Für die Verlaufsanalyse der EMA-Daten sind mindestens 5 Sessions erforderlich; der Zielwert von 10 Sessions ermöglicht erst eine sinnvoll interpretierbare Zeitreihe.
 
 **Zeitaufwand für Teilnehmende (Schätzung):**
-MSLQ Prä (12 Min.) + GSE Prä/Post (2 × 5 Min.) + Sessions 1–2 (2 × 25 Min.) + Sessions 3–10 (8 × 12 Min.) = 12 + 10 + 50 + 96 = **ca. 168 Minuten ≈ 2,8 Stunden** über 4 Wochen.
+MSLQ Prä (12 Min.) + GSE Prä/Post (2 × 5 Min.) + Sessions 1–2 (2 × 25 Min.) + Sessions 3–10 (8 × 12 Min.) = 12 + 10 + 50 + 96 = **ca. 168 Minuten ≈ 2,8 Stunden** über 3 Wochen.
 
 **Keine inhaltlichen Vorgaben:** Teilnehmende wählen selbst, welche Lernthemen sie mit KAIA bearbeiten. Das entspricht dem explorativen Charakter der Studie und der ökologischen Validität des Feldeinsatzes. Die Heterogenität der Lernthemen wird als Confounder dokumentiert.
 
@@ -285,7 +285,7 @@ Die technische Infrastruktur ermöglicht eine per-User-Modell-Zuweisung. Für di
 
 ## 6.7 Hypothesen
 
-**H1 (primär, gerichtet):** Die GSE nach vier Wochen KAIA-Nutzung ist signifikant höher als vor der Nutzung (Wilcoxon-Vorzeichenrangtest, α = .05, zweiseitig).
+**H1 (primär, gerichtet):** Die GSE nach drei Wochen KAIA-Nutzung ist signifikant höher als vor der Nutzung (Wilcoxon-Vorzeichenrangtest, α = .05, zweiseitig).
 
 *Methodische Anmerkung: Angesichts der bekannten Unterpower (Power ≈ 56 % bei d = 0.5, N = 20) ist ein statistisch nicht-signifikantes Ergebnis wahrscheinlich — auch wenn ein realer Effekt vorliegen sollte. Die Signifikanzentscheidung wird daher durch Effektgröße (r = z / √N) und deskriptive Statistik ergänzt und nicht isoliert interpretiert.*
 

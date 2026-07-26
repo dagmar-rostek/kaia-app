@@ -4,7 +4,7 @@
 > Jede strukturelle Änderung muss hier dokumentiert werden.
 > Die `/architektur`-Seite im Frontend rendert dieses Dokument direkt.
 
-**Stand:** 13. Juli 2026
+**Stand:** 26. Juli 2026
 
 ---
 

@@ -49,7 +49,7 @@ Ergänzende Forschungsfrage 2 (hinzugefügt 10.06.2026): *Verändert sich das Fl
 ## 3. Hypothesen
 
 **H1 (primär, gerichtet):**  
-Die allgemeine Selbstwirksamkeitserwartung der Teilnehmenden, gemessen mit der GSE-Skala (Schwarzer & Jerusalem, 1995), ist nach vier Wochen KAIA-Nutzung (Post-Messung) signifikant höher als vor der Nutzung (Prä-Messung).
+Die allgemeine Selbstwirksamkeitserwartung der Teilnehmenden, gemessen mit der GSE-Skala (Schwarzer & Jerusalem, 1995), ist nach drei Wochen KAIA-Nutzung (Post-Messung) signifikant höher als vor der Nutzung (Prä-Messung).
 
 **H2 (explorativ, ungerichtet):**  
 Es besteht ein positiver Zusammenhang zwischen der Häufigkeit der KAIA-Nutzung (Anzahl Sessions) und der Veränderung der Selbstwirksamkeitserwartung (Prä-Post-Differenz).
@@ -72,7 +72,7 @@ Das Flow-Erleben, gemessen mit der Flow-Kurzskala (FKS; Rheinberg et al., 2003),
 
 **Messinstrumente:**
 
-1. *Skala zur Allgemeinen Selbstwirksamkeitserwartung* (GSE; Schwarzer & Jerusalem, 1995) — 10 Items, 4-stufige Likert-Skala; Prä-Messung (Woche 0) und Post-Messung (nach Woche 4). Cronbachs α > .80 in zahlreichen Validierungsstudien.
+1. *Skala zur Allgemeinen Selbstwirksamkeitserwartung* (GSE; Schwarzer & Jerusalem, 1995) — 10 Items, 4-stufige Likert-Skala; Prä-Messung (Woche 0) und Post-Messung (nach Woche 3). Cronbachs α > .80 in zahlreichen Validierungsstudien.
 
 2. *Flow-Kurzskala* (FKS; Rheinberg, Vollmeyer & Engeser, 2003) — 10 Items, 7-stufige Likert-Skala, Cronbachs α = .90; Erhebung nach Session 2, 5, 8 und 10 (vier Messzeitpunkte). Frei verfügbar in PsychArchives (ZPID). Hinzugefügt am 10.06.2026.
 
@@ -109,7 +109,7 @@ Das Flow-Erleben, gemessen mit der Flow-Kurzskala (FKS; Rheinberg et al., 2003),
 | Power bei N=20, d=0.4 | ca. 37% (dokumentierte Limitation) |
 | Dropout-Puffer | 30% → Rekrutierungsziel ~46 |
 
-**Begründung der revidierten Effektschätzung (10.06.2026):** Mit der Anhebung der Mindest-Sessions-Anforderung auf 10 und einem Gesamtzeitaufwand von ca. 150 Minuten Chatzeit in 4 Wochen (statt ursprünglich unklar definierter ≥3 Sessions) erscheint eine konservativere Schätzung von d = 0.4 methodisch besser begründet. Kürzere Gesamtinterventionszeiten erzeugen im Mittel geringere Selbstwirksamkeitsveränderungen als intensivere Interventionen (Bandura, 1997; Scherer et al., 1982). Bei d = 0.4 ergibt sich ein Mindest-N von 51 für 80% Power — ein Wert, der mit dem Rekrutierungsziel von ~46 ohnehin nicht erreichbar war und der die bekannte Unterpower-Problematik weiter unterstreicht.
+**Begründung der revidierten Effektschätzung (10.06.2026):** Mit der Anhebung der Mindest-Sessions-Anforderung auf 10 und einem Gesamtzeitaufwand von ca. 150 Minuten Chatzeit in 3 Wochen (statt ursprünglich unklar definierter ≥3 Sessions) erscheint eine konservativere Schätzung von d = 0.4 methodisch besser begründet. Kürzere Gesamtinterventionszeiten erzeugen im Mittel geringere Selbstwirksamkeitsveränderungen als intensivere Interventionen (Bandura, 1997; Scherer et al., 1982). Bei d = 0.4 ergibt sich ein Mindest-N von 51 für 80% Power — ein Wert, der mit dem Rekrutierungsziel von ~46 ohnehin nicht erreichbar war und der die bekannte Unterpower-Problematik weiter unterstreicht.
 
 **Konsequenz:** Die Studie bleibt in jedem Szenario unterpowert für konfirmatorische Zwecke. Die explorative Natur wird explizit kommuniziert; statistische Signifikanztests dienen der Hypothesengenerierung für eine Folgestudie, nicht dem Hypothesentest im strengen Sinne. Dies entspricht dem angemessenen Umgang mit Pilotstudien (Thabane et al., 2010).
 
@@ -133,20 +133,20 @@ Das Flow-Erleben, gemessen mit der Flow-Kurzskala (FKS; Rheinberg et al., 2003),
 
 ```
 Woche 0     Registrierung, Einwilligung, KI-Disclosure, GSE Prä-Messung
-Wochen 1–4  Strukturierte KAIA-Nutzung (Mindest: ≥ 10 Sessions)
+Wochen 1–3  Strukturierte KAIA-Nutzung (Mindest: ≥ 10 Sessions)
               Sessions 1–2: Foundation-Sessions, 20–30 Min.
                 (Motivationsanker, Lerntyp-Routing, Standortbestimmung)
               Sessions 3–10: Micro-Sessions, 10–15 Min.
                 (Cross-Session-Memory übernimmt Kontextaufbau)
             FKS nach Session 2, 5, 8, 10 (je ~3 Min.)
-Woche 4/5   GSE Post-Messung, FKS MZP 4 (falls nicht nach S10 erfolgt),
+Woche 3/4   GSE Post-Messung, FKS MZP 4 (falls nicht nach S10 erfolgt),
             optionaler kurzer Erfahrungsbericht
 Nach Ende   Datenlöschung: spätestens 1 Jahr nach Abschlussnote
 ```
 
-**Mindestvorgabe (aktualisiert 10.06.2026):** Mindestens **10** abgeschlossene Chat-Sessions innerhalb der 4 Wochen für Einschluss in die Auswertung. Teilnehmende mit weniger als 10 Sessions werden als Dropout ausgewiesen (Intent-to-Treat-Reporting). Die frühere Vorgabe von ≥ 3 Sessions war wissenschaftlich unzureichend begründet (s. Begründung in Kapitel 6.4 des Thesis-Manuskripts).
+**Mindestvorgabe (aktualisiert 10.06.2026):** Mindestens **10** abgeschlossene Chat-Sessions innerhalb der 3 Wochen für Einschluss in die Auswertung. Teilnehmende mit weniger als 10 Sessions werden als Dropout ausgewiesen (Intent-to-Treat-Reporting). Die frühere Vorgabe von ≥ 3 Sessions war wissenschaftlich unzureichend begründet (s. Begründung in Kapitel 6.4 des Thesis-Manuskripts).
 
-**Zeitaufwand für Teilnehmende:** ca. 168 Minuten über 4 Wochen (Sessions + FKS + GSE).
+**Zeitaufwand für Teilnehmende:** ca. 168 Minuten über 3 Wochen (Sessions + FKS + GSE).
 
 **Keine Vorgaben** für Gesprächsthemen — die Teilnehmenden wählen selbst, womit sie KAIA nutzen. Das entspricht dem explorativen Charakter der Studie und der ökologischen Validität des Feldeinsatzes.
 
@@ -202,7 +202,7 @@ Bei wiederholten Krisen-Treffern für eine Benutzer-ID wird die Forscherin via S
 | Datenleck | Sehr gering | Hoch | Pseudonymisierung, bcrypt, httpOnly-Cookies, EU-Server |
 | Bias durch Forscherin-Teilnehmenden-Beziehung | Mittel | Mittel | Vorregistrierte Hypothesen, standardisiertes Instrument |
 | KI-Fehlfunktion / halluzinierte Inhalte | Gering | Mittel | Explizite KI-Disclosure, sokratischer Modus reduziert faktische Aussagen |
-| Dependency-Effekt (Überabhängigkeit von KAIA) | Sehr gering | Gering | Sokratischer Ansatz fördert Eigenständigkeit; 4-Wochen-Limit |
+| Dependency-Effekt (Überabhängigkeit von KAIA) | Sehr gering | Gering | Sokratischer Ansatz fördert Eigenständigkeit; 3-Wochen-Limit |
 | Erhöhter Dropout durch 10-Sessions-Anforderung (hinzugefügt 10.06.2026) | Mittel | Mittel | Transparente Kommunikation des Aufwands bei Rekrutierung; Reminder-Mechanismus im System; Dropout-Puffer von 30% bereits eingerechnet; Intent-to-Treat-Reporting |
 
 ---
@@ -226,9 +226,9 @@ Bei wiederholten Krisen-Treffern für eine Benutzer-ID wird die Forscherin via S
 | Ethikvotum Antrag einreichen | **Diese Woche** — spätestens 06.06.2026 |
 | DPAs Anthropic/OpenAI abgeschlossen | Abgeschlossen ✓ |
 | Study-Lock aktivieren | 28.07.2026 |
-| **Pilotstudie START** | **1. August 2026** |
-| Pilotstudie ENDE (4 Wochen) | 29. August 2026 |
-| Post-Messung + Interviews | 29. August – 05. September 2026 |
+| **Pilotstudie START** | **8. August 2026** |
+| Pilotstudie ENDE (3 Wochen) | 1. September 2026 |
+| Post-Messung + Interviews | 1. – 5. September 2026 |
 | Auswertung (Kap. 5 + 6) | September 2026 |
 | Thesis-Abgabe | **01. Oktober 2026** |
 

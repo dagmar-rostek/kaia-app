@@ -9,8 +9,41 @@
 
 ---
 
-**Stand heute:** 13. Juli 2026  
-**~190 Einträge insgesamt · 25 Release-Tage · ~120 h Gesamt-Aufwand**
+**Stand heute:** 26. Juli 2026  
+**~210 Einträge insgesamt · 28 Release-Tage · ~135 h Gesamt-Aufwand**
+
+---
+
+## 2026-07-26 — Studienstart verschoben · 3 Wochen · KDG-USP vollständig
+
+**26.07.2026 · `(aktuell)`** — Studienstart auf **8. August 2026** verschoben (war 1. August). Studiendauer von 4 auf **3 Wochen** reduziert (Ende: 1. September 2026). 10 Sessions bleiben. Alle Stellen im System aktualisiert: StudyCountdown, Mitmachen-Seite, Landing Page, Onboarding, Survey, E-Mails, Thesis-Dokumente (Studienprotokoll, Kap. 4, Abstract). · `20min`  
+*fix: reduce study to 3 weeks, shift start to Aug 8*
+
+**24.07.2026 · `cda4e6d`** — Fragebogen-Einstiegstexte auf Transfer-USP ausgerichtet. Titel: „Wie weit bringst du dein Wissen in die Praxis?" (war: „Wie lernst du bisher?"). Erklärtexte benennen jetzt explizit die Wissen-Handeln-Lücke als Messziel — kein generischer Lernfragebogen mehr. · `10min`  
+*fix: align survey intro texts with KDG/transfer USP*
+
+**22.07.2026 · `cc1fb40`** — Docker-Dev-Umgebung repariert: Prompts-Volume-Mount und KAIA_EVAL_PROMPTS_DIR fehlten in docker-compose.dev.yml (war in Prod vorhanden). Dockerfile.dev läuft jetzt Alembic-Migrationen beim Start automatisch. · `25min`  
+*fix: add prompts volume mount and migrations to dev docker setup*
+
+**20.07.2026 · `942157a`** — Thesis-Kapitelstruktur vollständig auf Exposé-Gliederung umgestellt (mit Betreuern abgestimmt). Einleitung v2.0: Terminologische Grundlagen für „neuroadaptiv" und „Lernbegleitung/KDG". 7 neue Dokumente: Kap. 5–7 (Platzhalter), Abstract, Eidesstattliche Erklärung, Abkürzungsverzeichnis, Navigationsübersicht. · `3h`  
+*docs: Thesis-Kapitelstruktur auf Exposé-Gliederung umgestellt*
+
+**20.07.2026 · `9ad9e81`** — **KDG als USP — vollständiger Umbau.** KAIA positioniert sich nicht mehr als generischer Lernbegleiter, sondern explizit als Transfer-Instrument für den Knowing-Doing Gap (Pfeffer & Sutton, 2000). Alle Nutzertexte, Onboarding, Mitmachen-Seite, KI-Disclosure und Fragebogen-Rahmung überarbeitet. Placeholder-Beispiel: „Kritische Feedbackgespräche, die ich immer wieder aufschiebe." · `2h`  
+*feat: Knowing-Doing Gap als USP — vollständiger Umbau*
+
+**19.07.2026 · `499b91e`** — Journey-Guard verschärft: Reihenfolge Disclosure → Onboarding → Prä-Fragebogen wird nun serverseitig erzwungen (403 bei falscher Reihenfolge). Kein Bypass durch direkte URL mehr möglich. · `45min`  
+*feat: enforce full journey order in app guard*
+
+**19.07.2026 · `dd69ac6`** — Crisis-Detection: Bypass-Bug behoben (bestimmte Formulierungen umgingen den Pre-Filter), fehlende Muster ergänzt. Eval-Pipeline: Goldset-Validierung für Crisis-Szenarien erweitert. · `1h`  
+*fix: crisis detection bypass and missing patterns in eval pipeline*
+
+**19.07.2026 · `4c1e676`** — Eval-Judge-Kalibrierung: Score-Grenzen für M3 (Persona-Responsivität) und M5 (Sequenz-Kohärenz) geschärft. Central-Tendency-Bias reduziert — Judge verteilt Scores jetzt trennschärfer über die volle Skala. · `30min`  
+*fix: sharpen M3 and M5 judge score boundaries to reduce central-tendency bias*
+
+**19.07.2026 · `baeeb4b`** — KAIA System-Prompt v5: Schweiger-Check (#11) integriert. KAIA unterscheidet jetzt zwischen einsilbiger Antwort als Rückzug vs. als Nachdenken — Rupture-Repair-Sequenz reagiert entsprechend differenziert. · `45min`  
+*feat: add Schweiger-Check #11 to KAIA system prompt v5*
+
+**Thesis-Relevanz (KW 29–30):** KDG-Umbau ist die wichtigste konzeptionelle Entscheidung vor Studienstart — schärft die Forschungsfrage und macht KAIA als Instrument eindeutig verortbar. Crash-Persona-Simulation (100 Sessions, 0 Fehler) + Eval-Run (€1.19, System-Ø 43.9%, M7 Crisis Detection 4%) liefern erste quantitative Baseline für Kapitel 5. · `~12h gesamt KW 29–30`
 
 ---
 

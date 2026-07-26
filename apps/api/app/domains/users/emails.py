@@ -53,8 +53,8 @@ def _approval_html(username: str) -> str:
     </a>
   </div>
   <p style="color: #555; line-height: 1.6; font-size: 13px;">
-    Die Studie läuft über <strong>4 Wochen</strong> mit mindestens
-    <strong>3 Sessions</strong>. Du kannst selbst bestimmen, wann du startest —
+    Die Studie läuft über <strong>3 Wochen</strong> mit mindestens
+    <strong>10 Sessions</strong>. Du kannst selbst bestimmen, wann du startest —
     am besten bald, damit du alle Sessions entspannt verteilen kannst.
   </p>
   <hr style="border: none; border-top: 1px solid #eee; margin: 24px 0;">
@@ -79,7 +79,7 @@ def _study_start_html(username: str) -> str:
   </p>
   <p style="color: #555; line-height: 1.6;">
     <strong>Was dich erwartet:</strong><br>
-    Mindestens 3 Gespräche mit KAIA über 4 Wochen — rund um das Thema,
+    Mindestens 10 Gespräche mit KAIA über 3 Wochen — rund um das Thema,
     das du bei der Registrierung angegeben hast. Davor und danach ein kurzer Fragebogen.
     Das war's.
   </p>

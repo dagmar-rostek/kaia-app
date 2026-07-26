@@ -15,7 +15,7 @@ Diese Arbeit dokumentiert die Entwicklung und explorative Evaluation von KAIA (K
 
 Die Arbeit folgt dem Paradigma des Design Science Research (Hevner et al., 2004) und liefert drei Beiträge: (1) ein konzeptionelles Rahmenwerk für neuroadaptive, sokratische Lernbegleitung im Spannungsfeld von Adaptivität und Lernautonomie; (2) einen systematischen LLM-Evaluationsbericht, der sieben Sprachmodelle von Anthropic, OpenAI und Mistral AI nach Empathiequalität, sokratischer Gesprächsführung, Konsistenz und Crisis-Detection-Sicherheit vergleicht; (3) eine explorative Pilotstudie (N ≈ 20) mit Prä/Post-Messung der allgemeinen Selbstwirksamkeitserwartung (GSE; Schwarzer & Jerusalem, 1995) und motivationaler Lernstrategien (MSLQ; Pintrich et al., 1991).
 
-Das System wurde als DSGVO-konforme Webanwendung auf EU-Servern (Hetzner Cloud, Helsinki) implementiert. \[Ergebnisse der Pilotstudie werden nach Studienabschluss, 29. August 2026, ergänzt.\]
+Das System wurde als DSGVO-konforme Webanwendung auf EU-Servern (Hetzner Cloud, Helsinki) implementiert. \[Ergebnisse der Pilotstudie werden nach Studienabschluss, 1. September 2026, ergänzt.\]
 
 Die Studie ist als explorative Pilotstudie angelegt; kausale Wirksamkeitsnachweise sind bei der gewählten Stichprobengröße nicht möglich und nicht intendiert. Ein dreifacher Interessenkonflikt der Verfasserin (Entwicklerin, Forscherin, potenzielle Kommerzialisiererin) wird offen deklariert.
 
@@ -27,4 +27,4 @@ Die Studie ist als explorative Pilotstudie angelegt; kausale Wirksamkeitsnachwei
 
 ---
 
-> **Hinweis zur Fertigstellung:** Der Ergebnisabschnitt dieses Abstracts ist bis zum 29. August 2026 ein Platzhalter und wird nach Abschluss der Datenerhebung und -auswertung finalisiert. Die Schlagworte sind bereits final.
+> **Hinweis zur Fertigstellung:** Der Ergebnisabschnitt dieses Abstracts ist bis zum 1. September 2026 ein Platzhalter und wird nach Abschluss der Datenerhebung und -auswertung finalisiert. Die Schlagworte sind bereits final.

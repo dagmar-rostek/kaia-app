@@ -10,7 +10,7 @@ import { StudyCountdown } from "@/components/StudyCountdown"
 export const metadata = {
   title: "Mitmachen — KAIA Pilotstudie",
   description:
-    "Werde Teil der KAIA-Pilotstudie: Ein KI-Begleiter für das Wissen, das du schon hast — aber noch nicht wirklich lebst. Vom Verstehen ins Tun. Start: 1. August 2026.",
+    "Werde Teil der KAIA-Pilotstudie: Ein KI-Begleiter für das Wissen, das du schon hast — aber noch nicht wirklich lebst. Vom Verstehen ins Tun. Start: 8. August 2026.",
 }
 
 // ── Helpers ────────────────────────────────────────────────────────────────────
@@ -82,7 +82,7 @@ export default function MitmachenPage() {
       {/* ── COUNTDOWN BANNER ── */}
       <section className="rounded-xl border border-border bg-muted/20 p-6 text-center space-y-4">
         <p className="text-sm font-medium">
-          Registrierung öffnet am <strong>1. August 2026</strong>
+          Registrierung öffnet am <strong>8. August 2026</strong>
         </p>
         <StudyCountdown label="Noch" />
         <p className="text-xs text-muted-foreground">
@@ -94,7 +94,7 @@ export default function MitmachenPage() {
       <section className="space-y-6 text-center">
         <div className="flex justify-center gap-2 flex-wrap">
           <Badge>Masterthesis · SRH Fernhochschule</Badge>
-          <Badge>Start: 1. August 2026</Badge>
+          <Badge>Start: 8. August 2026</Badge>
           <Badge>~20 Teilnehmende gesucht</Badge>
         </div>
 
@@ -182,7 +182,7 @@ export default function MitmachenPage() {
         <div className="space-y-2">
           <h2 className="text-2xl font-bold tracking-tight">Wie läuft die Teilnahme ab?</h2>
           <p className="text-muted-foreground text-sm">
-            Fünf Schritte — insgesamt ca. <strong className="text-foreground">2–3 Stunden über 4 Wochen</strong>.
+            Fünf Schritte — insgesamt ca. <strong className="text-foreground">2–3 Stunden über 3 Wochen</strong>.
             Du entscheidest wann und wie lange — mindestens 10 Sessions à mind. 5 Minuten.
           </p>
         </div>
@@ -211,7 +211,7 @@ export default function MitmachenPage() {
                 Nicht wie gut du bist oder wie viel du weißt —
                 sondern wie zuversichtlich du dich <em>selbst</em> einschätzt,
                 Schwieriges zu meistern. Es gibt keine richtigen oder falschen Antworten.
-                Wir vergleichen deine Antworten am Anfang und am Ende der vier Wochen.
+                Wir vergleichen deine Antworten am Anfang und am Ende der drei Wochen.
               </p>
             </div>
           </StepCard>
@@ -251,11 +251,11 @@ export default function MitmachenPage() {
             number="3"
             icon={MessageSquare}
             title="Mindestens 10 Sessions mit KAIA"
-            duration="je mind. 5 Minuten · über 4 Wochen verteilt"
+            duration="je mind. 5 Minuten · über 3 Wochen verteilt"
           >
             <p>
               Du chatterst mit KAIA über dein Lernthema — kurz, fokussiert, wann du willst.
-              Mindestens zehn Sessions über vier Wochen sind für die Auswertung nötig —
+              Mindestens zehn Sessions über drei Wochen sind für die Auswertung nötig —
               das sind im Schnitt zweieinhalb pro Woche, also alle 2–3 Tage eine.
             </p>
 
@@ -278,16 +278,16 @@ export default function MitmachenPage() {
             number="4"
             icon={Target}
             title="Abschluss-Fragebogen"
-            duration="ca. 3 Minuten · einmalig nach Woche 4"
+            duration="ca. 3 Minuten · einmalig nach Woche 3"
           >
             <p>
-              Nach vier Wochen beantwortest du dieselben 10 Fragen wie am Anfang.
+              Nach drei Wochen beantwortest du dieselben 10 Fragen wie am Anfang.
               Dieser Vergleich ist das Herzstück der wissenschaftlichen Auswertung —
               hat sich deine Einschätzung der eigenen Lernfähigkeit verändert?
             </p>
             <p>
               Außerdem hast du die Möglichkeit, deinen Lernroadmap-Fortschritt
-              einzutragen: Was hast du in diesen vier Wochen tatsächlich gelernt?
+              einzutragen: Was hast du in diesen drei Wochen tatsächlich gelernt?
             </p>
           </StepCard>
 
@@ -331,7 +331,7 @@ export default function MitmachenPage() {
           {[
             {
               title: "Wissen endlich in Wirkung bringen",
-              desc: "Du verlässt diese vier Wochen nicht mit mehr Theorie — sondern mit konkreten ersten Schritten, die du wirklich gemacht hast. Das ist der Unterschied.",
+              desc: "Du verlässt diese drei Wochen nicht mit mehr Theorie — sondern mit konkreten ersten Schritten, die du wirklich gemacht hast. Das ist der Unterschied.",
             },
             {
               title: "Verstehen, was dich aufhält",
@@ -379,7 +379,7 @@ export default function MitmachenPage() {
             { ok: true,  text: "Deutschsprachig" },
             { ok: true,  text: "Hast ein Thema — und weißt eigentlich wie es geht" },
             { ok: true,  text: "Zugang zu Computer oder Tablet" },
-            { ok: true,  text: "~2–3 Stunden Kapazität über 4 Wochen" },
+            { ok: true,  text: "~2–3 Stunden Kapazität über 3 Wochen" },
             { ok: false, text: "Aktuell in psychiatrischer Behandlung wegen einer Krise" },
           ].map(({ ok, text }) => (
             <div key={text} className={`flex items-center gap-2.5 rounded-lg border p-3 ${ok ? "border-border" : "border-border/40 opacity-60"}`}>
@@ -408,7 +408,7 @@ export default function MitmachenPage() {
             {[
               { phase: "Vor Start",     dur: "~10 Min",    desc: "Registrierung, Einwilligung, KI-Disclosure, Kurzfragebogen (10 Fragen)" },
               { phase: "Tag 1",         dur: "~10 Min",    desc: "Persönliche Lernroadmap anlegen — Thema, Ziel, persönliche Motivation" },
-              { phase: "Woche 1–4",     dur: "10× mind. 5 Min", desc: "Mindestens 10 Sessions mit KAIA — flexibel, wann du willst" },
+              { phase: "Woche 1–3",     dur: "10× mind. 5 Min", desc: "Mindestens 10 Sessions mit KAIA — flexibel, wann du willst" },
               { phase: "Nach Woche 4",  dur: "~5 Min",     desc: "Abschluss-Fragebogen (dieselben 10 Fragen + Roadmap-Update)" },
               { phase: "Optional",      dur: "~45 Min",    desc: "Abschlussinterview mit der Forscherin (Video oder persönlich, aufgezeichnet)" },
             ].map(({ phase, dur, desc }) => (
@@ -466,7 +466,7 @@ export default function MitmachenPage() {
         <div className="space-y-2">
           <h2 className="text-2xl font-bold tracking-tight">Fast so weit.</h2>
           <p className="text-muted-foreground text-sm max-w-md mx-auto">
-            Die Registrierung ist geöffnet. Die Studie startet am <strong className="text-foreground">1. August 2026</strong>.
+            Die Registrierung ist geöffnet. Die Studie startet am <strong className="text-foreground">8. August 2026</strong>.
           </p>
         </div>
         <StudyCountdown label="Noch" />

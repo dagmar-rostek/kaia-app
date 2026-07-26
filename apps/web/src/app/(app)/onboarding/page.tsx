@@ -55,7 +55,7 @@ export default function OnboardingPage() {
           </div>
           <h1 className="text-2xl font-bold tracking-tight">Woran arbeitest du — obwohl du weißt wie es geht?</h1>
           <p className="text-muted-foreground text-sm leading-relaxed max-w-sm mx-auto">
-            KAIA begleitet dich vier Wochen bei einem Thema, das du schon
+            KAIA begleitet dich drei Wochen bei einem Thema, das du schon
             kennst oder verstehst — aber noch nicht wirklich in deinem Alltag lebst.
             Nicht für Einsteiger. Für Menschen, die den Schritt vom Wissen ins Tun gehen wollen.
           </p>
@@ -127,7 +127,7 @@ export default function OnboardingPage() {
           <div className="space-y-2">
             {[
               { step: "Jetzt",        label: "Kurzfragebogen (ca. 5 Min) — einmalig vor dem Start" },
-              { step: "Woche 1–4",   label: "Mind. 10 Sessions mit KAIA — à mind. 5 Minuten" },
+              { step: "Woche 1–3",   label: "Mind. 10 Sessions mit KAIA — à mind. 5 Minuten" },
               { step: "Am Ende",     label: "Nochmal derselbe Fragebogen — und wir vergleichen" },
             ].map(({ step, label }) => (
               <div key={step} className="flex items-start gap-3">

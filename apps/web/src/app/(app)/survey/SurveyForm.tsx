@@ -618,7 +618,7 @@ function PreCompletionPanel({ redirectTo }: { redirectTo: string }) {
           </li>
           <li className="flex items-start gap-2">
             <span className="text-foreground mt-0.5 shrink-0">→</span>
-            <span>Mindestens 10 Sessions über 4 Wochen — à mind. 5 Minuten.</span>
+            <span>Mindestens 10 Sessions über 3 Wochen — à mind. 5 Minuten.</span>
           </li>
           <li className="flex items-start gap-2">
             <span className="text-foreground mt-0.5 shrink-0">→</span>

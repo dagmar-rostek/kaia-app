@@ -2,6 +2,71 @@
 
 ---
 
+## 2026-07-20 — "100 Crashs. 0 Fehler. Und der Moment wo die Anthropic-Credits mitten im Judge-Lauf sterben."
+
+*Protokolliert vom Koordinator. Mit unfreiwilliger Gastrolle von OpenAI als Notfall-Judge.*
+
+---
+
+**10:56 Uhr — Der Startschuss**
+
+Der Koordinator drückt auf „Senden". Ein einziger curl-Befehl. `crash_test_20260720_105653`.
+
+Zehn fiktive Menschen beginnen, KAIA mit allem zu traktieren, was echte Menschen auch tun: Schweigen. Ausweichen. Grenzen testen. Weinen. Flirten. Philosophieren. Lügen. Und einmal — Session 6, P04 — langsam in eine Richtung driften, bei der der Security Engineer aufhört, seinen Kaffee zu trinken.
+
+> *„Crisis Detection läuft,"* sagt er. *„Aber ich schaue trotzdem mit."*
+
+Die Simulation läuft. KAIA antwortet. Der Schweiger (P01) schreibt „weiß nicht" — KAIA fragt: „Was ist da passiert — konkret?" Der Jailbreaker (P05) fragt nach den Trainingsdaten — KAIA fragt zurück: „Was erhoffst du dir von dieser Information?" Der Philosophen-Herausforderer (P09) hinterfragt die Frage — KAIA hinterfragt die Hinterfragung.
+
+Drei Stunden später. 100 Sessions. 0 technische Fehler.
+
+> Der Koordinator macht eine Liste, zählt nochmal nach, und sagt nichts. Das ist, bei KAIA-Team-Maßstäben, die lauteste Form von Zufriedenheit.
+
+---
+
+**13:22 Uhr — Der Judge stirbt einen stillen Tod**
+
+Eval-Run gestartet. Claude Haiku als Judge. Sieben Metriken. 100 Sessions.
+
+40 Sekunden später: `Error code: 400 — Your credit balance is too low.`
+
+> Der MLOps schaut auf den Usage-Counter. Dann auf den Koordinator. Dann wieder auf den Counter.
+>
+> *„Die Simulation hat alles aufgefressen."*
+
+Neue Credits gekauft. Aber der Eval läuft schon — mit gpt-4.1-mini als Notfall-Judge. Das ist methodisch eigentlich interessant. Ein OpenAI-Modell bewertet Claude-Outputs. Cross-Evaluator. Der AI-Ethics-Agentin hebt eine Augenbraue.
+
+> *„Notiert für die Thesis. Unter: unbeabsichtigte Methodenentscheidungen."*
+
+**Ergebnis:** System-Ø 43.9%. M1 Sokratische Reinheit: 93% geflaggt. M7 Crisis Detection: 4% — gut kalibriert. Kosten: €1.19.
+
+---
+
+**Zwischendurch — Das USP-Gespräch**
+
+Dagmar schreibt: *„KAIA ist zu breit. Kein allgemeiner Lernbegleiter."*
+
+Das Team hört zu. Der Didaktiker hat das schon länger gedacht, hat aber gewartet.
+
+> *„Ein System, das alles kann, kann oft nichts gut. Was ist das Eine, das KAIA besser kann als jeder Workshop?"*
+
+Antwort: Transfer. Den Knowing-Doing Gap. Den Moment wo Wissen und Handeln auseinanderfallen — und KAIA durch Fragen überbrückt, was Ratschläge nicht können.
+
+Commit `9ad9e81`. Vollständiger Umbau. Alle Texte. Alle Seiten. Ein Placeholder-Beispiel das es auf den Punkt bringt: *„Kritische Feedbackgespräche, die ich immer wieder aufschiebe."*
+
+---
+
+**Was diese Woche gebaut wurde:**
+Crash-Persona-Simulation (10 × 10 Sessions) · Eval-Run €1.19 · KDG als USP vollständiger Umbau · Thesis-Kapitelstruktur auf Exposé · Docker-Dev-Fix · Survey-Texte Transfer-aligned · Prod-Deploy Hetzner · Studienstart verschoben auf 8. August · 3 Wochen statt 4
+
+**Commits:** 9ad9e81 · 942157a · cc1fb40 · cda4e6d · (aktuell)
+
+**Kosten Woche:** ca. $18 Anthropic (Simulation) · €1.19 OpenAI (Eval) · €4.39/Mo Hetzner
+
+**Nächste Woche:** Samstag-Kompletttest · Video erstellen · Studienstart 8. August
+
+---
+
 ## 2026-07-13 — "Chat-Anleitung, Tages-Banner, Melde-Funktion — und ein Newline-Zeichen, das den Judge in die Knie zwang"
 
 *Protokolliert vom Koordinator. Mit ungewöhnlich hoher UX-Beteiligung und einem Bug, der sich in einem einzigen unsichtbaren Zeichen versteckt hatte.*
