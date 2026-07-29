@@ -1004,15 +1004,21 @@ export default function ChatPage() {
                 </>
               )}
 
-              {/* KAIA-Reflexion button — loading while Haiku processes, active once ready */}
-              {!showSummaryCard && (
+              {/* Loading: KAIA notiert — verschwindet wenn Reflexion bereit */}
+              {!sessionSummary && !showSummaryCard && (
+                <p className="text-center text-[11px] text-muted-foreground/50 pt-1">
+                  Ich notiere kurz, was ich aus diesem Gespräch mitnehme.
+                </p>
+              )}
+
+              {/* Button erscheint sobald Reflexion bereit */}
+              {sessionSummary && !showSummaryCard && (
                 <div className="flex justify-center pt-1">
                   <button
                     onClick={() => setShowSummaryCard(true)}
-                    disabled={!sessionSummary}
-                    className="text-xs px-4 py-2 rounded-xl border border-border/60 text-muted-foreground hover:text-foreground hover:border-foreground/30 transition-colors disabled:opacity-40 disabled:cursor-default"
+                    className="text-xs px-4 py-2 rounded-xl border border-border/60 text-muted-foreground hover:text-foreground hover:border-foreground/30 transition-colors"
                   >
-                    {sessionSummary ? "KAIAs Reflexion ansehen" : "Wird aufbereitet …"}
+                    KAIAs Reflexion ansehen
                   </button>
                 </div>
               )}
