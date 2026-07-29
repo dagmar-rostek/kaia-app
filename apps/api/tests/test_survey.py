@@ -5,7 +5,12 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
-from app.domains.survey.service import SUBSCALE_ITEMS, compute_subscale_scores, get_journey_state
+from app.domains.survey.service import (
+    SUBSCALE_ITEMS,
+    compute_subscale_scores,
+    get_journey_state,
+    maybe_create_learning_profile,
+)
 
 _REPO = "app.domains.survey.service.SurveyRepository"
 _MSLQ = f"{_REPO}.get_mslq_result"
@@ -133,3 +138,64 @@ async def test_journey_state_completed(mock_db: AsyncMock) -> None:
     assert result.state.value == "completed"
     assert result.pre_completed_at == t2  # max(t1, t2)
     assert result.post_completed_at == t2
+
+
+# ── maybe_create_learning_profile ─────────────────────────────────────────────
+
+
+def _mock_session_ctx(profile_repo: AsyncMock, survey_repo: AsyncMock) -> MagicMock:
+    """Build an async context manager that yields a mock DB session."""
+    mock_db = AsyncMock()
+    ctx = MagicMock()
+    ctx.__aenter__ = AsyncMock(return_value=mock_db)
+    ctx.__aexit__ = AsyncMock(return_value=False)
+
+    def _side_effect(*_args: object, **_kwargs: object) -> MagicMock:
+        return ctx
+
+    return _side_effect
+
+
+@pytest.mark.asyncio
+async def test_maybe_create_profile_skips_if_already_exists() -> None:
+    profile_repo = AsyncMock()
+    profile_repo.get_profile = AsyncMock(return_value=MagicMock())  # already exists
+
+    survey_repo = AsyncMock()
+    mock_db = AsyncMock()
+    ctx = MagicMock()
+    ctx.__aenter__ = AsyncMock(return_value=mock_db)
+    ctx.__aexit__ = AsyncMock(return_value=False)
+
+    with (
+        patch("app.db.session.AsyncSessionLocal", return_value=ctx),
+        patch("app.domains.users.repository.UserProfileRepository", return_value=profile_repo),
+        patch("app.domains.survey.service.SurveyRepository", return_value=survey_repo),
+    ):
+        await maybe_create_learning_profile(42)
+
+    profile_repo.create_profile.assert_not_called()
+
+
+@pytest.mark.asyncio
+async def test_maybe_create_profile_skips_if_surveys_incomplete() -> None:
+    profile_repo = AsyncMock()
+    profile_repo.get_profile = AsyncMock(return_value=None)
+
+    survey_repo = AsyncMock()
+    survey_repo.get_mslq_result = AsyncMock(return_value=None)
+    survey_repo.get_gse_result = AsyncMock(return_value=None)
+
+    mock_db = AsyncMock()
+    ctx = MagicMock()
+    ctx.__aenter__ = AsyncMock(return_value=mock_db)
+    ctx.__aexit__ = AsyncMock(return_value=False)
+
+    with (
+        patch("app.db.session.AsyncSessionLocal", return_value=ctx),
+        patch("app.domains.users.repository.UserProfileRepository", return_value=profile_repo),
+        patch("app.domains.survey.service.SurveyRepository", return_value=survey_repo),
+    ):
+        await maybe_create_learning_profile(42)
+
+    profile_repo.create_profile.assert_not_called()

@@ -43,19 +43,21 @@ def test_seed_templates_all_characters_have_active() -> None:
     assert active_chars == {"warm", "challenging", "wild"}
 
 
-def test_v5_warm_supersedes_v1_v2_v3_v4_warm() -> None:
-    """v1–v4 warm must be inactive; v5 warm must be the active version."""
-    v1 = next(t for t in SEED_TEMPLATES if t["name"] == "kaia_system_v1_warm")
-    v2 = next(t for t in SEED_TEMPLATES if t["name"] == "kaia_system_v2_warm")
-    v3 = next(t for t in SEED_TEMPLATES if t["name"] == "kaia_system_v3_warm")
-    v4 = next(t for t in SEED_TEMPLATES if t["name"] == "kaia_system_v4_warm")
-    v5 = next(t for t in SEED_TEMPLATES if t["name"] == "kaia_system_v5_warm")
-    assert v1["is_active"] is False, "v1 warm must be inactive (superseded by v5)"
-    assert v2["is_active"] is False, "v2 warm must be inactive (superseded by v5)"
-    assert v3["is_active"] is False, "v3 warm must be inactive (superseded by v5)"
-    assert v4["is_active"] is False, "v4 warm must be inactive (superseded by v5)"
-    assert v5["is_active"] is True, "v5 warm must be active"
-    assert v5["version"] > v4["version"] > v3["version"] > v2["version"] > v1["version"]
+def test_v7_warm_supersedes_all_previous_warm() -> None:
+    """v1–v6 warm must be inactive; v7 warm must be the active version."""
+    warm = {t["name"]: t for t in SEED_TEMPLATES if "warm" in t["name"]}
+    for v in (
+        "kaia_system_v1_warm",
+        "kaia_system_v2_warm",
+        "kaia_system_v3_warm",
+        "kaia_system_v4_warm",
+        "kaia_system_v5_warm",
+        "kaia_system_v6_warm",
+    ):
+        assert warm[v]["is_active"] is False, f"{v} must be inactive (superseded by v7)"
+    v7 = warm["kaia_system_v7_warm"]
+    assert v7["is_active"] is True, "v7 warm must be active"
+    assert v7["version"] == 7
 
 
 def test_prompt_warm_v1_contains_key_elements() -> None:

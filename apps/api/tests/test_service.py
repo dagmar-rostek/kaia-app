@@ -3,7 +3,7 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
-from app.domains.users.models import User, UserStatus
+from app.domains.users.models import PasswordResetToken, User, UserStatus
 from app.domains.users.schemas import RegisterRequest
 from app.domains.users.service import AuthError, AuthService, UserService
 from tests.factories import make_user
@@ -20,9 +20,24 @@ def user_repo():
     repo = AsyncMock()
     repo.get_by_email = AsyncMock(return_value=None)
     repo.get_by_username = AsyncMock(return_value=None)
+    repo.get_by_id = AsyncMock(return_value=None)
     repo.create = AsyncMock(side_effect=lambda u: u)
     repo.save = AsyncMock(side_effect=lambda u: u)
     return repo
+
+
+@pytest.fixture
+def reset_repo():
+    repo = AsyncMock()
+    repo.create = AsyncMock()
+    repo.save = AsyncMock()
+    repo.get_by_hash = AsyncMock(return_value=None)
+    return repo
+
+
+@pytest.fixture
+def auth_service_with_reset(user_repo, token_repo, reset_repo):
+    return AuthService(user_repo, token_repo, reset_repo)
 
 
 @pytest.fixture
@@ -221,3 +236,129 @@ async def test_user_update_consent(user_service, user_repo):
     await user_service.update_consent(user, True)
     assert user.consent_analytics is True
     user_repo.save.assert_called_once()
+
+
+# ── AuthService.login — account lockout trigger ───────────────────────────────
+
+
+@pytest.mark.asyncio
+async def test_login_triggers_lockout_at_max_attempts(auth_service, user_repo):
+    """Wrong password on 5th attempt must set locked_until."""
+    user = make_user(password=_CORRECT_PW, failed_login_count=4)
+    user_repo.get_by_email = AsyncMock(return_value=user)
+    with pytest.raises(AuthError) as exc:
+        await auth_service.login("test@example.com", _WRONG_PW)
+    assert exc.value.status_code == 401
+    assert user.locked_until is not None
+
+
+@pytest.mark.asyncio
+async def test_login_deleted_user(auth_service, user_repo):
+    user = _make_user(status=UserStatus.DELETED, password=_CORRECT_PW)
+    user_repo.get_by_email = AsyncMock(return_value=user)
+    with pytest.raises(AuthError) as exc:
+        await auth_service.login("test@example.com", _CORRECT_PW)
+    assert exc.value.status_code == 401
+
+
+# ── AuthService.refresh — expired token ──────────────────────────────────────
+
+
+@pytest.mark.asyncio
+async def test_refresh_expired_token(auth_service, token_repo):
+    stored = MagicMock()
+    stored.revoked_at = None
+    stored.expires_at = datetime.now(UTC) - timedelta(days=1)
+    stored.family = "fam"
+    token_repo.get_by_hash = AsyncMock(return_value=stored)
+    token_repo.revoke_family = AsyncMock()
+    with pytest.raises(AuthError) as exc:
+        await auth_service.refresh("expiredtoken")
+    assert exc.value.status_code == 401
+    assert "abgelaufen" in exc.value.message
+
+
+# ── AuthService.forgot_password ───────────────────────────────────────────────
+
+
+@pytest.mark.asyncio
+async def test_forgot_password_no_reset_repo(auth_service):
+    with pytest.raises(AuthError) as exc:
+        await auth_service.forgot_password("x@example.com")
+    assert exc.value.status_code == 500
+
+
+@pytest.mark.asyncio
+async def test_forgot_password_user_not_found(auth_service_with_reset, user_repo):
+    user_repo.get_by_email = AsyncMock(return_value=None)
+    await auth_service_with_reset.forgot_password("unknown@example.com")
+
+
+@pytest.mark.asyncio
+async def test_forgot_password_suspended_user(auth_service_with_reset, user_repo):
+    user = _make_user(status=UserStatus.SUSPENDED)
+    user_repo.get_by_email = AsyncMock(return_value=user)
+    await auth_service_with_reset.forgot_password(user.email)
+
+
+@pytest.mark.asyncio
+async def test_forgot_password_sends_email(auth_service_with_reset, user_repo, reset_repo):
+    user = _make_user()
+    user_repo.get_by_email = AsyncMock(return_value=user)
+    with patch("app.domains.users.service.send_password_reset", new_callable=AsyncMock):
+        await auth_service_with_reset.forgot_password(user.email)
+    reset_repo.create.assert_called_once()
+
+
+# ── AuthService.reset_password ────────────────────────────────────────────────
+
+
+@pytest.mark.asyncio
+async def test_reset_password_no_reset_repo(auth_service):
+    with pytest.raises(AuthError) as exc:
+        await auth_service.reset_password("sometoken", "newpass")
+    assert exc.value.status_code == 500
+
+
+@pytest.mark.asyncio
+async def test_reset_password_token_not_found(auth_service_with_reset, reset_repo):
+    reset_repo.get_by_hash = AsyncMock(return_value=None)
+    with pytest.raises(AuthError) as exc:
+        await auth_service_with_reset.reset_password("badtoken", "newpass")
+    assert exc.value.status_code == 400
+
+
+@pytest.mark.asyncio
+async def test_reset_password_already_used(auth_service_with_reset, reset_repo):
+    stored = MagicMock(spec=PasswordResetToken)
+    stored.used_at = datetime.now(UTC)
+    stored.expires_at = datetime.now(UTC) + timedelta(hours=1)
+    reset_repo.get_by_hash = AsyncMock(return_value=stored)
+    with pytest.raises(AuthError) as exc:
+        await auth_service_with_reset.reset_password("usedtoken", "newpass")
+    assert "bereits verwendet" in exc.value.message
+
+
+@pytest.mark.asyncio
+async def test_reset_password_expired(auth_service_with_reset, reset_repo):
+    stored = MagicMock(spec=PasswordResetToken)
+    stored.used_at = None
+    stored.expires_at = datetime.now(UTC) - timedelta(hours=2)
+    reset_repo.get_by_hash = AsyncMock(return_value=stored)
+    with pytest.raises(AuthError) as exc:
+        await auth_service_with_reset.reset_password("expiredtoken", "newpass")
+    assert exc.value.status_code == 400
+
+
+@pytest.mark.asyncio
+async def test_reset_password_success(auth_service_with_reset, user_repo, reset_repo, token_repo):
+    user = _make_user()
+    user_repo.get_by_id = AsyncMock(return_value=user)
+    stored = MagicMock(spec=PasswordResetToken)
+    stored.used_at = None
+    stored.expires_at = datetime.now(UTC) + timedelta(hours=1)
+    stored.user_id = user.id
+    reset_repo.get_by_hash = AsyncMock(return_value=stored)
+    await auth_service_with_reset.reset_password("validtoken", "newSecure123!")
+    assert stored.used_at is not None
+    token_repo.revoke_all_for_user.assert_called_once_with(user.id, "password_reset")
