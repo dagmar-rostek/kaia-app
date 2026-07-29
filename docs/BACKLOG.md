@@ -134,7 +134,7 @@
 ### Security
 - [ ] **Prompt-Injection-Schutz** — User-Inputs in `<user_input>`-Delimitern; Jinja2-Auto-Escaping; Max-Length-Validation
 - [ ] **Security-Headers** — HSTS, CSP, X-Frame-Options, Referrer-Policy (Caddy-Config bereits vorbereitet)
-- [ ] **Dependency-Scanning** — Dependabot aktivieren; npm audit + pip-audit in CI
+- [x] **Dependency-Scanning** ✅ Erledigt 29. Juli 2026 — `npm audit --audit-level=high --omit=dev` + `pip-audit` in CI. `package.json overrides` für postcss/sharp. Dependabot noch offen.
 - [ ] **Secrets-Scan** — gitleaks pre-commit-hook aktivieren (bereits in .pre-commit-config.yaml)
 - [ ] **CORS-Audit** — Allowlist verifizieren, kein `allow_origins=["*"]`
 

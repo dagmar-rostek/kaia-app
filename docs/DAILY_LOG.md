@@ -2,6 +2,104 @@
 
 ---
 
+## 2026-07-29 — "Die Compliance-Agentin, das Psychologen-Tribunal und der npm-Audit der einfach nicht aufhören will"
+
+*Protokolliert vom Koordinator. Mit Sonderauftritten von Compliance, Psychologe, UX-Designerin und — ungebeten aber unvermeidlich — brace-expansion.*
+
+---
+
+Der Tag beginnt mit einem harmlosen Satz. Dagmar schreibt: „Kannst du die Mitmachen-Seite aktualisieren — und alle drüber gucken lassen, ich will den Link verbreiten."
+
+Alle. Das klingt wie eine normale Bitte. Beim KAIA-Team bedeutet es: UX-Designerin, Compliance Officer und Psychologe bekommen die Seite gleichzeitig vor die Nase.
+
+Ergebnis: drei Dokumente. Neun Findings. Sechs Must-Fixes vor Go-Live.
+
+---
+
+**09:18 Uhr — Die Compliance-Agentin findet den schlimmsten Satz auf der gesamten Seite**
+
+Zeile 437. Dort stand, groß, deutlich, stolz:
+
+> *„Keine US-Clouds für deine persönlichen Daten."*
+
+Die Compliance-Agentin schaut. Dann schaut sie nochmal. Dann öffnet sie die Teilnahmevereinbarung — Zeile 64: Chat-Inhalte werden zur Verarbeitung an Anthropic (USA) und OpenAI (USA) übermittelt.
+
+> *„Das ist nicht eine Ungenauigkeit. Das ist aktive Fehlinformation gegenüber Studienteilnehmenden. Das ist DSGVO Art. 5(1)(a)."*
+
+Der Koordinator bittet um Tonmäßigung.
+
+> *„Ich bin tongemäßigt. Das Dokument nicht."*
+
+Außerdem: Interview mit 45 Minuten angegeben (Vereinbarung: 15–20 Min). Einführungsgespräch komplett fehlend. „Nach Woche 4" obwohl Studie 3 Wochen dauert. Der CTA sagt „Die Registrierung ist geöffnet" während der Banner oben sagt „öffnet am 8. August." Sechs Must-Fixes, zwei Sollte-Fixes, drei Kann-Nach-Go-Live-Fixes.
+
+---
+
+**09:41 Uhr — Der Psychologe erklärt Demand Characteristics**
+
+Währenddessen erscheint der Psychologe.
+
+> *„Zeile 214. 'Wir vergleichen deine Antworten am Anfang und am Ende.' Zeile 342. 'Zeigt dir, wie sich deine Einschätzung verändert hat.' Das sind Demand Characteristics auf Rekrutierungsebene."*
+
+Der Koordinator: „Was bedeutet das konkret?"
+
+> *„Jeder Teilnehmende weiß vor dem ersten GSE-Ausfüllen, dass wir Veränderung messen. Das induziert soziale Erwünschtheit Richtung höherer Postmessung. Bei n=20 ohne Kontrollgruppe kann das den gesamten Effekt erklären. Und: 'Lernfähigkeit' ist kein GSE-Konstrukt. Die GSE misst Selbstwirksamkeitserwartung. Das ist Konstrukt-Mislabeling."*
+
+Stille im Raum.
+
+> Der AI Engineer: *„Ich hab das Wort 'Lernfähigkeit' selbst nicht bemerkt."*  
+> Der Psychologe: *„Das ist normal. Ihr seid keine Psychologen."*
+
+Drei Textpassagen werden neutralisiert. Benefit-Versprechen entfernt. „Lernfähigkeit" wird zu „Überzeugung, schwierige Dinge aus eigener Kraft zu meistern".
+
+---
+
+**10:15 Uhr — Die UX-Designerin findet noch sieben weitere Dinge**
+
+Einführungsgespräch fehlt als Schritt. Session-Namen unsichtbar. Fünf Schritte sind jetzt sechs. Die Schritt-Nummerierung stimmt nicht mehr. Der Gesamtzeit-Schätzwert ist falsch.
+
+> *„Ich höre auf zu zählen. Macht alles neu."*
+
+---
+
+**11:30 Uhr — Die Seite wird neu gebaut**
+
+Sechs Schritte. Schritt 2: Einführungsgespräch per Video, ~15 Min, bevor die Studie startet. KAIAs Session-Reflexion erklärt: "schreibt eine kurze Reflexion — du kannst sie lesen, musst es aber nicht." Alle 10 Session-Namen als 5×2-Grid sichtbar (Ankern, Kartieren, Erden, Ausprobieren, Spiegel, Reiben, Schärfen, Übergeben, Konsolidieren, Loslassen). DSGVO-Fix mit SCCs statt falschem Versprechen. Zweite Krisenhotline 0800 111 0 222. CoI-Deklaration im Footer.
+
+Mittendrin schreibt Dagmar: „Könntest du noch meine Telefonnummer reinbauen — 0176 611 59 403." Die kommt in den CTA-Bereich. SMS, WhatsApp, Telefon.
+
+Commit `1a3ccf4`. Gepusht.
+
+---
+
+**12:48 Uhr — CI schlägt fehl**
+
+> MLOps: *„npm audit. High severity. Sechs Stück."*
+
+Analyse: `postcss 8.4.31` sitzt in Next.js' eigenen node_modules (vulnerable ≤8.5.17). `sharp 0.34.5` top-level (vulnerable <0.35.0). Und: `brace-expansion` über die ESLint-Chain.
+
+> Security: *„Was ist brace-expansion eigentlich?"*  
+> AI Engineer: *„Ein Glob-Pattern-Parser den niemand direkt importiert aber alle transitiv haben."*  
+> Security: *„Und wir scheitern deshalb an CI?"*  
+> MLOps: *„Willkommen in JavaScript."*
+
+Fix: `package.json overrides` für postcss und sharp. CI auf `--omit=dev` umgestellt — brace-expansion lebt ausschließlich in DevDependencies, nie in Production. Lokal: 0 vulnerabilities. Commit `c2d444e`. Gepusht.
+
+> Der Security Engineer notiert: *„Das war heute eigentlich das Einfachste."*  
+> Der Koordinator: *„Sag das nicht laut."*
+
+---
+
+**Was heute gebaut wurde:**
+Mitmachen-Seite vollständig aktualisiert (6 Schritte, Einführungsgespräch, KAIAs Reflexion, Session-Journey, DSGVO-Korrektur) · Demand-Characteristics aus GSE-Framing entfernt (Psychologe-Finding) · npm audit High-Severity behoben (overrides + --omit=dev)
+
+**Commits:** `a5446bb` · `436d538` · `4c73542` · `1a3ccf4` · `c2d444e`
+
+**Kosten heute:** ca. $3 Claude Code · €4.39/Mo Hetzner
+
+**Morgen:** Server deployen, Tester anschreiben. 8. August kommt schneller als gedacht — und Plausible ist übrigens schon drin, seit wann auch immer. Gut.
+
+---
+
 ## 2026-07-20 — "100 Crashs. 0 Fehler. Und der Moment wo die Anthropic-Credits mitten im Judge-Lauf sterben."
 
 *Protokolliert vom Koordinator. Mit unfreiwilliger Gastrolle von OpenAI als Notfall-Judge.*

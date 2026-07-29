@@ -9,14 +9,55 @@
 
 ---
 
-**Stand heute:** 26. Juli 2026  
-**~210 Einträge insgesamt · 28 Release-Tage · ~135 h Gesamt-Aufwand**
+**Stand heute:** 29. Juli 2026  
+**~224 Einträge insgesamt · 30 Release-Tage · ~145 h Gesamt-Aufwand**
 
 ---
 
-## 2026-07-26 — Studienstart verschoben · 3 Wochen · KDG-USP vollständig
+## 2026-07-29 — Mitmachen-Seite · KAIAs Reflexion · Session-Journey · npm Audit
 
-**26.07.2026 · `(aktuell)`** — Studienstart auf **8. August 2026** verschoben (war 1. August). Studiendauer von 4 auf **3 Wochen** reduziert (Ende: 1. September 2026). 10 Sessions bleiben. Alle Stellen im System aktualisiert: StudyCountdown, Mitmachen-Seite, Landing Page, Onboarding, Survey, E-Mails, Thesis-Dokumente (Studienprotokoll, Kap. 4, Abstract). · `20min`  
+**29.07.2026 · `c2d444e`** — npm audit: 6 High-Severity-Vulnerabilities in Web-Dependencies behoben. `package.json overrides` für `postcss` (≥8.5.18) und `sharp` (≥0.35.0) zwingen Next.js, gepatchte Versionen in eigenen node_modules zu nutzen. CI-Audit auf `--omit=dev` umgestellt: `brace-expansion` läuft ausschließlich durch ESLint (devOnly, nie in Production). Lokal und CI: 0 high vulnerabilities. · `20min`  
+*fix: resolve npm audit high severity vulnerabilities in web*
+
+**29.07.2026 · `1a3ccf4`** — **Mitmachen-Seite vollständig neu** — nach 3-Agenten-Review (UX, Compliance, Psychologe). Neu: Einführungsgespräch als Schritt 2 (~15 Min Videocall vor Studienstart), KAIAs Session-Reflexion erklärt, alle 10 Session-Namen als Grid (Ankern → Loslassen). Korrekturen: "mindestens" → "genau 10 Sessions", Interview 45 Min → 15–20 Min, "Nach Woche 4" → "Nach Woche 3", CTA-Widerspruch aufgelöst, Telefonnummer Forscherin (0176 611 59 403), zweite Krisenhotline (0800 111 0 222), CoI-Deklaration im Footer. DSGVO-Fix: "Keine US-Clouds" durch korrekte SCC-Formulierung ersetzt (Anthropic/OpenAI erhalten Chat-Inhalte zur KI-Verarbeitung auf Basis von EU-SCCs). · `1h 30min`  
+*feat: update mitmachen page for study launch*
+
+**29.07.2026 · `4c73542`** — KAIAs Reflexion: Ladetext korrigiert auf "Ich notiere kurz, was ich aus diesem Gespräch mitnehme." (Vorgänger "nachlassen" bedeutet auf Deutsch auch "abnehmen" — grammatikalisch mehrdeutig). · `15min`  
+*feat: KAIA reflection — notiz-text while loading, button on ready*
+
+**29.07.2026 · `436d538`** — **KAIAs Reflexion** — Session-Zusammenfassung nach Session-Ende hinter Button statt Auto-Show. UX: "Ich notiere kurz…" → "KAIAs Reflexion ansehen"-Button → expandierbare Karte (Stimmung, Themen, stärkstes Zitat, nächster Schritt). · `45min`  
+*feat: KAIA-Reflexion button — session summary on demand, not auto-shown*
+
+**29.07.2026 · `a5446bb`** — Studienzeitraum finalisiert: 8.–28. August 2026 (3 Wochen), Interviews 1.–4. September, Thesis-Abgabe 3. Oktober. Alle Thesis-Dokumente aktualisiert (Kap. 2, 4, 6, Studienprotokoll, Teilnahmevereinbarung, Anhang, Ethikkommission). "Vier Wochen" → "drei Wochen" durchgehend. · `1h`  
+*docs: update study timeline — 3 weeks, Aug 8–28, interviews Sep 1–4, thesis Oct 3*
+
+**Thesis-Relevanz (29.07.):** Mitmachen-Seite ist das primäre Rekrutierungsdokument. Drei-Agenten-Review hat Demand-Characteristics-Problem im GSE-Framing entdeckt (Vorabankündigung des Pre-Post-Vergleichs als persönlicher Nutzen → Response-Shift-Bias in der Postmessung). Beseitigung schützt interne Validität der Hauptmessung. SCC-Formulierung bringt Rekrutierungsseite in Übereinstimmung mit Teilnahmevereinbarung. · `~4h gesamt`
+
+---
+
+## 2026-07-26 — V7 Prompt · Session-Journey · Tages-Limit · Completion-Page · Studienstart verschoben
+
+**26.07.2026 · `65af364`** — **KAIA Prompt V7** — Vollständige Überarbeitung des System-Prompts: Session-spezifische Opening-Trigger für alle 10 Sessions (jeweils mit eigenem Gesprächseinstieg und Retrieval-first Memory-Anchor). Einzel-Fragen-Constraint: genau 1 Fragezeichen pro KAIA-Antwort ([EINZEL-FRAGE]-Block + Check #14). Beziehungsreife-Block ab Session 6 (Elenchos, schärfere Konfrontation). `session_tone` und `session_memory_horizon` pro Session differenziert. Chat-Header: "Session 4 — Ausprobieren · von 10". Phase-Marker nach S3 ("Einstiegsphase abgeschlossen") und S5 ("Halbzeit"). Abschluss-Seite (`/abschluss`) neu: "Alles abgeschlossen.", privates Textarea-Ritual, "Fertig."-Button. · `4h`  
+*feat: V7 prompt + session-named journey arc + hero experience improvements*
+
+**26.07.2026 · `fcfb59d`** — Thema-Lock: Session 1 erlaubt einmalige Thema-Änderung, danach gesperrt. Meta-Reflexion Polling-Fix: `showSummaryCard` state korrekt reset auf `resetSession`. · `30min`  
+*feat: topic lock + one-time change in session 1 + fix meta-reflection polling*
+
+**26.07.2026 · `b33e031`** — Alembic-Migration für KAIA Prompt v6 repariert: `updated_at`-Spalte entfernt (existiert nicht in Prod-Schema), DELETE + INSERT statt ON CONFLICT (idempotent). · `25min`  
+*fix: prompt v6 migration — remove updated_at + use DELETE/INSERT instead of ON CONFLICT*
+
+**26.07.2026 · `0ba14b2`** — Studienabschluss-Seite `/abschluss` + Redirect nach Post-Survey. Teilnehmende landen nach dem Post-Fragebogen auf einer Abschlussseite statt auf einem leeren State. · `30min`  
+*feat: study completion page + redirect after post-survey*
+
+**26.07.2026 · `d5e752c`** — **KAIA Prompt v6** — Konzept-Drift-Sperre (Check #12): KAIA wechselt das Gesprächsthema nicht, solange der aktuelle Faden unabgeschlossen ist. Schritt-Abschluss-Check (Check #13): KAIA fragt nach dem konkreten nächsten Schritt bevor sie zum nächsten Gedanken wechselt. · `1h 30min`  
+*feat: KAIA prompt v6 — Konzept-Drift-Sperre + Schritt-Abschluss-Check*
+
+**26.07.2026 · `e13f10b`** — Tages-Limit pro User: max. 1 Session/Tag (studienkonform). Preferred Name: KAIA fragt in Session 1 nach dem Wunschnamen, speichert in `users.preferred_name`, verwendet ihn in allen folgenden Sessions im System-Prompt. Admin-Timestamp in Kostentabelle. · `1h 15min`  
+*feat: daily session limit, preferred name collection, name in prompt*
+
+**26.07.2026 · `c206436` · `f32142f` · `e0b95fc`** — Session-Summary-Karte: Erklärtext ergänzt. UserTurnCount-Reset bei neuer Session behoben. Textarea-Fokus auf React re-render verzögert (verhindert Flackern). · `30min`  
+
+**26.07.2026 · `(aktuell)`** — Studienstart auf **8. August 2026** verschoben (war 1. August). Studiendauer von 4 auf **3 Wochen** reduziert (Ende: 28. August 2026). 10 Sessions bleiben. Alle Stellen im System aktualisiert: StudyCountdown, Mitmachen-Seite, Landing Page, Onboarding, Survey, E-Mails, Thesis-Dokumente. · `20min`  
 *fix: reduce study to 3 weeks, shift start to Aug 8*
 
 **24.07.2026 · `cda4e6d`** — Fragebogen-Einstiegstexte auf Transfer-USP ausgerichtet. Titel: „Wie weit bringst du dein Wissen in die Praxis?" (war: „Wie lernst du bisher?"). Erklärtexte benennen jetzt explizit die Wissen-Handeln-Lücke als Messziel — kein generischer Lernfragebogen mehr. · `10min`  
