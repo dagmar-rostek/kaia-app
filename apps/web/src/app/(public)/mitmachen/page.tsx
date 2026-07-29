@@ -242,7 +242,7 @@ export default function MitmachenPage() {
           <StepCard
             number="3"
             icon={Map}
-            title="Deine persönliche Lernroadmap erstellen"
+            title="Dein Lernthema wählen"
             duration="5–10 Minuten · einmalig"
             accent
           >
@@ -255,8 +255,8 @@ export default function MitmachenPage() {
               präsentieren, Zeitblöcke wirklich einhalten.
             </p>
             <p>
-              Du trägst ein, was du erreichen möchtest — und verfolgst
-              deinen Fortschritt selbst. KAIA schlägt dir nichts vor und bewertet dich nicht.
+              Du trägst ein, was du erreichen möchtest. KAIA fragt nach —
+              bis das Ziel greifbar ist. KAIA schlägt dir nichts vor und bewertet dich nicht.
               Du bist der Maßstab für dich.
             </p>
             <div className="rounded-lg bg-muted/40 border border-border p-3 text-xs space-y-1">
@@ -328,10 +328,6 @@ export default function MitmachenPage() {
               Dieser Vergleich ist das Herzstück der wissenschaftlichen Auswertung —
               hat sich deine Überzeugung, schwierige Dinge aus eigener Kraft zu meistern,
               über drei Wochen verändert?
-            </p>
-            <p>
-              Außerdem hast du die Möglichkeit, deinen Lernroadmap-Fortschritt
-              einzutragen: Was hast du in diesen drei Wochen tatsächlich umgesetzt?
             </p>
           </StepCard>
 
@@ -451,9 +447,9 @@ export default function MitmachenPage() {
             {[
               { phase: "Vor Start",               dur: "~10 Min",              desc: "Registrierung, Einwilligung, KI-Disclosure, Kurzfragebogen (10 Fragen)" },
               { phase: "Vor Start",               dur: "~15 Min",              desc: "Einführungsgespräch per Video — Einweisung, Thema klären, Fragen stellen" },
-              { phase: "Tag 1 (8. Aug.)",          dur: "~10 Min",              desc: "Persönliche Lernroadmap anlegen — Thema, Ziel, persönliche Motivation" },
+              { phase: "Tag 1 (8. Aug.)",          dur: "~10 Min",              desc: "Lernthema + Ziel festlegen — was du in 3 Wochen umsetzen möchtest" },
               { phase: "Woche 1–3 (8.–28. Aug.)", dur: "genau 10× mind. 5 Min", desc: "Genau 10 Sessions mit KAIA — flexibel, wann du willst, max. 1 pro Tag" },
-              { phase: "Nach Woche 3",            dur: "~5 Min",               desc: "Abschluss-Fragebogen (dieselben 10 Fragen + Roadmap-Update)" },
+              { phase: "Nach Woche 3",            dur: "~5 Min",               desc: "Abschluss-Fragebogen (dieselben 10 Fragen + Reflexion)" },
               { phase: "1.–4. Sep. 2026",         dur: "~15–20 Min",           desc: "Abschlussgespräch mit der Forscherin (Video oder persönlich, aufgezeichnet)" },
             ].map(({ phase, dur, desc }, i) => (
               <div key={i} className="grid grid-cols-[110px_1fr] gap-4 px-5 py-4 hover:bg-muted/20 transition-colors">

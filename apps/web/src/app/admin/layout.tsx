@@ -23,7 +23,7 @@ const NAV = [
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="h-screen flex overflow-hidden">
+    <div className="h-dvh flex overflow-hidden">
       <aside className="w-56 shrink-0 border-r border-border flex flex-col">
         <div className="px-4 py-5 border-b border-border">
           <span className="font-semibold text-sm tracking-tight">KAIA Admin</span>
