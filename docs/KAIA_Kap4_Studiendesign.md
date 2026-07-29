@@ -8,7 +8,7 @@
 
 ## Überblick
 
-Kapitel 6 beschreibt Design, Durchführung und — soweit zum aktuellen Zeitpunkt möglich — die geplanten Auswertungsschritte der explorativen Pilotstudie mit KAIA. Die methodische Grundlage entspricht dem Studienprotokoll (v2.0, docs/STUDIENPROTOKOLL.md). Die Datenerhebung beginnt am 8. August 2026 und endet am 1. September 2026.
+Kapitel 6 beschreibt Design, Durchführung und — soweit zum aktuellen Zeitpunkt möglich — die geplanten Auswertungsschritte der explorativen Pilotstudie mit KAIA. Die methodische Grundlage entspricht dem Studienprotokoll (v2.0, docs/STUDIENPROTOKOLL.md). Die Datenerhebung beginnt am 8. August 2026 und endet am 28. August 2026.
 
 ---
 
@@ -115,7 +115,7 @@ Die in KAIA eingesetzte 34-Item-Version ist eine Selektion und Kurzung des 81-It
 **Instrument:** General Self-Efficacy Scale, deutschsprachige Originalversion (Schwarzer & Jerusalem, 1995)
 **Items:** 10 (Beispielitem: "Wenn ich mit einem Problem konfrontiert werde, habe ich meist mehrere Ideen, wie ich damit fertig werde.")
 **Skalierung:** 4-stufige Likert-Skala (1 = stimmt nicht, 4 = stimmt genau)
-**Erhebungszeitpunkte:** Prä-Messung (vor erster Session, ab 8. August 2026) und Post-Messung (1. – 5. September 2026)
+**Erhebungszeitpunkte:** Prä-Messung (vor erster Session, ab 8. August 2026) und Post-Messung (1.–4. September 2026)
 
 **Gütekriterien (Originalinstrument):**
 - Interne Konsistenz: Cronbachs α = .80–.90 in zahlreichen Validierungsstudien (N > 1.000; Schwarzer & Jerusalem, 1995)
@@ -217,11 +217,11 @@ Die Forscherin ist gleichzeitig Entwicklerin von KAIA und potenzielle Kommerzial
 | Laufend | DPAs abgeschlossen (Anthropic, OpenAI) | Abgeschlossen ✓ |
 | **28. Juli 2026** | **Study-Lock: Prompt-Freeze** — keine Prompt- oder Schema-Änderungen ab diesem Datum | Geplant |
 | **8. August 2026** | **Studienstart** — Registrierung, KI-Disclosure, Multi-Step-Consent, Prä-Befragung (MSLQ + GSE) + erste Sessions möglich | Geplant |
-| 1. August – 1. September 2026 | Aktive Studienphase (3 Wochen, max. 1 Session pro Tag) | Geplant |
-| **1. September 2026** | **Studienende** — letzte Session, Studienphase abgeschlossen | Geplant |
-| 1. – 5. September 2026 | Post-Befragung (GSE Post, 10 Items); optionaler Erfahrungsbericht | Geplant |
+| 8. August – 28. August 2026 | Aktive Studienphase (3 Wochen, max. 1 Session pro Tag) | Geplant |
+| **28. August 2026** | **Studienende** — letzte Session, Studienphase abgeschlossen | Geplant |
+| 1.–4. September 2026 | Post-Befragung (GSE Post, 10 Items) + Abschlussinterviews (~15–20 Min, persönlich) | Geplant |
 | September – Oktober 2026 | Datenauswertung, qualitative Analyse, Ergebniskapitel | Geplant |
-| **1. September 2026** | **Abgabe Masterthesis** (SRH Fernhochschule Riedlingen) | Deadline |
+| **3. Oktober 2026** | **Abgabe Masterthesis** (SRH Fernhochschule Riedlingen) | Deadline |
 
 **Kritischer Hinweis (Stand 15. Juli 2026):** Die Studie hat noch NICHT begonnen. DPAs mit Anthropic und OpenAI sind abgeschlossen. Offene kritische Voraussetzungen: Datenschutzerklärung, Impressum, Password-Reset-Flow, Postgres-Backup, Study-Lock. Ohne Abschluss dieser Punkte vor dem 28. Juli 2026 verschiebt sich der Studienstart. Eine Verschiebung über den 8. August 2026 hinaus würde den Thesis-Abgabetermin gefährden.
 
@@ -368,13 +368,13 @@ Der Effekt des zugrundeliegenden Sprachmodells (Claude vs. GPT-4o vs. Mistral) i
 Alle Instrumente und KAIA selbst sind auf Deutsch. Generalisierbarkeit auf andere Sprachgruppen ist nicht gegeben.
 
 **11. Keine Langzeit-Follow-up-Messung**
-Mangels zeitlicher Ressourcen (Thesis-Deadline 1. September 2026) ist kein Follow-up nach Studienabschluss vorgesehen. Nachhaltigkeitseffekte und Transkriptionsverläufe sind nicht messbar.
+Mangels zeitlicher Ressourcen (Thesis-Deadline 3. Oktober 2026) ist kein Follow-up nach Studienabschluss vorgesehen. Nachhaltigkeitseffekte und Transkriptionsverläufe sind nicht messbar.
 
 ---
 
 ## 6.11 Ergebnisse
 
-*[Dieser Abschnitt wird nach Abschluss der Post-Befragung (5. September 2026) befüllt. Datenlage: frühestens ab 6. September 2026 vollständig.]*
+*[Dieser Abschnitt wird nach Abschluss der Post-Befragung (4. September 2026) befüllt. Datenlage: frühestens ab 5. September 2026 vollständig.]*
 
 ### 6.11.1 Stichprobenbeschreibung
 

@@ -227,10 +227,10 @@ Bei wiederholten Krisen-Treffern für eine Benutzer-ID wird die Forscherin via S
 | DPAs Anthropic/OpenAI abgeschlossen | Abgeschlossen ✓ |
 | Study-Lock aktivieren | 28.07.2026 |
 | **Pilotstudie START** | **8. August 2026** |
-| Pilotstudie ENDE (3 Wochen) | 1. September 2026 |
-| Post-Messung + Interviews | 1. – 5. September 2026 |
+| Pilotstudie ENDE (3 Wochen) | 28. August 2026 |
+| Post-Befragung + Abschlussinterviews | 1.–4. September 2026 |
 | Auswertung (Kap. 5 + 6) | September 2026 |
-| Thesis-Abgabe | **01. Oktober 2026** |
+| Thesis-Abgabe | **03. Oktober 2026** |
 
 ---
 

@@ -12,7 +12,7 @@ Deine Teilnahme ist vollständig freiwillig.
 
 ## Was wird untersucht?
 
-Diese Studie untersucht, ob die Nutzung eines KI-gestützten Lernbegleiters (KAIA) über einen Zeitraum von vier Wochen die **allgemeine Selbstwirksamkeitserwartung** beeinflusst. Selbstwirksamkeit bezeichnet die Überzeugung, schwierige Aufgaben durch eigene Anstrengung meistern zu können.
+Diese Studie untersucht, ob die Nutzung eines KI-gestützten Lernbegleiters (KAIA) über einen Zeitraum von drei Wochen die **allgemeine Selbstwirksamkeitserwartung** beeinflusst. Selbstwirksamkeit bezeichnet die Überzeugung, schwierige Aufgaben durch eigene Anstrengung meistern zu können.
 
 Die Studie ist Teil einer Masterthesis an der SRH Fernhochschule (M.Sc. Data Science & Analytics) und folgt den Grundsätzen wissenschaftlicher Integrität.
 
@@ -34,11 +34,12 @@ Was das bedeutet:
 ## Was wird von mir erwartet?
 
 1. **Einmalig bei Registrierung:** Ausfüllen der Skala zur Allgemeinen Selbstwirksamkeitserwartung (GSE, 10 Fragen, ca. 3 Minuten)
-2. **Über 4 Wochen:** Mindestens 3 Chat-Sessions mit KAIA zu einem Lernthema deiner Wahl
-3. **Am Ende:** Nochmaliges Ausfüllen der GSE-Skala (10 Fragen, ca. 3 Minuten)
-4. **Optional:** Kurzer schriftlicher Erfahrungsbericht (nicht verpflichtend)
+2. **Einführungsgespräch (vor Start):** ~15 Minuten Videocall mit der Forscherin zur Einweisung in KAIA
+3. **Über 3 Wochen (8.–28. August 2026):** 10 Chat-Sessions mit KAIA zu einem Lernthema deiner Wahl — max. 1 Session pro Tag
+4. **Am Ende:** Nochmaliges Ausfüllen der GSE-Skala (10 Fragen, ca. 3 Minuten)
+5. **Abschlussgespräch (1.–4. September 2026):** ~15–20 Minuten persönliches Interview mit der Forscherin
 
-**Gesamtaufwand:** ca. 1–3 Stunden über 4 Wochen, abhängig von der Nutzungsintensität.
+**Gesamtaufwand:** ca. 2–4 Stunden über 3 Wochen, abhängig von der Gesprächslänge.
 
 ---
 

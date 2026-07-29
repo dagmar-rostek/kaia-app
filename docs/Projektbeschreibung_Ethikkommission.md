@@ -16,7 +16,7 @@ Entwicklung eines empathischen AI-Agenten zur neuroadaptiven personalisierten Le
 
 ## Forschungsfrage und Ziel
 
-Die Studie untersucht, inwieweit die Nutzung eines sokratisch konfigurierten KI-Agenten zur Lernbegleitung über vier Wochen die allgemeine Selbstwirksamkeitserwartung von Lernenden beeinflusst. Der Agent ist eine Webanwendung, die Lernende durch gezielte Fragen beim selbstständigen Erarbeiten von Lerninhalten begleitet — ohne fertige Antworten zu liefern. Das System passt seinen Gesprächsstil adaptiv an den wahrgenommenen Lernzustand der Person an (neuroadaptive Komponente). Die Studie ist Teil einer Masterthesis im Rahmen des Studiengangs M.Sc. Data Science & Analytics an der SRH Fernhochschule.
+Die Studie untersucht, inwieweit die Nutzung eines sokratisch konfigurierten KI-Agenten zur Lernbegleitung über drei Wochen die allgemeine Selbstwirksamkeitserwartung von Lernenden beeinflusst. Der Agent ist eine Webanwendung, die Lernende durch gezielte Fragen beim selbstständigen Erarbeiten von Lerninhalten begleitet — ohne fertige Antworten zu liefern. Das System passt seinen Gesprächsstil adaptiv an den wahrgenommenen Lernzustand der Person an (neuroadaptive Komponente). Die Studie ist Teil einer Masterthesis im Rahmen des Studiengangs M.Sc. Data Science & Analytics an der SRH Fernhochschule.
 
 ---
 

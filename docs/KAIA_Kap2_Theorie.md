@@ -89,7 +89,7 @@ KAIAs Design erfüllt alle fünf Prinzipien strukturell: Die freie Themenwahl ad
 
 Eine der robustesten Befundlagen der Kognitionspsychologie ist der Spacing-Effekt: Verteiltes Lernen über mehrere Zeitpunkte ist massed practice — das konzentrierte Lernen in einer einzigen Sitzung — in Bezug auf langfristigen Behaltens- und Transfererfolg substanziell überlegen. Cepeda, Pashler, Vul, Wixted und Rohrer (2006) haben in einer quantitativen Synthese von 254 Studien mit 317 Experimenten belegt, dass die optimale intersessionale Zeitspanne von der beabsichtigten Behaltensintervall abhängt, aber in praktisch allen untersuchten Bedingungen mindestens 24 Stunden betragen sollte. Dunlosky, Rawson, Marsh, Nathan und Willingham (2013) bewerten distributed practice als die Lerntechnik mit dem stärksten empirischen Wirkungsnachweis insgesamt.
 
-Die Beschränkung auf maximal eine KAIA-Session pro Tag ist damit nicht nur eine pragmatische Nutzungsregel, sondern eine direkte Implementierung des Distributed-Practice-Prinzips. Zehn Sessions über mindestens zehn Tage — in der Praxis über vier Wochen — erzeugt die intersessionalen Abstände, die nach Cepeda et al. (2006) für nachhaltiges Behalten notwendig sind. Gleichzeitig stellt die Mindestteilnahmevorgabe (drei Sessions über vier Wochen) die Untergrenze des Spacing-Effekts sicher. Das kumulatives Gedächtnis (Abschnitt 2.13) ist dabei nicht nur technisch notwendig, um Gesprächskontinuität herzustellen, sondern kognitiv notwendig: Es aktiviert bei jeder Session das in Vorabsitzungen erworbene Wissen und schafft die semantischen Anker, über die Spacing seinen Effekt entfaltet (Ausubel, 1968).
+Die Beschränkung auf maximal eine KAIA-Session pro Tag ist damit nicht nur eine pragmatische Nutzungsregel, sondern eine direkte Implementierung des Distributed-Practice-Prinzips. Zehn Sessions über mindestens zehn Tage — in der Praxis über drei Wochen — erzeugt die intersessionalen Abstände, die nach Cepeda et al. (2006) für nachhaltiges Behalten notwendig sind. Gleichzeitig stellt die Mindestteilnahmevorgabe (drei Sessions über drei Wochen) die Untergrenze des Spacing-Effekts sicher. Das kumulatives Gedächtnis (Abschnitt 2.13) ist dabei nicht nur technisch notwendig, um Gesprächskontinuität herzustellen, sondern kognitiv notwendig: Es aktiviert bei jeder Session das in Vorabsitzungen erworbene Wissen und schafft die semantischen Anker, über die Spacing seinen Effekt entfaltet (Ausubel, 1968).
 
 ---
 
@@ -207,7 +207,7 @@ KAIAs drei Beispiel-Lernthemen (Wertschätzende Kommunikation, KI-Kompetenz, Lea
 
 ### 2.12.4 Was "Lernen lernen" durch KAIA realistisch bedeutet
 
-Die vertretbare Behauptung lautet: KAIA kann durch sokratische Begleitung episodische Mastery-Erlebnisse erzeugen, die kurzfristig allgemeine Selbstwirksamkeitserwartungen stabilisieren und metakognitive Aufmerksamkeit für eigene Lernprozesse aktivieren. Ob sich daraus domänenübergreifende Problemlösekompetenz entwickelt, ist eine mittelfristige Hypothese, die die vorliegende Pilotstudie (N ≈ 20, 4 Wochen) nicht prüfen kann und nicht beansprucht zu prüfen.
+Die vertretbare Behauptung lautet: KAIA kann durch sokratische Begleitung episodische Mastery-Erlebnisse erzeugen, die kurzfristig allgemeine Selbstwirksamkeitserwartungen stabilisieren und metakognitive Aufmerksamkeit für eigene Lernprozesse aktivieren. Ob sich daraus domänenübergreifende Problemlösekompetenz entwickelt, ist eine mittelfristige Hypothese, die die vorliegende Pilotstudie (N ≈ 20, 3 Wochen) nicht prüfen kann und nicht beansprucht zu prüfen.
 
 "Lernen lernen" ist damit kein Outcome dieser Studie — es ist die theoretische Vision, die KAIAs Designprinzipien motiviert, und eine Forschungsperspektive für Folgestudien mit längerem Zeithorizont.
 
@@ -267,7 +267,7 @@ Die in den vorangegangenen Abschnitten dargestellten Theorien sind nicht additiv
 
 **Die Hypothesen** der Studie lauten:
 
-- **H1:** Die allgemeine Selbstwirksamkeitserwartung (GSE; Schwarzer & Jerusalem, 1995) ist nach vier Wochen KAIA-Nutzung signifikant höher als vor der Nutzung (gerichtet, Wilcoxon-Vorzeichenrangtest, α = .05).
+- **H1:** Die allgemeine Selbstwirksamkeitserwartung (GSE; Schwarzer & Jerusalem, 1995) ist nach drei Wochen KAIA-Nutzung signifikant höher als vor der Nutzung (gerichtet, Wilcoxon-Vorzeichenrangtest, α = .05).
 - **H2:** Es besteht ein positiver Zusammenhang zwischen Nutzungshäufigkeit und Veränderung der Selbstwirksamkeitserwartung (ungerichtet, Spearman-Rho).
 - **H3:** Lernende mit höherer MSLQ-Elaborationsstrategie zu T1 zeigen stärkere GSE-Veränderungen (explorativ, moderierte Regression).
 - **H4:** Die durch LLM-Analyse aus Gesprächstranskripten abgeleiteten Indikatoren für Handlungskontrolle und Problemlösezuversicht konvergieren über die Studienlaufzeit mit den GSE-Selbstaussagen (explorativ).

@@ -50,7 +50,7 @@ Geplante Inhalte:
 
 **Fehlende Kontrollgruppe:** Das explorative Design verzichtet auf eine Kontrollgruppe, sodass Prä/Post-Veränderungen nicht kausal auf KAIA zurückgeführt werden können. Reifungseffekte, Erwartungseffekte und externe Einflüsse können nicht ausgeschlossen werden.
 
-**Kurze Studiendauer:** Vier Wochen (mindestens drei Sessions) sind für nachhaltige Selbstwirksamkeitsveränderungen möglicherweise zu kurz (Bandura, 1997).
+**Kurze Studiendauer:** Drei Wochen (mindestens drei Sessions) sind für nachhaltige Selbstwirksamkeitsveränderungen möglicherweise zu kurz (Bandura, 1997).
 
 ### 6.2.2 Limitationen des Systems
 

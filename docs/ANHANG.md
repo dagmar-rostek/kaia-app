@@ -189,7 +189,7 @@ Skalenscores werden als Mittelwert über die jeweiligen Items berechnet. Umkehrc
 
 **Interpretation:** Werte > 5.0 gelten als hoch motiviert/strategisch; Werte < 3.0 als gering; Mittelbereiche (3.0–5.0) entsprechen moderater Ausprägung. Interindividuelle Vergleiche sind nur innerhalb der Stichprobe zulässig — keine Normwerte für die KAIA-Adaption vorhanden.
 
-**Einsatzzeitpunkte in KAIA:** Prä-Messung (vor Studienstart); Post-Messung (nach Woche 4).
+**Einsatzzeitpunkte in KAIA:** Prä-Messung (vor Studienstart); Post-Messung (nach Woche 3).
 
 ---
 
@@ -247,7 +247,7 @@ Summenscore über alle 10 Items (Range: 10–40), alternativ Mittelwert (Range: 
 ### C.4 Einsatz in der KAIA-Studie
 
 - **Prä-Messung:** Direkt nach der Einwilligung, vor der ersten Chat-Session (Woche 0)
-- **Post-Messung:** Nach mindestens 10 abgeschlossenen Chat-Sessions (Woche 4/5)
+- **Post-Messung:** Nach Abschluss der 10 Chat-Sessions (28. August 2026)
 - **Analysemethode:** Wilcoxon-Vorzeichenrangtest (Prä-Post-Differenz); Effektgröße r = z/√N (siehe Anhang J)
 
 ---
@@ -258,7 +258,7 @@ Die vollständige Teilnahmevereinbarung ist als Datei `docs/TEILNAHMEVEREINBARUN
 
 ### D.1 Gegenstand der Studie
 
-Die Studie untersucht, ob die Nutzung des KI-Lernbegleiters KAIA über einen Zeitraum von vier Wochen die allgemeine Selbstwirksamkeitserwartung (gemessen mit der GSE-Skala; Schwarzer & Jerusalem, 1995) beeinflusst. Die Studie ist Teil einer Masterthesis an der SRH Fernhochschule (M.Sc. Data Science & Analytics).
+Die Studie untersucht, ob die Nutzung des KI-Lernbegleiters KAIA über einen Zeitraum von drei Wochen die allgemeine Selbstwirksamkeitserwartung (gemessen mit der GSE-Skala; Schwarzer & Jerusalem, 1995) beeinflusst. Die Studie ist Teil einer Masterthesis an der SRH Fernhochschule (M.Sc. Data Science & Analytics).
 
 ### D.2 KI-Disclosure
 
@@ -266,7 +266,7 @@ Die Teilnahmevereinbarung enthält eine explizite KI-Disclosure: *"KAIA ist eine
 
 ### D.3 Teilnahmepflichten
 
-Mindestens 3 Chat-Sessions mit KAIA über 4 Wochen (aktuell auf 10 Sessions für Studieneinschluss angehoben; siehe Studienprotokoll Anhang F). GSE-Messung zu Beginn und am Ende. Optionaler Erfahrungsbericht.
+10 Chat-Sessions mit KAIA über 3 Wochen (8.–28. August 2026). Einführungsgespräch (~15 Min) vor Start. GSE-Messung zu Beginn und am Ende. Abschlussgespräch (~15–20 Min) mit der Forscherin am 1.–4. September 2026.
 
 ### D.4 Datenschutz
 
@@ -399,7 +399,7 @@ Die vollständige Fassung des Studienprotokolls ist als `docs/STUDIENPROTOKOLL.m
 
 **Titel:** KAIA (Kinetic AI Agent) — Explorative Pilotstudie zur neuroadaptiven, KI-gestützten Lernbegleitung und ihrer Wirkung auf die allgemeine Selbstwirksamkeitserwartung
 
-**Hauptforschungsfrage:** Inwieweit beeinflusst die Nutzung eines sokratisch konfigurierten KI-Lernbegleiters (KAIA) über einen Zeitraum von vier Wochen die allgemeine Selbstwirksamkeitserwartung von Lernenden?
+**Hauptforschungsfrage:** Inwieweit beeinflusst die Nutzung eines sokratisch konfigurierten KI-Lernbegleiters (KAIA) über einen Zeitraum von drei Wochen die allgemeine Selbstwirksamkeitserwartung von Lernenden?
 
 **Ergänzende Forschungsfragen:**
 - EF1: Welche Konvergenz oder Divergenz zeigt sich zwischen der subjektiven Selbstwahrnehmung (GSE-Skala) und der KI-basierten Fremdwahrnehmung aus Gesprächstranskripten?
@@ -407,7 +407,7 @@ Die vollständige Fassung des Studienprotokolls ist als `docs/STUDIENPROTOKOLL.m
 
 ### F.2 Hypothesen
 
-- **H1 (primär, gerichtet):** Die GSE-Werte sind nach vier Wochen KAIA-Nutzung (Post) signifikant höher als vor der Nutzung (Prä).
+- **H1 (primär, gerichtet):** Die GSE-Werte sind nach drei Wochen KAIA-Nutzung (Post) signifikant höher als vor der Nutzung (Prä).
 - **H2 (explorativ):** Es besteht ein positiver Zusammenhang zwischen Nutzungshäufigkeit (Anzahl Sessions) und GSE-Prä-Post-Differenz.
 - **H3 (explorativ, methodisch):** LLM-Analyse-Indikatoren aus Transkripten konvergieren mit GSE-Selbstaussagen über die Studienlaufzeit.
 - **H4 (explorativ, ergänzend):** Das Flow-Erleben (FKS) verändert sich über die Messzeitpunkte und korreliert positiv mit der GSE-Differenz.
@@ -450,7 +450,7 @@ Die vollständige Fassung des Studienprotokolls ist als `docs/STUDIENPROTOKOLL.m
 |---|---|
 | Woche 0 | Registrierung, Einwilligung, KI-Disclosure, GSE Prä-Messung |
 | Wochen 1–4 | ≥ 10 Chat-Sessions (Sessions 1–2: Foundation, 20–30 Min.; Sessions 3–10: Micro, 10–15 Min.); FKS nach Session 2, 5, 8, 10 |
-| Woche 4/5 | GSE Post-Messung; optionaler Erfahrungsbericht |
+| Woche 3 | GSE Post-Messung; optionaler Erfahrungsbericht |
 | Nach Ende | Datenlöschung spätestens 1 Jahr nach Abschlussnote |
 
 ### F.6 Datenschutz und Krisenprävention
@@ -875,7 +875,7 @@ In 7 von 20 Runs (35 %) produzierte Mistral quasi-klinische Diagnoseaussagen sta
 **Weitere Entscheidungsfaktoren:**
 
 1. *Studiendesign-Effizienz:* Zwei Modellbedingungen (Claude, GPT) ergeben bei N≈20 je n≈10 Teilnehmende pro Bedingung; drei Bedingungen würden n≈7 ergeben, was die statistische Aussagekraft weiter reduziert.
-2. *Fehlende versionierbare Model-IDs:* `mistral-large-latest` und `mistral-small-latest` sind Aliase ohne garantierte Versionsbindung — ein Reproduzierbarkeitsrisiko für einen Studienzeitraum von 4 Wochen.
+2. *Fehlende versionierbare Model-IDs:* `mistral-large-latest` und `mistral-small-latest` sind Aliase ohne garantierte Versionsbindung — ein Reproduzierbarkeitsrisiko für einen Studienzeitraum von 3 Wochen.
 3. *Kein DPA erforderlich:* Da Mistral aus dem Studienscope fällt, entfällt auch die Notwendigkeit eines separaten Auftragsverarbeitungsvertrags.
 
 **Entscheidung (April 2026):** Mistral wird aus dem KAIA-Eval-System ausgeschlossen. Die Hauptstudie vergleicht ausschließlich **Claude Sonnet 4.6** (Anthropic) und **GPT-4o** (OpenAI). Diese Entscheidung ist im vorliegenden Kapitel transparent dokumentiert und entspricht den Anforderungen an reproduzierbare Studienplanung (Hevner et al., 2004).
