@@ -11,30 +11,30 @@
 ## 🔴 BLOCKER — Vor Studienstart zwingend
 
 ### Sicherheit & Ethik
-- [ ] **Crisis-Detection-Modul** — Pre-Filter auf User-Input, NLP-Klassifikator für Krisensignale, statische Eskalations-Notice (Telefonseelsorge 0800 111 0 111), Banned-Topic-Liste
-- [ ] **KI-Disclosure-Screen** — Expliziter Hinweis vor Onboarding: "Du sprichst mit einem KI-System. Antworten können fehlerhaft sein. KAIA ist kein Therapie-Ersatz."
-- [ ] **Ethikvotum** — Antrag bei SRH Fernhochschule einreichen (Frist klären mit Betreuung)
+- [x] **Crisis-Detection-Modul** ✅ Erledigt Juni/Juli 2026 — Pre-Filter auf User-Input, statische Eskalations-Notice (Telefonseelsorge 0800 111 0 111 + 0800 111 0 222), Banned-Topic-Liste, Bypass-Bug behoben. Goldset-Validierung in Eval-Pipeline. `b89d594` · `dd69ac6`
+- [x] **KI-Disclosure-Screen** ✅ Erledigt Juni 2026 — Expliziter Hinweis vor Onboarding: "Du sprichst mit einem KI-System." KDG-Framing aktualisiert (20.07.). Journey-Guard serverseitig erzwungen. `b89d594` · `499b91e`
+- [ ] **Ethikvotum** — Projektbeschreibung für SRH-Ethikkommission eingereicht (`d474cf6`). Status: ausstehend.
 - [ ] **Betreuungs-Approval** — Schriftliche Freigabe des Studiendesigns vom Thesis-Betreuer
 
 ### DSGVO
-- [ ] **Separate Einwilligungserklärung** — Dokument für Forschungsteilnahme (≠ DSGVO-Consent): Studienzweck, Risiken, Freiwilligkeit, Right-to-Withdraw mit Datenlöschung
+- [x] **Separate Einwilligungserklärung** ✅ Erledigt Mai 2026 — Teilnahmevereinbarung mit Studienzweck, Risiken, Freiwilligkeit, Right-to-Withdraw + Datenlöschung. `7404aa3`
 - [x] **DPA Anthropic** ✅ Erledigt 15. Juli 2026 — DPA war bei API-Vertragsschluss automatisch akzeptiert (Commercial ToS). SCCs Module Two (controller→processor), irisches Recht. PDF: `docs/legal/anthropic_dpa_2026-07-15.pdf`
 - [x] **DPA OpenAI** ✅ Erledigt 15. Juli 2026 — Bestätigung von OpenAI Privacy Team erhalten. Gültig ab 1. Januar 2026, OpenAI Ireland Ltd. als Vertragspartner (EWR), SCCs Modul 2, irisches Recht. PDF: `docs/legal/openai_dpa_2026-07-15.pdf`
 - [x] **DPA Mistral** ~~entfällt~~ — Mistral wird nach Pre-Test nicht in die Studie aufgenommen (Empathiequalität unzureichend). LLM-Eval: nur Anthropic Claude + OpenAI.
-- [ ] **Schrems-II-Dokumentation** — SCCs für US-Datenübermittlung in Datenschutzerklärung
-- [ ] **Datenschutzerklärung** auf kaia.rostek-dagmar.eu (Art. 13/14 DSGVO-konform)
-- [ ] **Impressum** auf kaia.rostek-dagmar.eu (TMG-Pflicht)
+- [x] **Schrems-II-Dokumentation** ✅ Erledigt 15. Juli 2026 — SCCs für US-Datenübermittlung (Anthropic, OpenAI) in Datenschutzerklärung dokumentiert. `0aa22eb`
+- [x] **Datenschutzerklärung** ✅ Erledigt (laufend aktualisiert) — Art. 13/14 DSGVO-konform auf kaia.rostek-dagmar.eu. Mistral entfernt, Schrems-II präzisiert. `b89d594` · `0aa22eb`
+- [x] **Impressum** ✅ Erledigt Mai 2026 — § 5 TMG, Dagmar Rostek, Geilenkirchen. `32bd2df`
 - [ ] **DSGVO Art. 16** — Berichtigungsrecht (User kann eigene Daten korrigieren)
 - [ ] **DSGVO Art. 18** — Einschränkung der Verarbeitung
 - [ ] **DSGVO Art. 20** — Datenübertragbarkeit (CSV-Download Self-Service)
 - [ ] **DSGVO Art. 21** — Widerspruchsrecht
 
 ### Auth & User-Management
-- [ ] **User-Registration mit E-Mail-Verifikation** — Token-basiert, verhindert Fake-Accounts
-- [ ] **User-Approval-Flow** — Status: pending → active → suspended → deleted; Admin-UI
-- [ ] **Password-Reset-Flow** — Token per E-Mail, 30min gültig
+- [x] **User-Registration** ✅ Erledigt Juli 2026 — Registrierungsformular mit E-Mail + Art.-9-Consent + Lernthema bei Registrierung. `56ed9b7` · `169ce2b`
+- [x] **User-Approval-Flow** ✅ Erledigt Juni 2026 — Status: pending → active; Admin-UI + E-Mail bei Freischaltung. `cd2a0d5` · `5687029`
+- [x] **Password-Reset-Flow** ✅ Erledigt 16. Juli 2026 — Token per E-Mail via Brevo SMTP, 30min gültig. `fa569a6`
 - [ ] **2FA für Admin-Account** — TOTP (z.B. via PyOTP)
-- [ ] **JWT Auth** — Access-Token 15min + Refresh-Token 30d rotierend
+- [x] **JWT Auth** ✅ Erledigt Mai 2026 — Access-Token 15min + Refresh-Token 30d rotierend. `7bc1929`
 - [ ] **Session-Timeout** — Nach 30 Tagen Inaktivität Logout
 - [ ] **CAPTCHA / Bot-Schutz** — Cloudflare Turnstile bei Registrierung
 
@@ -45,10 +45,10 @@
 - [ ] **Vector-DB User-Isolation** — Row-Level-Security in pgvector; Integrationstest mit 2 Test-Usern; mypy-enforced user_id Parameter
 
 ### Studien-Infrastruktur
-- [ ] **Study-Lock-Modus** — DB-Flag `study_mode: locked`; Admin-UI sperrt Prompt-Änderungen; CI-Guard aktiv (bereits in CI.yml)
+- [ ] **Study-Lock-Modus** — CI-Guard aktiv (CI.yml). Admin-UI + DB-Flag `study_mode: locked` noch ausstehend.
 - [ ] **Prompt-Freeze-Dokumentation** — Exakte Prompt-Version-IDs zum Studienstart in Audit-Log
-- [ ] **LLM Model-Pinning** — Versionierte Model-IDs (nie "claude", immer "claude-opus-4-7-20260301"); temperature=0 für Analyzer
-- [ ] **Rate-Limiting** — Pro-User Tages-Limit; globaler Kosten-Alarm bei 80% Monatsbudget; Auto-Stop
+- [x] **LLM Model-Pinning** ✅ Erledigt — Alle Chat-Calls verwenden versionierte Model-IDs (claude-sonnet-4-6-20250514 etc.). Kein generisches "claude". Per-User-Zuweisung in Admin-UI. `20319f8`
+- [x] **Rate-Limiting** ✅ Erledigt 26. Juli 2026 — Max. 1 Session/Tag (studienkonform). €5.00 Kostenlimit pro User. B3-Bug (orphaned Sessions) behoben. `e13f10b` · `860d6e9` · `79144ad`
 - [ ] **Provider-Failover-Plan** — Dokumentiertes Vorgehen bei Anthropic-Ausfall (höfliche Fehlermeldung + Session-Resume)
 
 ---
@@ -56,62 +56,62 @@
 ## 🟠 PRE-PILOT — Vor n=3-5 Pilotnutzern
 
 ### Kern-Features
-- [ ] **Chat-UI mit SSE-Streaming** — LLM-Antworten streamen; first-token < 3s; Mobile-optimiert
-- [ ] **LLM-Provider-Auswahl** — User wählt Claude / GPT-4o / Mistral beim Onboarding
-- [ ] **Dreiphasiges Onboarding** — Idempotent (Resume nach Refresh); alle Schritte server-persistent
-- [ ] **GSE Pre-Messung** — Konversationell operationalisiert, keine kalten Fragebögen
-- [ ] **GSE Post-Messung** — Trigger nach ≥3 Sessions; Banner im Chat
-- [ ] **Auswertungsseite** — Radar-Chart Baseline vs. aktuelle Session
+- [x] **Chat-UI mit SSE-Streaming** ✅ Erledigt 09. Juni 2026 — LLM-Antworten streamen, Tipp-Indikator, Mobile-optimiert. `179852c` · `d8d5c3c`
+- [ ] **LLM-Provider-Auswahl durch User** — Admin kann pro User setzen (✅). User-facing Onboarding-Auswahl noch ausstehend.
+- [x] **Dreiphasiges Onboarding** ✅ Erledigt — KI-Disclosure → Lernthema-Onboarding → Pre-Survey (MSLQ + GSE). Journey-Guard serverseitig (403). `7466be6` · `46c4a59` · `499b91e`
+- [x] **GSE Pre-Messung** ✅ Erledigt — MSLQ + GSE Pre-Survey, randomisiert (Fisher-Yates), Interpretationstext + Normwerte. `7466be6` · `744ce47`
+- [x] **GSE Post-Messung** ✅ Erledigt — Trigger nach Session 10, Auto-Redirect zur Post-Befragung. `f079f1f`
+- [x] **Auswertungsseite** ✅ Erledigt — Pre/Post-Vergleich auf Celebration Screen nach Post-Messung (GSE-Scores). `519e195` · `744ce47`
 
 ### Prompt-Management
-- [ ] **Prompt-Management-System** — DB-gespeichert, Jinja2-Templates, versioniert
-- [ ] **Admin-UI: Prompt-Editor** — Monaco-Editor, Variable-Picker, Draft/Active-Status
-- [ ] **A/B-Routing** — Deterministisches Hash-basiertes Variant-Assignment; prompt_variant in llm_usage
-- [ ] **Pedagogische Evaluations-Rubrik** — Stichprobe KAIA-Fragen codieren: Offenheit, Reflexionstiefe, Nicht-leitend
+- [x] **Prompt-Management-System** ✅ Erledigt — DB-gespeichert, Jinja2-Templates, versioniert (V1–V7 aktiv). `7976d7e`
+- [x] **Admin-UI: Prompt-Editor** ✅ Erledigt — Monaco-Editor, aktive Prompt-Version wählbar und editierbar. `7976d7e`
+- [ ] **A/B-Routing** — Deterministisches Hash-basiertes Variant-Assignment; prompt_variant in llm_usage *(Post-Studie oder Evaluations-Feature)*
+- [ ] **Pedagogische Evaluations-Rubrik** — Stichprobe KAIA-Fragen manuell codieren: Offenheit, Reflexionstiefe, Nicht-leitend
 
 ### Analytics
-- [ ] **LLM-Usage-Logging** — Tabelle llm_usage: provider, model, tokens, cost_eur, latency_ms, prompt_variant
-- [ ] **Pricing-Tabelle** — Pro Modell Input/Output-Kosten in EUR, in DB konfigurierbar
-- [ ] **Learning-Analytics-Dashboard** — Funnel (Registrierung → Onboarding → Sessions → Post), Aktivität, Drop-Out
-- [ ] **Kosten-Dashboard** — Gesamt, pro User, pro Provider, Hochrechnung auf 100 User
+- [x] **LLM-Usage-Logging** ✅ Erledigt — Tabelle llm_usage mit provider, model, tokens, cost_eur, latency. Admin-Dashboard. `b14a8f9`
+- [x] **Pricing-Tabelle** ✅ Erledigt — Kosten pro Modell (Sonnet, Haiku, GPT-4o, GPT-5.6 Terra, GPT-4.1 mini) in Admin-UI sichtbar. `73b05c4` + mehrere
+- [x] **Learning-Analytics-Dashboard** ✅ Erledigt — Admin-Dashboard: User-Liste, Sessions, Kosten pro User, Status. `e7fda9f`
+- [x] **Kosten-Dashboard** ✅ Erledigt — Live-Kostentransparenz: €/Turn, €/Session, €/User (Kostentabelle + Admin-Dashboard). `b14a8f9`
 
 ### Admin
-- [ ] **Admin-Dashboard** — 5 Tabs: User / Sessions / Prompts / Analytics / System
-- [ ] **User Hard-Delete** — Admin kann User ohne Einwilligung löschen (DSGVO Art. 17 Admin-Perspektive); Audit-Log-Pflicht
-- [ ] **Audit-Log-Seite** — Alle DSGVO-relevanten Aktionen chronologisch
+- [x] **Admin-Dashboard** ✅ Erledigt — User / Sessions / Prompts / Eval / Kosten / Lerndesign / Tagebuch / Roadmap / Journey-Test. `8085cb7` + viele
+- [x] **User Hard-Delete** ✅ Erledigt 06. Juli 2026 — Admin kann User löschen (DSGVO Art. 17 Kaskade aller Daten). `169ce2b`
+- [ ] **Audit-Log-Seite** — Alle DSGVO-relevanten Aktionen chronologisch *(audit_events-Tabelle existiert, Seite fehlt)*
 
 ### Chat-Core-V2: Session-Abschluss mit Closure-Phase
-- [ ] **Closing-Endpoint** — `POST /api/v1/chat/sessions/{id}/closing`: KAIA generiert Abschluss-Bubble via SSE (wie /opening) ohne User-Input. `extract_session_summary()` läuft erst danach.
-- [ ] **Chat-UI Abschluss-Flow** — Neuer Frontend-State "pending_closure": KAIA's Abschluss-Bubble als normale Chat-Bubble, darunter [Antworten] (primär, volle Breite) · [Jetzt wirklich beenden] (Ghost-Link). Mobile: vertikal gestackt. Kein Modal/Overlay.
-- [ ] **Timeout-Handling nach Closure** — Nach 10 Min. Inaktivität post-Closing → automatisches Session-End mit sichtbarer Notification im Chat. Client-seitig implementiert.
-- [ ] **aria-live="polite" auf Nachrichten-Container** — Pflicht für Screen Reader. Muss gleichzeitig mit Closing-Feature implementiert werden.
+- [x] **Closing-Endpoint** ✅ Erledigt — `POST /sessions/{id}/closing`: KAIA generiert Abschluss via SSE, `extract_session_summary()` danach. `321a4cb`
+- [x] **Chat-UI Abschluss-Flow** ✅ Erledigt — "Sitzung abschließen"-Button, Session-Ende-State, Post-Session-Redirect. `321a4cb` · `5e784c3` · `158df16`
+- [ ] **Timeout-Handling nach Closure** — Nach 10 Min. Inaktivität post-Closing → automatisches Session-End
+- [ ] **aria-live="polite" auf Nachrichten-Container** — Pflicht für Screen Reader
 
 ### Chat-Core-V2: In-Session Feedback Buttons
-- [ ] **session_feedback Tabelle** — Schema: `id, session_id, user_id, feedback_type ENUM('transfer_marker', 'engagement', 'stuck', 'unclear'), message_id FK NULLABLE, created_at`. Alembic-Migration.
-- [ ] **Feedback-Endpoint** — `POST /api/v1/chat/sessions/{id}/feedback` — nimmt `feedback_type`, optional `message_id`. Speichert in DB.
-- [ ] **Feedback-Buttons Frontend** — 4 Buttons neben Chat: "Muss ich weiterdenken" / "Wow — das trifft was" / "Ich hänge gerade" / "Das verstehe ich noch nicht". Kein Gamification (keine Animation, keine Punkte). Dezente Platzierung rechts neben Chat oder unter Eingabefeld.
-- [ ] **KAIA-Reaktion auf metacognitive Buttons** — Bei "Ich hänge gerade" und "Das verstehe ich noch nicht": KAIA sendet Meta-Frage als Trigger-Message ins Chat ("Was hängt gerade?" — Fragetyp Klärung). KEIN Modus-Switch (Hysterese-Logik bleibt intakt).
-- [ ] **Cross-Session Transfer-Anker** — "Muss ich weiterdenken"-Klicks werden in session_summary.transfer_markers[] gespeichert. Haiku-Extraktor: neue Felder `transfer_markers`, `knowledge_type`, `current_phase`, `routing_confidence`.
+- [x] **session_feedback Tabelle** ✅ Erledigt — Alembic-Migration f6a2b4c8d1e9. `4bddc2b`
+- [x] **Feedback-Endpoint** ✅ Erledigt — `POST /feedback` + `POST /meta-question`. `4bddc2b`
+- [x] **Feedback-Buttons Frontend** ✅ Erledigt — 4 Buttons aktiv. `4bddc2b`
+- [x] **KAIA-Reaktion auf metacognitive Buttons** ✅ Erledigt — Meta-Frage bei "Hänge fest" + "Unklar". `4bddc2b`
+- [ ] **Cross-Session Transfer-Anker** — Transfer-Markers in session_summary, Haiku-Extraktor *(Post-Studie)*
 
 ### Chat-Core-V2: Backend-Erweiterungen
-- [ ] **session_summary JSON-Schema erweitern** — Neue Felder: `knowledge_type` (konzeptuell|prozedural|metakognitiv|faktisch|unklar), `current_phase` (1-7), `routing_confidence` (low|high). Default: routing_confidence="low" bis Session 2.
-- [ ] **PromptContext + render_prompt erweitern** — Neue Felder `knowledge_type`, `current_phase`, `routing_confidence` + Jinja2-Block `routing_context`.
-- [ ] **Thinking-Block Check 9 + 10** — Check 9: Wissensart-Klassifikation (welche der 4 Wissensarten nach Anderson & Krathwohl?). Check 10: Routing-Konsistenz-Check (passt aktuelle Frage zur routing_confidence?).
+- [x] **session_summary JSON-Schema erweitern** ✅ Erledigt — insight_for_next_session, first_step, strongest_quote, session_phase, historical_quotes, MSLQ-Subscores. `7d9a51d`
+- [x] **PromptContext + render_prompt erweitern** ✅ Erledigt — session_number, session_phase, is_final_session, learner_profile, gse_baseline, session_history_summary. `7d9a51d`
+- [ ] **Thinking-Block Check 9 + 10** — Wissensart-Klassifikation + Routing-Konsistenz *(für Eval, nicht Studienstart)*
 
-### Funken-Feature (STORY-003 + STORY-004, Spec: docs/FEATURE_SPEC_FUNKEN.md)
-- [ ] **Funken: DB-Migration** — Neue Tabelle `funken (id UUID, user_id FK, session_id FK, content TEXT CHECK 1–2000, created_at)`. Kein `updated_at` — Funken sind unveränderlich by Design. Index auf `(user_id, created_at DESC)`.
-- [ ] **Funken: Backend-Endpoints** — `POST /sessions/{id}/funken` (speichern), `GET /users/me/funken?filter=today|yesterday|last_week` (abrufen), `DELETE /funken/{id}` (löschen, nur eigene). Alle: JWT-Auth + user_id Row-Level-Security.
-- [ ] **Funken: PDF-Export-Endpoint** — `GET /users/me/funken/export` → PDF mit allen Funken (Datum, Session-Nummer, Text). Dateiname: `kaia-funken-export-YYYY-MM-DD.pdf`. DSGVO Art. 20 Pflicht. Bibliothek-Entscheid: ReportLab vs. WeasyPrint (OQ-F1).
-- [ ] **Funken: Frontend Closing-Integration** — Textarea erscheint nach KAIA-Closing-Bubble (nur wenn `streaming: false`). Placeholder: "Schreib auf, was bleibt…". Button: "Diesen Funken speichern" (primär) · "Überspringen" (Ghost). Bestätigung inline, kein Toast. Vollständige Microcopy → FEATURE_SPEC_FUNKEN.md.
-- [ ] **Funken: Frontend Liste (/funken)** — Seite "Meine Funken". Chip-Filter "Alle · Heute · Gestern · Letzte Woche". Einträge: Datum + Session-Nummer + Text (2-Zeilen-Clamp, expandierbar). Löschen via `<dialog role="alertdialog">`, "Behalten" als Primäraktion. Leerzustand mit Erklärtext (kein CTA).
-- [ ] **Funken: Datenschutzerklärung** — Neue Sektion: Funken-Inhalte als personenbezogene Daten, Speicherdauer, Art. 20 Export, Art. 17 Löschrecht. Compliance-Sign-off nötig (OQ-F4).
+### Funken-Feature (STORY-003 + STORY-004, verschoben auf Post-Thesis)
+- [ ] **Funken: DB-Migration** — Neue Tabelle `funken`
+- [ ] **Funken: Backend-Endpoints** — POST/GET/DELETE
+- [ ] **Funken: PDF-Export-Endpoint** — DSGVO Art. 20
+- [ ] **Funken: Frontend Closing-Integration** — Textarea nach Closing-Bubble
+- [ ] **Funken: Frontend Liste (/funken)**
+- [ ] **Funken: Datenschutzerklärung** — Neue Sektion
 
 ---
 
 ## 🟡 PRE-STUDY — Vor Hauptstudie
 
 ### Methodik (kein Code)
-- [ ] **Power-Analyse** — G*Power, d=0.3, 80% Power → n berechnen
+- [x] **Power-Analyse** ✅ Erledigt Mai 2026 — R-basierte Power-Analyse (d=0.3, 80% Power): Ziel-N=32, Rekrutierungsziel ~46. `bccc530` · `aa12bf9`
 - [ ] **Lern-SWE-Skala ergänzen** — Bereichsspezifische Selbstwirksamkeit zusätzlich zur GSE
 - [ ] **Statistischer Analyseplan** — Welche Tests, Assumptions, Confounder-Kontrolle — vor Datensicht
 - [ ] **Conflict-of-Interest-Statement** — Im Thesis-Methodik-Kapitel offen deklarieren
@@ -154,7 +154,7 @@
 - [ ] **Self-Hosted LLM** — vLLM oder Ollama als Provider (DSGVO-Killer-Argument)
 - [ ] **Replay-Funktion** — Kompletter Session-State reproduzierbar; voller rendered Prompt gespeichert
 - [ ] **API-Dokumentation** — OpenAPI-Schema für externe Integration
-- [ ] **E-Mail-Versand** — Resend.com für Approval-Mails, Erinnerungen, Reset
+- [x] **E-Mail-Versand** ✅ Erledigt 06. Juli 2026 — Brevo SMTP für Approval-Mails, Registrierungsbestätigung, Studienstart, Passwort-Reset. `5687029` · `fa569a6`
 
 ### Wissenschaft & Open Science
 - [ ] **Open Data auf OSF** — Anonymisierte Studie-Daten nach Thesis-Abgabe veröffentlichen
@@ -169,10 +169,12 @@
 
 ## 📊 Statistik
 
-| Bereich | Offen | Kategorie |
-|---|---|---|
-| Blocker | 25 | Vor Studienstart |
-| Pre-Pilot | 37 | Vor n=3-5 |
-| Pre-Study | 23 | Vor Hauptstudie |
-| Post-Thesis | 11 | Für Produkt |
-| **Gesamt** | **96** | |
+| Bereich | Offen | Erledigt | Kategorie |
+|---|---|---|---|
+| Blocker | 11 | 17 | Vor Studienstart |
+| Pre-Pilot | 11 | 23 | Abgeschlossen / in Produktion |
+| Pre-Study | 12 | 1 | Vor Hauptstudie |
+| Post-Thesis | 9 | 1 | Für Produkt-Phase |
+| **Gesamt** | **43** | **42** | |
+
+> Stand: 29. Juli 2026 — Studienstart 8. August 2026. Kern-Features alle deployed. Offene Blocker: DSGVO Art. 16/18/20/21, Backup, Ethikvotum-Status, Study-Lock Admin-UI.

@@ -10,7 +10,7 @@
 ---
 
 **Stand heute:** 29. Juli 2026  
-**~224 Einträge insgesamt · 30 Release-Tage · ~145 h Gesamt-Aufwand**
+**~256 Einträge insgesamt · 34 Release-Tage · ~165 h Gesamt-Aufwand**
 
 ---
 
@@ -57,8 +57,14 @@
 
 **26.07.2026 · `c206436` · `f32142f` · `e0b95fc`** — Session-Summary-Karte: Erklärtext ergänzt. UserTurnCount-Reset bei neuer Session behoben. Textarea-Fokus auf React re-render verzögert (verhindert Flackern). · `30min`  
 
-**26.07.2026 · `(aktuell)`** — Studienstart auf **8. August 2026** verschoben (war 1. August). Studiendauer von 4 auf **3 Wochen** reduziert (Ende: 28. August 2026). 10 Sessions bleiben. Alle Stellen im System aktualisiert: StudyCountdown, Mitmachen-Seite, Landing Page, Onboarding, Survey, E-Mails, Thesis-Dokumente. · `20min`  
-*fix: reduce study to 3 weeks, shift start to Aug 8*
+**26.07.2026 · `f825db8`** — Studienstart auf **8. August 2026** verschoben (war 1. August). Studiendauer von 4 auf **3 Wochen** reduziert (Ende: 28. August 2026). 10 Sessions bleiben. Alle Stellen im System aktualisiert: StudyCountdown, Mitmachen-Seite, Landing Page, Onboarding, Survey, E-Mails, Thesis-Dokumente. · `20min`  
+*fix: reduce study to 3 weeks, shift start Aug 8 — update all texts and docs*
+
+**26.07.2026 · `d6731b2` · `576a75b` · `f70e95f`** — Onboarding-Beispiele vollständig überarbeitet: drei neue Lernthemen (Fremdsprache sprechen, konkretes Alltagsszenario, Leadership). Formulierungen auf natürliches Knowing-Doing-Gap-Framing umgeschrieben — keine konstruierten Beispiele mehr. · `30min`  
+*feat: add foreign language + new learning topic examples to onboarding*
+
+**26.07.2026 · `9869f13`** — authFetch für Disclosure-Acknowledgement repariert: Bearer-Token wurde nicht mitgeschickt → 401 beim KI-Disclosure-Bestätigungs-Endpoint. · `10min`  
+*fix: use authFetch for disclosure-ack to send Bearer token*
 
 **24.07.2026 · `cda4e6d`** — Fragebogen-Einstiegstexte auf Transfer-USP ausgerichtet. Titel: „Wie weit bringst du dein Wissen in die Praxis?" (war: „Wie lernst du bisher?"). Erklärtexte benennen jetzt explizit die Wissen-Handeln-Lücke als Messziel — kein generischer Lernfragebogen mehr. · `10min`  
 *fix: align survey intro texts with KDG/transfer USP*
@@ -84,6 +90,24 @@
 **19.07.2026 · `baeeb4b`** — KAIA System-Prompt v5: Schweiger-Check (#11) integriert. KAIA unterscheidet jetzt zwischen einsilbiger Antwort als Rückzug vs. als Nachdenken — Rupture-Repair-Sequenz reagiert entsprechend differenziert. · `45min`  
 *feat: add Schweiger-Check #11 to KAIA system prompt v5*
 
+**19.07.2026 · `ed888b1`** — MSLQ Subskala V "Control of Learning Beliefs" (4 Items): misst, ob Teilnehmende glauben, dass ihr Lernerfolg von ihrer eigenen Anstrengung abhängt (vs. externen Faktoren). Fünfte Subskala im Pre/Post-Survey. · `45min`  
+*feat: add MSLQ subscale V "Control of Learning Beliefs" (4 items)*
+
+**19.07.2026 · `7c7029d`** — MSLQ Subskala V im Survey-UI sichtbar: motivierender Intro-Screen vor dem Fragebogen ("Bevor wir starten — ein kurzer Moment für dich"). · `30min`  
+*feat: add MSLQ Subskala V to survey UI + motivating intro screen*
+
+**19.07.2026 · `994ae33`** — Goldset-Beispiel m6-g001 ersetzt: Coaching-Drift im alten Beispiel führte zu systematisch zu hohem Judge-Score für M6 (Autonomie-Respekt). Neues Beispiel zeigt echte KAIA-Grenze (direktive Formulierung korrigiert). · `15min`  
+*fix: replace m6-g001 goldset example to eliminate coaching drift*
+
+**19.07.2026 · `c786ca9`** — Judge-Validierungsmethodik in Thesis Kap. 5 + Anhang M dokumentiert: Cohen's κ-Berechnung, Goldset-Design, Inter-Rater-Reliabilität-Protokoll für LLM-Evaluationsbericht. · `45min`  
+*docs: add judge validation methodology to thesis (Kap 5 + Anhang M)*
+
+**19.07.2026 · `860d6e9`** — User-Kostenlimit auf €5.00 erhöht (war €2.00). Pre-Test zeigte: €2.00 reicht für ~15 KAIA-Turns — zu wenig für sinnvolle 10-Session-Journey. · `10min`  
+*fix: raise user cost limit to €5.00 for study participants*
+
+**20.07.2026 · `f8bc255`** — Prompt-Versions-ID für v4_warm korrigiert + Supersession-Test aktualisiert (referenzierte falsche Version). · `10min`  
+*fix: correct v4_warm version number and update supersession test*
+
 **Thesis-Relevanz (KW 29–30):** KDG-Umbau ist die wichtigste konzeptionelle Entscheidung vor Studienstart — schärft die Forschungsfrage und macht KAIA als Instrument eindeutig verortbar. Crash-Persona-Simulation (100 Sessions, 0 Fehler) + Eval-Run (€1.19, System-Ø 43.9%, M7 Crisis Detection 4%) liefern erste quantitative Baseline für Kapitel 5. · `~12h gesamt KW 29–30`
 
 ---
@@ -106,7 +130,91 @@ Auf Empfehlung von UX-Designer und Didaktiker erhält der Chat-Bereich drei neue
 
 **13.07.2026 · `ddd4811`** — Studienstart auf 1. August 2026 verschoben (war 16. Juli). StudyCountdown, /mitmachen, Landing Page, Vorregistrierungs-Flow, Studienprotokoll, Backend-Service aktualisiert. Study-Lock jetzt 28. Juli 2026. · `20min`
 
+**13.07.2026 · `158df16`** — Ton-Selector direkt über Chat verschoben (war versteckt im Header). Sitzung-abschließen-Button neben Senden-Button für konsistentere Bedienbarkeit. · `20min`  
+*fix: Ton-Selector direkt über Chat, Sitzung-abschließen neben Senden-Button*
+
+**13.07.2026 · `5e784c3`** — Beenden-Button prominenter: Icon (CheckCircle2) + Label direkt neben dem Senden-Button sichtbar. Verhindert unbewusstes Tab-Schließen ohne Session-Abschluss. · `15min`  
+*fix: Beenden-Button prominenter — Icon + Label direkt neben Senden*
+
+**13.07.2026 · `ff405cb`** — Session-Counter-Bug: Zähler ging nach `resetSession` rückwärts (3 → 2). Fix: Session-Nummer wird aus DB geladen, nicht aus lokalem State. · `15min`  
+*fix: session counter goes backwards after resetSession*
+
+**13.07.2026 · `2691e69`** — TypeScript-Narrowing im Charakter-Selektor: `disabled`-Bedingung korrigiert — verhinderte falsches Greying-out von Charakter-Buttons. · `10min`  
+*fix: TypeScript-Narrowing in Charakter-Selektor — disabled-Bedingung korrigiert*
+
+**13.07.2026 · `3ac1527`** — DPA-Tasks mit Frist 18. Juli 2026 und Links zu Anthropic/OpenAI-DPA-Seiten im Backlog hinterlegt. · `10min`  
+*chore: DPA-Tasks mit Links und Frist 18. Juli 2026 im Backlog*
+
+**13.07.2026 · `f7aa365`** — Vollständige Thesis- und Dokumentations-Aktualisierung auf Stand 13. Juli: Kap. 2–6, Studienprotokoll, Teilnahmevereinbarung, BACKLOG, ARCHITECTURE synchronisiert. · `1h 30min`  
+*docs: vollständige Thesis- und Doku-Aktualisierung auf Stand 13. Juli 2026*
+
 **Thesis-Relevanz:** ChatInfoPanel + ChatDayBanner erfüllen Didaktik-Gate G12 (Lernziele explizit kommuniziert, Session-Sequenzierung für Teilnehmende sichtbar). ChatReportModal erfüllt Security-Gate G4 (Crisis-Eskalationspfad). Charakter-Selektor im Input-Bereich entspricht UX-Gate G6 (kontextuell platzierte Kontrollen). · `~4h Implementierung + Team-Abstimmung`
+
+---
+
+## 2026-07-15 — DPAs abgeschlossen · Mistral ausgeschieden · Prompt v4 · Celebration Screen · B1/B3-Fixes
+
+**Compliance-Meilenstein: Beide DPAs unterzeichnet und archiviert.**
+
+**15.07.2026 · `45a9958`** — Anthropic DPA archiviert: Mit Commercial ToS automatisch akzeptiert (SCCs Module Two, irisches Recht, controller→processor). PDF in `docs/legal/anthropic_dpa_2026-07-15.pdf`. Backlog-Task abgehakt. · `20min`  
+*docs: archive Anthropic DPA and mark as complete*
+
+**15.07.2026 · `7e29278`** — Mistral nach Pre-Test aus LLM-Eval-Scope ausgeschlossen. Begründung: Empathiequalität im Acceptance-Test unzureichend für Studienstandards. LLM-Eval läuft jetzt mit Anthropic Claude + OpenAI only. Vereinfacht LLM-Evaluationsbericht erheblich. · `20min`  
+*docs: drop Mistral from LLM eval scope after pre-test*
+
+**15.07.2026 · `4357f2d`** — OpenAI DPA-Bestätigung archiviert: OpenAI Ireland Ltd. als Vertragspartner (EWR), SCCs Modul 2, gültig ab 1. Januar 2026. · `10min`  
+*docs: archive OpenAI DPA confirmation and mark as complete*
+
+**15.07.2026 · `16ba1e2`** — OpenAI DPA-PDF archiviert + vollständige Compliance-Dokumentation abgeschlossen. Beide DPA-Backlog-Tasks erledigt. · `10min`  
+*docs: archive OpenAI DPA PDF, complete compliance documentation*
+
+**15.07.2026 · `8b98a35`** — Vorläufiger Acceptance-Test dokumentiert (Acceptance-Kriterien G1-G3 für Claude-Sonnet-4.6 erfüllt). Mistral offiziell aus Studienscope ausgeschlossen und in allen Dokumenten aktualisiert. · `30min`  
+*docs: integrate preliminary acceptance test + exclude Mistral from study scope*
+
+**15.07.2026 · `519e195`** — **Post-Studie Celebration-Screen** — Nach der Post-Messung sehen Teilnehmende eine Abschlussseite mit Pre/Post-Vergleich ihres GSE-Scores und der MSLQ-Subscores. Visualisiert die persönliche Entwicklung ohne sie zu interpretieren. Psychologen-Gate G11: Normative Referenz (Schwarzer & Jerusalem, 1995), keine klinische Aussage. · `1h`  
+*feat: post-study celebration screen with pre/post comparison*
+
+**15.07.2026 · `91868fc`** — **KAIA Prompt v4** — Drei Verbesserungen: (1) Typ-5-Loop-Fix: KAIA fragt nicht mehr in jeder Antwort nach dem gleichen Schrittfortschritt. (2) Koan/Analogie als neues Gesprächselement für Session 4+. (3) Melden-Button im Prompt explizit sichtbar gemacht. · `2h`  
+*feat: KAIA Prompt v4 — Typ-5-Loop-Fix + Koan/Analogie + Melden-Button sichtbar*
+
+**15.07.2026 · `1cf8148`** — OSF-Vorregistrierung vollständig aus Thesis und Backlog entfernt. Vom Betreuer nicht als Pflicht bestätigt — Entfernung vereinfacht Thesis-Struktur ohne wissenschaftlichen Verlust. · `15min`  
+*docs: OSF-Vorregistrierung vollständig aus Thesis und Backlog entfernt*
+
+**15.07.2026 · `0aa22eb`** — Datenschutzerklärung: Mistral aus Auflistung der Datenempfänger entfernt. Schrems-II-Formulierung präzisiert: Transfers an Anthropic/OpenAI auf Basis von EU-SCCs dokumentiert. · `20min`  
+*fix: Datenschutzerklärung — Mistral entfernt, Schrems-II-Formulierung präzisiert*
+
+**15.07.2026 · `e9663ee`** — Session-1-Abschlussfrage korrigiert: war Bloom-5-Synthesefrage ("Was hast du heute entdeckt?") — ersetzt durch nicht-präsupponierende Bloom-1-2-Frage ("Woran würdest du heute Abend merken, dass sich etwas bewegt hat?"). Psychologen-Gate G11. · `20min`  
+*fix: S1 Abschlussfrage — nicht-präsupponierende Bloom-1-2-Frage statt Bloom-5-Discovery*
+
+**15.07.2026 · `94b3c3c`** — Post-Closure Bug B1 behoben: `is_final_exchange`-Flag verhindert jetzt, dass KAIA nach dem formalen Session-Abschluss noch eine neue Frage stellt (war: Endlosschleife im Abschluss-State). · `20min`  
+*fix: Post-Closure B1 — is_final_exchange verhindert neue Frage nach Sitzungsabschluss*
+
+**Thesis-Relevanz (15.07.):** DPA-Abschluss ist DSGVO-Grundvoraussetzung (Art. 28 Verantwortlicher/Auftragsverarbeiter). Mistral-Ausschluss hat klare wissenschaftliche Begründung (Pre-Test-Ergebnis) und vereinfacht den Evaluationsbericht auf 2 Modelle mit Compliance-Klarheit. · `~6h gesamt`
+
+---
+
+## 2026-07-16 — Session-10-Flow · Meta-Reflexion UI · Passwort-Reset · B3-Fix
+
+**16.07.2026 · `fa569a6`** — **Passwort-Reset-Flow** via Brevo SMTP: User fordert Reset an, bekommt E-Mail mit Token (30 Min Gültigkeit), setzt neues Passwort. Vollständig: `POST /auth/forgot-password` + `POST /auth/reset-password`. DSGVO-konform (kein Tracking-Pixel). · `1h 30min`  
+*feat: password-reset flow via Brevo SMTP*
+
+**16.07.2026 · `725fc8d`** — **Meta-Reflexion UI** — KAIA schreibt nach Session-Ende eine kurze Reflexion (Stimmung, Themen, stärkstes Zitat, nächster Schritt). Karte erscheint nach dem Abschluss — optional lesbar, kein Pflicht-Interaktionspunkt. · `1h`  
+*feat: meta-reflection UI — session summary after session end*
+
+**16.07.2026 · `79144ad`** — Bug B3 behoben: `count_sessions()` zählte orphaned Sessions (ohne Nachrichten) mit — Tages-Limit wurde dadurch fälschlicherweise überschritten. Fix: Query schließt leere Sessions aus (`WHERE message_count > 0`). · `20min`  
+*fix: B3 — count_sessions excludes empty orphaned sessions*
+
+**16.07.2026 · `f079f1f`** — Session-10-Abschluss-Flow: Nach der letzten Session werden Teilnehmende automatisch zur Post-Befragung weitergeleitet (`/umfrage/post`). Kein manueller Schritt mehr nötig. · `30min`  
+*feat: session-10 completion flow — redirect to post-survey*
+
+---
+
+## 2026-07-18 — Goldset M2-M6 + Judge-Validierungsscript + Release Gates
+
+**18.07.2026 · `cce5055`** — **Goldset M2-M6 + Release Gates** — Goldset-Beispiele für alle fünf operationalisierten Metriken (M2 Empathie, M3 Persona-Responsivität, M4 Sokratische Reinheit, M5 Sequenz-Kohärenz, M6 Autonomie-Respekt) manuell gelabelt. Judge-Validierungsscript: berechnet Cohen's κ zwischen Judge-Scores und Goldset-Labels. Release Gates: Eval-Pipeline startet erst nach erfolgreichem Gate-Check (κ ≥ 0.6). · `2h`  
+*feat: add goldset M2-M6, judge validation script, release gates*
+
+**Thesis-Relevanz (18.07.):** Goldset + κ-Berechnung sind die Validierungsgrundlage für den LLM-Evaluationsbericht (Gate G13: Statistik-Gate). Ohne Goldset-Validierung wären Judge-Scores nicht interpretierbar. · `~2h gesamt`
 
 ---
 

@@ -100,6 +100,160 @@ Mitmachen-Seite vollständig aktualisiert (6 Schritte, Einführungsgespräch, KA
 
 ---
 
+## 2026-07-26 — "V7 prompt, preferred names, Topic-Lock — und warum Session 1 ab jetzt einmalig ist"
+
+*Protokolliert vom Koordinator. Mit einem AI Engineer, der seit Wochen auf diesen Sprint gewartet hat.*
+
+---
+
+Es gibt Sprints, bei denen man morgens weiß: heute wird es groß. Dagmar hatte eine Liste. Der AI Engineer hatte schon angefangen.
+
+**08:30 Uhr — KAIA Prompt V7**
+
+Der AI Engineer hatte die vergangenen Wochen gesammelt: Wo zieht KAIA Fragen durch, die nicht zur Session passen? Wo fehlt Session-Bewusstsein? Wo wirkt KAIA in Session 7 genauso wie in Session 1?
+
+V7 war die Antwort auf all das. Session-spezifische Opening-Trigger für alle 10 Sessions — jede Session hat ihren eigenen Gesprächseinstieg und einen eigenen Memory-Anchor. Beziehungsreife-Block ab Session 6: Elenchos, schärfere Konfrontation, mehr Zumutung. Und: genau 1 Fragezeichen pro KAIA-Antwort.
+
+> **AI Engineer:** *"Das war das Missing Link. KAIA wusste, in welcher Session sie ist. Aber sie hat nicht anders geklungen."*
+
+> **Didaktiker:** *"Genau das ist das Problem mit regelbasierten Systemen. Regeln kennen, Regeln anwenden — das ist nicht dasselbe wie das Gespräch wirklich anders führen."*
+
+Der Chat-Header zeigt jetzt: "Session 4 — Ausprobieren · von 10". Phase-Marker nach S3 und S5. Commit `65af364`.
+
+---
+
+**10:00 Uhr — Topic-Lock und der Sinn von Commitment**
+
+Das Lernthema war bisher jederzeit änderbar. Das war ein Problem — nicht technisch, sondern methodisch.
+
+> **Psychologe:** *"Wenn man das Thema nach drei Sessions ändern kann, misst man nicht mehr dasselbe. Die Prä-Messung bezieht sich auf Thema A. Die Post-Messung auf Thema B. Das ist kein Prä-Post-Vergleich, das ist Chaos."*
+
+Neues Verhalten: Session 1 erlaubt einmalige Thema-Änderung. Danach gesperrt. Commit `fcfb59d`.
+
+---
+
+**11:30 Uhr — Preferred Names, Tages-Limit, Session-Journey-Fixes**
+
+Drei Features in einem Sprint: 
+
+**Preferred Name** — KAIA fragt in Session 1 nach dem Wunschnamen. Speichert ihn in `users.preferred_name`. Ab Session 2 spricht KAIA die Person mit ihrem Wunschnamen an.
+
+> **UX Designerin:** *"Das klingt trivial. Es ist nicht trivial. Wie jemand angesprochen werden möchte ist grundlegendes Respektverhalten."*
+
+**Tages-Limit** — Max. 1 Session pro Tag. Studienkonform: mehrere Sessions am selben Tag wären kein Distributed Practice mehr.
+
+> **Didaktiker:** *"Cepeda et al., 2006. Verteiltes Lernen. Das war nicht optional."*
+
+Commit `e13f10b`.
+
+---
+
+**14:00 Uhr — Onboarding-Beispiele und Studienstart-Verschiebung**
+
+Drei neue Lernthemen-Beispiele: Fremdsprache sprechen, kritische Feedbackgespräche, Leadership. Alle auf natürliches KDG-Framing umgeschrieben.
+
+Und dann: Studienstart auf 8. August verschoben. Studiendauer von 4 auf 3 Wochen reduziert. Das war eine pragmatische Entscheidung mit methodischem Rückhalt.
+
+> **Koordinator:** *"Drei Wochen, 10 Sessions. Das ist dichter. Aber vollständiger."*
+
+> **Psychologe:** *"Weniger Dropout-Risiko. Der kurze Zeitraum ist für unsere n=20 der realistischere Rahmen."*
+
+Commit `f825db8`.
+
+---
+
+**Was heute gebaut wurde:**
+KAIA Prompt V7 (session-aware, 1-Frage-Constraint, Beziehungsreife ab S6) · Topic-Lock (Session 1: einmalige Änderung, danach gesperrt) · Preferred Name (KAIA spricht Teilnehmende mit Wunschnamen an) · Tages-Limit (1 Session/Tag) · Onboarding-Beispiele auf KDG-Framing · Studienstart auf 8. August
+
+**Commits:** `65af364` · `fcfb59d` · `b33e031` · `0ba14b2` · `d5e752c` · `e13f10b` · `d6731b2` · `576a75b` · `f70e95f` · `9869f13` · `f825db8`
+
+**Kosten heute:** ca. $8 Claude Code · €4.39/Mo Hetzner
+
+**Nächste Woche:** Mitmachen-Seite aktualisieren, Tester anschreiben, 8. August kommt.
+
+---
+
+## 2026-07-15–19 — "DPAs, Prompt v4, Meta-Reflexion, Goldset — die Woche bevor der Ernstfall beginnt"
+
+*Protokolliert vom Koordinator. Mit Compliance Officer am Montag, AI Engineer Dienstag bis Freitag, und einem Judge der von Coaching-Drift befreit werden musste.*
+
+---
+
+Manche Wochen sind keine Feature-Wochen. Sie sind Qualitäts-Wochen. Diese war beides.
+
+**Montag, 15. Juli — Die DPA-Frage ist endlich beantwortet**
+
+Seit Wochen stand es im Backlog: DPA mit Anthropic. DPA mit OpenAI. Compliance Officer hatte daran erinnert. Und erinnert. Und erinnert.
+
+> **Compliance Officer:** *"DPA ist keine Bürokratie. Ohne DPA können wir nicht rechtmäßig Nutzerdaten an Anthropic übermitteln. Das ist Art. 28 DSGVO. Das blockiert den Studienstart."*
+
+Anthropic: DPA war bei API-Vertragsschluss automatisch akzeptiert (Commercial ToS). SCCs Module Two, irisches Recht. PDF archiviert.
+
+OpenAI: E-Mail-Bestätigung vom Privacy Team. OpenAI Ireland Ltd. als Vertragspartner (EWR). Ebenfalls archiviert.
+
+Und dann: Mistral. Der Pre-Test hatte gezeigt, dass Mistrals Empathiequalität für die Studienzwecke unzureichend ist. Einfache Entscheidung.
+
+> **AI Ethics:** *"Das ist keine willkürliche Ausgrenzung. Das ist eine dokumentierte, begründete Entscheidung. Wichtiger Unterschied für die Thesis."*
+
+Commits: `45a9958` · `7e29278` · `4357f2d` · `16ba1e2` · `8b98a35` · `0aa22eb` · `1cf8148`
+
+---
+
+**Montag, 15. Juli — Prompt v4 und zwei Bugs die wirklich stören**
+
+Der AI Engineer hatte drei Wochen Beobachtungsdaten gesammelt. Ergebnis: Prompt v4.
+
+Typ-5-Loop-Fix: KAIA fragte in jedem Turn nach dem Schrittfortschritt. Auch wenn der Schritt längst abgeschlossen war. Das fiel erst auf, als jemand nach Session 3 sagte: "KAIA fragt mich immer noch ob ich den ersten Schritt gemacht habe."
+
+Post-Closure Bug B1: KAIA stellte nach dem formalen Session-Abschluss noch Fragen. Das ist wie ein Therapist der nach "Die Stunde ist um" noch eine Diagnose stellt.
+
+S1-Abschlussfrage: war Bloom-5-Synthesefrage ("Was hast du heute entdeckt?"). Der Psychologe hatte das schon früher markiert.
+
+> **Psychologe:** *"'Was hast du entdeckt' setzt voraus, dass jemand etwas entdeckt hat. Das ist präsupponierend. Ersetzt durch: 'Woran würdest du heute Abend merken, dass die Session etwas bewegt hat?'"*
+
+Commits: `91868fc` · `94b3c3c` · `e9663ee` · `519e195`
+
+---
+
+**Mittwoch, 16. Juli — Passwort-Reset, Meta-Reflexion, Session-10-Flow**
+
+Drei Features, die alle denselben Ursprung haben: Die Journey muss vollständig sein.
+
+**Passwort-Reset** via Brevo SMTP: Jeder kann jetzt sein Passwort zurücksetzen. Das klingt selbstverständlich. Es war fünf Wochen lang nicht da.
+
+> **Security:** *"Kein Passwort-Reset + User vergisst Passwort + Admin hat keine Zeit = Teilnehmende fällt aus der Studie. Das ist kein hypothetisches Risiko."*
+
+**Meta-Reflexion UI**: KAIA schreibt nach jeder Session eine Reflexion. Die erscheint jetzt als Karte — optional lesbar, kein Pflicht-Interaktionspunkt.
+
+**Session-10-Flow**: Nach der letzten Session: automatischer Redirect zur Post-Befragung. Kein Fragezeichen mehr wo es weitergeht.
+
+Commits: `fa569a6` · `725fc8d` · `79144ad` · `f079f1f`
+
+---
+
+**Freitag, 18.–19. Juli — Goldset, MSLQ Subskala V, Schweiger-Check**
+
+Das Goldset war die eigentlich wichtige Arbeit der Woche. Fünf Metriken. Für jede Metrik: manuell gelabelte Beispiele. Judge-Validierungsscript. Cohen's κ. Release Gates.
+
+> **Data Scientist:** *"Ohne Goldset-Validierung hat ein LLM-Judge genauso viel Aussagekraft wie ein Zufallsgenerator mit wissenschaftlichem Vokabular."*
+
+MSLQ Subskala V "Control of Learning Beliefs" (4 Items): die fünfte Subskala. Misst ob Teilnehmende glauben, dass Lernerfolg von ihrer Anstrengung abhängt. Für die Selbstregulationsmessung relevant.
+
+Schweiger-Check (#11): KAIA unterscheidet jetzt zwischen Schweigen als Rückzug und Schweigen als Nachdenken. Rupture-Repair-Protokoll reagiert entsprechend.
+
+Commits: `cce5055` · `c786ca9` · `994ae33` · `ed888b1` · `7c7029d` · `baeeb4b` · `4c1e676` · `796c634` · `dd69ac6` · `499b91e` · `860d6e9`
+
+---
+
+**Was diese Woche gebaut wurde:**
+Beide DPAs abgeschlossen · Mistral aus Scope entfernt · Prompt v4 (Loop-Fix, B1-Bug) · Celebration Screen · Passwort-Reset · Meta-Reflexion UI · Session-10-Flow · Goldset M2-M6 + Judge-Validierung · MSLQ Subskala V · Schweiger-Check #11 · User-Kostenlimit erhöht
+
+**Kosten Woche:** ca. $12 Claude Code · €4.39/Mo Hetzner
+
+**Nächste Woche:** Crash-Persona-Simulation · Eval-Run · KDG-Umbau · Studienstart fixieren
+
+---
+
 ## 2026-07-20 — "100 Crashs. 0 Fehler. Und der Moment wo die Anthropic-Credits mitten im Judge-Lauf sterben."
 
 *Protokolliert vom Koordinator. Mit unfreiwilliger Gastrolle von OpenAI als Notfall-Judge.*
