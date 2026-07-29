@@ -156,6 +156,7 @@ export default function ChatPage() {
   const [bannerDismissed, setBannerDismissed] = useState(false)
   const [showReportModal,  setShowReportModal]  = useState(false)
   const [sessionSummary,   setSessionSummary]   = useState<SessionSummary | null>(null)
+  const [showSummaryCard,  setShowSummaryCard]  = useState(false)
 
   // Name collection — first-time ask before session 1
   const [preferredName,  setPreferredName]  = useState<string | null>(null)
@@ -471,6 +472,7 @@ export default function ChatPage() {
     setResumed(false)
     setBannerDismissed(false)
     setSessionSummary(null)
+    setShowSummaryCard(false)
     userTurnCountRef.current = 0
     setOpenTrigger(t => t + 1)
   }, [sessionId])
@@ -1002,23 +1004,27 @@ export default function ChatPage() {
                 </>
               )}
 
-              {!sessionSummary && (
-                <p className="text-center text-xs text-muted-foreground/40 pt-1">
-                  Einen Moment — KAIA fasst zusammen.
-                </p>
+              {/* KAIA-Reflexion button — loading while Haiku processes, active once ready */}
+              {!showSummaryCard && (
+                <div className="flex justify-center pt-1">
+                  <button
+                    onClick={() => setShowSummaryCard(true)}
+                    disabled={!sessionSummary}
+                    className="text-xs px-4 py-2 rounded-xl border border-border/60 text-muted-foreground hover:text-foreground hover:border-foreground/30 transition-colors disabled:opacity-40 disabled:cursor-default"
+                  >
+                    {sessionSummary ? "KAIAs Reflexion ansehen" : "Wird aufbereitet …"}
+                  </button>
+                </div>
               )}
 
-              {sessionSummary && (
+              {showSummaryCard && sessionSummary && (
                 <div className="rounded-xl border border-border/50 bg-muted/30 p-4 space-y-3 text-sm">
                   <div className="space-y-1">
                     <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
-                      Reflexion dieser Session
+                      KAIAs Reflexion
                     </p>
                     <p className="text-xs text-muted-foreground/70 leading-relaxed">
-                      {preferredName
-                        ? `${preferredName}, KAIA hat das Gespräch im Hintergrund ausgewertet — was war das Thema, wie war die Stimmung, was hat sich bewegt.`
-                        : "KAIA hat das Gespräch im Hintergrund ausgewertet — was war das Thema, wie war die Stimmung, was hat sich bewegt."
-                      }
+                      Was KAIA aus diesem Gespräch mitnimmt.
                     </p>
                   </div>
 
@@ -1026,7 +1032,7 @@ export default function ChatPage() {
                     <p className="flex items-center gap-2">
                       <span className="text-muted-foreground text-xs">Stimmung</span>
                       <span className={`text-xs rounded-full px-2 py-0.5 font-medium ${
-                        sessionSummary.mood === "positiv"   ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400" :
+                        sessionSummary.mood === "positiv"    ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400" :
                         sessionSummary.mood === "frustriert" ? "bg-red-500/10 text-red-600 dark:text-red-400" :
                         "bg-muted text-muted-foreground"
                       }`}>
