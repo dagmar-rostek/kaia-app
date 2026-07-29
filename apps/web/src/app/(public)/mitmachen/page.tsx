@@ -111,7 +111,7 @@ export default function MitmachenPage() {
         </p>
 
         <div className="flex flex-col sm:flex-row gap-3 justify-center pt-2">
-            <Link
+          <Link
             href="/vorregistrierung"
             className="inline-flex items-center justify-center gap-2 rounded-lg bg-foreground text-background px-6 py-3 text-sm font-medium hover:opacity-90 transition-opacity"
           >
@@ -182,7 +182,7 @@ export default function MitmachenPage() {
         <div className="space-y-2">
           <h2 className="text-2xl font-bold tracking-tight">Wie läuft die Teilnahme ab?</h2>
           <p className="text-muted-foreground text-sm">
-            Fünf Schritte — insgesamt ca. <strong className="text-foreground">2–3 Stunden über 3 Wochen</strong>.
+            Sechs Schritte — insgesamt ca. <strong className="text-foreground">2,5–3,5 Stunden über 3 Wochen</strong>.
             Du entscheidest wann und wie lange — genau 10 Sessions à mind. 5 Minuten.
           </p>
         </div>
@@ -207,17 +207,40 @@ export default function MitmachenPage() {
             </p>
             <div className="rounded-lg bg-muted/40 border border-border p-3 text-xs space-y-1">
               <p className="font-medium text-foreground">Was wird gemessen?</p>
-              <p className="text-muted-foreground">
+              <p className="text-muted-foreground leading-relaxed">
                 Nicht wie gut du bist oder wie viel du weißt —
                 sondern wie zuversichtlich du dich <em>selbst</em> einschätzt,
                 Schwieriges zu meistern. Es gibt keine richtigen oder falschen Antworten.
-                Wir vergleichen deine Antworten am Anfang und am Ende der drei Wochen.
+                Dieselben Fragen beantwortest du am Ende der drei Wochen erneut —
+                als Teil der wissenschaftlichen Auswertung.
               </p>
             </div>
           </StepCard>
 
           <StepCard
             number="2"
+            icon={Video}
+            title="Einführungsgespräch mit der Forscherin"
+            duration="ca. 15 Minuten · einmalig vor Studienstart"
+          >
+            <p>
+              Bevor die Studie offiziell startet, führen wir einen kurzen Videocall —
+              damit du weißt, was auf dich zukommt, und damit ich sicherstellen kann,
+              dass KAIA das Richtige für dich ist.
+            </p>
+            <div className="rounded-lg bg-muted/40 border border-border p-3 text-xs space-y-1.5">
+              <p className="font-medium text-foreground">Was klären wir?</p>
+              <ul className="space-y-1 text-muted-foreground list-disc list-inside">
+                <li>Kurze Einweisung in KAIA — wie das System funktioniert</li>
+                <li>Dein Lernthema — passt es zur Studie?</li>
+                <li>Offene Fragen aus der Teilnahmevereinbarung</li>
+                <li>Terminabsprache für die drei Studienwochen</li>
+              </ul>
+            </div>
+          </StepCard>
+
+          <StepCard
+            number="3"
             icon={Map}
             title="Deine persönliche Lernroadmap erstellen"
             duration="5–10 Minuten · einmalig"
@@ -248,34 +271,54 @@ export default function MitmachenPage() {
           </StepCard>
 
           <StepCard
-            number="3"
+            number="4"
             icon={MessageSquare}
-            title="Mindestens 10 Sessions mit KAIA"
+            title="Genau 10 Sessions mit KAIA"
             duration="je mind. 5 Minuten · über 3 Wochen verteilt"
           >
             <p>
               Du chatterst mit KAIA über dein Lernthema — kurz, fokussiert, wann du willst.
-              Mindestens zehn Sessions über drei Wochen sind für die Auswertung nötig —
-              das sind im Schnitt zweieinhalb pro Woche, also alle 2–3 Tage eine.
+              Genau 10 Sessions über drei Wochen — das ist die Studieneinheit.
+              Eine Session pro Tag ist das Maximum, das gibt dir Spielraum im Tempo.
+              Im Schnitt alle 2–3 Tage eine.
             </p>
 
             <div className="rounded-lg bg-muted/40 border border-border p-3 text-xs space-y-2">
               <p className="text-muted-foreground leading-relaxed">
-                Was in einer Session passiert, lässt sich schwer vorausschreiben —
-                das ist auch der Sinn der Sache.
-                KAIA beginnt mit einer Frage. Du antwortest.
-                Irgendwo dazwischen entsteht meistens etwas, womit du nicht gerechnet hast.
+                Jede Session hat einen eigenen Charakter. Die 10 Sessions folgen
+                einem geplanten Bogen — von Ankern und Kartieren am Anfang über
+                Reiben und Schärfen in der Mitte bis hin zu Übergeben und Loslassen
+                am Ende. Du merkst den Unterschied, wenn du aufmerksam bist.
               </p>
               <p className="text-muted-foreground leading-relaxed">
-                Was du am Ende einer Session mitnimmst: mindestens eine Erkenntnis,
-                die du selbst erarbeitet hast — und einen konkreten nächsten Schritt,
-                den du dir selbst gesetzt hast.
+                Am Ende jeder Session schreibt KAIA eine kurze Reflexion über das Gespräch —
+                was exploriert wurde, was offen blieb. Du kannst sie lesen, musst es aber nicht.
               </p>
+            </div>
+
+            <div className="grid grid-cols-5 gap-1 pt-1">
+              {[
+                ["1", "Ankern"],
+                ["2", "Kartieren"],
+                ["3", "Erden"],
+                ["4", "Ausprobieren"],
+                ["5", "Spiegel"],
+                ["6", "Reiben"],
+                ["7", "Schärfen"],
+                ["8", "Übergeben"],
+                ["9", "Konsolidieren"],
+                ["10", "Loslassen"],
+              ].map(([n, name]) => (
+                <div key={n} className="rounded-md border border-border/60 p-1.5 text-center">
+                  <p className="text-[10px] text-muted-foreground/50 leading-none">{n}</p>
+                  <p className="text-[10px] font-medium text-muted-foreground leading-tight mt-0.5">{name}</p>
+                </div>
+              ))}
             </div>
           </StepCard>
 
           <StepCard
-            number="4"
+            number="5"
             icon={Target}
             title="Abschluss-Fragebogen"
             duration="ca. 3 Minuten · einmalig nach Woche 3"
@@ -283,19 +326,20 @@ export default function MitmachenPage() {
             <p>
               Nach drei Wochen beantwortest du dieselben 10 Fragen wie am Anfang.
               Dieser Vergleich ist das Herzstück der wissenschaftlichen Auswertung —
-              hat sich deine Einschätzung der eigenen Lernfähigkeit verändert?
+              hat sich deine Überzeugung, schwierige Dinge aus eigener Kraft zu meistern,
+              über drei Wochen verändert?
             </p>
             <p>
               Außerdem hast du die Möglichkeit, deinen Lernroadmap-Fortschritt
-              einzutragen: Was hast du in diesen drei Wochen tatsächlich gelernt?
+              einzutragen: Was hast du in diesen drei Wochen tatsächlich umgesetzt?
             </p>
           </StepCard>
 
           <StepCard
-            number="5"
+            number="6"
             icon={Video}
-            title="Abschlussinterview"
-            duration="ca. 45 Minuten · optional, aber wertvoll"
+            title="Abschlussgespräch mit der Forscherin"
+            duration="ca. 15–20 Minuten · 1.–4. September 2026"
           >
             <p>
               Ich lade dich zu einem persönlichen Gespräch ein —
@@ -311,9 +355,8 @@ export default function MitmachenPage() {
                 <li>Was würdest du an KAIA verändern?</li>
               </ul>
               <p className="text-muted-foreground pt-1">
-                Kein Test, keine richtigen Antworten. Das Interview ist der Raum,
+                Kein Test, keine richtigen Antworten. Das Gespräch ist der Raum,
                 in dem <em>deine</em> Erfahrung zählt — nicht das System.
-                Das ist freiwillig, aber es macht aus Zahlen eine Geschichte.
               </p>
             </div>
           </StepCard>
@@ -338,8 +381,8 @@ export default function MitmachenPage() {
               desc: "KAIA hilft dir zu erkennen, was zwischen Wissen und Handeln steckt. Oft ist es nicht fehlendes Wissen — sondern etwas anderes, das erst durch Fragen sichtbar wird.",
             },
             {
-              title: "Selbstkenntnis mitnehmen",
-              desc: "Der Fragebogen am Anfang und Ende zeigt dir, wie sich deine eigene Einschätzung verändert hat. Interessant auch jenseits der Studie.",
+              title: "Eine psychometrische Momentaufnahme",
+              desc: "Der Kurzfragebogen am Anfang und Ende ist Teil der wissenschaftlichen Auswertung. Kein Leistungstest — eine Messung deiner Selbsteinschätzung, die du im Einführungsgespräch erklärt bekommst.",
             },
             {
               title: "Erste Reihe in einem echten Forschungsprojekt",
@@ -379,8 +422,8 @@ export default function MitmachenPage() {
             { ok: true,  text: "Deutschsprachig" },
             { ok: true,  text: "Hast ein Thema — und weißt eigentlich wie es geht" },
             { ok: true,  text: "Zugang zu Computer oder Tablet" },
-            { ok: true,  text: "~2–3 Stunden Kapazität über 3 Wochen" },
-            { ok: false, text: "Aktuell in psychiatrischer Behandlung wegen einer Krise" },
+            { ok: true,  text: "~2,5–3,5 Stunden Kapazität über 3 Wochen" },
+            { ok: false, text: "Aktuell in einer akuten psychischen Krise" },
           ].map(({ ok, text }) => (
             <div key={text} className={`flex items-center gap-2.5 rounded-lg border p-3 ${ok ? "border-border" : "border-border/40 opacity-60"}`}>
               {ok
@@ -406,13 +449,14 @@ export default function MitmachenPage() {
         <div className="rounded-xl border border-border overflow-hidden">
           <div className="divide-y divide-border">
             {[
-              { phase: "Vor Start",     dur: "~10 Min",    desc: "Registrierung, Einwilligung, KI-Disclosure, Kurzfragebogen (10 Fragen)" },
-              { phase: "Tag 1",         dur: "~10 Min",    desc: "Persönliche Lernroadmap anlegen — Thema, Ziel, persönliche Motivation" },
-              { phase: "Woche 1–3",     dur: "10× mind. 5 Min", desc: "Mindestens 10 Sessions mit KAIA — flexibel, wann du willst" },
-              { phase: "Nach Woche 4",  dur: "~5 Min",     desc: "Abschluss-Fragebogen (dieselben 10 Fragen + Roadmap-Update)" },
-              { phase: "Optional",      dur: "~45 Min",    desc: "Abschlussinterview mit der Forscherin (Video oder persönlich, aufgezeichnet)" },
-            ].map(({ phase, dur, desc }) => (
-              <div key={phase} className="grid grid-cols-[110px_1fr] gap-4 px-5 py-4 hover:bg-muted/20 transition-colors">
+              { phase: "Vor Start",               dur: "~10 Min",              desc: "Registrierung, Einwilligung, KI-Disclosure, Kurzfragebogen (10 Fragen)" },
+              { phase: "Vor Start",               dur: "~15 Min",              desc: "Einführungsgespräch per Video — Einweisung, Thema klären, Fragen stellen" },
+              { phase: "Tag 1 (8. Aug.)",          dur: "~10 Min",              desc: "Persönliche Lernroadmap anlegen — Thema, Ziel, persönliche Motivation" },
+              { phase: "Woche 1–3 (8.–28. Aug.)", dur: "genau 10× mind. 5 Min", desc: "Genau 10 Sessions mit KAIA — flexibel, wann du willst, max. 1 pro Tag" },
+              { phase: "Nach Woche 3",            dur: "~5 Min",               desc: "Abschluss-Fragebogen (dieselben 10 Fragen + Roadmap-Update)" },
+              { phase: "1.–4. Sep. 2026",         dur: "~15–20 Min",           desc: "Abschlussgespräch mit der Forscherin (Video oder persönlich, aufgezeichnet)" },
+            ].map(({ phase, dur, desc }, i) => (
+              <div key={i} className="grid grid-cols-[110px_1fr] gap-4 px-5 py-4 hover:bg-muted/20 transition-colors">
                 <div>
                   <p className="text-xs font-medium">{phase}</p>
                   <div className="flex items-center gap-1 mt-0.5">
@@ -434,7 +478,7 @@ export default function MitmachenPage() {
           <TrustItem
             icon={Shield}
             title="DSGVO-konform"
-            desc="Alle Daten auf einem Hetzner-Server in Helsinki, Finnland (EU). Keine US-Clouds für deine persönlichen Daten."
+            desc="Profilinformationen und Messdaten liegen auf einem Hetzner-Server in Helsinki (EU). Chat-Inhalte werden zur KI-Verarbeitung an Anthropic, OpenAI oder Mistral übermittelt — auf Basis von EU-Standardvertragsklauseln (SCCs)."
           />
           <TrustItem
             icon={CheckCircle2}
@@ -464,9 +508,10 @@ export default function MitmachenPage() {
       {/* ── CTA ── */}
       <section className="rounded-xl border border-foreground/20 bg-foreground/3 p-8 text-center space-y-6">
         <div className="space-y-2">
-          <h2 className="text-2xl font-bold tracking-tight">Fast so weit.</h2>
+          <h2 className="text-2xl font-bold tracking-tight">Dabei sein.</h2>
           <p className="text-muted-foreground text-sm max-w-md mx-auto">
-            Die Registrierung ist geöffnet. Die Studie startet am <strong className="text-foreground">8. August 2026</strong>.
+            Die Studie startet am <strong className="text-foreground">8. August 2026</strong> —
+            jetzt schon vorregistrieren und einen Platz sichern.
           </p>
         </div>
         <StudyCountdown label="Noch" />
@@ -476,12 +521,21 @@ export default function MitmachenPage() {
         >
           Jetzt vorregistrieren <ArrowRight className="h-4 w-4" />
         </Link>
-        <p className="text-xs text-muted-foreground">
-          Noch Fragen?{" "}
-          <a href="mailto:Dagmar.Rostek@stud.mobile-university.de" className="underline hover:text-foreground transition-colors">
-            Dagmar.Rostek@stud.mobile-university.de
-          </a>
-        </p>
+        <div className="space-y-1 pt-1">
+          <p className="text-xs text-muted-foreground">
+            Noch Fragen?
+          </p>
+          <p className="text-xs text-muted-foreground">
+            <a href="mailto:Dagmar.Rostek@stud.mobile-university.de" className="underline hover:text-foreground transition-colors">
+              Dagmar.Rostek@stud.mobile-university.de
+            </a>
+            {" "}·{" "}
+            <a href="tel:+4917661159403" className="underline hover:text-foreground transition-colors">
+              0176 611 59 403
+            </a>
+            {" "}(SMS, WhatsApp, Telefon)
+          </p>
+        </div>
       </section>
 
       {/* ── FOOTER NOTE ── */}
@@ -493,8 +547,13 @@ export default function MitmachenPage() {
           Ethikkomitee der SRH geprüft.
         </p>
         <p className="text-xs text-muted-foreground">
+          Hinweis: Die Forscherin ist gleichzeitig die Entwicklerin von KAIA.
+          Dieser Interessenkonflikt ist in der Thesis deklariert.
+        </p>
+        <p className="text-xs text-muted-foreground">
           Bei Anzeichen psychischer Belastung: Telefonseelsorge{" "}
           <strong className="text-foreground">0800 111 0 111</strong>{" "}
+          · <strong className="text-foreground">0800 111 0 222</strong>{" "}
           (kostenlos, 24/7) · Notruf <strong className="text-foreground">112</strong>
         </p>
       </section>
