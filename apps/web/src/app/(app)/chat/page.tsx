@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
-import { AlertCircle, CheckCircle2, HelpCircle, LogOut, Loader2, Send } from "lucide-react"
+import { AlertCircle, CheckCircle2, Download, HelpCircle, LogOut, Loader2, Send } from "lucide-react"
 import Link from "next/link"
 import { LegalFooter } from "@/components/LegalFooter"
 import { tokenStore, authFetch, apiLogout } from "@/lib/auth"
@@ -92,6 +92,50 @@ async function readSSEStream(
       } catch { /* ignore malformed lines */ }
     }
   }
+}
+
+// ── Transcript download ───────────────────────────────────────────────────────
+
+function buildTranscriptMarkdown(
+  messages: ChatMessage[],
+  sessionNumber: number | null,
+  sessionName: string | null,
+  summary: SessionSummary | null,
+): string {
+  const date = new Date().toLocaleDateString("de-DE", { dateStyle: "long" })
+  const heading = [
+    "# KAIA Gesprächsprotokoll",
+    sessionNumber ? `Session ${sessionNumber}` : null,
+    sessionName ? `— ${sessionName}` : null,
+  ].filter(Boolean).join(" ")
+
+  const lines: string[] = [heading, `*${date}*`, "", "---", "", "## Gesprächsverlauf", ""]
+  for (const msg of messages) {
+    if (msg.streaming) continue
+    lines.push(`**${msg.role === "user" ? "Du" : "KAIA"}:** ${msg.content}`, "")
+  }
+
+  if (summary) {
+    lines.push("---", "", "## KAIAs Reflexion", "")
+    if (summary.mood) lines.push(`**Stimmung:** ${summary.mood}`, "")
+    if (summary.topics.length > 0) lines.push(`**Themen:** ${summary.topics.join(" · ")}`, "")
+    if (summary.strengths_observed) lines.push(`**Was KAIA beobachtet hat:** ${summary.strengths_observed}`, "")
+    if (summary.strongest_quote) lines.push(`**Dein stärkster Moment:**`, `> "${summary.strongest_quote}"`, "")
+    if (summary.first_step) lines.push(`**Nächster Schritt:** ${summary.first_step}`, "")
+    if (summary.friction_points) lines.push(`**Wo es hakte:** ${summary.friction_points}`, "")
+    if (summary.insight_for_next_session) lines.push(`**Für die nächste Session:** ${summary.insight_for_next_session}`, "")
+  }
+  return lines.join("\n")
+}
+
+function triggerDownload(content: string, filename: string): void {
+  const blob = new Blob([content], { type: "text/markdown; charset=utf-8" })
+  const url = URL.createObjectURL(blob)
+  const a = document.createElement("a")
+  a.href = url
+  a.download = filename
+  a.click()
+  URL.revokeObjectURL(url)
 }
 
 // ── Chat page ─────────────────────────────────────────────────────────────────
@@ -1016,6 +1060,18 @@ export default function ChatPage() {
                       Neue Session starten
                     </Link>
                   </p>
+                  <div className="flex justify-center">
+                    <button
+                      onClick={() => triggerDownload(
+                        buildTranscriptMarkdown(messages, sessionNumber, sessionNumber ? SESSION_NAMES[sessionNumber] ?? null : null, sessionSummary),
+                        `kaia-session-${sessionNumber ?? 1}.md`,
+                      )}
+                      className="flex items-center gap-1.5 text-[11px] text-muted-foreground/50 hover:text-muted-foreground transition-colors"
+                    >
+                      <Download className="w-3 h-3" />
+                      Gespräch herunterladen
+                    </button>
+                  </div>
                 </>
               )}
 
@@ -1084,6 +1140,40 @@ export default function ChatPage() {
                       <p className="text-xs leading-relaxed">{sessionSummary.first_step}</p>
                     </div>
                   )}
+
+                  {sessionSummary.strengths_observed && (
+                    <div className="space-y-0.5">
+                      <p className="text-xs text-muted-foreground">Was KAIA an dir beobachtet hat</p>
+                      <p className="text-xs leading-relaxed">{sessionSummary.strengths_observed}</p>
+                    </div>
+                  )}
+
+                  {sessionSummary.friction_points && (
+                    <div className="space-y-0.5">
+                      <p className="text-xs text-muted-foreground">Wo es heute hakte</p>
+                      <p className="text-xs leading-relaxed text-muted-foreground/80">{sessionSummary.friction_points}</p>
+                    </div>
+                  )}
+
+                  {sessionSummary.insight_for_next_session && (
+                    <div className="space-y-0.5 border-t border-border/40 pt-3">
+                      <p className="text-xs text-muted-foreground">Für die nächste Session</p>
+                      <p className="text-xs leading-relaxed italic">{sessionSummary.insight_for_next_session}</p>
+                    </div>
+                  )}
+
+                  <div className="flex justify-end border-t border-border/40 pt-3">
+                    <button
+                      onClick={() => triggerDownload(
+                        buildTranscriptMarkdown(messages, sessionNumber, sessionNumber ? SESSION_NAMES[sessionNumber] ?? null : null, sessionSummary),
+                        `kaia-session-${sessionNumber ?? 1}.md`,
+                      )}
+                      className="flex items-center gap-1.5 text-[11px] text-muted-foreground/60 hover:text-muted-foreground transition-colors"
+                    >
+                      <Download className="w-3 h-3" />
+                      Gespräch herunterladen
+                    </button>
+                  </div>
                 </div>
               )}
             </div>

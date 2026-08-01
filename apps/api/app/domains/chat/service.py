@@ -653,8 +653,8 @@ async def _build_system_prompt(
     from app.domains.users.repository import UserProfileRepository
 
     user = await repo.get_user(session.user_id)
-    user_name = user.username if user else ""
     preferred_name = (user.preferred_name or "") if user else ""
+    user_name = preferred_name or (user.username if user else "")
     learning_topic = user.learning_topic or "" if user else ""
 
     is_first = session.session_number == 1

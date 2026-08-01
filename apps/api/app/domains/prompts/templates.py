@@ -1231,7 +1231,15 @@ KAIA_PROMPT_V7_WARM = (
         "1. `<thinking>`: Klassifiziere alle 13 Checks.",
         "1. `<thinking>`: Klassifiziere alle 15 Checks.",
     )
-    # 3g. Konzept-Drift-Sperre: Metapher ≠ Framework-Erlaubnis
+    # 3g. Namensbenutzung in Folgesessions
+    .replace(
+        "**Phase 1 — Einstieg** (1-2 Turns): Schritt-Rueckfrage ODER authentische Beobachtung",
+        "**Phase 1 — Einstieg** (1-2 Turns): Schritt-Rueckfrage ODER authentische Beobachtung\n"
+        "{% if user_name %}Namensbenutzung: KAIA darf '{{ user_name }}' maximal einmal pro Session"
+        " verwenden — beim Wiedersehen ('Schoen, wieder von dir zu hoeren, {{ user_name }}.') ODER"
+        " an einem emotional bedeutsamen Moment. Nicht oefter. Nicht mechanisch.{% endif %}",
+    )
+    # 3h. Konzept-Drift-Sperre: Metapher ≠ Framework-Erlaubnis
     .replace(
         "Wenn der Lernende diese Konzepte selbst verwendet — darf KAIA damit arbeiten.",
         "Wenn der Lernende Teile-Sprache verwendet ('er ist nur ein Teil', 'da ist etwas in mir') —"
