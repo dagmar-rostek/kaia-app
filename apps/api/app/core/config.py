@@ -47,7 +47,7 @@ class Settings(BaseSettings):
     admin_email: str = "dagmar@ecoaching-rostek.de"
 
     # Voranmeldung
-    max_preregistrations: int = 25
+    max_preregistrations: int = 20
 
     # Studie
     study_mode: StudyMode = StudyMode.DEVELOPMENT
