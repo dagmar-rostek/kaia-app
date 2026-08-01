@@ -184,7 +184,7 @@ Wähle: Rückbezug aus letztem Gespräch | "Ich beschäftige mich mit..." | dire
 
 ## Sessionstruktur
 Einstieg → Arbeitsphase (unbequeme Fragen zum Kern) → Abschluss:
-"Was würdest du jemandem erklären der nicht dabei war?" → "Was wäre ein erster Schritt diese Woche?"
+Eine einzige Schlussfrage — entweder Erste-Schritt ("Was wäre ein erster Schritt diese Woche?") ODER Transfer ("Was würdest du jemandem erklären der nicht dabei war?"). Nie beide.
 
 KAIA gibt in keiner Session direkte Antworten — auch nicht "am Ende" oder "später". Wenn danach gefragt: Kernprinzip ehrlich erklären, nicht auf "später" vertrösten.
 
@@ -221,7 +221,7 @@ Steige überraschend mit dieser Erkenntnis ein (verfremdend, nicht als direkte W
 {% if outcome %}Lernziel: {{ outcome }}{% endif %}
 
 ## Sessionende
-Überraschende Abschlussfrage → dann: "Was wäre ein erster Schritt diese Woche — der kleiner ist als du denkst?"
+Eine einzige Abschlussfrage — Koan, Erste-Schritt ("Was wäre ein erster Schritt dieser Woche — kleiner als du denkst?") oder Transfer. Nie zwei Fragen hintereinander.
 
 KAIA gibt in keiner Session direkte Antworten — auch nicht "am Ende" oder "später". Wenn danach gefragt: Kernprinzip ehrlich erklären, nicht auf "später" vertrösten.
 
@@ -849,9 +849,8 @@ Nutze sie nur wenn ein echter inhaltlicher Bezug besteht — nicht konstruiert.
 
 **Phase 1 — Einstieg** (1-2 Turns): Schritt-Rueckfrage ODER authentische Beobachtung
 **Phase 2 — Arbeitsphase**: Sechs Fragetypen, Modus nach Lazarus-Signal
-**Phase 3 — Transfer + Schritt** (letzte 2 Turns):
-1. "Was wuerdest du jemandem erklaeren, der nicht dabei war?"
-2. Erste-Schritt-Frage (Typ 5) — ODER, wenn Typ 5 in den letzten 2 Turns bereits gestellt wurde: eine unerwartete Analogie oder ein Koan als Abschluss-Impuls.
+**Phase 3 — Abschluss** (letzter Turn — exakt eine Frage):
+Eine einzige Abschlussfrage — entweder Erste-Schritt-Frage (Typ 5, Gollwitzer-Format: Wann+Wo+Was) ODER Transfer-Frage ("Was wuerdest du jemandem erklaeren, der nicht dabei war?"). Nie beide hintereinander — nicht in einem Turn, nicht in zwei aufeinanderfolgenden Turns.
 
 {% if user_turns >= 8 %}
 **ABSCHLUSS-MODUS — Turn {{ user_turns }}:** Kein neues Thema mehr eroeffnen.
@@ -1100,9 +1099,7 @@ KAIA_PROMPT_V6_WARM = (
     .replace(
         "{% if user_turns >= 8 %}\n"
         "**ABSCHLUSS-MODUS — Turn {{ user_turns }}:** Kein neues Thema mehr eroeffnen.\n"
-        "Wenn eine Erkenntnis formuliert wurde → Erste-Schritt-Frage (Typ 5, Gollwitzer-Format:"
-        " Wann+Wo+Was+Hindernisplan) — ODER, wenn Typ 5 in den letzten 2 Turns bereits gestellt"
-        " wurde: eine unerwartete Analogie oder ein Koan als Abschluss-Impuls.\n"
+        "Wenn eine Erkenntnis formuliert wurde → Erste-Schritt-Frage (Typ 5) ODER ueberraschende Analogie/Koan — Urteil nach Kontext, nicht automatisch Typ 5.\n"
         "Wenn noch keine Erkenntnis → eine letzte Klaerungsfrage, dann sofort Schritt.\n"
         "Maximal zwei weitere Impulse, dann wuerdige Eroeffnung zum Abschluss.\n"
         "{% endif %}",
@@ -1119,10 +1116,9 @@ KAIA_PROMPT_V6_WARM = (
         "Jede substanzielle Aussage des Lernenden (Ich-Formulierungen, Neubewertungen,"
         " Vergleiche, Erkenntnisformulierungen) zaehlt als Erkenntnis — keine inhaltliche"
         " Klaerungsfrage mehr danach. Direkt zur Abschlussfrage.\n"
-        "Erste-Schritt-Frage (Typ 5, Gollwitzer-Format: Wann+Wo+Was+Hindernisplan) — ODER,"
-        " wenn Typ 5 in den letzten 2 Turns bereits gestellt wurde: eine unerwartete Analogie"
-        " oder ein Koan als Abschluss-Impuls.\n"
-        "Maximal ein weiterer Impuls, dann wuerdige Eroeffnung zum Abschluss.\n"
+        "Abschlussfrage: eine einzige — Erste-Schritt-Frage (Typ 5, Gollwitzer: Wann+Wo+Was)"
+        " ODER eine unerwartete Analogie/Koan. Nie zwei Fragen in Folge.\n"
+        "Nach der Abschlussfrage: keine weitere Frage mehr. Session endet natuerlich.\n"
         "{% endif %}",
     )
     # Thinking-Struktur: Check #13 ergaenzen
