@@ -1,7 +1,7 @@
 "use client"
 
 import { useCallback, useEffect, useRef, useState } from "react"
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import { AlertCircle, CheckCircle2, HelpCircle, LogOut, Loader2, Send } from "lucide-react"
 import Link from "next/link"
 import { LegalFooter } from "@/components/LegalFooter"
@@ -133,6 +133,8 @@ const DAILY_LIMIT_MESSAGES = [
 
 export default function ChatPage() {
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const forceNew = searchParams.get("force_new") === "true"
 
   const handleLogout = useCallback(async () => {
     await apiLogout().catch(() => null)
@@ -253,7 +255,7 @@ export default function ChatPage() {
         // 1. Check for an existing open session
         const activeRes = await authFetch(`${API_BASE}/api/v1/chat/sessions/active`)
 
-        if (activeRes.ok) {
+        if (activeRes.ok && !forceNew) {
           // Resume: load existing session + its messages
           const sessData = await activeRes.json() as SessionData
           if (cancelled) return
@@ -272,6 +274,12 @@ export default function ChatPage() {
           userTurnCountRef.current = history.filter(m => m.role === "user").length
           setLoading(false)
           return
+        }
+
+        if (activeRes.ok && forceNew) {
+          // Force new session: end the active one, then fall through to create
+          const sessData = await activeRes.json() as SessionData
+          await authFetch(`${API_BASE}/api/v1/chat/sessions/${sessData.id}/end`, { method: "POST" })
         }
 
         if (activeRes.status === 403) {
@@ -364,7 +372,7 @@ export default function ChatPage() {
 
     void run()
     return () => { cancelled = true }
-  }, [openTrigger, character])
+  }, [openTrigger, character, forceNew])
 
   const submitName = useCallback(async () => {
     const trimmed = nameInput.trim()
@@ -871,9 +879,9 @@ export default function ChatPage() {
               {(Object.keys(CHARACTER_LABELS) as Character[]).map(c => (
                 <button
                   key={c}
-                  onClick={() => resetSession(c)}
+                  onClick={() => setCharacter(c)}
                   disabled={closureState !== "idle"}
-                  title={`Gesprächston wechseln zu: ${CHARACTER_LABELS[c]} — startet eine neue Session`}
+                  title={`Gesprächston wechseln zu: ${CHARACTER_LABELS[c]}`}
                   className={`text-xs px-2.5 py-1 rounded-lg transition-colors disabled:opacity-40 ${
                     character === c
                       ? "bg-foreground text-background"

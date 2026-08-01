@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useMemo, useTransition } from "react"
 import { useRouter } from "next/navigation"
-import { CheckCircle2, Circle, ArrowRight, RotateCcw, Save, AlertTriangle, Bot } from "lucide-react"
+import { CheckCircle2, Circle, ArrowRight, RotateCcw, Save, AlertTriangle, Bot, FastForward, PlusCircle } from "lucide-react"
 import { tokenStore } from "@/lib/auth"
 import { setUserModel } from "../users/actions"
 
@@ -67,6 +67,7 @@ export function JourneyTestClient() {
   const [savedTopic, setSavedTopic] = useState<string | null>(null)
   const [resetting, setResetting] = useState(false)
   const [savingTopic, setSavingTopic] = useState(false)
+  const [skippingSurvey, setSkippingSurvey] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [resetMsg, setResetMsg] = useState<string | null>(null)
   const [testUserId, setTestUserId] = useState<number | null>(null)
@@ -144,6 +145,38 @@ export function JourneyTestClient() {
       setError("Reset fehlgeschlagen.")
     } finally {
       setResetting(false)
+    }
+  }
+
+  async function handleSkipSurvey(type: "pre" | "post") {
+    setSkippingSurvey(true)
+    setError(null)
+    try {
+      // MSLQ dummy: all items at neutral value 4 (scale 1–7)
+      const mslqItems: Record<string, number> = {}
+      for (const num of [5, 6, 12, 15, 20, 21, 29, 31, 101, 102, 103, 104, 105, 53, 62, 64, 67, 69, 81, 33, 36, 41, 44, 54, 55, 56, 57, 61, 76, 78, 79, 2, 9, 18, 25]) {
+        mslqItems[String(num)] = 4
+      }
+      const [mslqRes, gseRes] = await Promise.all([
+        fetch("/api/v1/survey/mslq", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", ...authHeader },
+          body: JSON.stringify({ measurement_type: type, items: mslqItems }),
+        }),
+        fetch("/api/v1/survey/gse", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", ...authHeader },
+          body: JSON.stringify({ measurement_type: type, items: [2, 2, 2, 2, 2, 2, 2, 2, 2, 2] }),
+        }),
+      ])
+      if (!mslqRes.ok && mslqRes.status !== 409) throw new Error("MSLQ fehlgeschlagen")
+      if (!gseRes.ok && gseRes.status !== 409) throw new Error("GSE fehlgeschlagen")
+      setResetMsg(`${type === "pre" ? "Pre" : "Post"}-Befragung übersprungen.`)
+      setRefreshKey(k => k + 1)
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Fehler beim Überspringen.")
+    } finally {
+      setSkippingSurvey(false)
     }
   }
 
@@ -293,42 +326,77 @@ export function JourneyTestClient() {
           <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">Flow-Schritte</h2>
           <div className="space-y-2">
 
-            <button
-              onClick={() => { if (token) tokenStore.set(token); router.push("/survey/pre") }}
-              className={`w-full flex items-center justify-between rounded-lg border px-4 py-3 text-sm transition-colors ${
-                journey.state === "pre_pending"
-                  ? "border-amber-500/40 bg-amber-500/5 hover:bg-amber-500/10 text-foreground"
-                  : "border-border text-muted-foreground hover:text-foreground hover:bg-muted/40"
-              }`}
-            >
-              <span className="font-medium">Pre-Befragung ausfüllen</span>
-              <ArrowRight className="h-4 w-4" />
-            </button>
+            {/* Pre-Befragung */}
+            <div className="flex gap-2">
+              <button
+                onClick={() => { if (token) tokenStore.set(token); router.push("/survey/pre") }}
+                className={`flex-1 flex items-center justify-between rounded-lg border px-4 py-3 text-sm transition-colors ${
+                  journey.state === "pre_pending"
+                    ? "border-amber-500/40 bg-amber-500/5 hover:bg-amber-500/10 text-foreground"
+                    : "border-border text-muted-foreground hover:text-foreground hover:bg-muted/40"
+                }`}
+              >
+                <span className="font-medium">Pre-Befragung ausfüllen</span>
+                <ArrowRight className="h-4 w-4" />
+              </button>
+              <button
+                onClick={() => handleSkipSurvey("pre")}
+                disabled={skippingSurvey || (journey.pre_mslq_done && journey.pre_gse_done)}
+                title="Fragebogen mit Testdaten überspringen"
+                className="flex items-center gap-1.5 rounded-lg border border-border px-3 py-2 text-xs text-muted-foreground hover:text-foreground hover:bg-muted/40 disabled:opacity-30 transition-colors"
+              >
+                <FastForward className="h-3.5 w-3.5" />
+                {skippingSurvey ? "…" : "Skip"}
+              </button>
+            </div>
 
-            <button
-              onClick={() => { if (token) tokenStore.set(token); router.push("/chat") }}
-              className={`w-full flex items-center justify-between rounded-lg border px-4 py-3 text-sm transition-colors ${
-                journey.state === "active"
-                  ? "border-emerald-500/40 bg-emerald-500/5 hover:bg-emerald-500/10 text-foreground"
-                  : "border-border text-muted-foreground hover:text-foreground hover:bg-muted/40"
-              }`}
-            >
-              <span className="font-medium">Chat starten</span>
-              <span className="text-xs text-muted-foreground mr-2">{journey.session_count}/10 Sessions</span>
-              <ArrowRight className="h-4 w-4" />
-            </button>
+            {/* Chat */}
+            <div className="flex gap-2">
+              <button
+                onClick={() => { if (token) tokenStore.set(token); router.push("/chat") }}
+                className={`flex-1 flex items-center justify-between rounded-lg border px-4 py-3 text-sm transition-colors ${
+                  journey.state === "active"
+                    ? "border-emerald-500/40 bg-emerald-500/5 hover:bg-emerald-500/10 text-foreground"
+                    : "border-border text-muted-foreground hover:text-foreground hover:bg-muted/40"
+                }`}
+              >
+                <span className="font-medium">Chat fortsetzen</span>
+                <span className="text-xs text-muted-foreground mr-2">{journey.session_count}/10 Sessions</span>
+                <ArrowRight className="h-4 w-4" />
+              </button>
+              <button
+                onClick={() => { if (token) tokenStore.set(token); router.push("/chat?force_new=true") }}
+                title="Neue Session erzwingen — aktive Session wird beendet"
+                className="flex items-center gap-1.5 rounded-lg border border-border px-3 py-2 text-xs text-muted-foreground hover:text-foreground hover:bg-muted/40 transition-colors"
+              >
+                <PlusCircle className="h-3.5 w-3.5" />
+                Neu
+              </button>
+            </div>
 
-            <button
-              onClick={() => { if (token) tokenStore.set(token); router.push("/survey/post") }}
-              className={`w-full flex items-center justify-between rounded-lg border px-4 py-3 text-sm transition-colors ${
-                journey.state === "post_pending"
-                  ? "border-blue-500/40 bg-blue-500/5 hover:bg-blue-500/10 text-foreground"
-                  : "border-border text-muted-foreground hover:text-foreground hover:bg-muted/40"
-              }`}
-            >
-              <span className="font-medium">Post-Befragung ausfüllen</span>
-              <ArrowRight className="h-4 w-4" />
-            </button>
+            {/* Post-Befragung */}
+            <div className="flex gap-2">
+              <button
+                onClick={() => { if (token) tokenStore.set(token); router.push("/survey/post") }}
+                className={`flex-1 flex items-center justify-between rounded-lg border px-4 py-3 text-sm transition-colors ${
+                  journey.state === "post_pending"
+                    ? "border-blue-500/40 bg-blue-500/5 hover:bg-blue-500/10 text-foreground"
+                    : "border-border text-muted-foreground hover:text-foreground hover:bg-muted/40"
+                }`}
+              >
+                <span className="font-medium">Post-Befragung ausfüllen</span>
+                <ArrowRight className="h-4 w-4" />
+              </button>
+              <button
+                onClick={() => handleSkipSurvey("post")}
+                disabled={skippingSurvey || (journey.post_mslq_done && journey.post_gse_done)}
+                title="Fragebogen mit Testdaten überspringen"
+                className="flex items-center gap-1.5 rounded-lg border border-border px-3 py-2 text-xs text-muted-foreground hover:text-foreground hover:bg-muted/40 disabled:opacity-30 transition-colors"
+              >
+                <FastForward className="h-3.5 w-3.5" />
+                {skippingSurvey ? "…" : "Skip"}
+              </button>
+            </div>
 
           </div>
         </section>
