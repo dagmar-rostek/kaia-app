@@ -6,7 +6,7 @@ from fastapi.responses import StreamingResponse
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.core.config import settings
+from app.core.config import StudyMode, settings
 from app.core.deps import CurrentUser
 from app.db.session import get_db
 from app.domains.chat.models import FeedbackType
@@ -74,8 +74,8 @@ async def create_session(
                 },
             )
     # Daily limit — max 1 session per user per calendar day (Europe/Berlin timezone)
-    # Skip for simulation users
-    if not getattr(user, "is_simulation", False):
+    # Skip for simulation users and in development mode
+    if not getattr(user, "is_simulation", False) and settings.study_mode != StudyMode.DEVELOPMENT:
         berlin = ZoneInfo("Europe/Berlin")
         now_berlin = datetime.now(berlin)
         day_start = now_berlin.replace(hour=0, minute=0, second=0, microsecond=0)
