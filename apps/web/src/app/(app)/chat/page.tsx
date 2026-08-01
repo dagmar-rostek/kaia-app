@@ -864,6 +864,11 @@ export default function ChatPage() {
                 </span>
               </p>
             )}
+            <p className="text-xs text-muted-foreground/50">
+              <Link href="/admin/journey-test" className="underline underline-offset-2 hover:text-muted-foreground transition-colors">
+                → Zur Testübersicht
+              </Link>
+            </p>
           </div>
         </div>
       )}
@@ -1002,12 +1007,12 @@ export default function ChatPage() {
                   )}
                   <p className="text-center text-xs text-muted-foreground/60">
                     Session beendet.{" "}
-                    <button
-                      onClick={() => resetSession()}
+                    <Link
+                      href="/chat?force_new=true"
                       className="underline underline-offset-2 hover:text-foreground transition-colors"
                     >
                       Neue Session starten
-                    </button>
+                    </Link>
                   </p>
                 </>
               )}
