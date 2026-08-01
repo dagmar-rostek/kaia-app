@@ -372,7 +372,9 @@ export default function ChatPage() {
 
     void run()
     return () => { cancelled = true }
-  }, [openTrigger, character, forceNew])
+  // character intentionally excluded: changing mode must not trigger a new session.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [openTrigger, forceNew])
 
   const submitName = useCallback(async () => {
     const trimmed = nameInput.trim()
