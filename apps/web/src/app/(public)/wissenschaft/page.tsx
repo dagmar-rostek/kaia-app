@@ -57,11 +57,19 @@ const DISKURSE: Diskurs[] = [
         relevanz: "Zone der nächsten Entwicklung (ZPD): Lernen findet optimal im Raum zwischen dem statt, was jemand alleine kann, und dem was mit Unterstützung möglich ist. Kernbegründung für KAIAs adaptive Fragelogik — KAIA muss erkennen wo jemand steht und Fragen genau an dieser Grenze platzieren, nicht darunter, nicht darüber.",
       },
       {
+        authors: "Wood, D., Bruner, J. S., & Ross, G.",
+        year: "1976",
+        title: "The role of tutoring in problem solving",
+        journal: "Journal of Child Psychology and Psychiatry, 17(2), 89–100",
+        doi: "10.1111/j.1469-7610.1976.tb00381.x",
+        relevanz: "Ursprüngliche Definition von Scaffolding: Ein tutorieller Agent übernimmt die Aufgabenteile die den Lernenden überfordern würden — und zieht sich schrittweise zurück. Wichtig: Scaffolding ist an Problemlösung gebunden, nicht an Inhaltsvermittlung. Kernbegründung für KAIAs adaptive Fragelogik — intensive Begleitung am Anfang, zunehmende Zurückhaltung sobald Selbstregulation einsetzt.",
+      },
+      {
         authors: "Bruner, J.",
         year: "1996",
         title: "The Culture of Education",
         journal: "Harvard University Press",
-        relevanz: "Scaffolding als didaktisches Prinzip: temporäre Unterstützungsstruktur, die schrittweise zurückgezogen wird sobald der Lernende eigenständiger wird. Begründet KAIAs dynamische Fragenadaption — intensive Begleitung am Anfang, zunehmende Zurückhaltung wenn Selbstregulation einsetzt.",
+        relevanz: "Erweitert das Scaffolding-Konzept (→ Wood et al. 1976) in den kulturellen und narrativen Kontext von Bildung. Lernen als gemeinschaftlich konstruierter Bedeutungsprozess, nicht als Informationsübertragung. Begründet KAIAs Gesprächslogik: KAIA ist kein Instruktor, sondern Teil eines gemeinsamen Deutungsprozesses.",
       },
       {
         authors: "Mezirow, J.",
@@ -185,6 +193,51 @@ const DISKURSE: Diskurs[] = [
         journal: "Journal of Educational Psychology, 82(1), 33–40",
         relevanz: "Liefert den MSLQ (Motivated Strategies for Learning Questionnaire) mit validierten Subskalen für akademische Selbstwirksamkeit. Direkt adaptierbar als Messinstrument neben der GSE-Skala.",
         zusatz: "Empfehlung Psychologe: Als Ergänzung zur GSE für lernspezifische Selbstwirksamkeitsmessung.",
+      },
+      {
+        authors: "Bordin, E. S.",
+        year: "1979",
+        title: "The generalizability of the psychoanalytic concept of the working alliance",
+        journal: "Psychotherapy: Theory, Research and Practice, 16(3), 252–260",
+        doi: "10.1037/h0085885",
+        relevanz: "Die therapeutische Arbeitsallianz — Zielkonsens, Aufgabenkonsens, Beziehungsband — ist ein stärkerer Wirkfaktor als die eingesetzte Technik. Im KAIA-Prompt direkt zitiert: Wenn die Beziehung bricht, hilft keine Fragetechnik mehr. Begründet das Rupture-Repair-Protokoll als eigenständige didaktische Intervention — nicht als Ausnahme, sondern als Kernkompetenz der Begleitung.",
+      },
+    ],
+  },
+  {
+    titel: "Lerntransfer & Kognitive Taxonomie",
+    funktion: "Begründet die Transfer-Phase jeder Session und die taxonomische Stufung der Abschlusslogik",
+    farbe: "bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border-indigo-500/20",
+    quellen: [
+      {
+        authors: "Anderson, L. W., & Krathwohl, D. R. (Eds.)",
+        year: "2001",
+        title: "A taxonomy for learning, teaching, and assessing: A revision of Bloom's educational objectives",
+        journal: "Longman",
+        relevanz: "Die revidierte Bloom-Taxonomie (Erinnern → Verstehen → Anwenden → Analysieren → Bewerten → Erschaffen) ist das explizite Rückgrat von KAIAs Abschluss-Session. Session 10 setzt Bloom 5 (Bewerten) ein — Vergleich von Aussagen aus Session 1 und Session 9 — und Bloom 6 (Erschaffen): 'Wie wirst du ohne mich weiterlernen?' Ohne diese Quelle ist die taxonomische Verortung nicht verteidigbar.",
+      },
+      {
+        authors: "Perkins, D. N., & Salomon, G.",
+        year: "1992",
+        title: "Transfer of learning",
+        journal: "In: International Encyclopedia of Education (2nd ed., Vol. 11, pp. 6452–6457). Pergamon Press",
+        relevanz: "Grundlegende Transfertheorie: Nah-Transfer (ähnliche Situation) vs. Fern-Transfer (neuer Kontext). KAIAs Phase-3-Frage 'Was würdest du jemandem erklären, der nicht dabei war?' zielt explizit auf Fern-Transfer — der Lernende muss die Einsicht in neue Sprache übersetzen, nicht nur wiederholen. Begründet warum jede Session mit einer Transferfrage schließt statt mit KAIAs Zusammenfassung.",
+      },
+      {
+        authors: "Roediger, H. L., & Karpicke, J. D.",
+        year: "2006",
+        title: "Test-enhanced learning: Taking memory tests improves long-term retention",
+        journal: "Psychological Science, 17(3), 249–255",
+        doi: "10.1111/j.1467-9280.2006.01693.x",
+        relevanz: "Testing Effect / Retrieval Practice: Aktives Abrufen aus dem Gedächtnis verankert Wissen stärker als nochmaliges Durcharbeiten. KAIAs Phase-3-Frage 'Was würdest du jemandem erklären...' ist gezielt als Retrieval-Practice-Moment konzipiert — nicht Zusammenfassung durch KAIA, sondern aktive Erinnerungsarbeit durch den Lernenden. Empirisch einer der robustesten Befunde der Lernforschung.",
+      },
+      {
+        authors: "Gollwitzer, P. M.",
+        year: "1999",
+        title: "Implementation intentions: Strong effects of simple plans",
+        journal: "American Psychologist, 54(7), 493–503",
+        doi: "10.1037/0003-066X.54.7.493",
+        relevanz: "Implementierungsintentionen ('Wenn X, dann Y') als nachgewiesene Brücke zwischen Absicht und Handlung — sie reduzieren die Lücke zwischen Vorsatz und Verhalten um Faktor 2–3. KAIAs Erste-Schritt-Frage ('Was wäre ein erster Schritt diese Woche — kleiner als du denkst?') ist als Implementierungsintention konzipiert: konkret, situativ, minimal. Erklärt warum die Schritt-Frage am Ende jeder Session nicht optional ist.",
       },
     ],
   },
@@ -391,8 +444,8 @@ export default function WissenschaftPage() {
         <div className="mb-10 space-y-3">
           <h1 className="text-3xl font-bold tracking-tight">Wissenschaftliche Grundlagen</h1>
           <p className="text-muted-foreground text-sm max-w-xl leading-relaxed">
-            KAIA basiert auf neun theoretischen Diskursen aus Lernpsychologie, Entwicklungspsychologie,
-            Empathieforschung, Selbstwirksamkeitstheorie und Design Science Research. Hier sind alle{" "}
+            KAIA basiert auf zehn theoretischen Diskursen aus Lernpsychologie, Entwicklungspsychologie,
+            Lerntransferforschung, Empathieforschung, Selbstwirksamkeitstheorie und Design Science Research. Hier sind alle{" "}
             <strong className="text-foreground">{totalQuellen} Quellen</strong> mit ihrer
             spezifischen Relevanz für das Produkt dokumentiert.
           </p>
