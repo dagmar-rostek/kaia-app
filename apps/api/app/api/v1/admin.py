@@ -125,6 +125,7 @@ async def create_test_token(
                 username="admin_test",
                 password_hash=hash_password(secrets.token_urlsafe(32)),
                 status=UserStatus.ACTIVE,
+                is_simulation=True,
                 consent_data=True,
                 consent_analytics=True,
                 consent_version="1.0",
@@ -134,6 +135,9 @@ async def create_test_token(
                 approved_by="system",
             )
         )
+    elif not user.is_simulation:
+        user.is_simulation = True
+        await db.flush()
     return {"access_token": create_access_token(user.id, expire_minutes=120)}
 
 
