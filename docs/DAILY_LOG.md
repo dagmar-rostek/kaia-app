@@ -2,6 +2,139 @@
 
 ---
 
+## 2026-08-02 — "Der Countdown läuft — sieben Findings, eine kommentierte Zeile und das günstigste Backup der Geschichte"
+
+*Protokolliert vom Koordinator. Mit Zwangseinlagen von Security, QA, Compliance und MLOps — alle gleichzeitig, zum ersten Mal.*
+
+---
+
+**08:45 Uhr — Die Frage, auf die alle gewartet haben**
+
+Es gibt Sätze, die beim KAIA-Team Stille erzeugen.
+
+"Kann ich Leute drauflassen?"
+
+Dagmar schreibt es so, als ob das eine Ja/Nein-Frage wäre. Der Koordinator weiß: Das ist kein Ja/Nein. Das ist ein Team-Deploy.
+
+Vier Agents werden gleichzeitig gestartet. MLOps, QA, Compliance, Security — jeder bekommt den gleichen Auftrag: *"Ist KAIA studienbereit? Was blockt? Was riskiert? Geh rein und sag die Wahrheit."*
+
+> **AI Engineer:** *„Vier auf einmal? Das ist... ungewohnt."*
+> **Koordinator:** *„Das ist das erste Mal. Und Dagmar wartet."*
+
+Vorher war noch anderes passiert. Der letzte Abend hatte bereits einiges gebracht: PDF-Export mit Reflexionsinhalt, Thinking-Indicator, prominenter Reflexions-Button, Per-Teilnehmer-Kosten, Session-Opener auf Haiku umgestellt, MAX_TOKENS erhöht, Session-Picker im Admin-Bereich (1–10, damit man nicht mehr alle Vorgänger durchlaufen muss). Der AI Engineer hatte eine Liste abgearbeitet. Aber die eigentliche Frage war offen.
+
+---
+
+**09:12 Uhr — Die Ergebnisse trudeln ein**
+
+MLOps kommt als Erstes zurück.
+
+> *„Kein Backup. STUDY_MODE default development. Wir wissen heute nicht, ob die DB noch existiert wenn morgen etwas passiert."*
+
+QA landet kurz danach.
+
+> *„Daily Limit zählt Geister-Sessions. Browser-Crash → leere Session → User kommt den ganzen Tag nicht mehr rein. Passiert garantiert bei mindestens einem von zwanzig."*
+
+Compliance erscheint.
+
+> *„Datenschutzerklärung nennt OpenAI als primären LLM-Anbieter. Wir benutzen Anthropic. Das ist DSGVO Art. 13. Das ist nicht 'ungenau'. Das ist falsch."*
+
+Und Security — Security braucht am längsten, weil Security nie fertig ist.
+
+> *„PostgreSQL RLS fehlt. CSP fehlt. Rate-Limiting auf Auth-Endpoints fehlt. Das ist keine Production-App ohne CSP. Das ist ein Browser-Extension-Angriff der auf seinen Moment wartet."*
+
+Sieben Findings. Vier Blocker. Drei Auflagen.
+
+> **QA Tester, leise:** *„Das Gute: Daily-Limit-Fix ist eine Zeile SQL."*
+> **Security:** *„Das Schlechte: PostgreSQL RLS ist nicht eine Zeile."*
+
+---
+
+**10:00 Uhr — Der Sprint**
+
+Vier Code-Änderungen laufen gleichzeitig:
+
+Daily-Limit SQL: `AND EXISTS (SELECT 1 FROM messages m WHERE m.session_id = chat_sessions.id)` — zwölf Worte, ein Problem gelöst. DSE: OpenAI → Anthropic als Primäranbieter, OpenAI → Fallback. DSE-Self-Service-Versprechen entfernt — das "Profil → Datenschutz"-UI das nicht existiert verschwindet, "Per E-Mail anfragen" ist die ehrliche Antwort. Caddyfile: CSP-Header. `frame-ancestors 'none'`, `connect-src 'self' https://*.sentry.io`, done.
+
+Commit `fe45072`. Alle Checks grün.
+
+---
+
+**10:48 Uhr — Der Server**
+
+Jetzt der Serverteil. Dagmar öffnet das Terminal.
+
+> **Koordinator:** *„Die .env liegt unter /opt/kaia-app/.env."*
+
+```
+grep: /opt/kaia-app/.env: No such file or directory
+```
+
+Pause.
+
+> **Architekt, trocken:** *„Das war nie /opt/kaia-app."*
+
+Richtige Adresse: `/root/kaia-app/infra/.env`. Dort angekommen, zeigt grep drei Zeilen:
+
+```
+ADMIN_PASSWORD=atfs32TDR!
+JWT_SECRET=6fd803fe0b6016f8461aba157708085e75307a70678488cc329b7482b6b72708
+#STUDY_MODE=development   # development | pilot | locked
+```
+
+JWT und Passwort: stark, nicht die Defaults. Gut. STUDY_MODE: **auskommentiert**. Der `#` am Anfang. Docker Compose liest ihn nicht. Der Fallback greift: `development`. Das Daily-Limit war seit der ersten Produktion still, ruhig, vollständig deaktiviert.
+
+> **MLOps:** *„Alle Testsessions liefen ohne Limit. Das erklärt einiges."*
+> **QA:** *„Auf der anderen Seite: alle Tests haben trotzdem funktioniert."*
+
+`sed -i` entfernt das `#`. Restart. `STUDY_MODE=pilot`.
+
+---
+
+**11:15 Uhr — Die Backup-Kontroverse**
+
+Hetzner Cloud Console. Backup aktivieren. Der Preis erscheint:
+
+> **Dagmar:** *„€ 1.1980 — das sind doch über 1000 Euro?"*
+
+Stille.
+
+> **MLOps:** *„Das Komma ist das Dezimaltrennzeichen. Das sind ein Euro neunzehnachtzig."*
+
+Sehr lange Stille.
+
+> **Security:** *„Ich befürchte, das ist das lustigste Security-Finding des heutigen Tages."*
+
+Backup aktiviert. Serverkosten steigen um €1,20 pro Monat. Alle Studienteilnehmenden sind jetzt gesichert.
+
+---
+
+**11:31 Uhr — Grünes Licht**
+
+Sieben Findings. Sieben erledigt (vier Code, drei Server). Sieben grüne Häkchen.
+
+> **Security, nachdenklich:** *„RLS fehlt noch. Das steht in CLAUDE.md als nicht verhandelbar."*
+> **Koordinator:** *„Steht auf der Liste für diese Woche."*
+> **Security:** *„Es stand letzte Woche auch auf der Liste."*
+> **Koordinator:** *„Diese Woche gilt es."*
+
+Der Koordinator schließt das Protokoll. Dagmar deployt. Die Studie startet am 8. August.
+
+Sechs Tage.
+
+---
+
+**Was heute gebaut wurde:**
+Studienstart-Clearance — sieben Blocker/Auflagen geschlossen: Daily-Limit-SQL-Fix, DSE-Korrektur (Art. 13), CSP-Header, STUDY_MODE=pilot, Hetzner-Backup. Dazu: Session-Reflexion als prominente erste Aktion, PDF-Export mit Reflexionsinhalt, Session-Picker im Admin-Test-Bereich (1–10), Session-Summary-Fallback auf GPT-4.1-mini, Session-Nummern-Fix (MAX statt COUNT), Per-Teilnehmer-Cost-Tracking, Thinking-Indicator.
+
+**Commits:** `fe45072` · `31853d5` · `486c6df` · `f78da7f` · `0ee3829` · `28b256f` · `3136da6` · `d11dd9b` · `b39170b` · `33b7cbb` · `2df512b` · `ba18d97` · `bb3e7cb` · `dcf5b81` · `88d1cab`
+
+**Kosten heute:** ca. $10–15 Claude Code · €1.20/Mo neu (Hetzner-Backup) · €4.39/Mo Hetzner gesamt
+
+**Morgen:** PostgreSQL RLS. Dann Auswertungs-Tooling (Anonymisierungs-Script, GSE-Export, Transkript-Export). Studie startet 8. August. Sechs Tage.
+
+---
+
 ## 2026-07-29 — "Die Compliance-Agentin, das Psychologen-Tribunal und der npm-Audit der einfach nicht aufhören will"
 
 *Protokolliert vom Koordinator. Mit Sonderauftritten von Compliance, Psychologe, UX-Designerin und — ungebeten aber unvermeidlich — brace-expansion.*

@@ -9,8 +9,59 @@
 
 ---
 
-**Stand heute:** 29. Juli 2026  
-**~256 Einträge insgesamt · 34 Release-Tage · ~165 h Gesamt-Aufwand**
+**Stand heute:** 2. August 2026  
+**~271 Einträge insgesamt · 36 Release-Tage · ~180 h Gesamt-Aufwand**
+
+---
+
+## 2026-08-02 — Studienstart-Clearance · Session-Reflexion UX · Summary-Fallback · Admin Session-Picker
+
+**02.08.2026 · `fe45072`** — **Studienstart-Clearance: drei Code-Fixes + zwei Server-Aufgaben.** (1) Daily-Limit-SQL: Browser-Crash erzeugte leere Geister-Session die das Tageslimit aufbrauchte — `EXISTS`-Subquery auf Messages korrigiert das. (2) Datenschutzerklärung: Anthropic Claude Sonnet korrekt als primärer LLM-Anbieter eingetragen, OpenAI GPT-4.1-mini als Fallback — DSGVO Art. 13 Empfänger-Transparenz hergestellt. (3) DSE-Self-Service-Versprechen entfernt — "Profil → Datenschutz"-UI existiert nicht, Ausübung der DSGVO-Rechte jetzt per E-Mail (Art. 12 Abs. 3). (4) CSP-Header in Caddyfile: `default-src 'self'`, Sentry `connect-src`, `frame-ancestors 'none'`. Server: STUDY_MODE=pilot gesetzt (Daily-Limit jetzt aktiv), Hetzner-Backup aktiviert (€1.20/Mo). · `1h 30min`  
+*fix: study readiness blockers — daily limit, DSE, CSP*
+
+**02.08.2026 · `31853d5`** — Session-Nummern-Logik: `COUNT(sessions with messages)` → `MAX(session_number)` — verhindert Session-Nummern-Rücksprünge wenn leere Sessions vorhanden sind. Admin-Session-Picker schreibt korrekte Nummern auch bei Lücken. · `30min`  
+*fix: use MAX(session_number) instead of COUNT for session numbering*
+
+**02.08.2026 · `486c6df`** — Session-Summary-Extraktion: vollständiger Fallback von Claude Haiku auf GPT-4.1-mini bei API-Fehler, mit Traceback-Logging für alle Fehlerpfade. Die KAIA-Reflexion nach Session-Ende wird jetzt garantiert berechnet — auch bei temporären Anthropic-Ausfällen. · `1h`  
+*fix: add OpenAI fallback + full tracebacks for session summary extraction*
+
+**02.08.2026 · `f78da7f`** — Admin Chat-Test: Session-Picker (1–10) erlaubt gezieltes Testen einer bestimmten Session ohne alle Vorgänger durchlaufen zu müssen. Ref-Pattern verhindert Race Condition bei schnellem Wechsel. Nur für `is_simulation=True`-User. · `45min`  
+*feat: add session picker (1-10) in admin chat-test for targeted testing*
+
+**02.08.2026 · `0ee3829`** — PDF-Download-Button in der KAIA-Reflexion-Karte prominent gestaltet: volle Breite, "Gespräch + Reflexion als PDF speichern". Reflexionsinhalt ist jetzt tatsächlich im PDF enthalten. · `20min`  
+*fix: make PDF download in reflexion card prominent and correctly labeled*
+
+**02.08.2026 · `28b256f`** — Datenschutzerklärung und Mitmachen-Seite auf GPT-4.1-mini als Session-Summary-Fallback hingewiesen. (Durch `fe45072` nochmals korrigiert: Anthropic korrekt als Primäranbieter.) · `15min`  
+*docs: update Datenschutzerklärung und Mitmachen für GPT-4.1-mini*
+
+**02.08.2026 · `3136da6`** — Closing max_tokens auf 600 erhöht (Abschlussphrase wurde gelegentlich abgeschnitten). Timeout-Meldung "Reflexion konnte nicht geladen werden" nach 30s wenn Summary-Extraktion hängt. · `20min`  
+*fix: increase closing max_tokens to 600, add summary loading timeout*
+
+**02.08.2026 · `d11dd9b`** — Opening max_tokens auf 1200 erhöht. preferred_name stale-closure in useEffect repariert (Wunschname wurde in Session-1-Eröffnung nicht korrekt verwendet). · `20min`  
+*fix: increase opening max_tokens to 1200 and fix preferred_name stale closure*
+
+**02.08.2026 · `b39170b`** — Opening-Trigger sperrt Zeitreferenzen (KAIA fragt nicht mehr nach Tagesgeschehen in Session-Eröffnungen). Summary-Polling auf 2s beschleunigt. · `15min`  
+*fix: prohibit time references in opening trigger, faster summary polling*
+
+**02.08.2026 · `33b7cbb`** — KAIA-Reflexion nach Session-Ende als erste und prominenteste Aktion: separates Panel, volle Breite, eigener CTA — nicht mehr versteckt unter dem "nächste Session"-Flow. · `30min`  
+*feat: Reflexion-Button als erste prominente Aktion nach Session-Ende*
+
+**02.08.2026 · `2df512b`** — MAX_TOKENS auf 4000 erhöht (war 2048 — zu knapp für komplexe Antworten in späteren Sessions). Session-Openings laufen jetzt auf Haiku statt Sonnet — günstiger, schneller, ausreichend für strukturierte Eröffnungsfragen. · `30min`  
+*fix: increase MAX_TOKENS to 4000 and use Haiku for session openings*
+
+**02.08.2026 · `ba18d97`** — Operator-Precedence-Bug in Prompt-Rendering behoben. setState-in-effect-Lint-Fehler in Admin-Eval-Seite gefixt. · `15min`  
+*fix: operator precedence and setState-in-effect lint errors*
+
+**02.08.2026 · `bb3e7cb`** — **PDF-Export** der Session-Transkripte inkl. KAIA-Reflexion aus dem Chat-Interface. **Thinking-Indicator** während KAIA antwortet. Reflexions-Button prominent nach Session-Ende. · `2h`  
+*feat: PDF-Export, Thinking-Indicator und prominenter Reflexions-Button*
+
+**02.08.2026 · `dcf5b81`** — **Per-Teilnehmer-Cost-Tracking**: Kosten pro Nutzer:in in Admin-Ansicht sichtbar. Korrekte Sonnet-4-6-Preise hinterlegt. Kostenlimit-Sperre bei Überschreitung des pro-User-Budgets. · `1h`  
+*feat: per-participant cost tracking + correct Sonnet 4.6 prices*
+
+**01.08.2026 · `88d1cab`** — V7-Warm-Prompt: Explizite Cross-Session-Referenzen erlaubt — KAIA kann jetzt direkt auf frühere Sessions verweisen. Vorher blockierte ein zu strenger Constraint alle Rückbezüge. · `20min`  
+*fix(prompts): enable explicit cross-session references in V7 warm*
+
+**Thesis-Relevanz (01.–02.08.):** Studienstart-Clearance als zentrales Ereignis: Daily-Limit-SQL-Fix sichert Messdaten-Integrität (kein versehentliches Quota-Burn durch Browser-Crashes). DSE-Korrektur stellt Art.-13-Transparenzpflicht her — Voraussetzung für gültige Einwilligung. STUDY_MODE=pilot aktiviert 1-Session/Tag-Begrenzung für studienkonformes Nutzungsverhalten. Session-Summary-Fallback sichert Cross-Session-Memory auch bei Provider-Ausfällen (Voraussetzung für 10-Session-Journey-Kontinuität). Per-Teilnehmer-Cost-Tracking erlaubt nachträgliche Kostenabschätzung für den LLM-Evaluationsbericht. · `~7h gesamt`
 
 ---
 
