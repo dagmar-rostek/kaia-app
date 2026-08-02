@@ -119,13 +119,14 @@ export default function DatenschutzPage() {
         </p>
         <p>
           <strong className="text-foreground">LLM-Anbieter:</strong> Für die KI-gestützte
-          Gesprächsführung wird <strong className="text-foreground">OpenAI (GPT-4.1-mini)</strong> eingesetzt.
-          Chat-Gespräche werden zur Antwortgenerierung an OpenAI übermittelt. Für die automatische
-          Gesprächsanalyse nach jeder Session (interne Session-Zusammenfassung) wird zusätzlich
-          <strong className="text-foreground"> Anthropic (Claude Haiku)</strong> als
-          Auftragsverarbeiter genutzt; diese Verarbeitung erfolgt im Hintergrund und ist für
-          Teilnehmende nicht direkt sichtbar. Die Nutzung beider Dienste erfolgt ausschließlich
-          mit abgeschlossenen Auftragsverarbeitungsverträgen (Data Processing Agreements, DPAs).
+          Gesprächsführung wird <strong className="text-foreground">Anthropic (Claude Sonnet)</strong> eingesetzt.
+          Chat-Gespräche werden zur Antwortgenerierung an Anthropic übermittelt. Für die automatische
+          Gesprächsanalyse nach jeder Session (interne Session-Zusammenfassung) wird
+          <strong className="text-foreground"> OpenAI (GPT-4.1-mini)</strong> als
+          Fallback-Auftragsverarbeiter genutzt, sofern Anthropic nicht erreichbar ist; diese Verarbeitung
+          erfolgt im Hintergrund und ist für Teilnehmende nicht direkt sichtbar.
+          Die Nutzung beider Dienste erfolgt ausschließlich mit abgeschlossenen
+          Auftragsverarbeitungsverträgen (Data Processing Agreements, DPAs).
         </p>
         <div className="rounded-lg border border-amber-500/30 bg-amber-500/5 p-3 text-xs">
           <p className="font-medium text-amber-700 dark:text-amber-400">Hinweis zu US-Anbietern (Schrems II)</p>
@@ -160,9 +161,10 @@ export default function DatenschutzPage() {
           ))}
         </ul>
         <p>
-          Alle DSGVO-Rechte sind im eingeloggten Bereich unter{" "}
-          <strong className="text-foreground">Profil → Datenschutz</strong> als Self-Service
-          verfügbar (in Entwicklung — wird vor Studienstart vollständig implementiert).
+          Zur Ausübung dieser Rechte wende dich per E-Mail an{" "}
+          <a href="mailto:Dagmar.Rostek@stud.mobile-university.de" className="underline hover:text-foreground transition-colors">
+            Dagmar.Rostek@stud.mobile-university.de
+          </a>. Anfragen werden innerhalb von 30 Tagen bearbeitet (Art. 12 Abs. 3 DSGVO).
         </p>
         <p>
           Du hast außerdem das Recht, Beschwerde bei der zuständigen Datenschutzaufsichtsbehörde

@@ -85,7 +85,8 @@ async def create_session(
         existing_today = await db.execute(
             text(
                 "SELECT COUNT(*) FROM chat_sessions "
-                "WHERE user_id = :uid AND started_at >= :start AND started_at < :end"
+                "WHERE user_id = :uid AND started_at >= :start AND started_at < :end "
+                "AND EXISTS (SELECT 1 FROM messages m WHERE m.session_id = chat_sessions.id)"
             ),
             {"uid": user.id, "start": day_start_utc, "end": day_end_utc},
         )
