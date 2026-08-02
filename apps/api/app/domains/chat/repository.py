@@ -15,10 +15,13 @@ class ChatRepository:
     # ── Sessions ──────────────────────────────────────────────────────────────
 
     async def count_sessions(self, user_id: int) -> int:
-        # Count only sessions that contain at least one message — orphaned empty sessions
-        # (created by resetSession without messages) must not inflate the session number.
+        # Count ALL sessions — even empty/orphaned ones still occupy a session number slot.
+        # Using MAX(session_number) is more robust: if rows were deleted or overrides used,
+        # we never reuse a number. Falls back to 0 if no sessions exist yet.
         result = await self.db.execute(
-            select(func.count()).where(ChatSession.user_id == user_id, ChatSession.messages.any())
+            select(func.coalesce(func.max(ChatSession.session_number), 0)).where(
+                ChatSession.user_id == user_id
+            )
         )
         return result.scalar_one()
 
