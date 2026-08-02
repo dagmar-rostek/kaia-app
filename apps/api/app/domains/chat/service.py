@@ -844,7 +844,7 @@ async def stream_opening(
         ) = await _call_llm(
             system_prompt,
             [{"role": "user", "content": trigger}],
-            max_tokens=600,
+            max_tokens=1200,
             model_override=OPENING_MODEL,
         )
     except Exception as exc:

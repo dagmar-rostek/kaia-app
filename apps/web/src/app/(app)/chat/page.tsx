@@ -308,16 +308,17 @@ export default function ChatPage() {
       try {
         // 0. Fetch user profile to get preferred_name + learning_topic
         let storedLearningTopic = ""
+        let resolvedName: string | null = null
         const meRes = await authFetch(`${API_BASE}/api/v1/users/me`)
         if (meRes.ok) {
           const meData = await meRes.json() as {
             preferred_name?: string | null
             learning_topic?: string | null
           }
-          const name = meData.preferred_name ?? null
+          resolvedName = meData.preferred_name ?? null
           storedLearningTopic = meData.learning_topic ?? ""
-          setPreferredName(name)
-          if (!name) {
+          setPreferredName(resolvedName)
+          if (!resolvedName) {
             setNameStep(true)
             setLoading(false)
             return
@@ -364,8 +365,8 @@ export default function ChatPage() {
           }
         }
 
-        // 1b. Check preferred_name — ask before first session if not set
-        if (!preferredName) {
+        // 1b. Fallback name check — only needed if /me fetch failed above
+        if (!resolvedName) {
           setNameStep(true)
           setLoading(false)
           return
