@@ -103,6 +103,11 @@ async def create_session(
         character=body.character,
         daily_plan=body.daily_plan,
         active_goal_id=body.active_goal_id,
+        session_number_override=(
+            body.session_number_override
+            if getattr(user, "is_simulation", False) and body.session_number_override
+            else None
+        ),
     )
     return SessionResponse.model_validate(session)
 

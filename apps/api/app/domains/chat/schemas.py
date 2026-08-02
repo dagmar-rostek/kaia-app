@@ -9,6 +9,7 @@ class SessionCreate(BaseModel):
     character: str = "warm"  # warm | challenging | wild
     daily_plan: str | None = None
     active_goal_id: int | None = None
+    session_number_override: int | None = None  # simulation/admin only
 
     @field_validator("character")
     @classmethod

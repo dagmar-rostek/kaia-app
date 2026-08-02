@@ -49,9 +49,13 @@ class ChatRepository:
         character: str,
         daily_plan: str | None = None,
         active_goal_id: int | None = None,
+        session_number_override: int | None = None,
     ) -> ChatSession:
         await self._close_orphaned_empty_sessions(user_id)
-        session_number = await self.count_sessions(user_id) + 1
+        if session_number_override:
+            session_number = session_number_override
+        else:
+            session_number = await self.count_sessions(user_id) + 1
         session = ChatSession(
             user_id=user_id,
             character=character,

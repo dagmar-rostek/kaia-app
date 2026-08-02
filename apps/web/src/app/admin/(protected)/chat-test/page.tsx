@@ -181,6 +181,8 @@ export default function AdminChatTestPage() {
   const [character,    setCharacter]    = useState<Character>("warm")
   const [chatError,    setChatError]    = useState<string | null>(null)
   const [openTrigger,  setOpenTrigger]  = useState(0)
+  const [targetSession, setTargetSession] = useState<number | null>(null)
+  const targetSessionRef = useRef<number | null>(null)
   const [confirmReset, setConfirmReset] = useState(false)
   const [resetting,    setResetting]    = useState(false)
   const confirmResetTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
@@ -225,7 +227,7 @@ export default function AdminChatTestPage() {
         const sessRes = await fetch("/api/v1/chat/sessions", {
           method: "POST",
           headers: { "Content-Type": "application/json", ...authHeader },
-          body: JSON.stringify({ character }),
+          body: JSON.stringify({ character, ...(targetSessionRef.current ? { session_number_override: targetSessionRef.current } : {}) }),
         })
         if (!sessRes.ok) throw new Error(`Session-Start fehlgeschlagen (${sessRes.status})`)
         const { id: sid, session_number: sessNum } = await sessRes.json() as { id: number; session_number: number }
@@ -338,7 +340,7 @@ export default function AdminChatTestPage() {
         const res = await fetch("/api/v1/chat/sessions", {
           method: "POST",
           headers: { "Content-Type": "application/json", ...authHeader },
-          body: JSON.stringify({ character }),
+          body: JSON.stringify({ character, ...(targetSessionRef.current ? { session_number_override: targetSessionRef.current } : {}) }),
         })
         if (!res.ok) throw new Error(`Session-Start fehlgeschlagen (${res.status})`)
         const data = await res.json() as { id: number; session_number: number }
@@ -493,7 +495,7 @@ export default function AdminChatTestPage() {
             {sessionNumber != null && <span className="text-xs text-muted-foreground font-mono">Session {sessionNumber}</span>}
             <span className="text-xs text-muted-foreground/60 bg-muted px-2 py-0.5 rounded">admin_test@kaia.internal</span>
           </div>
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-1 flex-wrap">
             {(Object.keys(CHARACTER_LABELS) as Character[]).map(c => (
               <button
                 key={c}
@@ -505,10 +507,23 @@ export default function AdminChatTestPage() {
                 }`}
               >{CHARACTER_LABELS[c]}</button>
             ))}
+            <span className="ml-2 mr-1 text-xs text-muted-foreground/50">S:</span>
+            {Array.from({ length: 10 }, (_, i) => i + 1).map(n => (
+              <button
+                key={n}
+                onClick={() => { targetSessionRef.current = n; setTargetSession(n); void resetSession() }}
+                className={`text-xs w-7 py-1.5 rounded-lg font-mono transition-colors ${
+                  targetSession === n
+                    ? "bg-blue-500/20 text-blue-400 border border-blue-500/40"
+                    : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                }`}
+                title={`Session ${n} starten`}
+              >{n}</button>
+            ))}
             <button
-              onClick={() => void resetSession()}
+              onClick={() => { targetSessionRef.current = null; setTargetSession(null); void resetSession() }}
               className="ml-1 p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
-              title="Neue Session"
+              title="Neue Session (weiter zählen)"
             ><Plus className="h-4 w-4" /></button>
             <button
               onClick={() => { setToken(null); setTokenError(null); setFetchTrigger(t => t + 1) }}
