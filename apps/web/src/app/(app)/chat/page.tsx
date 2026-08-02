@@ -1084,6 +1084,13 @@ export default function ChatPage() {
 
               {/* ── 1. REFLEXION — immer zuerst und prominent ── */}
 
+              {/* Reflexion nicht verfügbar */}
+              {summaryTimedOut && !sessionSummary && (
+                <p className="text-xs text-muted-foreground/50 text-center py-1">
+                  Reflexion konnte nicht geladen werden.
+                </p>
+              )}
+
               {/* Loading: Platzhalter in gleicher Form wie der Button */}
               {!sessionSummary && !showSummaryCard && !summaryTimedOut && (
                 <div className="rounded-xl border border-border/50 bg-muted/20 px-5 py-5 flex items-center gap-3">
@@ -1227,7 +1234,7 @@ export default function ChatPage() {
                     </div>
                   )}
 
-                  <div className="flex justify-end border-t border-border/40 pt-3">
+                  <div className="border-t border-border/40 pt-3">
                     <button
                       onClick={() => openPrintWindow(buildTranscriptHTML(
                         messages, sessionNumber,
@@ -1235,10 +1242,10 @@ export default function ChatPage() {
                         sessionSummary, preferredName,
                         learningTopic || sessionSummary?.topics?.[0] || null,
                       ))}
-                      className="flex items-center gap-1.5 text-[11px] text-muted-foreground/60 hover:text-muted-foreground transition-colors"
+                      className="w-full flex items-center justify-center gap-2 rounded-lg border border-border/60 bg-background px-4 py-2.5 text-sm text-foreground/80 hover:bg-muted hover:text-foreground hover:border-border transition-all"
                     >
-                      <Download className="w-3 h-3" />
-                      Gespräch als PDF speichern
+                      <Download className="w-4 h-4 shrink-0" />
+                      Gespräch + Reflexion als PDF speichern
                     </button>
                   </div>
                 </div>
