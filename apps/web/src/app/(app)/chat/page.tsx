@@ -576,9 +576,10 @@ export default function ChatPage() {
 
   // Poll for session summary after session ends — retry at 5s, 15s, 30s
   // Count seconds while KAIA is thinking (streaming msg with no content yet)
+  // Reset happens in cleanup when messages change and isThinking becomes false
   useEffect(() => {
     const isThinking = messages.some(m => m.streaming && !m.content)
-    if (!isThinking) { setThinkingElapsed(0); return }
+    if (!isThinking) return
     const interval = setInterval(() => setThinkingElapsed(s => s + 1), 1000)
     return () => { clearInterval(interval); setThinkingElapsed(0) }
   }, [messages])
@@ -1114,7 +1115,7 @@ export default function ChatPage() {
                         messages, sessionNumber,
                         sessionNumber ? SESSION_NAMES[sessionNumber] ?? null : null,
                         sessionSummary, preferredName,
-                        learningTopic || sessionSummary?.topics?.[0] ?? null,
+                        learningTopic || sessionSummary?.topics?.[0] || null,
                       ))}
                       className="flex items-center gap-1.5 text-[11px] text-muted-foreground/50 hover:text-muted-foreground transition-colors"
                     >
@@ -1225,7 +1226,7 @@ export default function ChatPage() {
                         messages, sessionNumber,
                         sessionNumber ? SESSION_NAMES[sessionNumber] ?? null : null,
                         sessionSummary, preferredName,
-                        learningTopic || sessionSummary?.topics?.[0] ?? null,
+                        learningTopic || sessionSummary?.topics?.[0] || null,
                       ))}
                       className="flex items-center gap-1.5 text-[11px] text-muted-foreground/60 hover:text-muted-foreground transition-colors"
                     >
