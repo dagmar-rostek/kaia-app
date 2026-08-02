@@ -1073,7 +1073,42 @@ export default function ChatPage() {
 
           {/* Session ended notice */}
           {closureState === "ended" && (
-            <div className="space-y-4 py-4" aria-live="assertive">
+            <div className="space-y-3 py-4" aria-live="assertive">
+
+              {/* ── 1. REFLEXION — immer zuerst und prominent ── */}
+
+              {/* Loading: Platzhalter in gleicher Form wie der Button */}
+              {!sessionSummary && !showSummaryCard && (
+                <div className="rounded-xl border border-border/50 bg-muted/20 px-5 py-5 flex items-center gap-3">
+                  <span className="inline-flex gap-1 items-center shrink-0">
+                    <span className="w-1.5 h-1.5 rounded-full bg-muted-foreground/40 animate-bounce" style={{ animationDelay: "0ms" }} />
+                    <span className="w-1.5 h-1.5 rounded-full bg-muted-foreground/40 animate-bounce" style={{ animationDelay: "150ms" }} />
+                    <span className="w-1.5 h-1.5 rounded-full bg-muted-foreground/40 animate-bounce" style={{ animationDelay: "300ms" }} />
+                  </span>
+                  <span className="text-sm text-muted-foreground">KAIA reflektiert das Gespräch…</span>
+                </div>
+              )}
+
+              {/* Reflexion bereit */}
+              {sessionSummary && !showSummaryCard && (
+                <div className="animate-in fade-in slide-in-from-bottom-2 duration-500">
+                  <button
+                    onClick={() => setShowSummaryCard(true)}
+                    className="w-full rounded-xl border border-foreground/15 bg-muted/50 px-5 py-5 text-left hover:bg-muted hover:border-foreground/30 transition-all group focus:outline-none focus:ring-2 focus:ring-foreground/20"
+                    aria-label="KAIAs Reflexion über diese Session ansehen"
+                  >
+                    <div className="flex items-center justify-between gap-3">
+                      <div className="space-y-1">
+                        <span className="text-base font-semibold text-foreground block">KAIA reflektiert</span>
+                        <span className="text-sm text-muted-foreground block">Was KAIA aus diesem Gespräch mitnimmt</span>
+                      </div>
+                      <span className="text-xl text-muted-foreground/50 group-hover:text-foreground transition-colors shrink-0 select-none" aria-hidden="true">→</span>
+                    </div>
+                  </button>
+                </div>
+              )}
+
+              {/* ── 2. Sekundäre Aktionen ── */}
               {sessionNumber === 10 ? (
                 <div className="rounded-xl border border-border/60 bg-muted/40 p-5 space-y-3 text-center">
                   <p className="font-medium text-sm">10 Gespräche — fertig.</p>
@@ -1089,65 +1124,30 @@ export default function ChatPage() {
                   </Link>
                 </div>
               ) : (
-                <>
+                <div className="flex flex-col items-center gap-2 pt-1">
                   {sessionNumber === 3 && (
-                    <p className="text-center text-[11px] text-muted-foreground/40 pb-1">
-                      — Einstiegsphase abgeschlossen —
-                    </p>
+                    <p className="text-[11px] text-muted-foreground/40">— Einstiegsphase abgeschlossen —</p>
                   )}
                   {sessionNumber === 5 && (
-                    <p className="text-center text-[11px] text-muted-foreground/40 pb-1">
-                      — Halbzeit —
-                    </p>
+                    <p className="text-[11px] text-muted-foreground/40">— Halbzeit —</p>
                   )}
-                  <p className="text-center text-xs text-muted-foreground/60">
-                    Session beendet.{" "}
-                    <Link
-                      href="/chat?force_new=true"
-                      className="underline underline-offset-2 hover:text-foreground transition-colors"
-                    >
-                      Neue Session starten
-                    </Link>
-                  </p>
-                  <div className="flex justify-center">
-                    <button
-                      onClick={() => openPrintWindow(buildTranscriptHTML(
-                        messages, sessionNumber,
-                        sessionNumber ? SESSION_NAMES[sessionNumber] ?? null : null,
-                        sessionSummary, preferredName,
-                        learningTopic || sessionSummary?.topics?.[0] || null,
-                      ))}
-                      className="flex items-center gap-1.5 text-[11px] text-muted-foreground/50 hover:text-muted-foreground transition-colors"
-                    >
-                      <Download className="w-3 h-3" />
-                      Gespräch als PDF speichern
-                    </button>
-                  </div>
-                </>
-              )}
-
-              {/* Loading: KAIA notiert — verschwindet wenn Reflexion bereit */}
-              {!sessionSummary && !showSummaryCard && (
-                <p className="text-center text-[11px] text-muted-foreground/50 pt-1">
-                  Ich notiere kurz, was ich aus diesem Gespräch mitnehme.
-                </p>
-              )}
-
-              {/* Button erscheint sobald Reflexion bereit */}
-              {sessionSummary && !showSummaryCard && (
-                <div className="animate-in fade-in slide-in-from-bottom-2 duration-500">
-                  <button
-                    onClick={() => setShowSummaryCard(true)}
-                    className="w-full rounded-xl border border-border bg-muted/40 px-5 py-4 text-left hover:bg-muted hover:border-foreground/20 transition-all group focus:outline-none focus:ring-2 focus:ring-foreground/20"
-                    aria-label="KAIAs Reflexion über diese Session ansehen"
+                  <Link
+                    href="/chat?force_new=true"
+                    className="text-sm text-muted-foreground/70 hover:text-foreground underline underline-offset-2 transition-colors"
                   >
-                    <div className="flex items-center justify-between gap-3">
-                      <div className="space-y-0.5">
-                        <span className="text-sm font-medium text-foreground block">KAIAs Reflexion ansehen</span>
-                        <span className="text-xs text-muted-foreground block">Was KAIA aus diesem Gespräch mitnimmt</span>
-                      </div>
-                      <span className="text-muted-foreground/60 group-hover:text-foreground transition-colors shrink-0 text-base leading-none select-none" aria-hidden="true">→</span>
-                    </div>
+                    Neue Session starten →
+                  </Link>
+                  <button
+                    onClick={() => openPrintWindow(buildTranscriptHTML(
+                      messages, sessionNumber,
+                      sessionNumber ? SESSION_NAMES[sessionNumber] ?? null : null,
+                      sessionSummary, preferredName,
+                      learningTopic || sessionSummary?.topics?.[0] || null,
+                    ))}
+                    className="flex items-center gap-1.5 text-[11px] text-muted-foreground/40 hover:text-muted-foreground transition-colors"
+                  >
+                    <Download className="w-3 h-3" />
+                    Gespräch als PDF speichern
                   </button>
                 </div>
               )}
