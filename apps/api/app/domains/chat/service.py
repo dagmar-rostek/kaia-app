@@ -30,6 +30,7 @@ from app.domains.chat.sse import (
     COST_INPUT_PER_TOKEN,
     COST_OUTPUT_PER_TOKEN,
     MAX_TOKENS,
+    OPENING_MODEL,
     delta,
     done,
     error,
@@ -833,7 +834,10 @@ async def stream_opening(
             cache_creation_tokens,
             cache_read_tokens,
         ) = await _call_llm(
-            system_prompt, [{"role": "user", "content": trigger}], model_override=model_override
+            system_prompt,
+            [{"role": "user", "content": trigger}],
+            max_tokens=600,
+            model_override=OPENING_MODEL,
         )
     except Exception as exc:
         log.error("llm_opening_error", error=str(exc), session_id=session.id)
