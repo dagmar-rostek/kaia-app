@@ -33,8 +33,9 @@ const LLM_ROWS: CostRow[] = [
 
 interface LiveCosts {
   total_eur: number
-  by_model: { model: string; provider: string; input_tokens: number; output_tokens: number; cost_eur: number; sessions: number }[]
-  recent_sessions: { session_number: number; username: string; started_at: string | null; cost_eur: number; input_tokens: number; output_tokens: number }[]
+  by_model: { model: string; provider: string; input_tokens: number; output_tokens: number; cache_creation_tokens: number; cache_read_tokens: number; cost_eur: number; sessions: number }[]
+  recent_sessions: { session_number: number; username: string; started_at: string | null; cost_eur: number; input_tokens: number; output_tokens: number; cache_read_tokens: number }[]
+  by_user: { username: string; sessions: number; input_tokens: number; output_tokens: number; cache_read_tokens: number; cost_eur: number }[]
 }
 
 async function fetchLiveCosts(): Promise<LiveCosts | null> {
@@ -123,41 +124,72 @@ export default async function KostenPage() {
         </div>
       </div>
 
-      {/* Live-Kosten pro Session */}
+      {/* Live-Kosten pro Teilnehmende:r */}
       {live && (
         <section className="space-y-3">
           <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-2">
-            <Activity className="h-4 w-4" /> Live-Inferenzkosten — letzte Sessions
+            <Activity className="h-4 w-4" /> Live-Inferenzkosten — pro Teilnehmende:r
           </h2>
-          {live.recent_sessions.length === 0 ? (
+          {live.by_user.length === 0 ? (
             <p className="text-sm text-muted-foreground px-1">Noch keine Sessions mit Kosten-Tracking.</p>
           ) : (
             <div className="rounded-lg border border-border divide-y divide-border overflow-x-auto">
               <div className="grid grid-cols-5 px-4 py-2 text-xs font-medium text-muted-foreground bg-muted/30">
                 <span>Nutzer</span>
-                <span>Session #</span>
-                <span>Datum</span>
-                <span>Token</span>
-                <span className="text-right">Kosten</span>
+                <span>Sessions</span>
+                <span>Output-Tok</span>
+                <span>Cache gespart</span>
+                <span className="text-right">Gesamt</span>
               </div>
-              {live.recent_sessions.map((s, i) => (
+              {live.by_user.map((u, i) => (
                 <div key={i} className="grid grid-cols-5 px-4 py-2.5 text-sm items-center">
-                  <span className="font-mono text-xs text-muted-foreground">{s.username}</span>
-                  <span>#{s.session_number}</span>
-                  <span className="text-xs text-muted-foreground tabular-nums">
-                    {s.started_at
-                      ? new Date(s.started_at).toLocaleString("de-DE", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" })
-                      : "—"}
-                  </span>
-                  <span className="text-xs text-muted-foreground">
-                    {((s.input_tokens + s.output_tokens) / 1000).toFixed(1)}k
-                  </span>
+                  <span className="font-mono text-xs">{u.username}</span>
+                  <span className="text-xs text-muted-foreground">{u.sessions}/10</span>
+                  <span className="text-xs text-muted-foreground tabular-nums">{(u.output_tokens / 1000).toFixed(1)}k</span>
+                  <span className="text-xs text-muted-foreground tabular-nums">{(u.cache_read_tokens / 1000).toFixed(1)}k</span>
                   <span className="text-right">
-                    <CentBadge amount={Number(s.cost_eur)} />
+                    <CentBadge amount={Number(u.cost_eur)} />
                   </span>
                 </div>
               ))}
             </div>
+          )}
+
+          {/* Pro Session */}
+          {live.recent_sessions.length > 0 && (
+            <details className="group">
+              <summary className="text-xs text-muted-foreground cursor-pointer hover:text-foreground transition-colors px-1 py-1 list-none flex items-center gap-1">
+                <span className="group-open:hidden">▶</span>
+                <span className="hidden group-open:inline">▼</span>
+                Letzte Sessions im Detail
+              </summary>
+              <div className="mt-2 rounded-lg border border-border divide-y divide-border overflow-x-auto">
+                <div className="grid grid-cols-5 px-4 py-2 text-xs font-medium text-muted-foreground bg-muted/30">
+                  <span>Nutzer</span>
+                  <span>Session #</span>
+                  <span>Datum</span>
+                  <span>Token</span>
+                  <span className="text-right">Kosten</span>
+                </div>
+                {live.recent_sessions.map((s, i) => (
+                  <div key={i} className="grid grid-cols-5 px-4 py-2.5 text-sm items-center">
+                    <span className="font-mono text-xs text-muted-foreground">{s.username}</span>
+                    <span>#{s.session_number}</span>
+                    <span className="text-xs text-muted-foreground tabular-nums">
+                      {s.started_at
+                        ? new Date(s.started_at).toLocaleString("de-DE", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" })
+                        : "—"}
+                    </span>
+                    <span className="text-xs text-muted-foreground">
+                      {((s.input_tokens + s.output_tokens) / 1000).toFixed(1)}k
+                    </span>
+                    <span className="text-right">
+                      <CentBadge amount={Number(s.cost_eur)} />
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </details>
           )}
 
           {live.by_model.length > 0 && (
@@ -168,7 +200,8 @@ export default async function KostenPage() {
                   <div>
                     <p className="text-sm font-mono">{m.model}</p>
                     <p className="text-xs text-muted-foreground">
-                      {m.sessions} Sessions · {((m.input_tokens + m.output_tokens) / 1000).toFixed(1)}k Token gesamt
+                      {m.sessions} Sessions · {((m.input_tokens + m.output_tokens) / 1000).toFixed(1)}k Token
+                      {m.cache_read_tokens > 0 && ` · ${(m.cache_read_tokens / 1000).toFixed(1)}k Cache-Hits`}
                     </p>
                   </div>
                   <CentBadge amount={Number(m.cost_eur)} />
@@ -272,9 +305,10 @@ export default async function KostenPage() {
         <div className="rounded-lg border border-amber-500/20 bg-amber-500/5 p-4 space-y-1">
           <p className="text-sm font-medium text-amber-600 dark:text-amber-400">Kostenabschätzung für die Studie</p>
           <p className="text-xs text-muted-foreground">
-            Bei ~30 Teilnehmern × ~5 Chat-Sessions × ~20 Nachrichten × ~500 Token/Nachricht ≈ 1.5M Output-Token.
-            Mit claude-sonnet-4-6: ca. <strong className="text-foreground">$22</strong> Inferenz gesamt.
-            Infrastruktur bleibt konstant. Gesamtkosten Studie geschätzt: <strong className="text-foreground">€50–80</strong>.
+            20 Teilnehmende × 10 Sessions × ~18 Turns/Session × ~950 Output-Tok/Turn (inkl. Thinking-Block) ≈ 3.4M Output-Token.
+            Bei $15/MTok Output + ~$0.08 Input/Session = ca. <strong className="text-foreground">$4–5/Person</strong>,
+            Studie gesamt: ca. <strong className="text-foreground">$80–100</strong>.
+            Cache-Hits senken Input-Kosten erheblich (Sys-Prompt ~8k Tok, 90% als Cache-Read à $0.30/MTok).
           </p>
         </div>
       </section>

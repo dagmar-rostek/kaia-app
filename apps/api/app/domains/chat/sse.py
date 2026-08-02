@@ -16,15 +16,22 @@ from app.core.config import settings
 MAX_TOKENS = 3000  # final_answer (~300) + reasoning buffer; valid for Sonnet and Haiku
 
 _COST_TABLE: dict[str, tuple[Decimal, Decimal]] = {
-    # (input_per_token_eur, output_per_token_eur)
-    "claude-sonnet-5": (Decimal("0.0000018"), Decimal("0.0000092")),
-    "claude-sonnet-4-6": (Decimal("0.0000027"), Decimal("0.000013")),
+    # (input_per_token_eur, output_per_token_eur) — prices in EUR, converted at ~1.08 USD/EUR
+    # Cache write = 1.25× input, cache read = 0.10× input (Anthropic standard)
+    # claude-sonnet-4-6: $3/MTok input, $15/MTok output, $3.75 cache write, $0.30 cache read
+    "claude-sonnet-4-6": (Decimal("0.000002778"), Decimal("0.000013889")),
+    # claude-sonnet-5: $3/MTok input, $15/MTok output (same tier as 4.6)
+    "claude-sonnet-5": (Decimal("0.000002778"), Decimal("0.000013889")),
+    # claude-haiku-4-5: $0.80/MTok input, $4/MTok output
     "claude-haiku-4-5-20251001": (Decimal("0.00000074"), Decimal("0.0000037")),
-    "gpt-4o": (Decimal("0.0000022"), Decimal("0.0000088")),
+    # gpt-4o: $2.50/MTok input, $10/MTok output
+    "gpt-4o": (Decimal("0.0000023"), Decimal("0.0000093")),
     "gpt-4o-mini": (Decimal("0.00000013"), Decimal("0.00000053")),
     "gpt-5.6-terra": (Decimal("0.0000023"), Decimal("0.0000092")),
+    # gpt-4.1-mini: $0.40/MTok input, $1.60/MTok output
     "gpt-4.1-mini": (Decimal("0.00000037"), Decimal("0.0000015")),
-    "mistral-large-latest": (Decimal("0.0000026"), Decimal("0.0000078")),
+    # mistral-large: €2/MTok input, €6/MTok output
+    "mistral-large-latest": (Decimal("0.000002"), Decimal("0.000006")),
     "mistral-small-latest": (Decimal("0.00000074"), Decimal("0.0000022")),
 }
 

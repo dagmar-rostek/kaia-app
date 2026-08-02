@@ -216,6 +216,8 @@ async def get_costs(db: Annotated[AsyncSession, Depends(get_db)]) -> dict[str, A
             "SELECT model, provider, "
             "SUM(input_tokens) AS input_tokens, "
             "SUM(output_tokens) AS output_tokens, "
+            "SUM(cache_creation_tokens) AS cache_creation_tokens, "
+            "SUM(cache_read_tokens) AS cache_read_tokens, "
             "SUM(cost_eur) AS cost_eur, "
             "COUNT(DISTINCT session_id) AS sessions "
             "FROM llm_usage GROUP BY model, provider ORDER BY cost_eur DESC"
@@ -231,7 +233,8 @@ async def get_costs(db: Annotated[AsyncSession, Depends(get_db)]) -> dict[str, A
             "SELECT s.session_number, u.username, s.started_at, "
             "SUM(l.cost_eur) AS cost_eur, "
             "SUM(l.input_tokens) AS input_tokens, "
-            "SUM(l.output_tokens) AS output_tokens "
+            "SUM(l.output_tokens) AS output_tokens, "
+            "SUM(l.cache_read_tokens) AS cache_read_tokens "
             "FROM llm_usage l "
             "JOIN chat_sessions s ON s.id = l.session_id "
             "JOIN users u ON u.id = l.user_id "
@@ -241,7 +244,28 @@ async def get_costs(db: Annotated[AsyncSession, Depends(get_db)]) -> dict[str, A
     )
     sessions = [dict(r._mapping) for r in per_session]
 
-    return {"total_eur": total_eur, "by_model": by_model, "recent_sessions": sessions}
+    per_user = await db.execute(
+        text(
+            "SELECT u.username, "
+            "COUNT(DISTINCT l.session_id) AS sessions, "
+            "SUM(l.input_tokens) AS input_tokens, "
+            "SUM(l.output_tokens) AS output_tokens, "
+            "SUM(l.cache_read_tokens) AS cache_read_tokens, "
+            "SUM(l.cost_eur) AS cost_eur "
+            "FROM llm_usage l "
+            "JOIN users u ON u.id = l.user_id "
+            "GROUP BY u.id, u.username "
+            "ORDER BY cost_eur DESC"
+        )
+    )
+    by_user = [dict(r._mapping) for r in per_user]
+
+    return {
+        "total_eur": total_eur,
+        "by_model": by_model,
+        "recent_sessions": sessions,
+        "by_user": by_user,
+    }
 
 
 @router.post("/study-start-mail", status_code=200)

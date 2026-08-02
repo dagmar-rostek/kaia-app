@@ -681,9 +681,14 @@ async def _build_system_prompt(
         if session.session_number >= 6:
             historical_quotes = await load_historical_quotes(db, session.user_id, session.id)
 
-    mission, dominant_type, forbidden_types, few_shots, session_tone, memory_horizon = (
-        _session_mission_block(session.session_number)
-    )
+    (
+        mission,
+        dominant_type,
+        forbidden_types,
+        few_shots,
+        session_tone,
+        memory_horizon,
+    ) = _session_mission_block(session.session_number)
     ctx = PromptContext(
         user_name=user_name,
         preferred_name=preferred_name,
@@ -981,8 +986,8 @@ async def _log_usage(
     await db.execute(
         __import__("sqlalchemy").text(
             "INSERT INTO llm_usage (session_id, user_id, provider, model, "
-            "input_tokens, output_tokens, cost_eur) "
-            "VALUES (:sid, :uid, :provider, :model, :inp, :out, :cost)"
+            "input_tokens, output_tokens, cache_creation_tokens, cache_read_tokens, cost_eur) "
+            "VALUES (:sid, :uid, :provider, :model, :inp, :out, :cc, :cr, :cost)"
         ),
         {
             "sid": session.id,
@@ -991,6 +996,8 @@ async def _log_usage(
             "model": get_model(),
             "inp": input_tokens,
             "out": output_tokens,
+            "cc": cache_creation_tokens,
+            "cr": cache_read_tokens,
             "cost": float(cost),
         },
     )
