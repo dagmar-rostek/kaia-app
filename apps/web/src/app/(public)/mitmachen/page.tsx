@@ -474,7 +474,7 @@ export default function MitmachenPage() {
           <TrustItem
             icon={Shield}
             title="DSGVO-konform"
-            desc="Profilinformationen und Messdaten liegen auf einem Hetzner-Server in Helsinki (EU). Chat-Inhalte werden zur KI-Verarbeitung an Anthropic, OpenAI oder Mistral übermittelt — auf Basis von EU-Standardvertragsklauseln (SCCs)."
+            desc="Profilinformationen und Messdaten liegen auf einem Hetzner-Server in Helsinki (EU). Chat-Inhalte werden zur KI-Verarbeitung an OpenAI (GPT-4.1-mini) übermittelt; die interne Gesprächsanalyse nach jeder Session erfolgt über Anthropic (Claude Haiku). Beide Dienste auf Basis von EU-Standardvertragsklauseln (SCCs)."
           />
           <TrustItem
             icon={CheckCircle2}

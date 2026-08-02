@@ -118,15 +118,18 @@ export default function DatenschutzPage() {
           Hostingdaten).
         </p>
         <p>
-          <strong className="text-foreground">LLM-Anbieter:</strong> Für die KI-Verarbeitung
-          werden Sprachmodelle von Anthropic (Claude) und OpenAI (GPT-4o) eingesetzt.
-          Chat-Inhalte werden an diese Dienste übermittelt. Die Nutzung erfolgt nur mit
-          abgeschlossenen Auftragsverarbeitungsverträgen (Data Processing Agreements, DPAs),
-          die beide Anbieter abgeschlossen haben.
+          <strong className="text-foreground">LLM-Anbieter:</strong> Für die KI-gestützte
+          Gesprächsführung wird <strong className="text-foreground">OpenAI (GPT-4.1-mini)</strong> eingesetzt.
+          Chat-Gespräche werden zur Antwortgenerierung an OpenAI übermittelt. Für die automatische
+          Gesprächsanalyse nach jeder Session (interne Session-Zusammenfassung) wird zusätzlich
+          <strong className="text-foreground"> Anthropic (Claude Haiku)</strong> als
+          Auftragsverarbeiter genutzt; diese Verarbeitung erfolgt im Hintergrund und ist für
+          Teilnehmende nicht direkt sichtbar. Die Nutzung beider Dienste erfolgt ausschließlich
+          mit abgeschlossenen Auftragsverarbeitungsverträgen (Data Processing Agreements, DPAs).
         </p>
         <div className="rounded-lg border border-amber-500/30 bg-amber-500/5 p-3 text-xs">
           <p className="font-medium text-amber-700 dark:text-amber-400">Hinweis zu US-Anbietern (Schrems II)</p>
-          <p className="mt-1">Anthropic und OpenAI haben ihren Sitz in den USA. Die Übermittlung
+          <p className="mt-1">OpenAI und Anthropic haben ihren Sitz in den USA. Die Übermittlung
           von Chat-Inhalten in die USA erfolgt auf Basis von Standardvertragsklauseln (SCCs)
           gemäß Art. 46 Abs. 2 lit. c DSGVO. Auf diesen Umstand wird in der
           Teilnahmevereinbarung explizit hingewiesen. Teilnehmende können der Verarbeitung
