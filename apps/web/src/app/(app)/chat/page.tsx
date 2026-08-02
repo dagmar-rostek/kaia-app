@@ -96,46 +96,73 @@ async function readSSEStream(
 
 // ── Transcript download ───────────────────────────────────────────────────────
 
-function buildTranscriptMarkdown(
+function esc(s: string): string {
+  return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;")
+}
+
+function buildTranscriptHTML(
   messages: ChatMessage[],
   sessionNumber: number | null,
   sessionName: string | null,
   summary: SessionSummary | null,
+  participantName: string | null,
+  topic: string | null,
 ): string {
   const date = new Date().toLocaleDateString("de-DE", { dateStyle: "long" })
-  const heading = [
-    "# KAIA Gesprächsprotokoll",
-    sessionNumber ? `Session ${sessionNumber}` : null,
-    sessionName ? `— ${sessionName}` : null,
-  ].filter(Boolean).join(" ")
+  const sessionLabel = [sessionNumber ? `Session ${sessionNumber}` : null, sessionName].filter(Boolean).join(" · ")
+  const pageTitle = ["KAIA", sessionLabel, topic, participantName, date].filter(Boolean).join(" — ")
 
-  const lines: string[] = [heading, `*${date}*`, "", "---", "", "## Gesprächsverlauf", ""]
+  let html = `<!doctype html><html lang="de"><head><meta charset="utf-8"><title>${esc(pageTitle)}</title><style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,'Times New Roman',serif;font-size:12pt;line-height:1.72;color:#111;max-width:660px;margin:0 auto;padding:36px 20px}
+header{border-bottom:2px solid #111;padding-bottom:14px;margin-bottom:28px}
+header h1{font-size:13pt;font-weight:700;letter-spacing:.02em}
+header .meta{font-size:9.5pt;color:#666;margin-top:5px}
+h2{font-size:9.5pt;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#666;margin:28px 0 14px;border-top:1px solid #ddd;padding-top:14px}
+.msg{margin-bottom:14px}
+.lbl{font-size:8.5pt;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#aaa;margin-bottom:2px}
+.lbl.k{color:#2563eb}
+.txt{font-size:11pt;line-height:1.65}
+.ri{margin-bottom:12px}
+.rl{font-size:8.5pt;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#999;margin-bottom:2px}
+.rv{font-size:11pt}
+.quote{border-left:3px solid #2563eb;padding-left:12px;font-style:italic;color:#444;margin:3px 0}
+.next{background:#f0f5ff;border-radius:5px;padding:10px 14px;margin-top:6px}
+footer{margin-top:44px;padding-top:10px;border-top:1px solid #eee;font-size:8.5pt;color:#bbb}
+@media print{body{padding:0}@page{margin:18mm 16mm}}
+</style></head><body>
+<header><h1>${esc(pageTitle.replace(` — ${date}`, ""))}</h1><div class="meta">${esc(date)}</div></header>
+<h2>Gesprächsverlauf</h2>\n`
+
   for (const msg of messages) {
     if (msg.streaming) continue
-    lines.push(`**${msg.role === "user" ? "Du" : "KAIA"}:** ${msg.content}`, "")
+    const isKaia = msg.role === "assistant"
+    const content = esc(msg.content).replace(/\n/g, "<br>")
+    html += `<div class="msg"><div class="lbl${isKaia ? " k" : ""}">${isKaia ? "KAIA" : "Du"}</div><div class="txt">${content}</div></div>\n`
   }
 
   if (summary) {
-    lines.push("---", "", "## KAIAs Reflexion", "")
-    if (summary.mood) lines.push(`**Stimmung:** ${summary.mood}`, "")
-    if (summary.topics.length > 0) lines.push(`**Themen:** ${summary.topics.join(" · ")}`, "")
-    if (summary.strengths_observed) lines.push(`**Was KAIA beobachtet hat:** ${summary.strengths_observed}`, "")
-    if (summary.strongest_quote) lines.push(`**Dein stärkster Moment:**`, `> "${summary.strongest_quote}"`, "")
-    if (summary.first_step) lines.push(`**Nächster Schritt:** ${summary.first_step}`, "")
-    if (summary.friction_points) lines.push(`**Wo es hakte:** ${summary.friction_points}`, "")
-    if (summary.insight_for_next_session) lines.push(`**Für die nächste Session:** ${summary.insight_for_next_session}`, "")
+    html += `<h2>KAIAs Reflexion</h2>\n`
+    if (summary.mood) html += `<div class="ri"><div class="rl">Stimmung</div><div class="rv">${esc(summary.mood)}</div></div>\n`
+    if (summary.topics.length > 0) html += `<div class="ri"><div class="rl">Themen</div><div class="rv">${summary.topics.map(esc).join(" · ")}</div></div>\n`
+    if (summary.strengths_observed) html += `<div class="ri"><div class="rl">Was KAIA beobachtet hat</div><div class="rv">${esc(summary.strengths_observed)}</div></div>\n`
+    if (summary.strongest_quote) html += `<div class="ri"><div class="rl">Dein stärkster Moment</div><div class="rv"><div class="quote">&ldquo;${esc(summary.strongest_quote)}&rdquo;</div></div></div>\n`
+    if (summary.first_step) html += `<div class="ri"><div class="rl">Nächster Schritt</div><div class="rv">${esc(summary.first_step)}</div></div>\n`
+    if (summary.friction_points) html += `<div class="ri"><div class="rl">Wo es hakte</div><div class="rv">${esc(summary.friction_points)}</div></div>\n`
+    if (summary.insight_for_next_session) html += `<div class="ri next"><div class="rl">Für die nächste Session</div><div class="rv"><em>${esc(summary.insight_for_next_session)}</em></div></div>\n`
   }
-  return lines.join("\n")
+
+  html += `<footer>Erstellt mit KAIA · kaia.rostek-dagmar.eu</footer></body></html>`
+  return html
 }
 
-function triggerDownload(content: string, filename: string): void {
-  const blob = new Blob([content], { type: "text/markdown; charset=utf-8" })
-  const url = URL.createObjectURL(blob)
-  const a = document.createElement("a")
-  a.href = url
-  a.download = filename
-  a.click()
-  URL.revokeObjectURL(url)
+function openPrintWindow(html: string): void {
+  const w = window.open("", "_blank", "width=820,height=1000")
+  if (!w) { alert("Bitte erlaube Pop-ups für diese Seite, um das PDF zu öffnen."); return }
+  w.document.write(html)
+  w.document.close()
+  w.focus()
+  setTimeout(() => w.print(), 500)
 }
 
 // ── Chat page ─────────────────────────────────────────────────────────────────
@@ -221,6 +248,7 @@ export default function ChatPage() {
   // Daily limit
   const [dailyLimitMsg,  setDailyLimitMsg]  = useState<string | null>(null)
   const [nextAvailableAt, setNextAvailableAt] = useState<string | null>(null)
+  const [thinkingElapsed, setThinkingElapsed] = useState(0)
   // Derived: show banner only when no user message sent yet AND not manually dismissed
   const showDayBanner = !bannerDismissed && !messages.some(m => m.role === "user")
 
@@ -547,6 +575,14 @@ export default function ChatPage() {
   }, [sessionId])
 
   // Poll for session summary after session ends — retry at 5s, 15s, 30s
+  // Count seconds while KAIA is thinking (streaming msg with no content yet)
+  useEffect(() => {
+    const isThinking = messages.some(m => m.streaming && !m.content)
+    if (!isThinking) { setThinkingElapsed(0); return }
+    const interval = setInterval(() => setThinkingElapsed(s => s + 1), 1000)
+    return () => { clearInterval(interval); setThinkingElapsed(0) }
+  }, [messages])
+
   // Haiku extraction runs as background task and may take >5s to complete
   useEffect(() => {
     if (closureState !== "ended" || !sessionId) return
@@ -990,11 +1026,23 @@ export default function ChatPage() {
                     : "bg-muted text-foreground rounded-bl-sm"
               }`}>
                 {msg.content || (msg.streaming && (
-                  <span className="inline-flex gap-1 items-center h-4">
-                    <span className="w-1.5 h-1.5 rounded-full bg-current animate-bounce" style={{ animationDelay: "0ms" }} />
-                    <span className="w-1.5 h-1.5 rounded-full bg-current animate-bounce" style={{ animationDelay: "150ms" }} />
-                    <span className="w-1.5 h-1.5 rounded-full bg-current animate-bounce" style={{ animationDelay: "300ms" }} />
-                  </span>
+                  <div>
+                    <span className="inline-flex gap-1 items-center h-4">
+                      <span className="w-1.5 h-1.5 rounded-full bg-current animate-bounce" style={{ animationDelay: "0ms" }} />
+                      <span className="w-1.5 h-1.5 rounded-full bg-current animate-bounce" style={{ animationDelay: "150ms" }} />
+                      <span className="w-1.5 h-1.5 rounded-full bg-current animate-bounce" style={{ animationDelay: "300ms" }} />
+                    </span>
+                    {thinkingElapsed >= 5 && (
+                      <p className="text-xs text-muted-foreground/70 leading-relaxed mt-1.5">
+                        KAIA denkt nach…
+                      </p>
+                    )}
+                    {thinkingElapsed >= 10 && sessionNumber === 7 && (
+                      <p className="text-xs text-muted-foreground/60 leading-relaxed mt-0.5">
+                        Diese Session braucht mehr Nachdenken als andere — das ist so geplant.
+                      </p>
+                    )}
+                  </div>
                 ))}
               </div>
             </div>
@@ -1062,14 +1110,16 @@ export default function ChatPage() {
                   </p>
                   <div className="flex justify-center">
                     <button
-                      onClick={() => triggerDownload(
-                        buildTranscriptMarkdown(messages, sessionNumber, sessionNumber ? SESSION_NAMES[sessionNumber] ?? null : null, sessionSummary),
-                        `kaia-session-${sessionNumber ?? 1}.md`,
-                      )}
+                      onClick={() => openPrintWindow(buildTranscriptHTML(
+                        messages, sessionNumber,
+                        sessionNumber ? SESSION_NAMES[sessionNumber] ?? null : null,
+                        sessionSummary, preferredName,
+                        learningTopic || sessionSummary?.topics?.[0] ?? null,
+                      ))}
                       className="flex items-center gap-1.5 text-[11px] text-muted-foreground/50 hover:text-muted-foreground transition-colors"
                     >
                       <Download className="w-3 h-3" />
-                      Gespräch herunterladen
+                      Gespräch als PDF speichern
                     </button>
                   </div>
                 </>
@@ -1084,12 +1134,19 @@ export default function ChatPage() {
 
               {/* Button erscheint sobald Reflexion bereit */}
               {sessionSummary && !showSummaryCard && (
-                <div className="flex justify-center pt-1">
+                <div className="animate-in fade-in slide-in-from-bottom-2 duration-500">
                   <button
                     onClick={() => setShowSummaryCard(true)}
-                    className="text-xs px-4 py-2 rounded-xl border border-border/60 text-muted-foreground hover:text-foreground hover:border-foreground/30 transition-colors"
+                    className="w-full rounded-xl border border-border bg-muted/40 px-5 py-4 text-left hover:bg-muted hover:border-foreground/20 transition-all group focus:outline-none focus:ring-2 focus:ring-foreground/20"
+                    aria-label="KAIAs Reflexion über diese Session ansehen"
                   >
-                    KAIAs Reflexion ansehen
+                    <div className="flex items-center justify-between gap-3">
+                      <div className="space-y-0.5">
+                        <span className="text-sm font-medium text-foreground block">KAIAs Reflexion ansehen</span>
+                        <span className="text-xs text-muted-foreground block">Was KAIA aus diesem Gespräch mitnimmt</span>
+                      </div>
+                      <span className="text-muted-foreground/60 group-hover:text-foreground transition-colors shrink-0 text-base leading-none select-none" aria-hidden="true">→</span>
+                    </div>
                   </button>
                 </div>
               )}
@@ -1164,14 +1221,16 @@ export default function ChatPage() {
 
                   <div className="flex justify-end border-t border-border/40 pt-3">
                     <button
-                      onClick={() => triggerDownload(
-                        buildTranscriptMarkdown(messages, sessionNumber, sessionNumber ? SESSION_NAMES[sessionNumber] ?? null : null, sessionSummary),
-                        `kaia-session-${sessionNumber ?? 1}.md`,
-                      )}
+                      onClick={() => openPrintWindow(buildTranscriptHTML(
+                        messages, sessionNumber,
+                        sessionNumber ? SESSION_NAMES[sessionNumber] ?? null : null,
+                        sessionSummary, preferredName,
+                        learningTopic || sessionSummary?.topics?.[0] ?? null,
+                      ))}
                       className="flex items-center gap-1.5 text-[11px] text-muted-foreground/60 hover:text-muted-foreground transition-colors"
                     >
                       <Download className="w-3 h-3" />
-                      Gespräch herunterladen
+                      Gespräch als PDF speichern
                     </button>
                   </div>
                 </div>
