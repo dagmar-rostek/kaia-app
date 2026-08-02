@@ -588,7 +588,7 @@ export default function ChatPage() {
   useEffect(() => {
     if (closureState !== "ended" || !sessionId) return
     const sid = sessionId
-    const timers = [5000, 15000, 30000].map(delay =>
+    const timers = [2000, 4000, 8000, 15000, 30000].map(delay =>
       setTimeout(async () => {
         try {
           const res = await authFetch(`${API_BASE}/api/v1/chat/sessions/${sid}/summary`)

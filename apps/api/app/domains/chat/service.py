@@ -520,26 +520,34 @@ def _build_opening_trigger(
         )
 
     # Memory anchor: KAIA kennt den Schritt, öffnet aber mit offener Retrieval-Frage (Psychologe-Prinzip)
+    _no_time = (
+        "Wichtig: Keine Zeitangaben ('letzte Woche', 'gestern', 'neulich', 'heute') "
+        "— du weisst nicht wie lange die letzte Session her ist."
+    )
     if last_first_step:
         anchor = (
             f"Du weisst: der letzte vereinbarte Schritt war '{last_first_step}'. "
             f"Oeffne NICHT damit — stelle zuerst eine offene Frage was seit dem letzten Gespraech passiert ist. "
-            f"Greife den Schritt erst auf nachdem die Person geantwortet hat."
+            f"Greife den Schritt erst auf nachdem die Person geantwortet hat. "
+            f"{_no_time}"
         )
     elif insight_for_next_session:
         anchor = (
             f"Aus der letzten Session traegst du mit: '{insight_for_next_session}'. "
-            f"Formuliere als eigene Beobachtung oder Frage — kein 'In der letzten Session hast du gesagt...'."
+            f"Formuliere als eigene Beobachtung oder Frage — kein 'In der letzten Session hast du gesagt...'. "
+            f"{_no_time}"
         )
     elif last_session_observation:
         anchor = (
             f"Deine Beobachtung aus dem letzten Gespraech: '{last_session_observation}'. "
-            f"Nutze sie als natuerlichen Einstieg ohne sie als 'Beobachtung' zu bezeichnen."
+            f"Nutze sie als natuerlichen Einstieg ohne sie als 'Beobachtung' zu bezeichnen. "
+            f"{_no_time}"
         )
     else:
         anchor = (
             "Kein spezifisches Memory aus der letzten Session vorhanden. "
-            "Steige offen ein: 'Was ist dir seit unserem letzten Gespraeach durch den Kopf gegangen?'"
+            f"Steige offen ein: 'Was ist dir seit unserem letzten Gespraeach durch den Kopf gegangen?' "
+            f"{_no_time}"
         )
 
     if session_number == 6:
