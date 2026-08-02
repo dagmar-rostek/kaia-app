@@ -12,11 +12,13 @@ load_previous_session_fields — returns the three scalar fields (first_step,
 
 import json
 import re
+import traceback
 
 import httpx
 import structlog
 from anthropic import AsyncAnthropic
 from anthropic.types import TextBlock
+from openai import AsyncOpenAI
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -27,6 +29,7 @@ from app.domains.chat.repository import ChatRepository
 log = structlog.get_logger()
 
 _EXTRACTION_MODEL = "claude-haiku-4-5-20251001"
+_EXTRACTION_MODEL_FALLBACK = "gpt-4.1-mini"
 _EXTRACTION_SYSTEM = (
     "Du bist ein Analyse-Assistent fuer KAIA, einen KI-Lernbegleiter.\n"
     "Nach jeder Lernsession extrahierst du strukturierte Informationen"
@@ -55,53 +58,122 @@ _EXTRACTION_SYSTEM = (
 )
 
 
+def _strip_fences(raw: str) -> str:
+    """Remove markdown code fences that some models add despite instructions."""
+    if raw.startswith("```"):
+        raw = re.sub(r"^```(?:json)?\s*\n?", "", raw)
+        raw = re.sub(r"\n?```\s*$", "", raw).strip()
+    return raw
+
+
+async def _extract_via_anthropic(transcript: str) -> str:
+    """Call Claude Haiku and return raw JSON string. Raises on any error."""
+    client = AsyncAnthropic(
+        api_key=settings.anthropic_api_key,
+        timeout=httpx.Timeout(connect=10.0, read=60.0, write=10.0, pool=5.0),
+    )
+    response = await client.messages.create(
+        model=_EXTRACTION_MODEL,
+        max_tokens=600,
+        system=_EXTRACTION_SYSTEM,
+        messages=[{"role": "user", "content": f"Transkript:\n\n{transcript}"}],
+    )
+    block = response.content[0]
+    if not isinstance(block, TextBlock):
+        raise ValueError(f"unexpected block type: {type(block).__name__}")
+    return _strip_fences(block.text.strip())
+
+
+async def _extract_via_openai(transcript: str) -> str:
+    """Call GPT-4.1-mini and return raw JSON string. Raises on any error."""
+    client = AsyncOpenAI(
+        api_key=settings.openai_api_key,
+        timeout=httpx.Timeout(connect=10.0, read=60.0, write=10.0, pool=5.0),
+    )
+    response = await client.chat.completions.create(
+        model=_EXTRACTION_MODEL_FALLBACK,
+        max_tokens=600,
+        messages=[
+            {"role": "system", "content": _EXTRACTION_SYSTEM},
+            {"role": "user", "content": f"Transkript:\n\n{transcript}"},
+        ],
+    )
+    raw = (response.choices[0].message.content or "").strip()
+    return _strip_fences(raw)
+
+
 async def extract_session_summary(session_id: int) -> None:
     """Post-session extractor: analyse transcript → write JSON to session_summary.
 
     Called as a background task after end_session. Creates its own DB session
     because the request-scoped session will be closed by then.
+    Tries Claude Haiku first; falls back to GPT-4.1-mini if Anthropic fails.
     """
     from app.db.session import AsyncSessionLocal
 
-    async with AsyncSessionLocal() as db:
-        repo = ChatRepository(db)
-        result = await db.execute(select(ChatSession).where(ChatSession.id == session_id))
-        session = result.scalar_one_or_none()
-        if not session:
-            return
+    try:
+        async with AsyncSessionLocal() as db:
+            repo = ChatRepository(db)
+            result = await db.execute(select(ChatSession).where(ChatSession.id == session_id))
+            session = result.scalar_one_or_none()
+            if not session:
+                log.warning("session_summary_session_not_found", session_id=session_id)
+                return
 
-        messages = await repo.get_messages(session_id)
-        if not messages:
-            return
+            messages = await repo.get_messages(session_id)
+            if not messages:
+                log.warning("session_summary_no_messages", session_id=session_id)
+                return
 
-        lines = [f"{'User' if str(m.role) == 'user' else 'KAIA'}: {m.content}" for m in messages]
-        transcript = "\n".join(lines)
+            lines = [
+                f"{'User' if str(m.role) == 'user' else 'KAIA'}: {m.content}" for m in messages
+            ]
+            transcript = "\n".join(lines)
 
-        client = AsyncAnthropic(
-            api_key=settings.anthropic_api_key,
-            timeout=httpx.Timeout(connect=10.0, read=60.0, write=10.0, pool=5.0),
-        )
-        try:
-            response = await client.messages.create(
-                model=_EXTRACTION_MODEL,
-                max_tokens=600,
-                system=_EXTRACTION_SYSTEM,
-                messages=[{"role": "user", "content": f"Transkript:\n\n{transcript}"}],
-            )
-            block = response.content[0]
-            if not isinstance(block, TextBlock):
-                raise ValueError(f"unexpected block type: {type(block).__name__}")
-            raw_json = block.text.strip()
-            # Strip markdown fences Haiku sometimes adds despite instructions
-            if raw_json.startswith("```"):
-                raw_json = re.sub(r"^```(?:json)?\s*\n?", "", raw_json)
-                raw_json = re.sub(r"\n?```\s*$", "", raw_json).strip()
-            json.loads(raw_json)  # validate
+            raw_json: str | None = None
+
+            # Primary: Claude Haiku
+            if settings.anthropic_api_key:
+                try:
+                    raw_json = await _extract_via_anthropic(transcript)
+                    log.info("session_summary_extracted_via_anthropic", session_id=session_id)
+                except Exception as exc:
+                    log.warning(
+                        "session_summary_anthropic_failed",
+                        session_id=session_id,
+                        error=str(exc),
+                        tb=traceback.format_exc(),
+                    )
+
+            # Fallback: GPT-4.1-mini
+            if raw_json is None and settings.openai_api_key:
+                try:
+                    raw_json = await _extract_via_openai(transcript)
+                    log.info("session_summary_extracted_via_openai_fallback", session_id=session_id)
+                except Exception as exc:
+                    log.warning(
+                        "session_summary_openai_fallback_failed",
+                        session_id=session_id,
+                        error=str(exc),
+                        tb=traceback.format_exc(),
+                    )
+
+            if raw_json is None:
+                log.error("session_summary_all_providers_failed", session_id=session_id)
+                return
+
+            json.loads(raw_json)  # validate — raises if malformed
             session.session_summary = raw_json
             await db.commit()
-            log.info("session_summary_extracted", session_id=session_id)
-        except Exception as exc:
-            log.error("session_summary_extraction_failed", session_id=session_id, error=str(exc))
+            log.info("session_summary_saved", session_id=session_id)
+
+    except Exception as exc:
+        log.error(
+            "session_summary_extraction_failed",
+            session_id=session_id,
+            error=str(exc),
+            tb=traceback.format_exc(),
+        )
 
 
 async def load_all_session_contexts(
