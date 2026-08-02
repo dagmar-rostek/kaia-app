@@ -895,7 +895,7 @@ async def stream_closing(
             cache_creation_tokens,
             cache_read_tokens,
         ) = await _call_llm(
-            system_prompt, api_messages, max_tokens=300, model_override=model_override
+            system_prompt, api_messages, max_tokens=600, model_override=model_override
         )
     except Exception as exc:
         log.error("llm_closing_error", error=str(exc), session_id=session.id)

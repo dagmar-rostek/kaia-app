@@ -230,6 +230,7 @@ export default function ChatPage() {
   const [showReportModal,  setShowReportModal]  = useState(false)
   const [sessionSummary,   setSessionSummary]   = useState<SessionSummary | null>(null)
   const [showSummaryCard,  setShowSummaryCard]  = useState(false)
+  const [summaryTimedOut,  setSummaryTimedOut]  = useState(false)
 
   // Name collection — first-time ask before session 1
   const [preferredName,  setPreferredName]  = useState<string | null>(null)
@@ -589,15 +590,20 @@ export default function ChatPage() {
   useEffect(() => {
     if (closureState !== "ended" || !sessionId) return
     const sid = sessionId
-    const timers = [2000, 4000, 8000, 15000, 30000].map(delay =>
+    const delays = [2000, 4000, 8000, 15000, 30000]
+    let resolved = false
+    const timers = delays.map((delay, i) =>
       setTimeout(async () => {
+        if (resolved) return
         try {
           const res = await authFetch(`${API_BASE}/api/v1/chat/sessions/${sid}/summary`)
           if (res.ok) {
             const data = await res.json() as SessionSummary
-            if (data.ready) setSessionSummary(data)
+            if (data.ready) { resolved = true; setSessionSummary(data) }
           }
         } catch { /* best-effort */ }
+        // Last poll fired without result — stop showing spinner
+        if (i === delays.length - 1 && !resolved) setSummaryTimedOut(true)
       }, delay)
     )
     return () => timers.forEach(clearTimeout)
@@ -1079,7 +1085,7 @@ export default function ChatPage() {
               {/* ── 1. REFLEXION — immer zuerst und prominent ── */}
 
               {/* Loading: Platzhalter in gleicher Form wie der Button */}
-              {!sessionSummary && !showSummaryCard && (
+              {!sessionSummary && !showSummaryCard && !summaryTimedOut && (
                 <div className="rounded-xl border border-border/50 bg-muted/20 px-5 py-5 flex items-center gap-3">
                   <span className="inline-flex gap-1 items-center shrink-0">
                     <span className="w-1.5 h-1.5 rounded-full bg-muted-foreground/40 animate-bounce" style={{ animationDelay: "0ms" }} />
