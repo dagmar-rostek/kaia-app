@@ -67,7 +67,7 @@ async def delete_user(
     db: Annotated[AsyncSession, Depends(get_db)],
     svc: Annotated[UserService, Depends(_svc)],
 ) -> None:
-    """Hard-delete: anonymisiert E-Mail und gibt sie für Neu-Registrierung frei."""
+    """Hard-delete: löscht User und alle verknüpften Daten per DB-Cascade."""
     user = await UserRepository(db).get_by_id(user_id)
     if not user or user.status == UserStatus.DELETED:
         raise HTTPException(404, "User nicht gefunden.")

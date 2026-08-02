@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { Map, ArrowRight, Loader2 } from "lucide-react"
 import { authFetch } from "@/lib/auth"
@@ -24,6 +24,15 @@ export default function OnboardingPage() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const { state: evalState, evaluate: evalTopic, reset: resetEval } = useTopicEval()
+
+  useEffect(() => {
+    authFetch("/api/v1/users/me")
+      .then(res => res.ok ? res.json() : null)
+      .then(user => {
+        if (user?.learning_topic) setTopic(user.learning_topic)
+      })
+      .catch(() => {})
+  }, [])
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()

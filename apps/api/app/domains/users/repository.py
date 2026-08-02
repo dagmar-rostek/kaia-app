@@ -49,6 +49,10 @@ class UserRepository:
         await self._db.refresh(user)
         return user
 
+    async def hard_delete(self, user: User) -> None:
+        await self._db.delete(user)
+        await self._db.commit()
+
 
 class RefreshTokenRepository:
     def __init__(self, db: AsyncSession) -> None:

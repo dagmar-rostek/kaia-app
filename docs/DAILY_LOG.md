@@ -91,24 +91,6 @@ JWT und Passwort: stark, nicht die Defaults. Gut. STUDY_MODE: **auskommentiert**
 
 ---
 
-**11:15 Uhr — Die Backup-Kontroverse**
-
-Hetzner Cloud Console. Backup aktivieren. Der Preis erscheint:
-
-> **Dagmar:** *„€ 1.1980 — das sind doch über 1000 Euro?"*
-
-Stille.
-
-> **MLOps:** *„Das Komma ist das Dezimaltrennzeichen. Das sind ein Euro neunzehnachtzig."*
-
-Sehr lange Stille.
-
-> **Security:** *„Ich befürchte, das ist das lustigste Security-Finding des heutigen Tages."*
-
-Backup aktiviert. Serverkosten steigen um €1,20 pro Monat. Alle Studienteilnehmenden sind jetzt gesichert.
-
----
-
 **11:31 Uhr — Grünes Licht**
 
 Sieben Findings. Sieben erledigt (vier Code, drei Server). Sieben grüne Häkchen.

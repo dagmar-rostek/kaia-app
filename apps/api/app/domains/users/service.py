@@ -249,22 +249,17 @@ class UserService:
         return user
 
     async def delete(self, user: User, reason: str) -> None:
-        """DSGVO Art. 17 — Recht auf Vergessenwerden: Soft-Delete + Anonymisierung."""
-        now = datetime.now(UTC)
-        # Alle Tokens sperren bevor Daten anonymisiert werden
-        await self._tokens.revoke_all_for_user(user.id, "account_deleted")
+        """DSGVO Art. 17 — Recht auf Vergessenwerden: Hard-Delete aller Nutzerdaten.
 
-        user.status = UserStatus.DELETED
-        user.deleted_at = now
-        user.deletion_reason = reason
-        # Personenbezogene Daten anonymisieren (Art. 17 — kein Hard-Delete wegen Audit-Trail)
-        user.email = f"deleted_{user.id}@anonymized.invalid"
-        user.username = f"deleted_{user.id}"
-        user.password_hash = "DELETED"  # noqa: S105
-        user.consent_at = None
-        user.last_login_at = None
-        await self._users.save(user)
-        log.info("gdpr_delete_completed", user_id=user.id, reason=reason)
+        Alle verknüpften Datensätze werden per DB-Cascade gelöscht (chat_sessions,
+        messages, memory_chunks, survey_results, refresh_tokens, learning_profile).
+        Die E-Mail-Adresse wird damit sofort für eine Neu-Registrierung freigegeben.
+        """
+        user_id = user.id
+        await self._tokens.revoke_all_for_user(user_id, "account_deleted")
+        log.info("gdpr_delete_started", user_id=user_id, reason=reason)
+        await self._users.hard_delete(user)
+        log.info("gdpr_delete_completed", user_id=user_id, reason=reason)
 
     async def approve_user(self, user: User, approved_by: str) -> User:
         """Admin: Freigabe eines pending Users für die Studie."""
