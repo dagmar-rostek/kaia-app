@@ -172,6 +172,7 @@ export default async function UsersPage() {
                       <div className="flex items-center gap-1 justify-end">
                         <UserMailButton userId={u.id} username={u.username} />
                         <RejectButton userId={u.id} />
+                        <DeleteButton userId={u.id} />
                       </div>
                     </td>
                   </tr>
