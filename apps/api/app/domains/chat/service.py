@@ -35,6 +35,7 @@ from app.domains.chat.sse import (
     done,
     error,
     get_model,
+    thinking_strip,
 )
 from app.domains.chat.summary import (
     load_all_session_contexts,
@@ -742,7 +743,6 @@ async def stream_response(
             system_prompt, api_messages, model_override=model_override
         ):
             if kind == "text":
-                yield delta(val)
                 parts.append(val)
             elif kind == "usage":
                 input_tokens, output_tokens = val
@@ -751,11 +751,11 @@ async def stream_response(
         yield error("KAIA ist gerade nicht erreichbar. Bitte versuche es in einem Moment erneut.")
         return
 
-    final_content = "".join(parts).strip()
+    _, final_content = thinking_strip(parts)
     if not final_content:
         final_content = "Ich bin einen Moment nicht sicher. Magst du das nochmal sagen?"
-        yield delta(final_content)
 
+    yield delta(final_content)
     assistant_msg = await repo.save_message(session.id, MessageRole.ASSISTANT, final_content)
     await _log_usage(db, session, input_tokens, output_tokens, 0, 0)
     yield done(assistant_msg.id, input_tokens, output_tokens)
@@ -810,7 +810,6 @@ async def stream_opening(
             model_override=OPENING_MODEL,
         ):
             if kind == "text":
-                yield delta(val)
                 parts.append(val)
             elif kind == "usage":
                 input_tokens, output_tokens = val
@@ -819,11 +818,11 @@ async def stream_opening(
         yield error("KAIA ist gerade nicht erreichbar.")
         return
 
-    final_content = "".join(parts).strip()
+    _, final_content = thinking_strip(parts)
     if not final_content:
         final_content = "Hallo! Womit darf ich dich heute begleiten?"
-        yield delta(final_content)
 
+    yield delta(final_content)
     try:
         assistant_msg = await repo.save_message(session.id, MessageRole.ASSISTANT, final_content)
     except IntegrityError:
@@ -855,7 +854,6 @@ async def stream_closing(
             system_prompt, api_messages, max_tokens=600, model_override=model_override
         ):
             if kind == "text":
-                yield delta(val)
                 parts.append(val)
             elif kind == "usage":
                 input_tokens, output_tokens = val
@@ -864,11 +862,11 @@ async def stream_closing(
         yield error("KAIA ist gerade nicht erreichbar.")
         return
 
-    final_content = "".join(parts).strip()
+    _, final_content = thinking_strip(parts)
     if not final_content:
         final_content = "Was möchtest du aus diesem Gespräch mitnehmen?"
-        yield delta(final_content)
 
+    yield delta(final_content)
     assistant_msg = await repo.save_message(session.id, MessageRole.ASSISTANT, final_content)
     await _log_usage(db, session, input_tokens, output_tokens, 0, 0)
     yield done(assistant_msg.id, input_tokens, output_tokens)
@@ -902,7 +900,6 @@ async def stream_meta_question(
             system_prompt, api_messages, max_tokens=120, model_override=model_override
         ):
             if kind == "text":
-                yield delta(val)
                 parts.append(val)
             elif kind == "usage":
                 input_tokens, output_tokens = val
@@ -915,11 +912,11 @@ async def stream_meta_question(
         "stuck": "Was genau macht es gerade schwierig?",
         "unclear": "Welcher Teil ist noch nicht klar?",
     }
-    final_content = "".join(parts).strip()
+    _, final_content = thinking_strip(parts)
     if not final_content:
         final_content = fallbacks[feedback_type]
-        yield delta(final_content)
 
+    yield delta(final_content)
     assistant_msg = await repo.save_message(session.id, MessageRole.ASSISTANT, final_content)
     await _log_usage(db, session, input_tokens, output_tokens, 0, 0)
     yield done(assistant_msg.id, input_tokens, output_tokens)
