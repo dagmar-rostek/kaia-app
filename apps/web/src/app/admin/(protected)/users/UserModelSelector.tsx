@@ -44,7 +44,7 @@ export function UserModelSelector({
       onChange={(e) => handleChange(e.target.value)}
       disabled={pending}
       className={`text-xs bg-transparent border border-zinc-700 rounded px-1.5 py-0.5
-                  focus:outline-none focus:border-zinc-500 disabled:opacity-50
+                  focus:outline-none focus:border-zinc-500 disabled:opacity-50 w-32
                   ${modelColor(value || null)}`}
     >
       {MODELS.map((m) => (

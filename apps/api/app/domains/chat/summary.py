@@ -107,7 +107,8 @@ async def extract_session_summary(session_id: int) -> None:
 
     Called as a background task after end_session. Creates its own DB session
     because the request-scoped session will be closed by then.
-    Tries Claude Haiku first; falls back to GPT-4.1-mini if Anthropic fails.
+    Tries GPT-4.1-mini first; falls back to Claude Haiku if OpenAI fails.
+    GPT first because it responds in <10s — well inside the frontend's 30s poll window.
     """
     from app.db.session import AsyncSessionLocal
 
@@ -132,27 +133,30 @@ async def extract_session_summary(session_id: int) -> None:
 
             raw_json: str | None = None
 
-            # Primary: Claude Haiku
-            if settings.anthropic_api_key:
+            # Primary: GPT-4.1-mini (fast, <10s response time)
+            if settings.openai_api_key:
                 try:
-                    raw_json = await _extract_via_anthropic(transcript)
-                    log.info("session_summary_extracted_via_anthropic", session_id=session_id)
+                    raw_json = await _extract_via_openai(transcript)
+                    log.info("session_summary_extracted_via_openai", session_id=session_id)
                 except Exception as exc:
                     log.warning(
-                        "session_summary_anthropic_failed",
+                        "session_summary_openai_failed",
                         session_id=session_id,
                         error=str(exc),
                         tb=traceback.format_exc(),
                     )
 
-            # Fallback: GPT-4.1-mini
-            if raw_json is None and settings.openai_api_key:
+            # Fallback: Claude Haiku
+            if raw_json is None and settings.anthropic_api_key:
                 try:
-                    raw_json = await _extract_via_openai(transcript)
-                    log.info("session_summary_extracted_via_openai_fallback", session_id=session_id)
+                    raw_json = await _extract_via_anthropic(transcript)
+                    log.info(
+                        "session_summary_extracted_via_anthropic_fallback",
+                        session_id=session_id,
+                    )
                 except Exception as exc:
                     log.warning(
-                        "session_summary_openai_fallback_failed",
+                        "session_summary_anthropic_fallback_failed",
                         session_id=session_id,
                         error=str(exc),
                         tb=traceback.format_exc(),

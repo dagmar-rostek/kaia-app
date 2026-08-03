@@ -30,6 +30,10 @@ def _patch_service_db_helpers():
     db.execute() calls.  With an AsyncMock db, scalar_one_or_none() and
     scalars().all() return unawaited coroutines, causing AttributeError.
     Patch both at their source so the service imports the mocked versions.
+
+    get_model is patched to return a Claude model so all tests go through the
+    Anthropic path — the existing AsyncAnthropic mocks stay valid regardless of
+    the system-wide default model.
     """
     with (
         patch("app.domains.users.repository.UserProfileRepository") as mock_cls,
@@ -38,7 +42,8 @@ def _patch_service_db_helpers():
             f"{_SVC}.load_previous_session_fields",
             new_callable=AsyncMock,
             return_value=("", "", ""),
-        ),  # noqa: E501
+        ),
+        patch(f"{_SVC}.get_model", return_value="claude-haiku-4-5-20251001"),
     ):
         inst = AsyncMock()
         inst.get_profile = AsyncMock(return_value=None)

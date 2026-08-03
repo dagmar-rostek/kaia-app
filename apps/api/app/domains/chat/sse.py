@@ -14,7 +14,7 @@ from app.core.config import settings
 # ── Model & cost constants ────────────────────────────────────────────────────
 
 MAX_TOKENS = 4000  # thinking buffer (~3000) + final_answer (~1000); prevent budget exhaustion
-OPENING_MODEL = "claude-haiku-4-5-20251001"  # greetings need no heavy reasoning
+OPENING_MODEL = "gpt-4.1-mini"  # greetings need no heavy reasoning; uses same fast path as chat
 
 _COST_TABLE: dict[str, tuple[Decimal, Decimal]] = {
     # (input_per_token_eur, output_per_token_eur) — prices in EUR, converted at ~1.08 USD/EUR
