@@ -30,10 +30,6 @@ def _patch_service_db_helpers():
     db.execute() calls.  With an AsyncMock db, scalar_one_or_none() and
     scalars().all() return unawaited coroutines, causing AttributeError.
     Patch both at their source so the service imports the mocked versions.
-
-    get_model is patched to return a Claude model so all tests go through the
-    Anthropic path — the existing AsyncAnthropic mocks stay valid regardless of
-    the system-wide default model.
     """
     with (
         patch("app.domains.users.repository.UserProfileRepository") as mock_cls,
@@ -43,7 +39,6 @@ def _patch_service_db_helpers():
             new_callable=AsyncMock,
             return_value=("", "", ""),
         ),
-        patch(f"{_SVC}.get_model", return_value="claude-haiku-4-5-20251001"),
     ):
         inst = AsyncMock()
         inst.get_profile = AsyncMock(return_value=None)
@@ -62,38 +57,25 @@ async def _collect(gen) -> list[str]:
     return result
 
 
-class _MockStream:
-    """Minimal mock for anthropic.messages.stream() context manager."""
+def _mock_iter(*chunks: str, input_tokens: int = 10, output_tokens: int = 20):
+    """Return an async-generator function that yields text chunks then usage."""
 
-    def __init__(
-        self,
-        text_chunks: list[str],
-        input_tokens: int = 10,
-        output_tokens: int = 20,
-    ):
-        self._chunks = text_chunks
-        self._input_tokens = input_tokens
-        self._output_tokens = output_tokens
+    async def _gen(*args, **kwargs):
+        for c in chunks:
+            yield "text", c
+        yield "usage", (input_tokens, output_tokens)
 
-    async def __aenter__(self):
-        return self
+    return _gen
 
-    async def __aexit__(self, *args):
-        pass
 
-    @property
-    def text_stream(self):
-        async def _gen():
-            for c in self._chunks:
-                yield c
+def _mock_iter_raises(exc: Exception):
+    """Return an async-generator function that raises on first iteration."""
 
-        return _gen()
+    async def _gen(*args, **kwargs):
+        raise exc
+        yield  # noqa: unreachable — makes this an async generator
 
-    async def get_final_message(self):
-        msg = MagicMock()
-        msg.usage.input_tokens = self._input_tokens
-        msg.usage.output_tokens = self._output_tokens
-        return msg
+    return _gen
 
 
 def _mock_result(*, scalar_one=0, scalar_one_or_none=None, all_items=None):
@@ -401,11 +383,8 @@ async def test_stream_closing_happy_path(db, mock_session):
         patch(f"{_SVC}.get_active_template", new_callable=AsyncMock, return_value="t"),
         patch(f"{_SVC}.render_prompt", return_value="sys"),
         patch(f"{_SVC}._log_usage", new_callable=AsyncMock),
-        patch(f"{_SVC}.AsyncAnthropic") as mock_client,
+        patch(f"{_SVC}._iter_llm", new=_mock_iter("Was möchtest ", "du mitnehmen?")),
     ):
-        mock_client.return_value.messages.stream.return_value = _MockStream(
-            ["Was möchtest ", "du mitnehmen?"]
-        )
         events = await _collect(stream_closing(db=db, session=mock_session))
 
     assert any('"type": "delta"' in e for e in events)
@@ -426,9 +405,8 @@ async def test_stream_closing_first_session_skips_prev_lookup(db, mock_session):
         patch(f"{_SVC}.get_active_template", new_callable=AsyncMock, return_value="t"),
         patch(f"{_SVC}.render_prompt", return_value="s"),
         patch(f"{_SVC}._log_usage", new_callable=AsyncMock),
-        patch(f"{_SVC}.AsyncAnthropic") as mock_client,
+        patch(f"{_SVC}._iter_llm", new=_mock_iter("Abschlussfrage?")),
     ):
-        mock_client.return_value.messages.stream.return_value = _MockStream(["Abschlussfrage?"])
         events = await _collect(stream_closing(db=db, session=mock_session))
 
     mock_repo.get_previous_session.assert_not_called()
@@ -446,9 +424,8 @@ async def test_stream_closing_llm_error_yields_error_event(db, mock_session):
         patch(f"{_SVC}.ChatRepository", return_value=mock_repo),
         patch(f"{_SVC}.get_active_template", new_callable=AsyncMock, return_value="t"),
         patch(f"{_SVC}.render_prompt", return_value="s"),
-        patch(f"{_SVC}.AsyncAnthropic") as mock_client,
+        patch(f"{_SVC}._iter_llm", new=_mock_iter_raises(RuntimeError("API down"))),
     ):
-        mock_client.return_value.messages.stream.side_effect = RuntimeError("API down")
         events = await _collect(stream_closing(db=db, session=mock_session))
 
     assert any('"type": "error"' in e for e in events)
@@ -467,9 +444,8 @@ async def test_stream_closing_empty_content_uses_fallback(db, mock_session):
         patch(f"{_SVC}.get_active_template", new_callable=AsyncMock, return_value="t"),
         patch(f"{_SVC}.render_prompt", return_value="s"),
         patch(f"{_SVC}._log_usage", new_callable=AsyncMock),
-        patch(f"{_SVC}.AsyncAnthropic") as mock_client,
+        patch(f"{_SVC}._iter_llm", new=_mock_iter()),
     ):
-        mock_client.return_value.messages.stream.return_value = _MockStream([])
         events = await _collect(stream_closing(db=db, session=mock_session))
 
     delta_events = [e for e in events if '"type": "delta"' in e]
@@ -492,9 +468,8 @@ async def test_stream_meta_question_happy_path(db, mock_session, feedback_type):
         patch(f"{_SVC}.get_active_template", new_callable=AsyncMock, return_value="t"),
         patch(f"{_SVC}.render_prompt", return_value="s"),
         patch(f"{_SVC}._log_usage", new_callable=AsyncMock),
-        patch(f"{_SVC}.AsyncAnthropic") as mock_client,
+        patch(f"{_SVC}._iter_llm", new=_mock_iter("Meta-Frage?")),
     ):
-        mock_client.return_value.messages.stream.return_value = _MockStream(["Meta-Frage?"])
         events = await _collect(
             stream_meta_question(db=db, session=mock_session, feedback_type=feedback_type)
         )
@@ -521,9 +496,8 @@ async def test_stream_meta_question_llm_error(db, mock_session):
         patch(f"{_SVC}.ChatRepository", return_value=mock_repo),
         patch(f"{_SVC}.get_active_template", new_callable=AsyncMock, return_value="t"),
         patch(f"{_SVC}.render_prompt", return_value="s"),
-        patch(f"{_SVC}.AsyncAnthropic") as mock_client,
+        patch(f"{_SVC}._iter_llm", new=_mock_iter_raises(RuntimeError("timeout"))),
     ):
-        mock_client.return_value.messages.stream.side_effect = RuntimeError("timeout")
         events = await _collect(
             stream_meta_question(db=db, session=mock_session, feedback_type="stuck")
         )
@@ -543,9 +517,8 @@ async def test_stream_meta_question_empty_content_uses_fallback(db, mock_session
         patch(f"{_SVC}.get_active_template", new_callable=AsyncMock, return_value="t"),
         patch(f"{_SVC}.render_prompt", return_value="s"),
         patch(f"{_SVC}._log_usage", new_callable=AsyncMock),
-        patch(f"{_SVC}.AsyncAnthropic") as mock_client,
+        patch(f"{_SVC}._iter_llm", new=_mock_iter()),
     ):
-        mock_client.return_value.messages.stream.return_value = _MockStream([])
         events = await _collect(
             stream_meta_question(db=db, session=mock_session, feedback_type="unclear")
         )
@@ -555,8 +528,8 @@ async def test_stream_meta_question_empty_content_uses_fallback(db, mock_session
 
 
 @pytest.mark.asyncio
-async def test_stream_closing_debug_emits_thinking_event(db, mock_session):
-    """debug=True + thinking block → a thinking event is yielded before the delta."""
+async def test_stream_closing_debug_yields_delta(db, mock_session):
+    """debug=True with GPT backend: tokens stream normally, no thinking events."""
     mock_repo = AsyncMock()
     mock_repo.get_user = AsyncMock(return_value=MagicMock(username="ada"))
     mock_repo.get_previous_session = AsyncMock(return_value=None)
@@ -568,20 +541,17 @@ async def test_stream_closing_debug_emits_thinking_event(db, mock_session):
         patch(f"{_SVC}.get_active_template", new_callable=AsyncMock, return_value="t"),
         patch(f"{_SVC}.render_prompt", return_value="s"),
         patch(f"{_SVC}._log_usage", new_callable=AsyncMock),
-        patch(f"{_SVC}.AsyncAnthropic") as mock_client,
+        patch(f"{_SVC}._iter_llm", new=_mock_iter("Answer")),
     ):
-        mock_client.return_value.messages.stream.return_value = _MockStream(
-            ["<thinking>hidden thought</thinking>Answer"]
-        )
         events = await _collect(stream_closing(db=db, session=mock_session, debug=True))
 
-    assert any('"type": "thinking"' in e for e in events)
     assert any('"type": "delta"' in e for e in events)
+    assert any('"type": "done"' in e for e in events)
 
 
 @pytest.mark.asyncio
-async def test_stream_meta_question_debug_emits_thinking_event(db, mock_session):
-    """debug=True + thinking block → a thinking event is yielded."""
+async def test_stream_meta_question_debug_yields_delta(db, mock_session):
+    """debug=True with GPT backend: tokens stream normally, no thinking events."""
     mock_repo = AsyncMock()
     mock_repo.get_user = AsyncMock(return_value=MagicMock(username="ada"))
     mock_repo.get_messages = AsyncMock(return_value=[])
@@ -592,16 +562,13 @@ async def test_stream_meta_question_debug_emits_thinking_event(db, mock_session)
         patch(f"{_SVC}.get_active_template", new_callable=AsyncMock, return_value="t"),
         patch(f"{_SVC}.render_prompt", return_value="s"),
         patch(f"{_SVC}._log_usage", new_callable=AsyncMock),
-        patch(f"{_SVC}.AsyncAnthropic") as mock_client,
+        patch(f"{_SVC}._iter_llm", new=_mock_iter("Meta-Frage?")),
     ):
-        mock_client.return_value.messages.stream.return_value = _MockStream(
-            ["<thinking>thought</thinking>Meta-Frage?"]
-        )
         events = await _collect(
             stream_meta_question(db=db, session=mock_session, feedback_type="stuck", debug=True)
         )
 
-    assert any('"type": "thinking"' in e for e in events)
+    assert any('"type": "delta"' in e for e in events)
 
 
 @pytest.mark.asyncio
@@ -622,9 +589,8 @@ async def test_stream_closing_malformed_summary_json_ignored(db, mock_session):
         patch(f"{_SVC}.get_active_template", new_callable=AsyncMock, return_value="t"),
         patch(f"{_SVC}.render_prompt", return_value="s"),
         patch(f"{_SVC}._log_usage", new_callable=AsyncMock),
-        patch(f"{_SVC}.AsyncAnthropic") as mock_client,
+        patch(f"{_SVC}._iter_llm", new=_mock_iter("Frage?")),
     ):
-        mock_client.return_value.messages.stream.return_value = _MockStream(["Frage?"])
         events = await _collect(stream_closing(db=db, session=mock_session))
 
     assert any('"type": "done"' in e for e in events)
@@ -650,9 +616,8 @@ async def test_stream_closing_previous_session_summary_parsed(db, mock_session):
         patch(f"{_SVC}.get_active_template", new_callable=AsyncMock, return_value="t"),
         patch(f"{_SVC}.render_prompt", return_value="s"),
         patch(f"{_SVC}._log_usage", new_callable=AsyncMock),
-        patch(f"{_SVC}.AsyncAnthropic") as mock_client,
+        patch(f"{_SVC}._iter_llm", new=_mock_iter("Frage?")),
     ):
-        mock_client.return_value.messages.stream.return_value = _MockStream(["Frage?"])
         events = await _collect(stream_closing(db=db, session=mock_session))
 
     # load_previous_session_fields is patched at service level (autouse fixture),

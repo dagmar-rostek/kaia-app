@@ -7,23 +7,23 @@ Wissen und Umsetzung.
 Rate Limiting: In-Memory, IP-basiert, 5 Calls / Stunde.
 Kein DB-Speicher — kein personenbezogener Datensatz nötig.
 
-Modell: claude-haiku-4-5-20251001 (günstig, schnell, ausreichend für Classification).
-Structured Output via Anthropic tool_use.
+Modell: gpt-4.1-mini. Structured Output via OpenAI function calling.
 """
 
+import json
 import time
 from collections import defaultdict
 from typing import Any
 
 import structlog
-from anthropic import AsyncAnthropic
+from openai import AsyncOpenAI
 
 from app.core.config import settings
 from app.domains.topics.schemas import TopicEvalResponse
 
 log = structlog.get_logger()
 
-EVAL_MODEL = "claude-haiku-4-5-20251001"
+EVAL_MODEL = "gpt-4.1-mini"
 MAX_OUTPUT_TOKENS = 256
 
 RATE_LIMIT_MAX = 5
@@ -46,43 +46,46 @@ def check_and_record_rate_limit(key: str) -> bool:
     return True
 
 
-# ── Anthropic Tool-Definition (strukturierter Output) ─────────────────────────
+# ── OpenAI Function-Definition (strukturierter Output) ────────────────────────
 
-_EVALUATE_TOOL: dict[str, Any] = {
-    "name": "evaluate_topic",
-    "description": ("Evaluiert ein Lernthema auf Passung zum KAIA-Ansatz (Knowing-Doing-Gap)."),
-    "input_schema": {
-        "type": "object",
-        "properties": {
-            "fits_gap": {
-                "type": "boolean",
-                "description": "True wenn das Thema primär ein Umsetzungsproblem ist.",
+_EVALUATE_FUNCTION: dict[str, Any] = {
+    "type": "function",
+    "function": {
+        "name": "evaluate_topic",
+        "description": "Evaluiert ein Lernthema auf Passung zum KAIA-Ansatz (Knowing-Doing-Gap).",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "fits_gap": {
+                    "type": "boolean",
+                    "description": "True wenn das Thema primär ein Umsetzungsproblem ist.",
+                },
+                "confidence": {
+                    "type": "string",
+                    "enum": ["high", "medium", "low"],
+                    "description": "Sicherheit der Klassifikation.",
+                },
+                "feedback": {
+                    "type": "string",
+                    "description": (
+                        "1–2 Sätze direkt für den User. Erklärt kurz, warum das Thema passt "
+                        "oder nicht — ohne akademische Floskeln."
+                    ),
+                },
+                "suggestion": {
+                    "type": ["string", "null"],
+                    "description": (
+                        "Nur wenn fits_gap=False: Umformulierung des Themas als Knowing-Doing-Gap. "
+                        "Null wenn fits_gap=True."
+                    ),
+                },
+                "category": {
+                    "type": "string",
+                    "enum": ["knowing_doing", "knowledge_acquisition", "unclear"],
+                },
             },
-            "confidence": {
-                "type": "string",
-                "enum": ["high", "medium", "low"],
-                "description": "Sicherheit der Klassifikation.",
-            },
-            "feedback": {
-                "type": "string",
-                "description": (
-                    "1–2 Sätze direkt für den User. Erklärt kurz, warum das Thema passt "
-                    "oder nicht — ohne akademische Floskeln."
-                ),
-            },
-            "suggestion": {
-                "type": ["string", "null"],
-                "description": (
-                    "Nur wenn fits_gap=False: Umformulierung des Themas als Knowing-Doing-Gap. "
-                    "Null wenn fits_gap=True."
-                ),
-            },
-            "category": {
-                "type": "string",
-                "enum": ["knowing_doing", "knowledge_acquisition", "unclear"],
-            },
+            "required": ["fits_gap", "confidence", "feedback", "suggestion", "category"],
         },
-        "required": ["fits_gap", "confidence", "feedback", "suggestion", "category"],
     },
 }
 
@@ -152,26 +155,24 @@ Thema in einen Knowing-Doing-Gap verwandelt — nur wenn das sachlich möglich i
 
 
 async def evaluate_topic(topic: str) -> TopicEvalResponse:
-    """Ruft Haiku auf und gibt das klassifizierte Ergebnis zurück."""
-    client = AsyncAnthropic(api_key=settings.anthropic_api_key)
+    """Klassifiziert ein Lernthema via GPT-4.1-mini function calling."""
+    client = AsyncOpenAI(api_key=settings.openai_api_key)
 
-    response = await client.messages.create(  # type: ignore[call-overload]
+    response = await client.chat.completions.create(  # type: ignore[call-overload]
         model=EVAL_MODEL,
-        max_tokens=MAX_OUTPUT_TOKENS,
-        system=_SYSTEM_PROMPT,
-        tools=[_EVALUATE_TOOL],
-        tool_choice={"type": "tool", "name": "evaluate_topic"},
-        messages=[{"role": "user", "content": f"Lernthema: {topic}"}],
+        max_completion_tokens=MAX_OUTPUT_TOKENS,
+        messages=[
+            {"role": "system", "content": _SYSTEM_PROMPT},
+            {"role": "user", "content": f"Lernthema: {topic}"},
+        ],
+        tools=[_EVALUATE_FUNCTION],
+        tool_choice={"type": "function", "function": {"name": "evaluate_topic"}},
     )
 
-    # tool_use ist garantiert der erste Block wenn tool_choice gesetzt ist
-    tool_block = next(
-        (b for b in response.content if b.type == "tool_use"),
-        None,
-    )
-    if tool_block is None:
-        log.error("topic_eval_no_tool_block", model=EVAL_MODEL, topic=topic[:80])
-        # Sicherer Fallback — lieber "unclear" als Exception
+    tool_calls = response.choices[0].message.tool_calls or []
+    tool_call = next((tc for tc in tool_calls if tc.function.name == "evaluate_topic"), None)
+    if tool_call is None:
+        log.error("topic_eval_no_tool_call", model=EVAL_MODEL, topic=topic[:80])
         return TopicEvalResponse(
             fits_gap=False,
             confidence="low",
@@ -182,8 +183,7 @@ async def evaluate_topic(topic: str) -> TopicEvalResponse:
             category="unclear",
         )
 
-    assert hasattr(tool_block, "input"), "tool_block must be ToolUseBlock"
-    result: dict[str, Any] = tool_block.input
+    result: dict[str, Any] = json.loads(tool_call.function.arguments)
 
     log.info(
         "topic_eval_done",
@@ -191,8 +191,8 @@ async def evaluate_topic(topic: str) -> TopicEvalResponse:
         category=result.get("category"),
         fits_gap=result.get("fits_gap"),
         confidence=result.get("confidence"),
-        input_tokens=response.usage.input_tokens,
-        output_tokens=response.usage.output_tokens,
+        input_tokens=response.usage.prompt_tokens if response.usage else 0,
+        output_tokens=response.usage.completion_tokens if response.usage else 0,
     )
 
     return TopicEvalResponse(

@@ -4,20 +4,20 @@ Architecture:
   User input
     → Crisis detection (sync, pre-LLM)
     → Prompt rendering (Jinja2 + session context)
-    → Claude API (streaming)
-    → Thinking strip → SSE delta stream → client
+    → OpenAI streaming API (token-by-token)
+    → SSE delta stream → client
     → Persist messages + log usage
 
-SSE helpers and thinking-strip live in sse.py.
+SSE helpers live in sse.py.
 Session summary extraction and cross-session memory live in summary.py.
 """
 
 from collections.abc import AsyncGenerator
 from decimal import Decimal
+from typing import Any
 
 import httpx
 import structlog
-from anthropic import AsyncAnthropic
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -35,8 +35,6 @@ from app.domains.chat.sse import (
     done,
     error,
     get_model,
-    thinking_event,
-    thinking_strip,
 )
 from app.domains.chat.summary import (
     load_all_session_contexts,
@@ -55,77 +53,48 @@ def _provider(model: str) -> str:
         return "openai"
     if "mistral" in model:
         return "mistral"
-    return "anthropic"
+    return "openai"
 
 
-async def _call_llm(
+async def _iter_llm(
     system_prompt: str,
     messages: list[dict[str, str]],
     max_tokens: int = MAX_TOKENS,
     model_override: str | None = None,
-) -> tuple[list[str], int, int, int, int]:
-    """Call the active LLM (Anthropic / OpenAI / Mistral) and collect the full response.
+) -> AsyncGenerator[tuple[str, Any], None]:
+    """Stream tokens from OpenAI/Mistral. Yields ('text', chunk) tuples then a final
+    ('usage', (input_tokens, output_tokens)) tuple. Raises on connection errors."""
+    from openai import AsyncOpenAI  # noqa: PLC0415
 
-    Returns (raw_chunks, input_tokens, output_tokens, cache_creation_tokens, cache_read_tokens).
-    All four streaming functions buffer the full response before yielding to the client
-    (thinking_strip needs to see the full text), so collecting here adds no latency.
-    """
     model = model_override or get_model()
     provider = _provider(model)
-    raw_chunks: list[str] = []
-    input_tokens = output_tokens = cache_creation = cache_read = 0
 
-    if provider == "anthropic":
-        client = AsyncAnthropic(
-            api_key=settings.anthropic_api_key,
-            timeout=httpx.Timeout(connect=10.0, read=120.0, write=10.0, pool=5.0),
-        )
-        async with client.messages.stream(
-            model=model,
-            max_tokens=max_tokens,
-            system=[
-                {"type": "text", "text": system_prompt, "cache_control": {"type": "ephemeral"}}
-            ],
-            messages=messages,  # type: ignore[arg-type]
-        ) as stream:
-            async for text in stream.text_stream:
-                raw_chunks.append(text)
-            final_msg = await stream.get_final_message()
-            input_tokens = final_msg.usage.input_tokens
-            output_tokens = final_msg.usage.output_tokens
-            cache_creation = getattr(final_msg.usage, "cache_creation_input_tokens", 0) or 0
-            cache_read = getattr(final_msg.usage, "cache_read_input_tokens", 0) or 0
+    api_key = settings.openai_api_key if provider != "mistral" else settings.mistral_api_key
+    base_url = None if provider != "mistral" else "https://api.mistral.ai/v1"
+    oai = AsyncOpenAI(
+        api_key=api_key,
+        base_url=base_url,
+        timeout=httpx.Timeout(connect=10.0, read=120.0, write=10.0, pool=5.0),
+    )
+    all_msgs = [{"role": "system", "content": system_prompt}, *messages]
 
+    kwargs: dict[str, Any] = {
+        "model": model,
+        "messages": all_msgs,
+        "stream": True,
+    }
+    if provider == "mistral":
+        kwargs["max_tokens"] = max_tokens
     else:
-        from openai import AsyncOpenAI  # noqa: PLC0415
+        kwargs["max_completion_tokens"] = max_tokens
+        kwargs["stream_options"] = {"include_usage": True}
 
-        api_key = settings.openai_api_key if provider == "openai" else settings.mistral_api_key
-        base_url = None if provider == "openai" else "https://api.mistral.ai/v1"
-        oai = AsyncOpenAI(
-            api_key=api_key,
-            base_url=base_url,
-            timeout=httpx.Timeout(connect=10.0, read=120.0, write=10.0, pool=5.0),
-        )
-        all_msgs = [{"role": "system", "content": system_prompt}, *messages]
-        if provider == "openai":
-            resp = await oai.chat.completions.create(
-                model=model,
-                max_completion_tokens=max_tokens,
-                messages=all_msgs,  # type: ignore[arg-type]
-            )
-        else:
-            resp = await oai.chat.completions.create(
-                model=model,
-                max_tokens=max_tokens,
-                messages=all_msgs,  # type: ignore[arg-type]
-            )
-        text = (resp.choices[0].message.content or "").strip()
-        raw_chunks = [text]
-        if resp.usage:
-            input_tokens = resp.usage.prompt_tokens
-            output_tokens = resp.usage.completion_tokens
-
-    return raw_chunks, input_tokens, output_tokens, cache_creation, cache_read
+    stream = await oai.chat.completions.create(**kwargs)
+    async for chunk in stream:
+        if chunk.choices and chunk.choices[0].delta.content:
+            yield "text", chunk.choices[0].delta.content
+        if chunk.usage:
+            yield "usage", (chunk.usage.prompt_tokens, chunk.usage.completion_tokens)
 
 
 # ── Didaktisches Progressionsmodell (Didaktiker, 2026-07-04) ──────────────────
@@ -766,32 +735,29 @@ async def stream_response(
 
     api_messages = [{"role": str(m.role), "content": m.content} for m in history if m.content]
 
+    parts: list[str] = []
+    input_tokens = output_tokens = 0
     try:
-        (
-            raw_chunks,
-            input_tokens,
-            output_tokens,
-            cache_creation_tokens,
-            cache_read_tokens,
-        ) = await _call_llm(system_prompt, api_messages, model_override=model_override)
+        async for kind, val in _iter_llm(
+            system_prompt, api_messages, model_override=model_override
+        ):
+            if kind == "text":
+                yield delta(val)
+                parts.append(val)
+            elif kind == "usage":
+                input_tokens, output_tokens = val
     except Exception as exc:
         log.error("llm_stream_error", error=str(exc), session_id=session.id)
         yield error("KAIA ist gerade nicht erreichbar. Bitte versuche es in einem Moment erneut.")
         return
 
-    thinking, final_content = thinking_strip(raw_chunks)
-    if debug and thinking:
-        yield thinking_event(thinking)
+    final_content = "".join(parts).strip()
     if not final_content:
         final_content = "Ich bin einen Moment nicht sicher. Magst du das nochmal sagen?"
+        yield delta(final_content)
 
-    yield delta(final_content)
-    assistant_msg = await repo.save_message(
-        session.id, MessageRole.ASSISTANT, final_content, thinking_raw=thinking
-    )
-    await _log_usage(
-        db, session, input_tokens, output_tokens, cache_creation_tokens, cache_read_tokens
-    )
+    assistant_msg = await repo.save_message(session.id, MessageRole.ASSISTANT, final_content)
+    await _log_usage(db, session, input_tokens, output_tokens, 0, 0)
     yield done(assistant_msg.id, input_tokens, output_tokens)
     log.info(
         "llm_response_complete",
@@ -834,41 +800,36 @@ async def stream_opening(
         learning_topic,
     )
 
+    parts: list[str] = []
+    input_tokens = output_tokens = 0
     try:
-        (
-            raw_chunks,
-            input_tokens,
-            output_tokens,
-            cache_creation_tokens,
-            cache_read_tokens,
-        ) = await _call_llm(
+        async for kind, val in _iter_llm(
             system_prompt,
             [{"role": "user", "content": trigger}],
             max_tokens=1200,
             model_override=OPENING_MODEL,
-        )
+        ):
+            if kind == "text":
+                yield delta(val)
+                parts.append(val)
+            elif kind == "usage":
+                input_tokens, output_tokens = val
     except Exception as exc:
         log.error("llm_opening_error", error=str(exc), session_id=session.id)
         yield error("KAIA ist gerade nicht erreichbar.")
         return
 
-    thinking, final_content = thinking_strip(raw_chunks)
-    if debug and thinking:
-        yield thinking_event(thinking)
+    final_content = "".join(parts).strip()
     if not final_content:
         final_content = "Hallo! Womit darf ich dich heute begleiten?"
+        yield delta(final_content)
 
-    yield delta(final_content)
     try:
-        assistant_msg = await repo.save_message(
-            session.id, MessageRole.ASSISTANT, final_content, thinking_raw=thinking
-        )
+        assistant_msg = await repo.save_message(session.id, MessageRole.ASSISTANT, final_content)
     except IntegrityError:
         log.warning("llm_opening_session_gone", session_id=session.id)
         return
-    await _log_usage(
-        db, session, input_tokens, output_tokens, cache_creation_tokens, cache_read_tokens
-    )
+    await _log_usage(db, session, input_tokens, output_tokens, 0, 0)
     yield done(assistant_msg.id, input_tokens, output_tokens)
     log.info("llm_opening_complete", session_id=session.id)
 
@@ -887,34 +848,29 @@ async def stream_closing(
     api_messages = [{"role": str(m.role), "content": m.content} for m in history if m.content]
     api_messages.append({"role": "user", "content": get_closing_trigger(session.session_number)})
 
+    parts: list[str] = []
+    input_tokens = output_tokens = 0
     try:
-        (
-            raw_chunks,
-            input_tokens,
-            output_tokens,
-            cache_creation_tokens,
-            cache_read_tokens,
-        ) = await _call_llm(
+        async for kind, val in _iter_llm(
             system_prompt, api_messages, max_tokens=600, model_override=model_override
-        )
+        ):
+            if kind == "text":
+                yield delta(val)
+                parts.append(val)
+            elif kind == "usage":
+                input_tokens, output_tokens = val
     except Exception as exc:
         log.error("llm_closing_error", error=str(exc), session_id=session.id)
         yield error("KAIA ist gerade nicht erreichbar.")
         return
 
-    thinking, final_content = thinking_strip(raw_chunks)
-    if debug and thinking:
-        yield thinking_event(thinking)
+    final_content = "".join(parts).strip()
     if not final_content:
         final_content = "Was möchtest du aus diesem Gespräch mitnehmen?"
+        yield delta(final_content)
 
-    yield delta(final_content)
-    assistant_msg = await repo.save_message(
-        session.id, MessageRole.ASSISTANT, final_content, thinking_raw=thinking
-    )
-    await _log_usage(
-        db, session, input_tokens, output_tokens, cache_creation_tokens, cache_read_tokens
-    )
+    assistant_msg = await repo.save_message(session.id, MessageRole.ASSISTANT, final_content)
+    await _log_usage(db, session, input_tokens, output_tokens, 0, 0)
     yield done(assistant_msg.id, input_tokens, output_tokens)
     log.info("llm_closing_complete", session_id=session.id)
 
@@ -939,38 +895,33 @@ async def stream_meta_question(
     api_messages = [{"role": str(m.role), "content": m.content} for m in history if m.content]
     api_messages.append({"role": "user", "content": trigger})
 
+    parts: list[str] = []
+    input_tokens = output_tokens = 0
     try:
-        (
-            raw_chunks,
-            input_tokens,
-            output_tokens,
-            cache_creation_tokens,
-            cache_read_tokens,
-        ) = await _call_llm(
+        async for kind, val in _iter_llm(
             system_prompt, api_messages, max_tokens=120, model_override=model_override
-        )
+        ):
+            if kind == "text":
+                yield delta(val)
+                parts.append(val)
+            elif kind == "usage":
+                input_tokens, output_tokens = val
     except Exception as exc:
         log.error("llm_meta_error", error=str(exc), session_id=session.id)
         yield error("KAIA ist gerade nicht erreichbar.")
         return
 
-    thinking, final_content = thinking_strip(raw_chunks)
-    if debug and thinking:
-        yield thinking_event(thinking)
     fallbacks = {
         "stuck": "Was genau macht es gerade schwierig?",
         "unclear": "Welcher Teil ist noch nicht klar?",
     }
+    final_content = "".join(parts).strip()
     if not final_content:
         final_content = fallbacks[feedback_type]
+        yield delta(final_content)
 
-    yield delta(final_content)
-    assistant_msg = await repo.save_message(
-        session.id, MessageRole.ASSISTANT, final_content, thinking_raw=thinking
-    )
-    await _log_usage(
-        db, session, input_tokens, output_tokens, cache_creation_tokens, cache_read_tokens
-    )
+    assistant_msg = await repo.save_message(session.id, MessageRole.ASSISTANT, final_content)
+    await _log_usage(db, session, input_tokens, output_tokens, 0, 0)
     yield done(assistant_msg.id, input_tokens, output_tokens)
     log.info("llm_meta_complete", session_id=session.id, feedback_type=feedback_type)
 
