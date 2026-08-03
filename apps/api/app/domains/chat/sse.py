@@ -101,7 +101,11 @@ def thinking_strip(raw_chunks: list[str]) -> tuple[str | None, str]:
     Returns: (thinking_content | None, final_answer)
     The thinking block is preserved for the debug/research audit trail.
     """
+    import structlog  # noqa: PLC0415
+
+    log = structlog.get_logger()
     full = "".join(raw_chunks)
+    original_len = len(full)
 
     thinking: str | None = None
     t_match = re.search(r"<thinking>([\s\S]*?)(?:</thinking>|$)", full, re.DOTALL)
@@ -115,5 +119,15 @@ def thinking_strip(raw_chunks: list[str]) -> tuple[str | None, str]:
 
     m = re.search(r"<final_answer>([\s\S]*?)</final_answer>", full, re.DOTALL)
     if m:
-        return thinking, m.group(1).strip()
-    return thinking, full.replace("<final_answer>", "").replace("</final_answer>", "").strip()
+        result = m.group(1).strip()
+    else:
+        result = full.replace("<final_answer>", "").replace("</final_answer>", "").strip()
+
+    if not result and original_len > 0:
+        log.warning(
+            "thinking_strip_empty_result",
+            original_chars=original_len,
+            had_thinking=thinking is not None,
+        )
+
+    return thinking, result

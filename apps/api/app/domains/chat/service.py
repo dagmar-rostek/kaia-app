@@ -897,7 +897,7 @@ async def stream_meta_question(
     input_tokens = output_tokens = 0
     try:
         async for kind, val in _iter_llm(
-            system_prompt, api_messages, max_tokens=120, model_override=model_override
+            system_prompt, api_messages, max_tokens=400, model_override=model_override
         ):
             if kind == "text":
                 parts.append(val)
