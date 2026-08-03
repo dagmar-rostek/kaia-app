@@ -362,6 +362,91 @@ async def test_get_user_not_found(db):
     assert await repo.get_user(user_id=999) is None
 
 
+# ── chat/service.py — _provider ──────────────────────────────────────────────
+
+
+def test_provider_gpt_returns_openai():
+    from app.domains.chat.service import _provider
+
+    assert _provider("gpt-4.1-mini") == "openai"
+    assert _provider("gpt-4o") == "openai"
+    assert _provider("o4-mini") == "openai"
+    assert _provider("o1-preview") == "openai"
+
+
+def test_provider_mistral_returns_mistral():
+    from app.domains.chat.service import _provider
+
+    assert _provider("mistral-large-latest") == "mistral"
+    assert _provider("mistral-small-latest") == "mistral"
+
+
+def test_provider_unknown_defaults_to_openai():
+    from app.domains.chat.service import _provider
+
+    assert _provider("some-unknown-model") == "openai"
+
+
+# ── chat/service.py — _iter_llm ───────────────────────────────────────────────
+
+
+@pytest.mark.asyncio
+async def test_iter_llm_yields_text_and_usage():
+    from app.domains.chat.service import _iter_llm
+
+    async def _fake_stream():
+        chunk_text = MagicMock()
+        chunk_text.choices = [MagicMock()]
+        chunk_text.choices[0].delta.content = "Hallo"
+        chunk_text.usage = None
+        yield chunk_text
+
+        chunk_usage = MagicMock()
+        chunk_usage.choices = []
+        chunk_usage.usage = MagicMock(prompt_tokens=5, completion_tokens=10)
+        yield chunk_usage
+
+    mock_create = AsyncMock(return_value=_fake_stream())
+
+    with (
+        patch("openai.AsyncOpenAI") as mock_oai_cls,
+        patch(f"{_SVC}.get_model", return_value="gpt-4.1-mini"),
+    ):
+        mock_oai_cls.return_value.chat.completions.create = mock_create
+        results = []
+        async for kind, val in _iter_llm("sys", [{"role": "user", "content": "hi"}]):
+            results.append((kind, val))
+
+    assert ("text", "Hallo") in results
+    assert ("usage", (5, 10)) in results
+
+
+@pytest.mark.asyncio
+async def test_iter_llm_mistral_uses_max_tokens():
+    from app.domains.chat.service import _iter_llm
+
+    async def _fake_stream():
+        chunk = MagicMock()
+        chunk.choices = [MagicMock()]
+        chunk.choices[0].delta.content = "ok"
+        chunk.usage = MagicMock(prompt_tokens=1, completion_tokens=2)
+        yield chunk
+
+    mock_create = AsyncMock(return_value=_fake_stream())
+
+    with (
+        patch("openai.AsyncOpenAI") as mock_oai_cls,
+        patch(f"{_SVC}.get_model", return_value="mistral-large-latest"),
+    ):
+        mock_oai_cls.return_value.chat.completions.create = mock_create
+        results = [r async for r in _iter_llm("sys", [], max_tokens=200)]
+
+    call_kwargs = mock_create.call_args.kwargs
+    assert "max_tokens" in call_kwargs
+    assert "max_completion_tokens" not in call_kwargs
+    assert ("text", "ok") in results
+
+
 # ── chat/service.py — stream_closing ─────────────────────────────────────────
 
 
