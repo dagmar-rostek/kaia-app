@@ -16,8 +16,6 @@ import traceback
 
 import httpx
 import structlog
-from anthropic import AsyncAnthropic
-from anthropic.types import TextBlock
 from openai import AsyncOpenAI
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -28,8 +26,7 @@ from app.domains.chat.repository import ChatRepository
 
 log = structlog.get_logger()
 
-_EXTRACTION_MODEL = "claude-haiku-4-5-20251001"
-_EXTRACTION_MODEL_FALLBACK = "gpt-4.1-mini"
+_EXTRACTION_MODEL = "gpt-4.1-mini"
 _EXTRACTION_SYSTEM = (
     "Du bist ein Analyse-Assistent fuer KAIA, einen KI-Lernbegleiter.\n"
     "Nach jeder Lernsession extrahierst du strukturierte Informationen"
@@ -66,24 +63,6 @@ def _strip_fences(raw: str) -> str:
     return raw
 
 
-async def _extract_via_anthropic(transcript: str) -> str:
-    """Call Claude Haiku and return raw JSON string. Raises on any error."""
-    client = AsyncAnthropic(
-        api_key=settings.anthropic_api_key,
-        timeout=httpx.Timeout(connect=10.0, read=60.0, write=10.0, pool=5.0),
-    )
-    response = await client.messages.create(
-        model=_EXTRACTION_MODEL,
-        max_tokens=600,
-        system=_EXTRACTION_SYSTEM,
-        messages=[{"role": "user", "content": f"Transkript:\n\n{transcript}"}],
-    )
-    block = response.content[0]
-    if not isinstance(block, TextBlock):
-        raise ValueError(f"unexpected block type: {type(block).__name__}")
-    return _strip_fences(block.text.strip())
-
-
 async def _extract_via_openai(transcript: str) -> str:
     """Call GPT-4.1-mini and return raw JSON string. Raises on any error."""
     client = AsyncOpenAI(
@@ -91,7 +70,7 @@ async def _extract_via_openai(transcript: str) -> str:
         timeout=httpx.Timeout(connect=10.0, read=60.0, write=10.0, pool=5.0),
     )
     response = await client.chat.completions.create(
-        model=_EXTRACTION_MODEL_FALLBACK,
+        model=_EXTRACTION_MODEL,
         max_tokens=600,
         messages=[
             {"role": "system", "content": _EXTRACTION_SYSTEM},
@@ -107,8 +86,7 @@ async def extract_session_summary(session_id: int) -> None:
 
     Called as a background task after end_session. Creates its own DB session
     because the request-scoped session will be closed by then.
-    Tries GPT-4.1-mini first; falls back to Claude Haiku if OpenAI fails.
-    GPT first because it responds in <10s — well inside the frontend's 30s poll window.
+    Uses GPT-4.1-mini exclusively.
     """
     from app.db.session import AsyncSessionLocal
 
@@ -133,37 +111,18 @@ async def extract_session_summary(session_id: int) -> None:
 
             raw_json: str | None = None
 
-            # Primary: GPT-4.1-mini (fast, <10s response time)
-            if settings.openai_api_key:
-                try:
-                    raw_json = await _extract_via_openai(transcript)
-                    log.info("session_summary_extracted_via_openai", session_id=session_id)
-                except Exception as exc:
-                    log.warning(
-                        "session_summary_openai_failed",
-                        session_id=session_id,
-                        error=str(exc),
-                        tb=traceback.format_exc(),
-                    )
-
-            # Fallback: Claude Haiku
-            if raw_json is None and settings.anthropic_api_key:
-                try:
-                    raw_json = await _extract_via_anthropic(transcript)
-                    log.info(
-                        "session_summary_extracted_via_anthropic_fallback",
-                        session_id=session_id,
-                    )
-                except Exception as exc:
-                    log.warning(
-                        "session_summary_anthropic_fallback_failed",
-                        session_id=session_id,
-                        error=str(exc),
-                        tb=traceback.format_exc(),
-                    )
+            try:
+                raw_json = await _extract_via_openai(transcript)
+                log.info("session_summary_extracted", session_id=session_id)
+            except Exception as exc:
+                log.error(
+                    "session_summary_failed",
+                    session_id=session_id,
+                    error=str(exc),
+                    tb=traceback.format_exc(),
+                )
 
             if raw_json is None:
-                log.error("session_summary_all_providers_failed", session_id=session_id)
                 return
 
             json.loads(raw_json)  # validate — raises if malformed
