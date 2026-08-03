@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react"
 import { CheckCircle2, XCircle, Loader2, Trash2, Mail } from "lucide-react"
-import { approveUser, rejectUser, deleteUser, sendStudyStartMails } from "./actions"
+import { approveUser, rejectUser, deleteUser, sendStudyStartMails, sendUserStudyStartMail } from "./actions"
 
 export function ApproveButton({ userId }: { userId: number }) {
   const [pending, startTransition] = useTransition()
@@ -89,6 +89,34 @@ export function DeleteButton({ userId }: { userId: number }) {
         Abbrechen
       </button>
     </div>
+  )
+}
+
+export function UserMailButton({ userId, username }: { userId: number; username: string }) {
+  const [done, setDone] = useState(false)
+  const [pending, startTransition] = useTransition()
+
+  if (done) {
+    return (
+      <span className="p-1.5 text-emerald-500" title="Mail gesendet">
+        <CheckCircle2 className="h-3.5 w-3.5" />
+      </span>
+    )
+  }
+
+  return (
+    <button
+      disabled={pending}
+      onClick={() => startTransition(async () => {
+        if (!confirm(`Studienstart-Mail an ${username} senden?`)) return
+        const ok = await sendUserStudyStartMail(userId)
+        if (ok) setDone(true)
+      })}
+      className="p-1.5 rounded-md text-muted-foreground hover:text-blue-500 hover:bg-blue-500/10 transition-colors disabled:opacity-40"
+      title="Studienstart-Mail senden"
+    >
+      {pending ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Mail className="h-3.5 w-3.5" />}
+    </button>
   )
 }
 

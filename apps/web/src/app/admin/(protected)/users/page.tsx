@@ -1,7 +1,7 @@
 export const dynamic = "force-dynamic"
 
 import { Clock, CheckCircle2, XCircle, Users, AlertTriangle } from "lucide-react"
-import { ApproveButton, RejectButton, DeleteButton, StudyStartMailButton } from "./UserActions"
+import { ApproveButton, RejectButton, DeleteButton, StudyStartMailButton, UserMailButton } from "./UserActions"
 import { UserModelSelector } from "./UserModelSelector"
 
 const API = process.env.INTERNAL_API_URL ?? process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000/api"
@@ -169,7 +169,10 @@ export default async function UsersPage() {
                     </td>
                     <td className="px-4 py-3 text-muted-foreground text-xs">{fmt(u.last_login_at)}</td>
                     <td className="px-4 py-3">
-                      <RejectButton userId={u.id} />
+                      <div className="flex items-center gap-1 justify-end">
+                        <UserMailButton userId={u.id} username={u.username} />
+                        <RejectButton userId={u.id} />
+                      </div>
                     </td>
                   </tr>
                 ))}

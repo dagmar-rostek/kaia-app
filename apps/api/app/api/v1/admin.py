@@ -278,10 +278,25 @@ async def send_study_start_emails(
     Verantwortung für Timing liegt beim Admin.
     """
     users = await UserRepository(db).get_all(UserStatus.ACTIVE)
-    real_users = [u for u in users if not u.email.endswith("@kaia.internal")]
+    real_users = [
+        u for u in users if not u.email.endswith("@kaia.internal") and not u.is_simulation
+    ]
     for user in real_users:
         await send_study_start(user.username, user.email)
     return {"sent": len(real_users)}
+
+
+@router.post("/users/{user_id}/study-start-mail", status_code=200)
+async def send_single_study_start_mail(
+    user_id: int,
+    db: Annotated[AsyncSession, Depends(get_db)],
+) -> dict[str, str]:
+    """Sendet die Studienstart-E-Mail an einen einzelnen User."""
+    user = await _get_user_or_404(user_id, db)
+    if user.status != UserStatus.ACTIVE:
+        raise HTTPException(400, "User ist nicht aktiv.")
+    await send_study_start(user.username, user.email)
+    return {"sent": user.email}
 
 
 @router.delete("/reset-test-user", status_code=204)

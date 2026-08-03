@@ -54,3 +54,11 @@ export async function sendStudyStartMails(): Promise<{ sent: number }> {
   if (!res.ok) return { sent: 0 }
   return res.json() as Promise<{ sent: number }>
 }
+
+export async function sendUserStudyStartMail(userId: number): Promise<boolean> {
+  const res = await fetch(`${API}/v1/admin/users/${userId}/study-start-mail`, {
+    method: "POST",
+    headers: adminHeaders(),
+  })
+  return res.ok
+}
