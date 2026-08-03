@@ -98,3 +98,21 @@ async def admin_remove(
     await repo.set_status(entry, "removed")
     await service.send_removal(entry.name, entry.email)
     return PreRegisterResponse(ok=True, message="Entfernt.")
+
+
+@router.delete(
+    "/admin/{entry_id}/silent",
+    response_model=PreRegisterResponse,
+    dependencies=[Depends(require_admin)],  # noqa: B008
+)
+async def admin_remove_silent(
+    entry_id: str,
+    db: AsyncSession = Depends(get_db),  # noqa: B008
+) -> PreRegisterResponse:
+    """Hard-delete ohne E-Mail — für Testeinträge und eigene Adressen."""
+    repo = PreRegistrationRepo(db)
+    entry = await repo.get_by_id(entry_id)
+    if not entry:
+        raise HTTPException(status_code=404, detail="Nicht gefunden.")
+    await repo.hard_delete(entry)
+    return PreRegisterResponse(ok=True, message="Gelöscht.")

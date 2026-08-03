@@ -50,6 +50,10 @@ class PreRegistrationRepo:
         entry.status = status
         await self.db.commit()
 
+    async def hard_delete(self, entry: PreRegistration) -> None:
+        await self.db.delete(entry)
+        await self.db.commit()
+
     async def list_all(self) -> list[PreRegistration]:
         result = await self.db.execute(
             select(PreRegistration).order_by(PreRegistration.created_at.desc())
