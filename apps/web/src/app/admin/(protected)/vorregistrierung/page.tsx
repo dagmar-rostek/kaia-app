@@ -2,6 +2,7 @@ export const dynamic = "force-dynamic"
 
 import { Users, UserX } from "lucide-react"
 import { RemoveButton } from "./RemoveButton"
+import { SilentDeleteButton } from "./SilentDeleteButton"
 
 const API = process.env.INTERNAL_API_URL ?? "http://localhost:8000/api"
 const AUTH = `Bearer ${process.env.ADMIN_PASSWORD ?? ""}`
@@ -119,10 +120,13 @@ export default async function VorregistrierungAdminPage() {
           </h2>
           <div className="space-y-1">
             {removed.map(e => (
-              <div key={e.id} className="rounded-lg border border-border/50 bg-muted/20 px-4 py-2.5 flex items-center gap-3 opacity-60">
-                <span className="text-sm line-through text-muted-foreground">{e.name}</span>
-                <span className="text-xs text-muted-foreground">{e.email}</span>
-                <span className="text-xs text-muted-foreground">{fmt(e.created_at)}</span>
+              <div key={e.id} className="rounded-lg border border-border/50 bg-muted/20 px-4 py-2.5 flex items-center gap-3">
+                <div className="flex-1 flex items-center gap-3 opacity-60 min-w-0">
+                  <span className="text-sm line-through text-muted-foreground shrink-0">{e.name}</span>
+                  <span className="text-xs text-muted-foreground">{e.email}</span>
+                  <span className="text-xs text-muted-foreground shrink-0">{fmt(e.created_at)}</span>
+                </div>
+                <SilentDeleteButton id={e.id} name={e.name} />
               </div>
             ))}
           </div>
