@@ -19,13 +19,21 @@ export function ApproveButton({ userId }: { userId: number }) {
   )
 }
 
-export function RejectButton({ userId }: { userId: number }) {
+export function RejectButton({ userId, compact = false }: { userId: number; compact?: boolean }) {
   const [open, setOpen] = useState(false)
   const [reason, setReason] = useState("")
   const [pending, startTransition] = useTransition()
 
   if (!open) {
-    return (
+    return compact ? (
+      <button
+        onClick={() => setOpen(true)}
+        className="p-1.5 rounded-md text-muted-foreground hover:text-red-500 hover:bg-red-500/10 transition-colors"
+        title="Ablehnen"
+      >
+        <XCircle className="h-3.5 w-3.5" />
+      </button>
+    ) : (
       <button
         onClick={() => setOpen(true)}
         className="inline-flex items-center gap-1.5 rounded-md bg-red-500/10 border border-red-500/20 px-3 py-1.5 text-xs font-medium text-red-700 dark:text-red-400 hover:bg-red-500/20 transition-colors"
@@ -59,12 +67,20 @@ export function RejectButton({ userId }: { userId: number }) {
   )
 }
 
-export function DeleteButton({ userId }: { userId: number }) {
+export function DeleteButton({ userId, compact = false }: { userId: number; compact?: boolean }) {
   const [confirm, setConfirm] = useState(false)
   const [pending, startTransition] = useTransition()
 
   if (!confirm) {
-    return (
+    return compact ? (
+      <button
+        onClick={() => setConfirm(true)}
+        className="p-1.5 rounded-md text-muted-foreground hover:text-red-500 hover:bg-red-500/10 transition-colors"
+        title="Löschen"
+      >
+        <Trash2 className="h-3.5 w-3.5" />
+      </button>
+    ) : (
       <button
         onClick={() => setConfirm(true)}
         className="inline-flex items-center gap-1.5 rounded-md bg-red-500/10 border border-red-500/20 px-3 py-1.5 text-xs font-medium text-red-700 dark:text-red-400 hover:bg-red-500/20 transition-colors"

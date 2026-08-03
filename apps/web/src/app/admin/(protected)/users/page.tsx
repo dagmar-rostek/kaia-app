@@ -171,8 +171,8 @@ export default async function UsersPage() {
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-1 justify-end">
                         <UserMailButton userId={u.id} username={u.username} />
-                        <RejectButton userId={u.id} />
-                        <DeleteButton userId={u.id} />
+                        <RejectButton userId={u.id} compact />
+                        <DeleteButton userId={u.id} compact />
                       </div>
                     </td>
                   </tr>
