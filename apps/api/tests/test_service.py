@@ -23,6 +23,7 @@ def user_repo():
     repo.get_by_id = AsyncMock(return_value=None)
     repo.create = AsyncMock(side_effect=lambda u: u)
     repo.save = AsyncMock(side_effect=lambda u: u)
+    repo.hard_delete = AsyncMock()
     return repo
 
 
@@ -189,6 +190,27 @@ async def test_refresh_reuse_detected(auth_service, token_repo):
     assert "Wiederverwendung" in exc.value.message
 
 
+@pytest.mark.asyncio
+async def test_refresh_success(auth_service, token_repo):
+    stored = MagicMock()
+    stored.revoked_at = None
+    stored.expires_at = datetime.now(UTC) + timedelta(hours=1)
+    stored.family = "test-family"
+    stored.user_id = 1
+    token_repo.get_by_hash = AsyncMock(return_value=stored)
+    token_repo.create = AsyncMock()
+    with patch("app.domains.users.service.create_access_token", return_value="access_tok"):
+        with patch(
+            "app.domains.users.service.create_refresh_token",
+            return_value=("raw_tok", "hash_tok"),
+        ):
+            access, raw = await auth_service.refresh("validtoken")
+    assert access == "access_tok"
+    assert raw == "raw_tok"
+    assert stored.revoke_reason == "rotated"
+    token_repo.create.assert_called_once()
+
+
 # ── AuthService.logout ────────────────────────────────────────────────────────
 
 
@@ -221,12 +243,11 @@ async def test_user_export_returns_user(user_service):
 
 
 @pytest.mark.asyncio
-async def test_user_delete_anonymizes(user_service, token_repo, user_repo):
+async def test_user_delete_hard_deletes(user_service, token_repo, user_repo):
     user = _make_user()
     await user_service.delete(user, "user_request")
-    assert user.status == UserStatus.DELETED
-    assert "anonymized" in user.email
     token_repo.revoke_all_for_user.assert_called_once()
+    user_repo.hard_delete.assert_called_once_with(user)
 
 
 @pytest.mark.asyncio
@@ -362,3 +383,19 @@ async def test_reset_password_success(auth_service_with_reset, user_repo, reset_
     await auth_service_with_reset.reset_password("validtoken", "newSecure123!")
     assert stored.used_at is not None
     token_repo.revoke_all_for_user.assert_called_once_with(user.id, "password_reset")
+
+
+@pytest.mark.asyncio
+async def test_reset_password_deleted_user(auth_service_with_reset, user_repo, reset_repo):
+    user = _make_user(status=UserStatus.DELETED)
+    user_repo.get_by_id = AsyncMock(return_value=user)
+    stored = MagicMock(spec=PasswordResetToken)
+    stored.used_at = None
+    stored.expires_at = datetime.now(UTC) + timedelta(hours=1)
+    stored.user_id = user.id
+    reset_repo.get_by_hash = AsyncMock(return_value=stored)
+    reset_repo.save = AsyncMock()
+    with pytest.raises(AuthError) as exc:
+        await auth_service_with_reset.reset_password("validtoken", "newpass123!")
+    assert exc.value.status_code == 400
+    assert "Konto" in exc.value.message
