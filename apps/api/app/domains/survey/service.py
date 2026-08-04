@@ -3,7 +3,7 @@ import json
 
 import httpx
 import structlog
-from anthropic import AsyncAnthropic
+from openai import AsyncOpenAI
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -14,7 +14,7 @@ from app.domains.survey.schemas import JourneyStateEnum, JourneyStateResponse
 
 log = structlog.get_logger()
 
-_PROFILE_MODEL = "claude-haiku-4-5-20251001"
+_PROFILE_MODEL = "gpt-4.1-mini"
 _PROFILE_SYSTEM = (
     "Du bist ein Lernbegleitungs-Assistent fuer KAIA.\n"
     "Du erhaeltst MSLQ-Subskalen-Scores (Skala 1-7) und einen GSE-Gesamtscore (Skala 1-4).\n"
@@ -82,21 +82,20 @@ async def maybe_create_learning_profile(user_id: int) -> None:
             f"GSE-Gesamtscore: {gse_score:.2f} (Skala 1-4)"
         )
 
-        client = AsyncAnthropic(
-            api_key=settings.anthropic_api_key,
+        client = AsyncOpenAI(
+            api_key=settings.openai_api_key,
             timeout=httpx.Timeout(connect=10.0, read=30.0, write=10.0, pool=5.0),
         )
         try:
-            response = await client.messages.create(
+            response = await client.chat.completions.create(
                 model=_PROFILE_MODEL,
                 max_tokens=200,
-                system=_PROFILE_SYSTEM,
-                messages=[{"role": "user", "content": prompt_input}],
+                messages=[
+                    {"role": "system", "content": _PROFILE_SYSTEM},
+                    {"role": "user", "content": prompt_input},
+                ],
             )
-            from anthropic.types import TextBlock
-
-            block = response.content[0]
-            interpretation = block.text.strip() if isinstance(block, TextBlock) else ""
+            interpretation = (response.choices[0].message.content or "").strip()
         except Exception as exc:
             log.error("profile_interpretation_failed", user_id=user_id, error=str(exc))
             interpretation = ""

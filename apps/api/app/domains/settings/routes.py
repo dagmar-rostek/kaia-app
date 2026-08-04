@@ -24,11 +24,8 @@ router = APIRouter(
 # ── Verfügbare Modelle ────────────────────────────────────────────────────────
 
 _ALL_MODELS = [
-    {"id": "claude-sonnet-5", "label": "Claude Sonnet 5", "provider": "anthropic"},
-    {"id": "claude-sonnet-4-6", "label": "Claude Sonnet 4.6", "provider": "anthropic"},
-    {"id": "claude-haiku-4-5-20251001", "label": "Claude Haiku 4.5", "provider": "anthropic"},
-    {"id": "gpt-5.6-terra", "label": "GPT-5.6 Terra", "provider": "openai"},
     {"id": "gpt-4.1-mini", "label": "GPT-4.1 mini", "provider": "openai"},
+    {"id": "gpt-5.6-terra", "label": "GPT-5.6 Terra", "provider": "openai"},
     {"id": "gpt-4o", "label": "GPT-4o (Legacy)", "provider": "openai"},
     {"id": "gpt-4o-mini", "label": "GPT-4o mini (Legacy)", "provider": "openai"},
     {"id": "mistral-large-latest", "label": "Mistral Large", "provider": "mistral"},
@@ -39,9 +36,7 @@ _ALL_MODELS = [
 def _available_models() -> list[dict[str, str]]:
     result = []
     for m in _ALL_MODELS:
-        if m["provider"] == "anthropic":
-            result.append(m)
-        elif m["provider"] == "openai" and settings.openai_api_key:
+        if m["provider"] == "openai" and settings.openai_api_key:
             result.append(m)
         elif m["provider"] == "mistral" and settings.mistral_api_key:
             result.append(m)
