@@ -11,6 +11,7 @@ from app.domains.users.routes import router as users_router
 
 from .admin import router as admin_router
 from .bugreport import router as bugreport_router
+from .export import router as export_router
 from .health import router as health_router
 
 v1_router = APIRouter(prefix="/api/v1")
@@ -19,6 +20,7 @@ v1_router.include_router(bugreport_router)
 v1_router.include_router(auth_router)
 v1_router.include_router(users_router)
 v1_router.include_router(admin_router)
+v1_router.include_router(export_router)
 v1_router.include_router(eval_router)
 v1_router.include_router(settings_router)
 v1_router.include_router(prereg_router)
