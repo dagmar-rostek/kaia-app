@@ -1,8 +1,8 @@
 "use client"
 
 import { useState, useTransition } from "react"
-import { CheckCircle2, XCircle, Loader2, Trash2, Mail } from "lucide-react"
-import { approveUser, rejectUser, deleteUser, sendStudyStartMails, sendUserStudyStartMail } from "./actions"
+import { CheckCircle2, XCircle, Loader2, Trash2, Mail, FlaskConical } from "lucide-react"
+import { approveUser, rejectUser, deleteUser, sendStudyStartMails, sendUserStudyStartMail, seedCompletion } from "./actions"
 
 export function ApproveButton({ userId }: { userId: number }) {
   const [pending, startTransition] = useTransition()
@@ -132,6 +132,36 @@ export function UserMailButton({ userId, username }: { userId: number; username:
       title="Studienstart-Mail senden"
     >
       {pending ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Mail className="h-3.5 w-3.5" />}
+    </button>
+  )
+}
+
+export function SeedCompletionButton({ userId }: { userId: number }) {
+  const [done, setDone] = useState(false)
+  const [pending, startTransition] = useTransition()
+
+  if (done) {
+    return (
+      <span className="p-1.5 text-emerald-500" title="Post-Survey angelegt">
+        <CheckCircle2 className="h-3.5 w-3.5" />
+      </span>
+    )
+  }
+
+  return (
+    <button
+      disabled={pending}
+      onClick={() =>
+        startTransition(async () => {
+          if (!confirm("Synthetische Post-Survey-Daten anlegen (pre = post)?")) return
+          const ok = await seedCompletion(userId)
+          if (ok) setDone(true)
+        })
+      }
+      className="p-1.5 rounded-md text-muted-foreground hover:text-violet-500 hover:bg-violet-500/10 transition-colors disabled:opacity-40"
+      title="Auf COMPLETED setzen (Sim)"
+    >
+      {pending ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <FlaskConical className="h-3.5 w-3.5" />}
     </button>
   )
 }

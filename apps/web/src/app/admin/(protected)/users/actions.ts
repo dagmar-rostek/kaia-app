@@ -62,3 +62,11 @@ export async function sendUserStudyStartMail(userId: number): Promise<boolean> {
   })
   return res.ok
 }
+
+export async function seedCompletion(userId: number): Promise<boolean> {
+  const res = await fetch(`${API}/v1/admin/users/${userId}/seed-completion`, {
+    method: "POST",
+    headers: adminHeaders(),
+  })
+  return res.ok
+}

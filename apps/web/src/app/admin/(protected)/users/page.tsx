@@ -1,7 +1,7 @@
 export const dynamic = "force-dynamic"
 
 import { Clock, CheckCircle2, XCircle, Users, AlertTriangle } from "lucide-react"
-import { ApproveButton, RejectButton, DeleteButton, StudyStartMailButton, UserMailButton } from "./UserActions"
+import { ApproveButton, RejectButton, DeleteButton, StudyStartMailButton, UserMailButton, SeedCompletionButton } from "./UserActions"
 import { UserModelSelector } from "./UserModelSelector"
 
 const API = process.env.INTERNAL_API_URL ?? process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000/api"
@@ -20,6 +20,7 @@ interface AdminUser {
   created_at: string
   learning_topic: string | null
   kaia_model: string | null
+  is_simulation: boolean
 }
 
 async function fetchUsers(): Promise<AdminUser[]> {
@@ -170,6 +171,7 @@ export default async function UsersPage() {
                     <td className="px-4 py-3 text-muted-foreground text-xs">{fmt(u.last_login_at)}</td>
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-1 justify-end">
+                        {u.is_simulation && <SeedCompletionButton userId={u.id} />}
                         <UserMailButton userId={u.id} username={u.username} />
                         <RejectButton userId={u.id} compact />
                         <DeleteButton userId={u.id} compact />
