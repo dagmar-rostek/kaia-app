@@ -42,22 +42,24 @@ async def create_session(
     db: AsyncSession = Depends(get_db),  # noqa: B008
 ) -> SessionResponse:
     repo = ChatRepository(db)
+    is_sim = getattr(user, "is_simulation", False)
     journey = await get_journey_state(user.id, db)
-    if journey.state == JourneyStateEnum.PRE_PENDING:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail={"code": "pre_survey_required", "redirect": "/survey/pre"},
-        )
-    if journey.state == JourneyStateEnum.POST_PENDING:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail={"code": "post_survey_required", "redirect": "/survey/post"},
-        )
-    if journey.state == JourneyStateEnum.COMPLETED:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail={"code": "study_completed"},
-        )
+    if not is_sim:
+        if journey.state == JourneyStateEnum.PRE_PENDING:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail={"code": "pre_survey_required", "redirect": "/survey/pre"},
+            )
+        if journey.state == JourneyStateEnum.POST_PENDING:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail={"code": "post_survey_required", "redirect": "/survey/post"},
+            )
+        if journey.state == JourneyStateEnum.COMPLETED:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail={"code": "study_completed"},
+            )
     # Cost guard — skip for simulation users (is_simulation flag set by runner)
     if not getattr(user, "is_simulation", False):
         row = await db.execute(
