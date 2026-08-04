@@ -16,6 +16,7 @@ from app.domains.chat.schemas import (
     FeedbackResponse,
     MessageCreate,
     SessionCreate,
+    SessionListItem,
     SessionReport,
     SessionResponse,
     SessionSummaryResponse,
@@ -121,6 +122,16 @@ async def list_sessions(
     repo = ChatRepository(db)
     sessions = await repo.list_sessions(user.id)
     return [SessionResponse.model_validate(s) for s in sessions]
+
+
+@router.get("/sessions/summary", response_model=list[SessionListItem])
+async def list_sessions_summary(
+    user: CurrentUser,
+    db: AsyncSession = Depends(get_db),  # noqa: B008
+) -> list[SessionListItem]:
+    """Return all sessions with message count — used by the completion screen."""
+    rows = await ChatRepository(db).list_sessions_with_count(user.id)
+    return [SessionListItem.model_validate(row) for row in rows]
 
 
 @router.get("/sessions/active", response_model=SessionWithMessages)

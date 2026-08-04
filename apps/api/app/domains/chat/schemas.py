@@ -109,5 +109,16 @@ class SessionSummaryResponse(BaseModel):
     ready: bool = False  # False when summary not yet generated
 
 
+# ── Sessions List with Count ───────────────────────────────────────────────────
+
+
+class SessionListItem(BaseModel):
+    id: int
+    session_number: int
+    started_at: datetime
+    ended_at: datetime | None
+    message_count: int
+
+
 # Update forward ref
 SessionWithMessages.model_rebuild()

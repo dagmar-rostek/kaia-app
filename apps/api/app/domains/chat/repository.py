@@ -104,6 +104,24 @@ class ChatRepository:
         )
         return list(result.scalars().all())
 
+    async def list_sessions_with_count(self, user_id: int) -> list[dict[str, object]]:
+        from sqlalchemy import text
+
+        result = await self.db.execute(
+            text(
+                "SELECT cs.id, cs.session_number, cs.started_at, cs.ended_at, "
+                "COUNT(m.id) AS message_count "
+                "FROM chat_sessions cs "
+                "LEFT JOIN messages m ON m.session_id = cs.id "
+                "WHERE cs.user_id = :uid "
+                "GROUP BY cs.id "
+                "ORDER BY cs.started_at ASC "
+                "LIMIT 50"
+            ),
+            {"uid": user_id},
+        )
+        return [dict(r._mapping) for r in result]
+
     async def get_previous_session(self, user_id: int, before_id: int) -> ChatSession | None:
         """Return the most recent session before the given id (ended or not).
 

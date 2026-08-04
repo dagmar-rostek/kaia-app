@@ -77,6 +77,7 @@ class UserAdminRead(BaseModel):
     created_at: datetime
     learning_topic: str | None = None
     kaia_model: str | None = None
+    is_simulation: bool = False
 
     model_config = {"from_attributes": True}
 

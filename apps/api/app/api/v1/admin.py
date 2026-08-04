@@ -299,6 +299,43 @@ async def send_single_study_start_mail(
     return {"sent": user.email}
 
 
+@router.post("/users/{user_id}/seed-completion", status_code=204)
+async def seed_completion(
+    user_id: int,
+    db: Annotated[AsyncSession, Depends(get_db)],
+) -> None:
+    """Seed synthetic post-survey results for simulation users.
+
+    Copies pre-survey values verbatim as post values — clearly marked as test data.
+    Only permitted for is_simulation=True users.
+    """
+    from app.domains.survey.models import MeasurementType
+    from app.domains.survey.repository import SurveyRepository
+    from app.domains.survey.service import compute_subscale_scores
+
+    user = await _get_user_or_404(user_id, db)
+    if not user.is_simulation:
+        raise HTTPException(400, "Nur für Simulationsuser erlaubt.")
+
+    repo = SurveyRepository(db)
+
+    pre_gse = await repo.get_gse_result(user.id, MeasurementType.PRE)
+    post_gse = await repo.get_gse_result(user.id, MeasurementType.POST)
+    if pre_gse and not post_gse:
+        await repo.create_gse_result(user.id, MeasurementType.POST, list(pre_gse.items))
+
+    pre_mslq = await repo.get_mslq_result(user.id, MeasurementType.PRE)
+    post_mslq = await repo.get_mslq_result(user.id, MeasurementType.POST)
+    if pre_mslq and not post_mslq:
+        items: dict[str, int] = {k: int(v) for k, v in pre_mslq.items.items()}
+        await repo.create_mslq_result(
+            user.id,
+            MeasurementType.POST,
+            items,
+            compute_subscale_scores(items),
+        )
+
+
 @router.delete("/reset-test-user", status_code=204)
 async def reset_test_user(
     db: Annotated[AsyncSession, Depends(get_db)],
