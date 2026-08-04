@@ -14,6 +14,7 @@ import {
   BookOpen,
   CalendarDays,
   ArrowRight,
+  LineChart,
 } from "lucide-react"
 
 async function fetchHealth() {
@@ -109,6 +110,15 @@ const QUICK_LINKS: QuickLink[] = [
     accent: "bg-indigo-500/10",
     iconColor: "text-indigo-400",
     badge: "Thesis-Eval",
+  },
+  {
+    href: "/admin/auswertung",
+    icon: LineChart,
+    label: "Auswertung",
+    desc: "Studienauswertung — GSE-Deltas, MSLQ-Subskalen, CSV- und PDF-Export je Teilnehmenden.",
+    accent: "bg-teal-500/10",
+    iconColor: "text-teal-400",
+    badge: "Studie",
   },
 ]
 
