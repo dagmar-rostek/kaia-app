@@ -9,8 +9,47 @@
 
 ---
 
-**Stand heute:** 2. August 2026  
-**~271 Einträge insgesamt · 36 Release-Tage · ~180 h Gesamt-Aufwand**
+**Stand heute:** 4. August 2026  
+**~282 Einträge insgesamt · 38 Release-Tage · ~200 h Gesamt-Aufwand**
+
+---
+
+## 2026-08-03/04 — Feature Freeze · LLM-Umbau auf OpenAI · Abschluss-Seite · Studie-Exportstack
+
+**04.08.2026 · `c1bfbfd`** — **LLM-Architektur-Umbau: Anthropic vollständig entfernt.** `_iter_llm()` als einheitlicher Streaming-Einstiegspunkt für alle LLM-Calls — ein Code-Pfad, kein Provider-spezifischer Branch mehr. Anthropic-SDK aus Dependencies entfernt, kein impliziter Claude-Fallback möglich. Standard-Modell ab sofort `gpt-4.1-mini`. Commits `c1bfbfd` · `6cb57bb` · `39927e7` · `ab42e15`. · `5h`  
+*feat: implement real-time token streaming via _iter_llm, remove Anthropic*
+
+**04.08.2026 · `e220155`** — **thinking_strip vollständig wiederhergestellt.** `<thinking>`-Blöcke werden gepuffert und vor dem SSE-Output entfernt — Nutzer:innen sehen nie die internen Klassifikationsschritte des V7-Warm-Prompts. Warnung im Log wenn Block unvollständig (verhindert stilles Partiell-Strippen). meta_question max_tokens auf 400 erhöht (Meta-Fragen wurden gelegentlich abgeschnitten). · `1h 15min`  
+*fix: strip <thinking> blocks before SSE output, restore thinking_strip*
+
+**04.08.2026 · `74cfa37`** — Unit-Tests für `_provider()` und `_iter_llm()` ergänzt — Coverage-Gate (65%) nach dem LLM-Umbau wiederhergestellt. CI wieder grün. · `1h 30min`  
+*test: add _provider and _iter_llm unit tests to restore coverage above 65%*
+
+**04.08.2026 · `6618853`** — **Abschluss-Seite `/abschluss`**: GSE prä/post-Vergleich (numerische Werte + Differenz), MSLQ-Subskalen als Balkengrafik (4 Subskalen: Kognition, Motivation, Lernstrategie, Ressourcenmanagement), Session-Tabelle (alle 10 Sessions mit Datum und Message-Count), Reflexionsfeld, PDF-Button. Zentrale Ergebnisdarstellung für Studienteilnehmende nach Abschluss aller 10 Sessions — zeigt die persönliche Entwicklung der Selbstwirksamkeitserwartung. · `3h`  
+*feat: implement /abschluss completion screen with GSE/MSLQ comparison*
+
+**04.08.2026 · `b83add6`** — `GET /api/v1/chat/sessions/summary` Endpoint: liefert `message_count` pro Session für die Abschluss-Seite. Seed-Completion-Logik für Simulation-User (MSLQ/GSE-Dummy-Werte, 10 Session-Stubs) — macht `/abschluss` testbar ohne echte 10 Sessions zu durchlaufen. · `1h`  
+*feat: add sessions/summary endpoint and seed-completion for sim users*
+
+**04.08.2026 · `270cec7`** — Admin-Button "Studie abschließen" für Simulation-User: setzt Journey-State manuell auf COMPLETED (ausschließlich `is_simulation=True`). Vollständiger Test des Abschluss-Flows in wenigen Klicks. · `30min`  
+*feat: add seed-completion button for simulation users in admin panel*
+
+**04.08.2026 · `c81c06d`** — **Studien-Export-Endpoints:** `GET /api/v1/admin/export/participants.csv` — 37 Spalten, R-ready, participant_ids (P01/P02 Pseudonymisierung), alle 10 GSE-Items + 4 MSLQ-Subskalen + Session-Counts. `GET /api/v1/admin/users/{id}/export/pdf` — WeasyPrint, Chat-Transkripte + Scores. Direkter Eingang für R-Analysen nach Studienende ohne manuelles Datenzusammenführen. · `3h`  
+*feat: add admin export endpoints for study data (CSV + PDF)*
+
+**04.08.2026 · `924cbf4`** · **`9b6dd1a`** — **Admin-Auswertungsseite `/admin/auswertung`**: Tabelle aller COMPLETED-Teilnehmenden mit Aggregate-Stats (Ø GSE prä/post, Ø MSLQ-Subskalen über alle Abgeschlossenen), Einzel-Download-Buttons für CSV und PDF direkt aus der Tabellenzeile. Anthropic vollständig aus Model-Selector und Survey-Profile-Service entfernt. · `2h`  
+*feat: add Auswertung admin page with per-participant CSV/PDF export*
+
+**03.08.2026 · `bd1da0e`** — **Studienstart-Mail pro Teilnehmer:in**: Admin kann Studienstart-Nachricht an einzelne Accounts senden. Simulation-User (`is_simulation=True`) werden automatisch aus Sammel-Versand ausgeschlossen — kein versehentlicher Mail-Blast an Test-Accounts. · `45min`  
+*feat: per-user study-start mail + exclude simulation users from bulk send*
+
+**03.08.2026 · `c408a30`** · **`070c873`** · **`befc217`** · **`d22e808`** · **`f1e3816`** — **Admin-Fixes:** Kompakte Icon-only-Buttons in Aktiv-User-Tabelle (Platzersparnis). Delete-Button direkt in der Aktiv-Ansicht. Hard-Delete für Vorregistrierungen (kein Soft-Delete, keine Benachrichtigungs-E-Mail). Delete-Button auch in Entfernt-Ansicht sichtbar. Admin-Remove als Hard-Delete aus DB (kein Soft-Delete-Zombie). Onboarding-Thema wird vorausgefüllt wenn Profil vorhanden. · `1h 30min`  
+*fix: compact icon-only buttons · add delete buttons · hard-delete pre-registrations*
+
+**02.08.2026 · `d42af66`** — **Topic-Lock (Thema-Anker) im V7-Warm-Prompt**: KAIA verankert das Lernthema aus dem Onboarding explizit als Gesprächsanker — verhindert thematischen Drift in späteren Sessions. Alle 10 Sessions bleiben auf das deklarierte Lernthema fokussiert. · `30min`  
+*feat: add topic-lock (Thema-Anker) to V7 warm prompt*
+
+**Thesis-Relevanz (02.–04.08.):** Feature Freeze — das Produkt ist studienbereit, ab jetzt nur noch Bugfixes. LLM-Umbau zu OpenAI-only-Stack vereinfacht den DPA-Status (ein statt zwei US-Anbieter für Chat-Daten; Mistral bleibt als EU-Provider erhalten). thinking_strip ist OWASP-LLM-Top-10-Pflicht (Insecure Output Handling). Abschluss-Seite zeigt Teilnehmenden ihren persönlichen GSE-Prä/Post-Vergleich — erste sichtbare Messung der Selbstwirksamkeitsveränderung im Prototyp. CSV-Export (37 Spalten, R-ready) ist der direkte Eingang für die statistische Auswertung nach Studienende. · `~22h gesamt`
 
 ---
 

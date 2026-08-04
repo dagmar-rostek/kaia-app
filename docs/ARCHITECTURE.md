@@ -4,7 +4,7 @@
 > Jede strukturelle Änderung muss hier dokumentiert werden.
 > Die `/architektur`-Seite im Frontend rendert dieses Dokument direkt.
 
-**Stand:** 2. August 2026
+**Stand:** 4. August 2026
 
 ---
 
@@ -26,8 +26,7 @@ Browser (Next.js)
                         │
                         ├── PostgreSQL 16 + pgvector
                         │
-                        ├── Anthropic API  (claude-sonnet-4-6, claude-haiku-4-5)
-                        ├── OpenAI API     (gpt-4o, gpt-5.6-terra, gpt-4.1-mini)
+                        ├── OpenAI API     (gpt-4.1-mini, gpt-5.6-terra, gpt-4o)
                         ├── Mistral API    (mistral-large-latest, mistral-small-latest)
                         │
                         └── Sentry / Slack / structlog
@@ -53,7 +52,7 @@ Hosting: Hetzner CX23, Helsinki (EU). Kein Drittanbieter-Cloud-Deployment.
 | State           | React Query                                        | Server-State, Caching |
 | API-Validation  | Zod                                                | Laufzeit-Typprüfung FE |
 | LLM-Streaming   | Server-Sent Events (SSE)                           | Echtzeitausgabe, kein WebSocket-Overhead |
-| LLM-Provider    | Anthropic SDK + OpenAI SDK (auch Mistral)          | Drei Provider für LLM-Eval |
+| LLM-Provider    | OpenAI SDK (auch Mistral über OpenAI-komp. API)    | Zwei Provider: OpenAI + Mistral (EU) |
 | Prompt-Mgmt     | DB-gespeichert + Jinja2, live editierbar           | Kein Deploy für Prompt-Updates |
 | Observability   | Sentry (FE + BE), Slack-Webhooks, structlog JSON   | Fehler + Business-Events |
 | CI/CD           | GitHub Actions                                     | Pre-Commit: mypy, ruff, commitlint |
@@ -104,7 +103,8 @@ kaia-app/
 │           │   ├── (app)/           Geschützter Bereich (AuthGuard)
 │           │   │   ├── chat/                 Chat mit KAIA (SSE, EMA-Buttons)
 │           │   │   ├── onboarding/           Onboarding-Flow
-│           │   │   └── survey/               Pre/Post MSLQ + GSE
+│           │   │   ├── survey/               Pre/Post MSLQ + GSE
+│           │   │   └── abschluss/            Abschluss-Seite (GSE/MSLQ prä/post, Session-Tabelle)
 │           │   └── admin/           Admin-Bereich (Server Component Layout)
 │           │       ├── page.tsx              Dashboard + API-Health
 │           │       ├── users/                User-Approval (pending/aktiv/gesperrt)
@@ -116,6 +116,7 @@ kaia-app/
 │           │       ├── thesis/               Live-Thesis-Cockpit (Kapitel 1–6)
 │           │       ├── production-readiness/ Deployment-Checkliste
 │           │       ├── roadmap/              Feature-Roadmap
+│           │       ├── auswertung/           Studien-Auswertung (COMPLETED-Tabelle, CSV/PDF-Download)
 │           │       ├── kosten/               LLM-Kostenübersicht
 │           │       ├── release-notes/        Changelog-Viewer
 │           │       ├── architektur/          Architektur-Viewer
@@ -276,6 +277,7 @@ Alle Endpunkte unter `/api/v1/`. Vollständige OpenAPI-Dokumentation unter `/api
 | POST    | /chat/sessions                          | Neue Session erstellen (403 bei falschen Journey-States) |
 | GET     | /chat/sessions                          | Alle Sessions des Users |
 | GET     | /chat/sessions/active                   | Aktive Session (falls vorhanden) |
+| GET     | /chat/sessions/summary                  | message_count pro Session (für Abschluss-Seite) |
 | GET     | /chat/sessions/{id}                     | Session-Details |
 | POST    | /chat/sessions/{id}/messages            | Nutzer-Nachricht → SSE-Stream (KAIAs Antwort) |
 | POST    | /chat/sessions/{id}/opening             | Session-Eröffnung → SSE-Stream |
@@ -305,6 +307,8 @@ Alle Endpunkte unter `/api/v1/`. Vollständige OpenAPI-Dokumentation unter `/api
 | GET     | /admin/prompts          | Alle Prompt-Templates |
 | POST    | /admin/prompts          | Neues Template erstellen |
 | PATCH   | /admin/prompts/{id}     | Template aktualisieren (Study-Lock-Guard) |
+| GET     | /admin/export/participants.csv | Studien-CSV-Export (37 Spalten, R-ready, P01/P02 IDs) |
+| GET     | /admin/users/{id}/export/pdf   | PDF-Export: Chat-Transkripte + Scores (WeasyPrint) |
 
 ### Eval
 
@@ -328,19 +332,17 @@ Alle Endpunkte unter `/api/v1/`. Vollständige OpenAPI-Dokumentation unter `/api
 
 ## LLM-Provider-Abstraktion
 
-### Unterstützte Modelle (Stand Juli 2026)
+### Unterstützte Modelle (Stand August 2026)
+
+Anthropic wurde vollständig entfernt (August 2026). Alle LLM-Calls laufen über `_iter_llm()` mit dem OpenAI SDK — für Mistral über die OpenAI-kompatible API (anderer Base-URL).
 
 | Provider   | Modell-ID                       | Verwendung |
 |------------|---------------------------------|---|
-| Anthropic  | claude-sonnet-4-6               | Primärer Chat-Provider |
-| Anthropic  | claude-haiku-4-5-20251001       | Session-Summary, Profil-Interpretation |
+| OpenAI     | gpt-4.1-mini                    | Primärer Chat-Provider (Standard) |
 | OpenAI     | gpt-4o                          | LLM-Eval |
 | OpenAI     | gpt-5.6-terra                   | LLM-Eval |
-| OpenAI     | gpt-4.1-mini                    | LLM-Eval |
 | Mistral    | mistral-large-latest            | LLM-Eval (EU-Provider) |
 | Mistral    | mistral-small-latest            | LLM-Eval (EU-Provider) |
-
-Mistral-Calls laufen über die OpenAI-kompatible API (OpenAI SDK mit anderem Base-URL).
 
 ### Per-User-Modell-Override
 
@@ -351,7 +353,6 @@ ohne Code-Änderung.
 ### API-Besonderheiten
 
 - **GPT-5.x:** `max_completion_tokens` statt `max_tokens` (OpenAI API-Änderung)
-- **Anthropic Prompt Caching:** aktiviert für System-Prompts und Session-Kontext (Input-Token-Kosten reduziert)
 - **Rate-Limit-Retry:** exponentieller Backoff bei 429-Antworten aller Provider
 
 ### Datenfluss LLM-Calls
@@ -369,9 +370,9 @@ _build_system_prompt(PromptContext)
         + Layer-1-Profil + Layer-2-Session-History injiziert
         │
         ▼
-Provider-SDK-Call (Anthropic / OpenAI / Mistral)
+_iter_llm() — einheitlicher Streaming-Einstiegspunkt (OpenAI SDK / Mistral)
         │
-        ├── <thinking>-Block strippen (Anthropic Extended Thinking)
+        ├── <thinking>-Block strippen (gepuffert, vor SSE-Ausgabe)
         ├── SSE-Chunks an Frontend streamen
         │
         ▼
@@ -550,6 +551,7 @@ Passwort-Hashing: bcrypt direkt (12 Runden) + SHA-256-Pre-Hash. passlib ist entf
 - **pgvector:** Vektorsuche immer mit `user_id`-Filter
 - **Admin-Aktionen:** Audit-Log mit Timestamp
 - **Crisis-Detection:** Pre-Filter vor jedem LLM-Call, 20+ deutsche Regex-Muster (Suizidgedanken, Selbstverletzung). Bei Treffer: statische Eskalations-Antwort, kein LLM-Processing.
+- **thinking_strip:** `<thinking>`-Blöcke des V7-Prompts werden gepuffert und vor dem SSE-Output entfernt (OWASP LLM Top 10: Insecure Output Handling).
 - **Study-Lock:** Bei `STUDY_MODE=locked` blockt CI Prompt- und Schema-Änderungen
 
 ### Study-Lock-Modi
@@ -567,7 +569,7 @@ Passwort-Hashing: bcrypt direkt (12 Runden) + SHA-256-Pre-Hash. passlib ist entf
 - Art. 15–21: DSGVO-Rechte implementiert (Auskunft, Löschung, Berichtigung)
 - Art. 17: Admin DELETE /admin/users/{id} — vollständige Datenlöschung
 - KI-Disclosure: expliziter Hinweis vor Onboarding (computational empathy, kein Mensch)
-- DPAs mit Anthropic, OpenAI, Mistral erforderlich
+- DPAs mit OpenAI, Mistral erforderlich (Anthropic entfernt August 2026)
 
 ### OWASP LLM Top 10
 
@@ -665,4 +667,4 @@ Vollständige ADRs unter `docs/adr/`.
 
 ---
 
-*Letzte Aktualisierung: 13. Juli 2026*
+*Letzte Aktualisierung: 4. August 2026*

@@ -2,6 +2,112 @@
 
 ---
 
+## 2026-08-03/04 — "Zwei Tage, drei Export-Formate, elf Commits und ein Feature Freeze der Geschichte"
+
+*Protokolliert vom Koordinator. Mit Zwangseinlagen vom AI Engineer, Data Scientist, QA-Tester, MLOps und Product Owner — alle etwas ungläubig, dass es wirklich vorbei ist.*
+
+---
+
+**08:20 Uhr — Die Inventur**
+
+Dagmar schreibt drei Wörter.
+
+"Was fehlt noch?"
+
+Der Koordinator verteilt die Frage. QA-Tester, Data Scientist und Product Owner bekommen sie gleichzeitig. Die Antwort kommt schneller als erwartet.
+
+> **Product Owner:** *„Vier Dinge. Abschluss-Seite mit GSE/MSLQ-Ergebnissen. CSV-Export für R. PDF-Export für Teilnehmende. Admin-Übersicht der abgeschlossenen Accounts."*  
+> **QA-Tester:** *„Und eine Möglichkeit, die Abschluss-Seite zu testen ohne zehn echte Sessions durchzulaufen."*  
+> **Data Scientist:** *„Der CSV braucht 37 Spalten. Mindestens. Pseudonymisierte participant_ids, alle GSE-Items einzeln, vier MSLQ-Subskalen, Session-Counts. R soll das direkt einlesen können ohne Preprocessing."*  
+> **Koordinator:** *„Wann können wir das liefern?"*  
+> **AI Engineer, kurze Pause:** *„Heute und morgen."*
+
+---
+
+**08:45 Uhr — Das Andere Thema: Anthropic**
+
+Parallel läuft eine stille Diskussion, die eigentlich schon seit zwei Tagen läuft.
+
+Der AI Engineer öffnet `service.py`. Drinnen: `if provider == "anthropic": ...` — ein eigener Code-Pfad, eigene SDK-Calls, eigene Exception-Typen. Daneben: `elif provider == "openai": ...` und `elif provider == "mistral": ...`. Drei getrennte Streaming-Implementierungen, alle leicht unterschiedlich.
+
+> **AI Engineer:** *„Das ist technische Schuld. Ich will `_iter_llm()` — eine Funktion, alle Provider, ein SSE-Pfad."*  
+> **Koordinator:** *„Und Anthropic?"*  
+> **AI Engineer:** *„Raus. gpt-4.1-mini ist das Standard-Modell. Mistral bleibt als EU-Provider. Anthropic hat keinen relevanten Vorteil mehr für die Studie."*  
+> **MLOps:** *„DPA-Status vereinfacht sich. Ein US-Anbieter weniger für Chat-Daten."*  
+> **Koordinator:** *„Machen wir."*
+
+Commit `c1bfbfd`. Anthropic-SDK aus den Dependencies. `_iter_llm()` übernimmt alles.
+
+---
+
+**09:30 Uhr — thinking_strip**
+
+Während `_iter_llm()` läuft, fällt dem AI Engineer etwas auf.
+
+> *„Die `thinking_strip`-Funktion war in einem früheren Refactor still deaktiviert worden. `<thinking>`-Blöcke des V7-Prompts — acht interne Klassifikationsschritte, Lazarus-Bewertung, Crisis-Detection, Rupture-Erkennung — gingen direkt in den SSE-Stream. Nutzer:innen haben die internen Gedanken von KAIA gelesen."*
+
+Stille im Raum.
+
+> **QA-Tester:** *„Wie lange?"*  
+> **AI Engineer:** *„Seit dem letzten Refactor. Nicht lange. Aber zu lange."*  
+> **Security:** *„OWASP LLM Top 10, Punkt 2. Insecure Output Handling. Das ist genau das."*
+
+`e220155` — thinking_strip wiederhergestellt. Pufferung vor SSE-Ausgabe, Warnung im Log wenn Block unvollständig.
+
+---
+
+**11:00 Uhr — Der Abschluss-Flow**
+
+`b83add6`: `GET /api/v1/chat/sessions/summary` — message_count pro Session. Seed-Completion für Simulation-User (MSLQ/GSE-Dummy-Werte, zehn Session-Stubs). `270cec7`: Admin-Button "Studie abschließen" setzt `is_simulation=True`-Accounts direkt auf COMPLETED. `6618853`: die Abschluss-Seite selbst.
+
+> **QA-Tester, nach dem ersten Test:** *„GSE-Differenz wird angezeigt. MSLQ-Subskalen als Balken. Alle Sessions in der Tabelle. Das ist was Teilnehmende nach zehn Sessions sehen wollen."*  
+> **Psychologe, uneingeladen im Channel:** *„Die Differenz-Anzeige darf nicht suggerieren, dass eine Verbesserung garantiert war. Das wäre Demand Characteristics im Nachgang."*  
+> **Koordinator:** *„Steht auf der Bugfix-Liste."*
+
+---
+
+**14:30 Uhr — Der Export-Stack**
+
+`c81c06d`. Zwei Endpoints.
+
+`GET /api/v1/admin/export/participants.csv` — 37 Spalten. participant_id (P01, P02...), gse_pre_1 bis gse_pre_10, gse_post_1 bis gse_post_10, mslq_kognition, mslq_motivation, mslq_lernstrategie, mslq_ressourcen, session_count, alle Timestamps. R liest das direkt ein.
+
+> **Data Scientist:** *„Das ist der Datensatz. Den übergebe ich nach Studienende an R. Kein manuelles Zusammenführen, kein Python-Preprocessing. read.csv() und fertig."*
+
+`GET /api/v1/admin/users/{id}/export/pdf` — WeasyPrint. Chat-Transkripte plus Scores pro Teilnehmer:in. Für Interviews, für Dokumentation, für die Thesis-Anhänge.
+
+`924cbf4`: Admin-Auswertungsseite `/admin/auswertung`. Tabelle aller COMPLETED-Accounts. Aggregate-Stats oben (Ø GSE, Ø MSLQ). Download-Buttons direkt in der Zeile.
+
+---
+
+**17:00 Uhr — Feature Freeze**
+
+Dagmar schreibt: "Ich glaube, das war's."
+
+Der Koordinator öffnet die Checkliste. Abschluss-Seite: check. CSV: check. PDF: check. Admin-Auswertungsseite: check. LLM-Umbau: check. thinking_strip: check. Admin-Fixes: check. Studienstart-Mail: check.
+
+> **Product Owner:** *„Alle Studien-Features sind implementiert."*  
+> **MLOps:** *„Server läuft. STUDY_MODE=pilot. Backup aktiv."*  
+> **QA-Tester:** *„Coverage über 65%. CI grün."*  
+> **AI Engineer:** *„gpt-4.1-mini antwortet. Mistral antwortet. Prompts funktionieren."*  
+> **Security:** *„RLS fehlt noch. Das wissen wir."*  
+> **Koordinator:** *„Feature Freeze. Ab heute nur noch Bugfixes."*
+
+Der AI Engineer schließt `service.py`. Das ist das erste Mal seit Monaten, dass er eine Datei schließt ohne direkt die nächste zu öffnen.
+
+---
+
+**Was diese zwei Tage gebracht haben:**  
+LLM-Architektur-Umbau (Anthropic entfernt, `_iter_llm()`, `gpt-4.1-mini` als Standard). thinking_strip wiederhergestellt. Abschluss-Seite `/abschluss` (GSE + MSLQ + Session-Tabelle). `GET /sessions/summary` Endpoint. Seed-Completion für Sim-User. CSV-Export (37 Spalten, R-ready). PDF-Export (WeasyPrint). Admin-Auswertungsseite `/admin/auswertung`. Studienstart-Mail pro User. Admin-Fixes (Hard-Delete, Icon-Buttons, Delete-Buttons). Topic-Lock im V7-Prompt.
+
+**Commits:** `d42af66` · `f1e3816` · `d22e808` · `94279c6` · `befc217` · `bd1da0e` · `070c873` · `c408a30` · `6cb57bb` · `ab42e15` · `39927e7` · `c1bfbfd` · `74cfa37` · `e220155` · `6fa09e4` · `b83add6` · `6618853` · `270cec7` · `c81c06d` · `924cbf4` · `9b6dd1a`
+
+**Kosten heute:** ca. $18–22 Claude Code (zwei lange Tage) · kein neuer Server-Overhead
+
+**Morgen:** Bugfixes nach erstem echten Test-Run. PostgreSQL RLS (steht seit Wochen auf der Liste, Security hat Recht). Studienstart 8. August.
+
+---
+
 ## 2026-08-02 — "Der Countdown läuft — sieben Findings, eine kommentierte Zeile und das günstigste Backup der Geschichte"
 
 *Protokolliert vom Koordinator. Mit Zwangseinlagen von Security, QA, Compliance und MLOps — alle gleichzeitig, zum ersten Mal.*

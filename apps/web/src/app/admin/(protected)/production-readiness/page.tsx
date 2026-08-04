@@ -78,6 +78,11 @@ export default async function ProductionReadinessPage() {
           detail: "kaia_system_v3_warm muss in prompt_templates aktiv sein (is_active=TRUE). V2 als Eval-Regression-Baseline erhalten (is_active=FALSE).",
           status: "ok",
         },
+        {
+          label: "LLM-Architektur: nur OpenAI + Mistral",
+          detail: "Anthropic-SDK entfernt (August 2026). _iter_llm() als einheitlicher Streaming-Einstiegspunkt. Standard-Modell: gpt-4.1-mini. Mistral über OpenAI-kompatible API.",
+          status: "ok",
+        },
       ],
     },
     {
@@ -176,6 +181,21 @@ export default async function ProductionReadinessPage() {
           label: "Datenschutzerklärung",
           detail: "DSGVO-konforme Einwilligungserklärung für Studienteilnehmer hinterlegen",
           status: "warn",
+        },
+        {
+          label: "Abschluss-Seite (/abschluss)",
+          detail: "GSE prä/post-Vergleich, MSLQ-Subskalen als Balkengrafik, Session-Tabelle, Reflexionsfeld, PDF-Button. Journey-State COMPLETED erforderlich.",
+          status: "ok",
+        },
+        {
+          label: "Studien-Export (CSV + PDF)",
+          detail: "GET /admin/export/participants.csv — 37 Spalten, R-ready, P01/P02 IDs. GET /admin/users/{id}/export/pdf — WeasyPrint, Transkripte + Scores.",
+          status: "ok",
+        },
+        {
+          label: "Admin-Auswertungsseite (/admin/auswertung)",
+          detail: "Tabelle aller COMPLETED-Teilnehmenden, Aggregate-Stats (Ø GSE prä/post, Ø MSLQ-Subskalen), Einzel-Download-Buttons für CSV und PDF.",
+          status: "ok",
         },
       ],
     },
