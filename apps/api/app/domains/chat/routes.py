@@ -42,7 +42,7 @@ async def create_session(
     db: AsyncSession = Depends(get_db),  # noqa: B008
 ) -> SessionResponse:
     repo = ChatRepository(db)
-    is_sim = getattr(user, "is_simulation", False)
+    is_sim = getattr(user, "is_simulation", False) or (user.email or "").endswith("@kaia.internal")
     journey = await get_journey_state(user.id, db)
     if not is_sim:
         if journey.state == JourneyStateEnum.PRE_PENDING:

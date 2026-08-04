@@ -8,10 +8,9 @@ import { setUserModel } from "../users/actions"
 
 const MODELS = [
   { id: "", label: "System-Standard" },
-  { id: "claude-sonnet-4-6", label: "Claude Sonnet 4.6" },
-  { id: "claude-haiku-4-5-20251001", label: "Claude Haiku 4.5" },
-  { id: "gpt-5.6-terra", label: "GPT-5.6 Terra" },
   { id: "gpt-4.1-mini", label: "GPT-4.1 mini" },
+  { id: "gpt-5.6-terra", label: "GPT-5.6 Terra" },
+  { id: "gpt-4o", label: "GPT-4o" },
   { id: "mistral-large-latest", label: "Mistral Large" },
   { id: "mistral-small-latest", label: "Mistral Small" },
 ]
