@@ -162,7 +162,7 @@ async def create_test_token(
     elif not user.is_simulation:
         user.is_simulation = True
         await db.flush()
-    return {"access_token": create_access_token(user.id, expire_minutes=120)}
+    return {"access_token": create_access_token(user.id, expire_minutes=480)}
 
 
 class SimulationStart(BaseModel):

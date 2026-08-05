@@ -50,41 +50,6 @@ function validateFields(
   return errs
 }
 
-function SlotCounter({ stats }: { stats: SlotStats | null | "loading" }) {
-  if (stats === "loading") {
-    return (
-      <div
-        aria-hidden="true"
-        className="h-7 w-48 rounded-full bg-muted/60 animate-pulse motion-reduce:animate-none"
-      />
-    )
-  }
-  if (stats === null) return null
-
-  const { remaining, max } = stats
-  const isFull = remaining === 0
-  const isLow = remaining > 0 && remaining <= 5
-
-  const colorClasses = isFull
-    ? "border-red-500/30 bg-red-500/10 text-red-700 dark:text-red-400"
-    : isLow
-      ? "border-amber-500/30 bg-amber-500/10 text-amber-700 dark:text-amber-400"
-      : "border-emerald-500/30 bg-emerald-500/10 text-emerald-700 dark:text-emerald-400"
-
-  const label = isFull
-    ? "Alle Plätze belegt"
-    : `Noch ${remaining} von ${max} Plätzen frei`
-
-  return (
-    <span
-      role="status"
-      aria-live="polite"
-      className={`inline-flex items-center rounded-full border px-3 py-1 text-sm font-medium ${colorClasses}`}
-    >
-      {label}
-    </span>
-  )
-}
 
 export default function RegistrierungPage() {
   const [stats, setStats] = useState<SlotStats | null | "loading">("loading")
@@ -252,15 +217,11 @@ export default function RegistrierungPage() {
   return (
     <div className="w-full max-w-md space-y-8">
 
-      {/* Kopfbereich mit Platz-Counter */}
-      <div className="space-y-3">
-        <SlotCounter stats={stats} />
-        <div className="space-y-1">
-          <h1 className="text-2xl font-bold tracking-tight">Sei dabei.</h1>
-          <p className="text-sm text-muted-foreground">
-            Registriere dich jetzt — Dagmar schaltet deinen Account manuell frei.
-          </p>
-        </div>
+      <div className="space-y-1">
+        <h1 className="text-2xl font-bold tracking-tight">Sei dabei.</h1>
+        <p className="text-sm text-muted-foreground">
+          Registriere dich jetzt — Dagmar schaltet deinen Account manuell frei.
+        </p>
       </div>
 
       <form noValidate onSubmit={handleSubmit} className="space-y-7">
