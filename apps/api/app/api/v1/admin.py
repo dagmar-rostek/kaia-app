@@ -374,3 +374,50 @@ async def reset_test_user(
     if not user:
         return  # nothing to reset
     await ChatRepository(db).delete_user_data(user.id)
+
+
+@router.post("/users/{user_id}/seed-sessions", status_code=204)
+async def seed_sessions(
+    user_id: int,
+    db: Annotated[AsyncSession, Depends(get_db)],
+    count: int = 10,
+) -> None:
+    """Seed N completed chat sessions for simulation users.
+
+    Each session gets one user message so it counts toward the 10-session journey limit.
+    Used in admin journey test to skip manual session work and reach POST_PENDING state.
+    Only permitted for is_simulation=True users.
+    """
+    from sqlalchemy import func, select
+
+    from app.domains.chat.models import ChatSession, Message, MessageRole
+
+    user = await _get_user_or_404(user_id, db)
+    if not user.is_simulation:
+        raise HTTPException(400, "Nur für Simulationsuser erlaubt.")
+
+    max_num_result = await db.execute(
+        select(func.max(ChatSession.session_number)).where(ChatSession.user_id == user_id)
+    )
+    current_max = int(max_num_result.scalar() or 0)
+
+    now = datetime.now(UTC)
+    for i in range(count):
+        session = ChatSession(
+            user_id=user_id,
+            character="warm",
+            session_number=current_max + i + 1,
+            started_at=now,
+            ended_at=now,
+        )
+        db.add(session)
+        await db.flush()
+        db.add(
+            Message(
+                session_id=session.id,
+                role=MessageRole.USER,
+                content=f"[Test-Session {current_max + i + 1}]",
+            )
+        )
+
+    await db.commit()

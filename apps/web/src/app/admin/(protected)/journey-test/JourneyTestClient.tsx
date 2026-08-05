@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useMemo, useTransition } from "react"
 import { useRouter } from "next/navigation"
-import { CheckCircle2, Circle, ArrowRight, RotateCcw, Save, AlertTriangle, Bot, FastForward, PlusCircle } from "lucide-react"
+import { CheckCircle2, Circle, ArrowRight, RotateCcw, Save, AlertTriangle, Bot, FastForward, PlusCircle, BarChart2, Layers } from "lucide-react"
 import { tokenStore } from "@/lib/auth"
 import { setUserModel } from "../users/actions"
 
@@ -67,6 +67,7 @@ export function JourneyTestClient() {
   const [resetting, setResetting] = useState(false)
   const [savingTopic, setSavingTopic] = useState(false)
   const [skippingSurvey, setSkippingSurvey] = useState(false)
+  const [seedingSessions, setSeedingSessions] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [resetMsg, setResetMsg] = useState<string | null>(null)
   const [testUserId, setTestUserId] = useState<number | null>(null)
@@ -176,6 +177,27 @@ export function JourneyTestClient() {
       setError(e instanceof Error ? e.message : "Fehler beim Überspringen.")
     } finally {
       setSkippingSurvey(false)
+    }
+  }
+
+  async function handleSeedSessions() {
+    if (!testUserId) return
+    setSeedingSessions(true)
+    setError(null)
+    try {
+      const needed = Math.max(0, 10 - (journey?.session_count ?? 0))
+      if (needed === 0) { setResetMsg("Bereits 10+ Sessions vorhanden."); return }
+      const res = await fetch(
+        `/admin/api/users/${testUserId}/seed-sessions?count=${needed}`,
+        { method: "POST" }
+      )
+      if (!res.ok) throw new Error(`HTTP ${res.status}`)
+      setResetMsg(`${needed} Test-Session${needed !== 1 ? "s" : ""} angelegt.`)
+      setRefreshKey(k => k + 1)
+    } catch {
+      setError("Seed-Sessions fehlgeschlagen.")
+    } finally {
+      setSeedingSessions(false)
     }
   }
 
@@ -371,6 +393,15 @@ export function JourneyTestClient() {
                 <PlusCircle className="h-3.5 w-3.5" />
                 Neu
               </button>
+              <button
+                onClick={handleSeedSessions}
+                disabled={seedingSessions || journey.session_count >= 10}
+                title="10 leere Test-Sessions direkt in DB anlegen — überspringt echtes Chatten"
+                className="flex items-center gap-1.5 rounded-lg border border-border px-3 py-2 text-xs text-muted-foreground hover:text-foreground hover:bg-muted/40 disabled:opacity-30 transition-colors"
+              >
+                <Layers className="h-3.5 w-3.5" />
+                {seedingSessions ? "…" : "Seed ×10"}
+              </button>
             </div>
 
             {/* Post-Befragung */}
@@ -397,6 +428,39 @@ export function JourneyTestClient() {
               </button>
             </div>
 
+          </div>
+        </section>
+      )}
+
+      {/* Views */}
+      {journey && (
+        <section className="space-y-3">
+          <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">Ansichten prüfen</h2>
+          <div className="space-y-2">
+            <button
+              onClick={() => { if (token) tokenStore.set(token); router.push("/abschluss") }}
+              className="w-full flex items-center justify-between rounded-lg border border-border px-4 py-3 text-sm text-muted-foreground hover:text-foreground hover:bg-muted/40 transition-colors"
+            >
+              <div className="text-left">
+                <p className="font-medium text-foreground">Abschluss-Seite</p>
+                <p className="text-xs mt-0.5">Teilnehmer-Ansicht — GSE/MSLQ-Vergleich, Session-Tabelle</p>
+              </div>
+              <ArrowRight className="h-4 w-4 shrink-0" />
+            </button>
+            <a
+              href="/admin/auswertung"
+              className="flex items-center justify-between rounded-lg border border-border px-4 py-3 text-sm text-muted-foreground hover:text-foreground hover:bg-muted/40 transition-colors"
+            >
+              <div className="text-left">
+                <p className="font-medium text-foreground">Studienauswertung</p>
+                <p className="text-xs mt-0.5">Forscher-Ansicht — Abgeschlossene Teilnehmende, CSV-Export</p>
+              </div>
+              <BarChart2 className="h-4 w-4 shrink-0" />
+            </a>
+            <p className="text-xs text-muted-foreground/60 px-1">
+              Hinweis: Der Test-Account (is_simulation=true) erscheint nicht in der Studienauswertung —
+              nur echte freigeschaltete Teilnehmende zählen dort.
+            </p>
           </div>
         </section>
       )}
