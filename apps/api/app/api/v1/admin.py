@@ -155,13 +155,26 @@ async def create_test_token(
                 consent_version="1.0",
                 consent_at=datetime.now(UTC),
                 onboarding_complete=True,
+                ki_disclosure_seen_at=datetime.now(UTC),
+                preferred_name="Test",
                 approved_at=datetime.now(UTC),
                 approved_by="system",
             )
         )
-    elif not user.is_simulation:
-        user.is_simulation = True
-        await db.flush()
+    else:
+        # Ensure required flags are set regardless of how the user was originally created
+        changed = False
+        if not user.is_simulation:
+            user.is_simulation = True
+            changed = True
+        if not user.ki_disclosure_seen_at:
+            user.ki_disclosure_seen_at = datetime.now(UTC)
+            changed = True
+        if not user.preferred_name:
+            user.preferred_name = "Test"
+            changed = True
+        if changed:
+            await db.commit()
     return {"access_token": create_access_token(user.id, expire_minutes=480)}
 
 

@@ -61,7 +61,7 @@ async def create_session(
                 detail={"code": "study_completed"},
             )
     # Cost guard — skip for simulation users (is_simulation flag set by runner)
-    if not getattr(user, "is_simulation", False):
+    if not is_sim:
         row = await db.execute(
             text("SELECT COALESCE(SUM(cost_eur), 0) FROM llm_usage WHERE user_id = :uid"),
             {"uid": user.id},
@@ -78,7 +78,7 @@ async def create_session(
             )
     # Daily limit — max 1 session per user per calendar day (Europe/Berlin timezone)
     # Skip for simulation users and in development mode
-    if not getattr(user, "is_simulation", False) and settings.study_mode != StudyMode.DEVELOPMENT:
+    if not is_sim and settings.study_mode != StudyMode.DEVELOPMENT:
         berlin = ZoneInfo("Europe/Berlin")
         now_berlin = datetime.now(berlin)
         day_start = now_berlin.replace(hour=0, minute=0, second=0, microsecond=0)
