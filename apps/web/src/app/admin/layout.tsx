@@ -1,7 +1,7 @@
 import Link from "next/link"
 import { ThemeToggle } from "@/components/ThemeToggle"
 import { logoutAction } from "./actions"
-import { LayoutDashboard, CheckSquare, ScrollText, Network, Euro, BookOpen, LogOut, Map, Users, GraduationCap, Sparkles, ClipboardList, MessageSquare, Layers, Scale, FlaskConical } from "lucide-react"
+import { LayoutDashboard, CheckSquare, ScrollText, Network, Euro, BookOpen, LogOut, Map, Users, GraduationCap, Sparkles, MessageSquare, Layers, Scale, FlaskConical } from "lucide-react"
 
 const NAV = [
   { href: "/admin", label: "Übersicht", icon: LayoutDashboard },
@@ -10,7 +10,6 @@ const NAV = [
   { href: "/admin/lerndesign", label: "Lerndesign", icon: Layers },
   { href: "/admin/instrumente", label: "Instrumente", icon: Scale },
   { href: "/admin/users", label: "Teilnehmende", icon: Users },
-  { href: "/admin/vorregistrierung", label: "Voranmeldungen", icon: ClipboardList },
   { href: "/admin/roadmap", label: "Roadmap", icon: Map },
   { href: "/admin/prompts", label: "Prompts & Sandbox", icon: Sparkles },
   { href: "/admin/thesis", label: "Masterthesis", icon: GraduationCap },

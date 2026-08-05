@@ -70,3 +70,13 @@ export async function seedCompletion(userId: number): Promise<boolean> {
   })
   return res.ok
 }
+
+export async function setStudyParticipant(userId: number, value: boolean): Promise<boolean> {
+  const res = await fetch(`${API}/v1/admin/users/${userId}/study-participant`, {
+    method: "PATCH",
+    headers: adminHeaders(),
+    body: JSON.stringify({ study_participant: value }),
+  })
+  revalidatePath("/admin/users")
+  return res.ok
+}

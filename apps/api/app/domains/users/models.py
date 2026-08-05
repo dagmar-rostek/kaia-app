@@ -69,6 +69,9 @@ class User(Base):
     is_simulation: Mapped[bool] = mapped_column(Boolean, default=False)
     simulation_run: Mapped[str | None] = mapped_column(String(100), nullable=True)
 
+    # Study cohort flag — marks users who count for the study (set by admin)
+    study_participant: Mapped[bool] = mapped_column(Boolean, default=False)
+
     # Soft-Delete (DSGVO Art. 17)
     deleted_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     deletion_reason: Mapped[str | None] = mapped_column(String(100), nullable=True)

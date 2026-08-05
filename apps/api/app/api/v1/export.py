@@ -88,9 +88,9 @@ async def _get_user_or_404(user_id: int, db: AsyncSession) -> User:
 
 
 async def _get_completed_users(db: AsyncSession) -> list[User]:
-    """Return all non-simulation active users who have completed the study.
+    """Return study-participant-flagged users who have completed the study.
 
-    Completed = has both post_gse AND post_mslq records.
+    Completed = has both post_gse AND post_mslq records AND study_participant=True.
     Sorted by created_at ascending so P01 is the first registrant.
     """
     result = await db.execute(
@@ -98,6 +98,7 @@ async def _get_completed_users(db: AsyncSession) -> list[User]:
         .where(
             User.status == UserStatus.ACTIVE,
             User.is_simulation.is_(False),
+            User.study_participant.is_(True),
             User.id.in_(
                 select(GseResult.user_id).where(GseResult.measurement_type == MeasurementType.POST)
             ),

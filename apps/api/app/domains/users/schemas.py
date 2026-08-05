@@ -78,6 +78,7 @@ class UserAdminRead(BaseModel):
     learning_topic: str | None = None
     kaia_model: str | None = None
     is_simulation: bool = False
+    study_participant: bool = False
 
     model_config = {"from_attributes": True}
 

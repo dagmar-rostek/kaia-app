@@ -3,6 +3,7 @@ export const dynamic = "force-dynamic"
 import { Clock, CheckCircle2, XCircle, Users, AlertTriangle } from "lucide-react"
 import { ApproveButton, RejectButton, DeleteButton, StudyStartMailButton, UserMailButton, SeedCompletionButton } from "./UserActions"
 import { UserModelSelector } from "./UserModelSelector"
+import { StudyParticipantToggle } from "./StudyParticipantToggle"
 
 const API = process.env.INTERNAL_API_URL ?? process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000/api"
 
@@ -21,6 +22,7 @@ interface AdminUser {
   learning_topic: string | null
   kaia_model: string | null
   is_simulation: boolean
+  study_participant: boolean
 }
 
 async function fetchUsers(): Promise<AdminUser[]> {
@@ -49,11 +51,14 @@ const STATUS_CONFIG: Record<UserStatus, { label: string; cls: string; icon: Reac
   suspended: { label: "Abgelehnt",     cls: "bg-red-500/10 text-red-700 border-red-500/20 dark:text-red-400",           icon: XCircle },
 }
 
+const STUDY_MAX = 20
+
 export default async function UsersPage() {
   const users = await fetchUsers()
   const pending  = users.filter((u) => u.status === "pending")
   const active   = users.filter((u) => u.status === "active")
   const suspended = users.filter((u) => u.status === "suspended")
+  const studyCount = active.filter((u) => !u.is_simulation && u.study_participant).length
 
   return (
     <div className="p-8 max-w-5xl mx-auto space-y-8">
@@ -143,6 +148,10 @@ export default async function UsersPage() {
             <Users className="h-4 w-4 text-muted-foreground" />
             <h2 className="text-sm font-semibold text-muted-foreground">Aktive Teilnehmende</h2>
             <span className="text-xs text-muted-foreground font-mono">{active.length}</span>
+            <span className="text-xs text-muted-foreground">·</span>
+            <span className="text-xs font-medium text-emerald-600 dark:text-emerald-400">
+              {studyCount} / {STUDY_MAX} für Studie markiert
+            </span>
           </div>
           <div className="rounded-lg border border-border overflow-hidden">
             <table className="w-full text-sm">
@@ -152,6 +161,7 @@ export default async function UsersPage() {
                   <th className="text-left px-4 py-2.5 text-xs font-medium text-muted-foreground">Lernthema</th>
                   <th className="text-left px-4 py-2.5 text-xs font-medium text-muted-foreground">Modell</th>
                   <th className="text-left px-4 py-2.5 text-xs font-medium text-muted-foreground">Login</th>
+                  <th className="text-left px-4 py-2.5 text-xs font-medium text-muted-foreground">Studie</th>
                   <th className="px-4 py-2.5" />
                 </tr>
               </thead>
@@ -169,6 +179,11 @@ export default async function UsersPage() {
                       <UserModelSelector userId={u.id} currentModel={u.kaia_model} />
                     </td>
                     <td className="px-4 py-3 text-muted-foreground text-xs">{fmt(u.last_login_at)}</td>
+                    <td className="px-4 py-3">
+                      {!u.is_simulation && (
+                        <StudyParticipantToggle userId={u.id} initialValue={u.study_participant} />
+                      )}
+                    </td>
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-1 justify-end">
                         {u.is_simulation && <SeedCompletionButton userId={u.id} />}

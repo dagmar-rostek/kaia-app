@@ -83,6 +83,9 @@ export default async function AuswertungPage() {
             ? "Noch keine Teilnehmenden haben die Studie abgeschlossen."
             : `${summary.count} Teilnehmende ${summary.count === 1 ? "hat" : "haben"} die Studie abgeschlossen.`}
         </p>
+        <p className="text-xs text-muted-foreground/70">
+          Nur Teilnehmende mit aktivem Studie-Schalter werden hier angezeigt.
+        </p>
       </div>
 
       {/* Aggregate cards */}
@@ -129,10 +132,13 @@ export default async function AuswertungPage() {
 
       {/* Participant table */}
       {summary.count === 0 ? (
-        <div className="rounded-lg border border-dashed border-border p-12 text-center">
+        <div className="rounded-lg border border-dashed border-border p-12 text-center space-y-2">
           <p className="text-sm text-muted-foreground">
             Sobald Teilnehmende alle 10 Sessions und die Post-Befragung abgeschlossen haben,
             erscheinen sie hier.
+          </p>
+          <p className="text-xs text-muted-foreground/60">
+            Noch keine Teilnehmenden für die Studie markiert. Gehe zu Teilnehmende und aktiviere den Studie-Schalter.
           </p>
         </div>
       ) : (

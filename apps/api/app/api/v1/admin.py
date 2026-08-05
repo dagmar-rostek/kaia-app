@@ -58,7 +58,31 @@ async def approve_user(
     user = await _get_user_or_404(user_id, db)
     if user.status == UserStatus.ACTIVE:
         raise HTTPException(409, "User ist bereits aktiv.")
-    return await svc.approve_user(user, data.approved_by)
+    approved = await svc.approve_user(user, data.approved_by)
+    # Auto-mark as study participant if this is a real user (not simulation, not internal)
+    if not approved.is_simulation and not approved.email.endswith("@kaia.internal"):
+        approved.study_participant = True
+        await db.commit()
+        await db.refresh(approved)
+    return approved
+
+
+class StudyParticipantUpdate(BaseModel):
+    study_participant: bool
+
+
+@router.patch("/users/{user_id}/study-participant", response_model=UserAdminRead)
+async def set_study_participant(
+    user_id: int,
+    body: StudyParticipantUpdate,
+    db: Annotated[AsyncSession, Depends(get_db)],
+) -> User:
+    """Setzt oder entfernt die Studienteilnahme-Markierung für einen User."""
+    user = await _get_user_or_404(user_id, db)
+    user.study_participant = body.study_participant
+    await db.commit()
+    await db.refresh(user)
+    return user
 
 
 @router.delete("/users/{user_id}", status_code=204)
