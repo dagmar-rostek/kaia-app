@@ -153,14 +153,12 @@ export default async function UsersPage() {
               {studyCount} / {STUDY_MAX} für Studie markiert
             </span>
           </div>
-          <div className="overflow-x-auto rounded-lg border border-border">
+          <div className="rounded-lg border border-border overflow-hidden">
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-border bg-muted/30">
                   <th className="text-left px-4 py-2.5 text-xs font-medium text-muted-foreground">User</th>
-                  <th className="text-left px-4 py-2.5 text-xs font-medium text-muted-foreground max-w-36">Lernthema</th>
                   <th className="text-left px-4 py-2.5 text-xs font-medium text-muted-foreground">Modell</th>
-                  <th className="text-left px-4 py-2.5 text-xs font-medium text-muted-foreground">Login</th>
                   <th className="text-left px-4 py-2.5 text-xs font-medium text-muted-foreground">Studie</th>
                   <th className="px-4 py-2.5 text-right text-xs font-medium text-muted-foreground">Aktionen</th>
                 </tr>
@@ -171,14 +169,13 @@ export default async function UsersPage() {
                     <td className="px-4 py-3">
                       <p className="font-medium">{u.username}</p>
                       <p className="text-xs text-muted-foreground font-mono">{u.email}</p>
-                    </td>
-                    <td className="px-4 py-3 text-muted-foreground text-xs max-w-36 truncate">
-                      {u.learning_topic ?? "—"}
+                      {u.learning_topic && (
+                        <p className="text-xs text-muted-foreground/70 mt-0.5 max-w-64 truncate">{u.learning_topic}</p>
+                      )}
                     </td>
                     <td className="px-4 py-3">
                       <UserModelSelector userId={u.id} currentModel={u.kaia_model} />
                     </td>
-                    <td className="px-4 py-3 text-muted-foreground text-xs whitespace-nowrap">{fmt(u.last_login_at)}</td>
                     <td className="px-4 py-3">
                       {!u.is_simulation && (
                         <StudyParticipantToggle userId={u.id} initialValue={u.study_participant} />
