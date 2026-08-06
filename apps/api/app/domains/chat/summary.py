@@ -71,7 +71,8 @@ async def _extract_via_openai(transcript: str) -> str:
     )
     response = await client.chat.completions.create(
         model=_EXTRACTION_MODEL,
-        max_tokens=600,
+        max_tokens=800,
+        response_format={"type": "json_object"},
         messages=[
             {"role": "system", "content": _EXTRACTION_SYSTEM},
             {"role": "user", "content": f"Transkript:\n\n{transcript}"},
@@ -113,7 +114,10 @@ async def extract_session_summary(session_id: int) -> None:
 
             try:
                 raw_json = await _extract_via_openai(transcript)
-                log.info("session_summary_extracted", session_id=session_id)
+                json.loads(raw_json)  # validate — raises if malformed
+                session.session_summary = raw_json
+                await db.commit()
+                log.info("session_summary_saved", session_id=session_id)
             except Exception as exc:
                 log.error(
                     "session_summary_failed",
@@ -121,14 +125,6 @@ async def extract_session_summary(session_id: int) -> None:
                     error=str(exc),
                     tb=traceback.format_exc(),
                 )
-
-            if raw_json is None:
-                return
-
-            json.loads(raw_json)  # validate — raises if malformed
-            session.session_summary = raw_json
-            await db.commit()
-            log.info("session_summary_saved", session_id=session_id)
 
     except Exception as exc:
         log.error(
