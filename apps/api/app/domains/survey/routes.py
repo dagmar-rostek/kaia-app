@@ -1,4 +1,9 @@
+import json
+from datetime import date
+from typing import Any
+
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, status
+from fastapi.responses import Response
 from sqlalchemy import delete
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -125,3 +130,131 @@ async def get_survey_results(
         "pre": {"mslq": _mslq(pre_mslq), "gse": _gse(pre_gse)},
         "post": {"mslq": _mslq(post_mslq), "gse": _gse(post_gse)},
     }
+
+
+@router.get("/abschluss")
+async def get_abschluss_data(
+    user: CurrentUser,
+    db: AsyncSession = Depends(get_db),  # noqa: B008
+) -> dict[str, Any]:
+    """Full data for the completion screen: GSE items, MSLQ subscales, sessions with summaries + messages."""
+    repo = SurveyRepository(db)
+    chat_repo = ChatRepository(db)
+
+    pre_gse = await repo.get_gse_result(user.id, MeasurementType.PRE)
+    post_gse = await repo.get_gse_result(user.id, MeasurementType.POST)
+    pre_mslq = await repo.get_mslq_result(user.id, MeasurementType.PRE)
+    post_mslq = await repo.get_mslq_result(user.id, MeasurementType.POST)
+
+    raw_sessions = await chat_repo.list_sessions(user.id)
+    raw_sessions = sorted(raw_sessions, key=lambda s: s.session_number)
+
+    sessions: list[dict[str, Any]] = []
+    for s in raw_sessions:
+        messages = await chat_repo.get_messages(s.id)
+        summary: dict[str, Any] | None = None
+        if s.session_summary:
+            try:
+                summary = json.loads(s.session_summary)
+            except (json.JSONDecodeError, TypeError):
+                pass
+        sessions.append(
+            {
+                "id": s.id,
+                "session_number": s.session_number,
+                "started_at": s.started_at.isoformat() if s.started_at else None,
+                "message_count": len(messages),
+                "summary": summary,
+                "messages": [{"role": str(m.role), "content": m.content} for m in messages],
+            }
+        )
+
+    def _gse_data(r: GseResult | None) -> dict[str, Any] | None:
+        if not r:
+            return None
+        return {"total_score": float(r.total_score), "items": list(r.items) if r.items else []}
+
+    def _mslq_data(r: MslqResult | None) -> dict[str, Any] | None:
+        if not r:
+            return None
+        return {"subscale_scores": dict(r.subscale_scores or {})}
+
+    return {
+        "gse_pre": _gse_data(pre_gse),
+        "gse_post": _gse_data(post_gse),
+        "mslq_pre": _mslq_data(pre_mslq),
+        "mslq_post": _mslq_data(post_mslq),
+        "sessions": sessions,
+    }
+
+
+@router.get("/abschluss/pdf")
+async def download_abschluss_pdf(
+    user: CurrentUser,
+    db: AsyncSession = Depends(get_db),  # noqa: B008
+) -> Response:
+    """Generate personal PDF report for the authenticated user."""
+    from app.api.v1.export import _build_report_html
+
+    repo = SurveyRepository(db)
+    chat_repo = ChatRepository(db)
+
+    pre_gse = await repo.get_gse_result(user.id, MeasurementType.PRE)
+    post_gse = await repo.get_gse_result(user.id, MeasurementType.POST)
+    pre_mslq = await repo.get_mslq_result(user.id, MeasurementType.PRE)
+    post_mslq = await repo.get_mslq_result(user.id, MeasurementType.POST)
+
+    raw_sessions = await chat_repo.list_sessions(user.id)
+    raw_sessions = sorted(raw_sessions, key=lambda s: s.session_number)
+
+    sessions_with_messages: list[dict[str, Any]] = []
+    for s in raw_sessions:
+        messages = await chat_repo.get_messages(s.id)
+        if not messages:
+            continue
+        summary: dict[str, Any] | None = None
+        if s.session_summary:
+            try:
+                summary = json.loads(s.session_summary)
+            except (json.JSONDecodeError, TypeError):
+                pass
+        sessions_with_messages.append(
+            {
+                "session_number": s.session_number,
+                "started_at": s.started_at,
+                "summary": summary,
+                "messages": [{"role": str(m.role), "content": m.content} for m in messages],
+            }
+        )
+
+    html = _build_report_html(
+        user=user,
+        pre_gse=pre_gse,
+        post_gse=post_gse,
+        pre_mslq=pre_mslq,
+        post_mslq=post_mslq,
+        sessions=sessions_with_messages,
+    )
+
+    today = date.today().isoformat()
+    safe_name = (user.username or "user").replace(" ", "_")
+
+    try:
+        from weasyprint import HTML as WeasyPrintHTML
+
+        pdf_bytes: bytes = WeasyPrintHTML(string=html).write_pdf()
+        return Response(
+            content=pdf_bytes,
+            media_type="application/pdf",
+            headers={
+                "Content-Disposition": f'attachment; filename="kaia_bericht_{safe_name}_{today}.pdf"'
+            },
+        )
+    except ImportError:
+        return Response(
+            content=html.encode("utf-8"),
+            media_type="text/html",
+            headers={
+                "Content-Disposition": f'inline; filename="kaia_bericht_{safe_name}_{today}.html"'
+            },
+        )

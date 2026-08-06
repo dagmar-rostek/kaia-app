@@ -57,6 +57,8 @@ mccabe.max-complexity = 10
 "app/domains/eval/models.py" = ["E501"]
 "app/domains/eval/repository.py" = ["E501"]
 "alembic/versions/**" = ["E501"]  # migration column definitions are intentionally long
+"app/api/v1/export.py" = ["E501", "C901"]  # HTML report builder, intentionally verbose
+"app/domains/survey/routes.py" = ["E501", "N811"]   # completion screen endpoints, HTML/URL strings
 
 [tool.mypy]
 python_version = "3.12"

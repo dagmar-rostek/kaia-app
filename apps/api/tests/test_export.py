@@ -204,7 +204,7 @@ def test_build_report_html_all_none() -> None:
     html = _build_report_html(user, None, None, None, None, [])
     assert "<!DOCTYPE html>" in html
     assert "—" in html  # fallback for missing scores
-    assert "Keine Transkripte vorhanden" in html
+    assert "Keine Sessions vorhanden" in html
 
 
 def test_build_report_html_gse_delta_shown() -> None:
