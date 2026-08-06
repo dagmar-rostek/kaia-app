@@ -240,7 +240,7 @@ async def download_abschluss_pdf(
     safe_name = (user.username or "user").replace(" ", "_")
 
     try:
-        from weasyprint import HTML as WeasyPrintHTML
+        from weasyprint import HTML as WeasyPrintHTML  # noqa: N811
 
         pdf_bytes: bytes = WeasyPrintHTML(string=html).write_pdf()
         return Response(
@@ -250,11 +250,12 @@ async def download_abschluss_pdf(
                 "Content-Disposition": f'attachment; filename="kaia_bericht_{safe_name}_{today}.pdf"'
             },
         )
-    except ImportError:
+    except Exception:  # noqa: BLE001
+        # WeasyPrint may be installed but missing native libs (cairo/pango) — fall back to HTML
         return Response(
             content=html.encode("utf-8"),
             media_type="text/html",
             headers={
-                "Content-Disposition": f'inline; filename="kaia_bericht_{safe_name}_{today}.html"'
+                "Content-Disposition": f'attachment; filename="kaia_bericht_{safe_name}_{today}.html"'
             },
         )

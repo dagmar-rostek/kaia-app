@@ -463,6 +463,7 @@ export default function AbschlussPage() {
   const [data, setData] = useState<AbschlussData | null>(null)
   const [loading, setLoading] = useState(true)
   const [pdfLoading, setPdfLoading] = useState(false)
+  const [pdfError, setPdfError] = useState<string | null>(null)
 
   useEffect(() => {
     async function load() {
@@ -487,9 +488,14 @@ export default function AbschlussPage() {
 
   const handleDownloadPdf = useCallback(async () => {
     setPdfLoading(true)
+    setPdfError(null)
     try {
       const res = await authFetch("/api/v1/survey/abschluss/pdf")
-      if (!res.ok) return
+      if (!res.ok) {
+        const detail = await res.json().then((d: { detail?: string }) => d.detail).catch(() => null)
+        setPdfError(detail ?? `Fehler ${res.status} — bitte lade die Seite neu und versuche es erneut.`)
+        return
+      }
       const contentType = res.headers.get("content-type") ?? ""
       const blob = await res.blob()
       const url = URL.createObjectURL(blob)
@@ -500,6 +506,8 @@ export default function AbschlussPage() {
       a.click()
       document.body.removeChild(a)
       URL.revokeObjectURL(url)
+    } catch {
+      setPdfError("Download fehlgeschlagen — bitte versuche es erneut.")
     } finally {
       setPdfLoading(false)
     }
@@ -795,6 +803,9 @@ export default function AbschlussPage() {
           <p className="mt-2 text-xs text-muted-foreground/50">
             Persönlicher Abschlussbericht mit allen Daten.
           </p>
+          {pdfError && (
+            <p className="mt-2 text-xs text-red-500">{pdfError}</p>
+          )}
         </section>
 
         {/* ── 7. Local reflection ── */}
