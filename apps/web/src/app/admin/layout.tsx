@@ -1,12 +1,13 @@
 import Link from "next/link"
 import { ThemeToggle } from "@/components/ThemeToggle"
 import { logoutAction } from "./actions"
-import { LayoutDashboard, CheckSquare, ScrollText, Network, Euro, BookOpen, LogOut, Map, Users, GraduationCap, Sparkles, MessageSquare, Layers, Scale, FlaskConical } from "lucide-react"
+import { LayoutDashboard, CheckSquare, ScrollText, Network, Euro, BookOpen, LogOut, Map, Users, GraduationCap, Sparkles, MessageSquare, Layers, Scale, FlaskConical, BarChart2 } from "lucide-react"
 
 const NAV = [
   { href: "/admin", label: "Übersicht", icon: LayoutDashboard },
   { href: "/admin/chat-test", label: "Chat testen", icon: MessageSquare },
   { href: "/admin/journey-test", label: "Journey testen", icon: FlaskConical },
+  { href: "/admin/testauswertung", label: "Testauswertung", icon: BarChart2 },
   { href: "/admin/lerndesign", label: "Lerndesign", icon: Layers },
   { href: "/admin/instrumente", label: "Instrumente", icon: Scale },
   { href: "/admin/users", label: "Teilnehmende", icon: Users },

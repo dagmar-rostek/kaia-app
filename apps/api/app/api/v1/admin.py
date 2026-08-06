@@ -243,6 +243,87 @@ async def get_simulation_results(run_id: str) -> dict[str, Any]:
     return run
 
 
+@router.get("/test-user-evaluation")
+async def get_test_user_evaluation(
+    db: Annotated[AsyncSession, Depends(get_db)],
+) -> dict[str, Any]:
+    """Return all evaluation data for admin_test@kaia.internal.
+
+    Used by the admin Testauswertung page to preview what a completed
+    participant's data looks like before the real study starts.
+    """
+    import json
+
+    from sqlalchemy import select
+
+    from app.domains.chat.models import ChatSession, Message
+    from app.domains.survey.models import MeasurementType
+    from app.domains.survey.repository import SurveyRepository
+
+    user = await UserRepository(db).get_by_email("admin_test@kaia.internal")
+    if not user:
+        raise HTTPException(404, "admin_test@kaia.internal nicht gefunden.")
+
+    repo = SurveyRepository(db)
+
+    pre_gse = await repo.get_gse_result(user.id, MeasurementType.PRE)
+    post_gse = await repo.get_gse_result(user.id, MeasurementType.POST)
+    pre_mslq = await repo.get_mslq_result(user.id, MeasurementType.PRE)
+    post_mslq = await repo.get_mslq_result(user.id, MeasurementType.POST)
+
+    sessions_result = await db.execute(
+        select(ChatSession)
+        .where(ChatSession.user_id == user.id)
+        .order_by(ChatSession.session_number)
+    )
+    sessions = sessions_result.scalars().all()
+
+    msg_counts = {}
+    for s in sessions:
+        count_result = await db.execute(select(Message).where(Message.session_id == s.id))
+        msg_counts[s.id] = len(count_result.scalars().all())
+
+    def _gse(r: Any) -> dict[str, Any] | None:
+        if not r:
+            return None
+        return {
+            "total_score": r.total_score,
+            "items": r.items,
+            "created_at": r.created_at.isoformat() if r.created_at else None,
+        }
+
+    def _mslq(r: Any) -> dict[str, Any] | None:
+        if not r:
+            return None
+        return {
+            "subscale_scores": r.subscale_scores,
+            "items": r.items,
+            "created_at": r.created_at.isoformat() if r.created_at else None,
+        }
+
+    return {
+        "user": {
+            "id": user.id,
+            "username": user.username,
+            "preferred_name": user.preferred_name,
+            "learning_topic": user.learning_topic,
+        },
+        "gse": {"pre": _gse(pre_gse), "post": _gse(post_gse)},
+        "mslq": {"pre": _mslq(pre_mslq), "post": _mslq(post_mslq)},
+        "sessions": [
+            {
+                "id": s.id,
+                "session_number": s.session_number,
+                "started_at": s.started_at.isoformat() if s.started_at else None,
+                "ended_at": s.ended_at.isoformat() if s.ended_at else None,
+                "message_count": msg_counts.get(s.id, 0),
+                "summary": json.loads(s.session_summary) if s.session_summary else None,
+            }
+            for s in sessions
+        ],
+    }
+
+
 @router.get("/costs")
 async def get_costs(db: Annotated[AsyncSession, Depends(get_db)]) -> dict[str, Any]:
     """Return aggregated LLM inference costs from llm_usage table."""
