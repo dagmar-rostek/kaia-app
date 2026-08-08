@@ -519,13 +519,14 @@ async def seed_sessions(
 async def get_participants_progress(
     db: Annotated[AsyncSession, Depends(get_db)],
 ) -> list[dict[str, Any]]:
-    """Return session progress for all active study participants.
+    """Return session progress and survey status for all active study participants.
 
     Used by the admin Auswertung page to show who is at which session.
     """
     from sqlalchemy import func, select
 
     from app.domains.chat.models import ChatSession
+    from app.domains.survey.models import GseResult, MeasurementType
 
     users_result = await db.execute(
         select(User)
@@ -538,10 +539,10 @@ async def get_participants_progress(
     )
     users = list(users_result.scalars().all())
 
-    # Fetch MAX(session_number) per user in one query
     if not users:
         return []
     user_ids = [u.id for u in users]
+
     counts_result = await db.execute(
         select(
             ChatSession.user_id,
@@ -552,13 +553,20 @@ async def get_participants_progress(
     )
     counts = {row.user_id: row.max_session for row in counts_result}
 
+    gse_result = await db.execute(
+        select(GseResult.user_id, GseResult.measurement_type).where(GseResult.user_id.in_(user_ids))
+    )
+    gse_rows = list(gse_result)
+    pre_done = {r.user_id for r in gse_rows if r.measurement_type == MeasurementType.PRE}
+    post_done = {r.user_id for r in gse_rows if r.measurement_type == MeasurementType.POST}
+
     return [
         {
             "user_id": u.id,
             "display_name": u.preferred_name or u.username,
             "current_session": counts.get(u.id, 0),
+            "pre_survey_done": u.id in pre_done,
+            "post_survey_done": u.id in post_done,
         }
         for u in users
     ]
-
-    await db.commit()

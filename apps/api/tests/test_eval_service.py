@@ -50,6 +50,63 @@ async def test_build_heatmap_empty_run() -> None:
     assert result.weakest_persona_id is None
 
 
+# ── build_session_detail ─────────────────────────────────────────────────────
+
+
+@pytest.mark.asyncio
+async def test_build_session_detail_returns_none_when_no_results() -> None:
+    from app.domains.eval.service import build_session_detail
+
+    result_repo = AsyncMock()
+    result_repo.get_for_session = AsyncMock(return_value=[])
+    transcript_repo = AsyncMock()
+
+    result = await build_session_detail("run1", "P01", 1, result_repo, transcript_repo)
+
+    assert result is None
+    transcript_repo.get.assert_not_called()
+
+
+@pytest.mark.asyncio
+async def test_build_session_detail_with_scores() -> None:
+    from app.domains.eval.service import build_session_detail
+
+    eval_result = MagicMock()
+    eval_result.id = 1
+    eval_result.override_score = None
+    eval_result.score = 2
+    eval_result.metric_key = "m1_socratic_purity"
+    eval_result.reasoning = "Gut"
+    eval_result.flagged = False
+    eval_result.crisis_triggered = None
+    eval_result.override_reason = None
+    eval_result.override_by = None
+    eval_result.override_at = None
+
+    from datetime import UTC, datetime
+
+    transcript = MagicMock()
+    transcript.id = 1
+    transcript.persona_id = "P01"
+    transcript.session_number = 1
+    transcript.run_id = "run1"
+    transcript.messages = []
+    transcript.flagged_exchanges = []
+    transcript.overall_finding = "Keine Auffälligkeiten"
+    transcript.created_at = datetime.now(UTC)
+
+    result_repo = AsyncMock()
+    result_repo.get_for_session = AsyncMock(return_value=[eval_result])
+
+    transcript_repo = AsyncMock()
+    transcript_repo.get = AsyncMock(return_value=transcript)
+
+    result = await build_session_detail("run1", "P01", 1, result_repo, transcript_repo)
+
+    assert result is not None
+    assert result.run_id == "run1"
+
+
 @pytest.mark.asyncio
 async def test_build_heatmap_single_cell() -> None:
     run = MagicMock()

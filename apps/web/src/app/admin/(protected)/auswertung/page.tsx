@@ -9,6 +9,8 @@ interface ProgressItem {
   user_id: number
   display_name: string
   current_session: number
+  pre_survey_done: boolean
+  post_survey_done: boolean
 }
 
 async function fetchProgress(): Promise<ProgressItem[]> {
@@ -118,7 +120,9 @@ export default async function AuswertungPage() {
               <thead>
                 <tr className="border-b border-border bg-muted/30">
                   <th className="text-left px-4 py-2.5 text-xs font-medium text-muted-foreground">Name</th>
+                  <th className="text-left px-4 py-2.5 text-xs font-medium text-muted-foreground">Pre-Fragebogen</th>
                   <th className="text-left px-4 py-2.5 text-xs font-medium text-muted-foreground">Fortschritt</th>
+                  <th className="text-left px-4 py-2.5 text-xs font-medium text-muted-foreground">Post-Fragebogen</th>
                   <th className="text-right px-4 py-2.5 text-xs font-medium text-muted-foreground">Session</th>
                 </tr>
               </thead>
@@ -126,6 +130,11 @@ export default async function AuswertungPage() {
                 {progress.map((p) => (
                   <tr key={p.user_id} className="hover:bg-muted/20 transition-colors">
                     <td className="px-4 py-3 font-medium">{p.display_name}</td>
+                    <td className="px-4 py-3">
+                      {p.pre_survey_done
+                        ? <span className="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">ausgefüllt</span>
+                        : <span className="text-xs text-muted-foreground">ausstehend</span>}
+                    </td>
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-2">
                         <div className="h-1.5 w-32 rounded-full bg-muted overflow-hidden">
@@ -135,6 +144,11 @@ export default async function AuswertungPage() {
                           />
                         </div>
                       </div>
+                    </td>
+                    <td className="px-4 py-3">
+                      {p.post_survey_done
+                        ? <span className="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">ausgefüllt</span>
+                        : <span className="text-xs text-muted-foreground">ausstehend</span>}
                     </td>
                     <td className="px-4 py-3 text-right font-mono text-xs text-muted-foreground">
                       {p.current_session} / 10
