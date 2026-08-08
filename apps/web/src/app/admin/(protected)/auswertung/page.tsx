@@ -138,7 +138,7 @@ export default async function AuswertungPage() {
             erscheinen sie hier.
           </p>
           <p className="text-xs text-muted-foreground/60">
-            Noch keine Teilnehmenden für die Studie markiert. Gehe zu Teilnehmende und aktiviere den Studie-Schalter.
+            Die Studie läuft — Daten werden erfasst, sobald jemand alle Schritte abgeschlossen hat.
           </p>
         </div>
       ) : (
