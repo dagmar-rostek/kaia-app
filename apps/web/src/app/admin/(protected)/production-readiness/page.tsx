@@ -179,8 +179,8 @@ export default async function ProductionReadinessPage() {
         },
         {
           label: "Datenschutzerklärung",
-          detail: "DSE vorhanden. ⚠ Nach Anthropic-Entfernung (04.08.): GPT-4.1-mini ist jetzt Primäranbieter — DSE-Abschnitt zu LLM-Anbietern auf Aktualität prüfen (OpenAI + Mistral, kein Anthropic).",
-          status: "manual",
+          detail: "DSE aktualisiert (08.08.2026): OpenAI (GPT-4.1-mini) als primärer LLM-Anbieter, Mistral AI (EU) als Sekundäranbieter. Anthropic vollständig entfernt. Schrems-II-Hinweis angepasst.",
+          status: "ok",
         },
         {
           label: "Abschluss-Seite (/abschluss)",

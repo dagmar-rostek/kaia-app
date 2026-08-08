@@ -17,7 +17,7 @@ export default function DatenschutzPage() {
       <div className="space-y-2">
         <h1 className="text-3xl font-bold tracking-tight">Datenschutzerklärung</h1>
         <p className="text-sm text-muted-foreground">
-          Stand: Juli 2026 · Gültig für die KAIA-Pilotstudie im Rahmen einer Masterthesis
+          Stand: August 2026 · Gültig für die KAIA-Pilotstudie im Rahmen einer Masterthesis
           an der SRH Fernhochschule
         </p>
       </div>
@@ -119,22 +119,22 @@ export default function DatenschutzPage() {
         </p>
         <p>
           <strong className="text-foreground">LLM-Anbieter:</strong> Für die KI-gestützte
-          Gesprächsführung wird <strong className="text-foreground">Anthropic (Claude Sonnet)</strong> eingesetzt.
-          Chat-Gespräche werden zur Antwortgenerierung an Anthropic übermittelt. Für die automatische
-          Gesprächsanalyse nach jeder Session (interne Session-Zusammenfassung) wird
-          <strong className="text-foreground"> OpenAI (GPT-4.1-mini)</strong> als
-          Fallback-Auftragsverarbeiter genutzt, sofern Anthropic nicht erreichbar ist; diese Verarbeitung
+          Gesprächsführung wird <strong className="text-foreground">OpenAI (GPT-4.1-mini)</strong> eingesetzt.
+          Chat-Gespräche werden zur Antwortgenerierung an OpenAI übermittelt. Als europäischer
+          Alternativanbieter wird <strong className="text-foreground">Mistral AI (Frankreich, EU)</strong>
+          für Gesprächsanalyse und Zusammenfassungen nach jeder Session genutzt; diese Verarbeitung
           erfolgt im Hintergrund und ist für Teilnehmende nicht direkt sichtbar.
           Die Nutzung beider Dienste erfolgt ausschließlich mit abgeschlossenen
           Auftragsverarbeitungsverträgen (Data Processing Agreements, DPAs).
         </p>
         <div className="rounded-lg border border-amber-500/30 bg-amber-500/5 p-3 text-xs">
           <p className="font-medium text-amber-700 dark:text-amber-400">Hinweis zu US-Anbietern (Schrems II)</p>
-          <p className="mt-1">OpenAI und Anthropic haben ihren Sitz in den USA. Die Übermittlung
+          <p className="mt-1">OpenAI hat seinen Sitz in den USA. Die Übermittlung
           von Chat-Inhalten in die USA erfolgt auf Basis von Standardvertragsklauseln (SCCs)
           gemäß Art. 46 Abs. 2 lit. c DSGVO. Auf diesen Umstand wird in der
           Teilnahmevereinbarung explizit hingewiesen. Teilnehmende können der Verarbeitung
-          jederzeit widersprechen (Art. 21 DSGVO).</p>
+          jederzeit widersprechen (Art. 21 DSGVO). Mistral AI hat seinen Sitz in der EU
+          (Frankreich) — für diesen Anbieter besteht kein Drittlandtransfer.</p>
         </div>
         <p>
           <strong className="text-foreground">Fehler-Monitoring:</strong> Technische Fehler
