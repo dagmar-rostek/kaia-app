@@ -9,8 +9,56 @@
 
 ---
 
-**Stand heute:** 4. August 2026  
-**~282 Einträge insgesamt · 38 Release-Tage · ~200 h Gesamt-Aufwand**
+**Stand heute:** 8. August 2026  
+**~297 Einträge insgesamt · 40 Release-Tage · ~210 h Gesamt-Aufwand**
+
+---
+
+## 2026-08-07/08 — Studienstart live · Abschluss-Redesign · Admin-Fortschrittsübersicht · CI-Fixes
+
+**08.08.2026 · `d954159`** — **Admin Auswertung: Pre/Post-Fragebogen-Status je Teilnehmer:in.** Neue Spalten "Pre-Fragebogen" / "Post-Fragebogen" mit grünem "ausgefüllt"-Badge oder grauem "ausstehend". Backend-Endpoint `/admin/participants/progress` liefert `pre_survey_done` + `post_survey_done` via GseResult-Abfrage in einem DB-Roundtrip. Coverage-Gate: 63% → 65.06% via 14 neue Tests (participants/progress, send_single_study_start_mail, reset_test_user, settings-Routen, build_session_detail). nanoid <3.3.17 High-Severity-Vuln geschlossen. · `1h 10min`  
+*feat: participant progress with survey status + fix CI coverage & nanoid*
+
+**08.08.2026 · `960213a`** — **Admin Auswertung: Fortschrittsübersicht aller aktiven Teilnehmenden.** Neue Tabelle mit Fortschrittsbalken (Session x/10) erscheint sobald jemand die erste Session gestartet hat — unabhängig vom COMPLETED-Status. Macht Studienfortschritt in Echtzeit sichtbar. · `45min`  
+*feat: add participant progress overview to admin Auswertung*
+
+**08.08.2026 · `9fb70b7`** — **Admin Auswertung: korrekter Leerstand-Text.** Vorheriger Text suggerierte fälschlicherweise "Noch keine Teilnehmenden markiert", obwohl die Studie bereits läuft. Korrekte Botschaft: Daten werden erfasst, Tabelle erscheint erst nach Abschluss aller 10 Sessions. Modell-Liste bereinigt. · `15min`  
+*fix: update auswertung empty state + clean up model list*
+
+**08.08.2026 · `d516e6f`** — **Admin Thesis-Cockpit: falsche Dateinamen korrigiert.** Alle 6 Kapitel-Seiten (Theorie, Kap3–Kap6) hatten inkorrekte `readDoc()`-Dateinamen und zeigten Fallback-Platzhalter statt Thesis-Inhalt. Ursache: Dateinamen im Code entsprachen nicht den tatsächlichen `docs/KAIA_Kap*.md`-Dateien. · `20min`  
+*fix: correct thesis chapter filenames in all admin pages*
+
+**07.08.2026 · `31b142e`** — **WeasyPrint PDF: native Libraries im Docker-Image.** `python:3.12-slim` enthält kein libcairo/libpango — WeasyPrint installierte sich, crashing dann zur Laufzeit mit `OSError`. Fix: `apt-get install libpangocairo-1.0-0 libgdk-pixbuf-2.0-0 fonts-noto-core` im Runner-Stage des Dockerfiles. PDF-Download auf der Abschluss-Seite funktioniert jetzt vollständig. Rebuild des API-Images erforderlich. · `30min`  
+*fix: install WeasyPrint system libs in API Docker image*
+
+**07.08.2026 · `072b4ae`** — **WeasyPrint: Fehlerbehandlung und Fehleranzeige im UI.** `except ImportError` fing native-Library-Fehler nicht — auf `except Exception` erweitert. HTML-Fallback mit `Content-Disposition: attachment`. Frontend zeigt jetzt konkrete Fehlermeldung unter dem Download-Button statt still zu scheitern. · `30min`  
+*fix: catch all WeasyPrint exceptions and show PDF error in UI*
+
+**07.08.2026 · `fe1466a`** — **Abschluss-Seite `/abschluss` vollständig neu gestaltet.** Radar-Chart (Chart.js) für MSLQ-Subskalen. Session-Summaries einzeln aufklappbar. Vollständige Chat-Transkripte je Session. Farbiger PDF-Bericht. GSE prä/post-Vergleich mit Delta-Badge. Die Abschluss-Seite ist die zentrale Ergebnisdarstellung für Teilnehmende nach 10 Sessions — zeigt die persönliche Lernentwicklung. · `4h`  
+*feat: redesign /abschluss page with radar charts, session summaries, full chat logs + colorful PDF*
+
+**07.08.2026 · `eac1d01`** — **Admin Testauswertung-Seite.** Zeigt Rohdaten der Simulation-User (GSE-Werte, MSLQ, Chat-Transkripte) zur Verifizierung des Journey-Test-Flows. Macht Datenspeicherung kontrollierbar ohne echte Studienteilnehmende zu benötigen. · `45min`  
+*feat: admin Testauswertung page for journey test data review*
+
+**07.08.2026 · `de193f3`** — `is_simulation`-Flag wird jetzt persistent in die DB geschrieben. Chat-Route bypassed Session-Limit und Daily-Limit konsistent für alle Simulation-User — verhindert False-Positive-Sperren bei Admin-Tests. · `30min`  
+*fix: correct is_simulation persistence + consistent bypass in chat routes*
+
+**07.08.2026 · `78b1649`** — Test-Token-Laufzeit auf 8h verlängert (vorher 15 min — zu kurz für vollständige Session-Tests). Slot-Counter aus Registrierungs-UI entfernt (irreführend bei `STUDY_MODE=locked`). · `15min`  
+*fix: extend test token to 8h, remove slot counter from registration*
+
+**07.08.2026 · `0e566b8`** — **Seed-Sessions-Endpoint** `POST /admin/users/{id}/seed-sessions`: generiert N abgeschlossene Sessions für Simulation-User — Journey-Test in Sekunden statt Minuten. Forscher-Links auf der Mitmachen-Seite direkt zur Registrierung. · `30min`  
+*feat: seed-sessions endpoint + journey test researcher links*
+
+**07.08.2026 · `d347933`** — Session-Summary-Extraktion: `response_format={"type": "json_object"}` erzwungen — verhindert `JSONDecodeError` wenn GPT Markdown-Codeblock-Wrapping erzeugt. · `15min`  
+*fix: force json_object response format for session summary extraction*
+
+**07.08.2026 · `d131d50` · `3cfce28`** — Aktiv-User-Tabelle: horizontal scrollbar, auf 4 Spalten reduziert. · `15min`  
+*fix: active users table UI improvements*
+
+**07.08.2026 · `d5050d4`** — Tests für Export- und Admin-Endpoints ergänzt. npm-Audit-Vulnerabilities gefixt (esbuild + vite). · `30min`  
+*test: add export + admin tests; fix npm audit vulnerabilities*
+
+**Thesis-Relevanz (07.–08.08.):** `STUDY_MODE=locked` ist aktiv — Studie läuft. Admin-Auswertungsseite zeigt Echtzeit-Fortschritt (wer ist in welcher Session, wer hat Pre/Post-Fragebogen ausgefüllt). Thesis-Cockpit zeigt wieder die korrekten Kapitelinhalte. PDF-Download der Abschluss-Seite funktioniert nach Docker-Rebuild. CI stabil (65% Coverage, 0 kritische Vulnerabilities). · `~10h gesamt`
 
 ---
 

@@ -2,6 +2,136 @@
 
 ---
 
+## 2026-08-08 — "CI ist rot, WeasyPrint liegt, das Thesis-Cockpit zeigt Placeholders — und die Studie läuft schon"
+
+*Protokolliert vom Koordinator. Mit akrobatischen Beiträgen von QA-Tester, MLOps, AI Engineer und UX Designer — alle unter der stillen Prämisse, dass man an einem Tag, an dem die Studie bereits läuft, besser keine CI-Fails stehen lässt.*
+
+---
+
+**09:15 Uhr — Die Bestandsaufnahme**
+
+Dagmar ist seit gestern in Studienmode. `STUDY_MODE=locked` läuft. Teilnehmende sind im System. Die erste Nachricht kam um 22:47 Uhr.
+
+Das hätte ein ruhiger Morgen werden können.
+
+Dann macht jemand den CI-Tab auf.
+
+> **QA-Tester:** *„Coverage: 63%. Threshold: 65%. Und nanoid hat eine High-Severity-Vulnerability."*  
+> **MLOps:** *„Wann haben wir das gebrochen?"*  
+> **QA-Tester:** *„Beim letzten Feature-Push. Das participants/progress-Endpoint ist neu, Tests fehlten. Die neue Endpoint-Logik hat Coverage runtergeschoben."*  
+> **Koordinator:** *„Und das PDF-Download-Problem von gestern?"*  
+> **QA-Tester, kurze Pause:** *„Auch noch offen. HTML wird geliefert, kein PDF."*
+
+Drei Probleme. Studie läuft. Guten Morgen.
+
+---
+
+**09:30 Uhr — Der Docker-Detektiv**
+
+Das PDF-Problem ist das unangenehmste. WeasyPrint ist installiert — `import weasyprint` funktioniert. Aber beim Aufruf: `OSError: cannot load library 'gobject-2.0-0'`.
+
+> **AI Engineer:** *„`python:3.12-slim` hat keine System-Grafikbibliotheken. libcairo, libpango, libgdk-pixbuf — alles nicht da. WeasyPrint selbst ist ein Python-Package, aber es braucht C-Bibliotheken auf OS-Ebene."*  
+> **Koordinator:** *„Und wir haben `except ImportError` gecatcht."*  
+> **AI Engineer:** *„Exakt. ImportError tritt nie auf — das Package existiert. Der Crash ist ein OSError zur Laufzeit, der ist durch unser except geschlüpft."*
+
+Drei Fixes in einer halben Stunde: `except Exception` statt `except ImportError`. HTML-Fallback mit `Content-Disposition: attachment`. `libpangocairo-1.0-0 libgdk-pixbuf-2.0-0 fonts-noto-core` ins Dockerfile. Commits `072b4ae` und `31b142e`.
+
+> **Security:** *„Ich hätte das gerne in einem ADR."*  
+> **Koordinator:** *„Nein."*
+
+---
+
+**10:15 Uhr — Das Thesis-Cockpit Problem**
+
+Dagmar öffnet das Admin-Thesis-Cockpit. Jede Kapitel-Seite zeigt Placeholder-Text.
+
+> **Koordinator:** *„Welche Dateinamen hat `readDoc()` da drin?"*
+
+`THEORIE.md`. `KAIA_Kap3_Rahmenwerk.md`. `KAIA_Kap4_Implementierung.md`.
+
+Existierende Dateien: `KAIA_Kap2_Theorie.md`. `KAIA_Kap3_Konzeption.md`. `KAIA_Kap4_Methodisches_Vorgehen.md`.
+
+> **QA-Tester:** *„Alle sechs Dateien haben die falschen Namen."*  
+> **Koordinator:** *„Alle sechs."*
+
+Commit `d516e6f`. Sechs Dateipfade korrigiert. Thesis-Cockpit zeigt wieder echten Inhalt.
+
+---
+
+**11:00 Uhr — Coverage-Chirurgie**
+
+63.02% → 65% benötigt. Lücke: ~70 fehlende Items (Statements + Branch-Pfade).
+
+MLOps und QA-Tester analysieren das Coverage-Report gemeinsam.
+
+> **MLOps:** *„`admin.py` bei 30%. Der neue participants/progress-Endpoint hat null Tests."*  
+> **QA-Tester:** *„Auch `send_single_study_start_mail`, `reset_test_user` und die Settings-Routen fehlen komplett."*  
+> **MLOps:** *„Das sind zusammen ~70 Statements. Genug für 2%."*
+
+Drei neue Testdateien entstehen:
+- `test_admin.py`: 8 neue Tests (progress-Endpoint, Mail-Versand, Reset)
+- `test_settings.py`: 7 neue Tests (`_available_models` mit allen Provider-Kombinationen, GET/PUT Settings)
+- `test_eval_service.py`: 2 neue Tests (`build_session_detail`)
+
+63.02% → 63.80% nach dem ersten Durchgang. Noch 0.14% kurz.
+
+> **QA-Tester:** *„Fünf Statements. Wir brauchen fünf Statements."*
+
+`send_single_study_start_mail` — zwei Tests, fünf Statements. 65.06%. Gate grün.
+
+> **MLOps:** *„Das war der präziseste Coverage-Hunt seit Wochen."*
+
+---
+
+**13:30 Uhr — Die Auswertungsseite bekommt Augen**
+
+Dagmar fragt: *"Kann ich irgendwo sehen ob Pre- und Post-Fragebogen ausgefüllt sind?"*
+
+UX Designer antwortet bevor der Koordinator kann.
+
+> **UX Designer:** *„Die Tabelle hat Platz für zwei neue Spalten. Emerald-Badge für 'ausgefüllt', grauer Text für 'ausstehend'. Clean."*  
+> **AI Engineer:** *„GseResult-Tabelle hat measurement_type PRE/POST. Ein SELECT mit IN-Clause, kein N+1."*
+
+Zwei Commits, eine Stunde Arbeit. `960213a` + `d954159`. Die Auswertungsseite zeigt jetzt:
+
+| Name | Pre-Fragebogen | Fortschritt | Post-Fragebogen | Session |
+|------|---------------|-------------|----------------|---------|
+| Alice | ausgefüllt ✓ | ████░░░░ | ausstehend | 4 / 10 |
+
+> **Koordinator:** *„Das ist genau was Dagmar braucht um die Studie zu steuern."*  
+> **Psychologe:** *„Pre-Fragebogen als Studienstart-Bedingung ist korrekt dokumentiert?"*  
+> **Koordinator:** *„Ja. Consent-Protokoll, Zeile 14."*  
+> **Psychologe:** *„Gut."*
+
+---
+
+**15:00 Uhr — nanoid**
+
+CI zeigt noch einen roten Punkt. nanoid <3.3.17, High Severity.
+
+```
+npm audit fix
+changed 2 packages
+found 0 vulnerabilities
+```
+
+Zehn Sekunden.
+
+> **Security:** *„Das ist mein Lieblingsfix."*
+
+---
+
+**Was heute gebaut wurde:**
+WeasyPrint-Docker-Fix (PDF-Download funktioniert nach Server-Deploy), Thesis-Cockpit-Dateinamen korrigiert, Admin-Auswertung mit Pre/Post-Fragebogen-Status, CI-Coverage 63% → 65.06% (14 neue Tests), nanoid-Vuln geschlossen.
+
+**Commits:** `072b4ae` · `31b142e` · `d516e6f` · `9fb70b7` · `960213a` · `d954159`
+
+**Kosten heute:** ca. $3–5 Claude Code · €4.39/Mo Hetzner
+
+**Deploy-Status:** Server wartet noch auf `docker compose up -d --build api web` — danach funktioniert PDF-Download.
+
+---
+
 ## 2026-08-03/04 — "Zwei Tage, drei Export-Formate, elf Commits und ein Feature Freeze der Geschichte"
 
 *Protokolliert vom Koordinator. Mit Zwangseinlagen vom AI Engineer, Data Scientist, QA-Tester, MLOps und Product Owner — alle etwas ungläubig, dass es wirklich vorbei ist.*
