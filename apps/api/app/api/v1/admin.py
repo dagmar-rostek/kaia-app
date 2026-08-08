@@ -514,4 +514,51 @@ async def seed_sessions(
             )
         )
 
+
+@router.get("/participants/progress")
+async def get_participants_progress(
+    db: Annotated[AsyncSession, Depends(get_db)],
+) -> list[dict[str, Any]]:
+    """Return session progress for all active study participants.
+
+    Used by the admin Auswertung page to show who is at which session.
+    """
+    from sqlalchemy import func, select
+
+    from app.domains.chat.models import ChatSession
+
+    users_result = await db.execute(
+        select(User)
+        .where(
+            User.status == UserStatus.ACTIVE,
+            User.is_simulation.is_(False),
+            User.study_participant.is_(True),
+        )
+        .order_by(User.created_at)
+    )
+    users = list(users_result.scalars().all())
+
+    # Fetch MAX(session_number) per user in one query
+    if not users:
+        return []
+    user_ids = [u.id for u in users]
+    counts_result = await db.execute(
+        select(
+            ChatSession.user_id,
+            func.coalesce(func.max(ChatSession.session_number), 0).label("max_session"),
+        )
+        .where(ChatSession.user_id.in_(user_ids))
+        .group_by(ChatSession.user_id)
+    )
+    counts = {row.user_id: row.max_session for row in counts_result}
+
+    return [
+        {
+            "user_id": u.id,
+            "display_name": u.preferred_name or u.username,
+            "current_session": counts.get(u.id, 0),
+        }
+        for u in users
+    ]
+
     await db.commit()

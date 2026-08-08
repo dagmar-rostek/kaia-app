@@ -5,6 +5,25 @@ import { UserDownloadButtons, DownloadAllCsvButton } from "./DownloadButtons"
 
 const API = process.env.INTERNAL_API_URL ?? process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000/api"
 
+interface ProgressItem {
+  user_id: number
+  display_name: string
+  current_session: number
+}
+
+async function fetchProgress(): Promise<ProgressItem[]> {
+  try {
+    const res = await fetch(`${API}/v1/admin/participants/progress`, {
+      headers: { Authorization: `Bearer ${process.env.ADMIN_PASSWORD ?? ""}` },
+      cache: "no-store",
+    })
+    if (!res.ok) return []
+    return res.json() as Promise<ProgressItem[]>
+  } catch {
+    return []
+  }
+}
+
 interface ParticipantSummaryItem {
   user_id: number
   participant_id: string
@@ -70,7 +89,7 @@ function DeltaBadge({ delta }: { delta: number | null }) {
 }
 
 export default async function AuswertungPage() {
-  const summary = await fetchSummary()
+  const [summary, progress] = await Promise.all([fetchSummary(), fetchProgress()])
 
   return (
     <div className="p-8 max-w-5xl mx-auto space-y-8">
@@ -87,6 +106,46 @@ export default async function AuswertungPage() {
           Nur Teilnehmende mit aktivem Studie-Schalter werden hier angezeigt.
         </p>
       </div>
+
+      {/* Progress overview */}
+      {progress.length > 0 && (
+        <section className="space-y-3">
+          <h2 className="text-sm font-semibold text-muted-foreground">
+            Aktive Teilnehmende ({progress.length})
+          </h2>
+          <div className="rounded-lg border border-border overflow-hidden">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b border-border bg-muted/30">
+                  <th className="text-left px-4 py-2.5 text-xs font-medium text-muted-foreground">Name</th>
+                  <th className="text-left px-4 py-2.5 text-xs font-medium text-muted-foreground">Fortschritt</th>
+                  <th className="text-right px-4 py-2.5 text-xs font-medium text-muted-foreground">Session</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-border">
+                {progress.map((p) => (
+                  <tr key={p.user_id} className="hover:bg-muted/20 transition-colors">
+                    <td className="px-4 py-3 font-medium">{p.display_name}</td>
+                    <td className="px-4 py-3">
+                      <div className="flex items-center gap-2">
+                        <div className="h-1.5 w-32 rounded-full bg-muted overflow-hidden">
+                          <div
+                            className="h-full rounded-full bg-sky-500"
+                            style={{ width: `${Math.min(100, (p.current_session / 10) * 100)}%` }}
+                          />
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-4 py-3 text-right font-mono text-xs text-muted-foreground">
+                      {p.current_session} / 10
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </section>
+      )}
 
       {/* Aggregate cards */}
       <div className="grid grid-cols-3 gap-3">
