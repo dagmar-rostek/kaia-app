@@ -3,7 +3,7 @@ import { readDoc } from "@/lib/docs"
 export const dynamic = "force-dynamic"
 
 function get(): string {
-  return readDoc("KAIA_Kap6_Pilotstudie.md", "# Kapitel 6 — Pilotstudie & Evaluation\n\nInhalt folgt.")
+  return readDoc("KAIA_Kap4_Studiendesign.md", "# Kapitel 6 — Studiendesign & Pilotstudie\n\nInhalt folgt.")
 }
 
 

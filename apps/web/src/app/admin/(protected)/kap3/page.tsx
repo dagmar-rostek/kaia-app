@@ -3,7 +3,7 @@ import { readDoc } from "@/lib/docs"
 export const dynamic = "force-dynamic"
 
 function get(): string {
-  return readDoc("KAIA_Kap3_Rahmenwerk.md", "# Kapitel 3 — Konzeptionelles Rahmenwerk\n\nInhalt folgt.")
+  return readDoc("KAIA_Kap3_Konzeption.md", "# Kapitel 3 — Konzeptionelles Rahmenwerk\n\nInhalt folgt.")
 }
 
 

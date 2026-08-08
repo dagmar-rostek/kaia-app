@@ -3,7 +3,7 @@ import { readDoc } from "@/lib/docs"
 export const dynamic = "force-dynamic"
 
 function get(): string {
-  return readDoc("KAIA_Kap4_Implementierung.md", "# Kapitel 4 — Technische Implementierung\n\nInhalt folgt.")
+  return readDoc("KAIA_Kap4_Methodisches_Vorgehen.md", "# Kapitel 4 — Methodisches Vorgehen\n\nInhalt folgt.")
 }
 
 

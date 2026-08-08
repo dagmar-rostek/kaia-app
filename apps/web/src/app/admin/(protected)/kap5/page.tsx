@@ -3,7 +3,7 @@ import { readDoc } from "@/lib/docs"
 export const dynamic = "force-dynamic"
 
 function get(): string {
-  return readDoc("KAIA_Kap5_LLM_Eval.md", "# Kapitel 5 — LLM-Evaluationsbericht\n\nInhalt folgt.")
+  return readDoc("KAIA_Kap4_LLM_Evaluation.md", "# Kapitel 5 — LLM-Evaluationsbericht\n\nInhalt folgt.")
 }
 
 

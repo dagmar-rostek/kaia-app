@@ -3,7 +3,7 @@ import { readDoc } from "@/lib/docs"
 export const dynamic = "force-dynamic"
 
 function getTheorie(): string {
-  return readDoc("THEORIE.md", "# Theoretischer Hintergrund\n\nDokumentation folgt.")
+  return readDoc("KAIA_Kap2_Theorie.md", "# Theoretischer Hintergrund\n\nInhalt folgt.")
 }
 
 // ── Simple markdown renderer ──────────────────────────────────────────────────
