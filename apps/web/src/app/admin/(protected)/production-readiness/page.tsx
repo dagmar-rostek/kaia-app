@@ -101,8 +101,8 @@ export default async function ProductionReadinessPage() {
         },
         {
           label: "Backup-Strategie",
-          detail: "Noch kein automatisches PostgreSQL-Backup konfiguriert (pg_dump via Cron oder Hetzner Snapshot)",
-          status: "warn",
+          detail: "Hetzner Backup aktiviert (€1.20/Mo, seit 02.08.2026). Tägliche automatische Snapshots via Hetzner Cloud.",
+          status: "ok",
         },
       ],
     },
@@ -179,8 +179,8 @@ export default async function ProductionReadinessPage() {
         },
         {
           label: "Datenschutzerklärung",
-          detail: "DSGVO-konforme Einwilligungserklärung für Studienteilnehmer hinterlegen",
-          status: "warn",
+          detail: "DSE vorhanden. ⚠ Nach Anthropic-Entfernung (04.08.): GPT-4.1-mini ist jetzt Primäranbieter — DSE-Abschnitt zu LLM-Anbietern auf Aktualität prüfen (OpenAI + Mistral, kein Anthropic).",
+          status: "manual",
         },
         {
           label: "Abschluss-Seite (/abschluss)",

@@ -4,7 +4,7 @@
 > Jede strukturelle Änderung muss hier dokumentiert werden.
 > Die `/architektur`-Seite im Frontend rendert dieses Dokument direkt.
 
-**Stand:** 4. August 2026
+**Stand:** 8. August 2026
 
 ---
 
@@ -26,7 +26,7 @@ Browser (Next.js)
                         │
                         ├── PostgreSQL 16 + pgvector
                         │
-                        ├── OpenAI API     (gpt-4.1-mini, gpt-5.6-terra, gpt-4o)
+                        ├── OpenAI API     (gpt-4.1-mini, gpt-4o)
                         ├── Mistral API    (mistral-large-latest, mistral-small-latest)
                         │
                         └── Sentry / Slack / structlog
@@ -56,7 +56,7 @@ Hosting: Hetzner CX23, Helsinki (EU). Kein Drittanbieter-Cloud-Deployment.
 | Prompt-Mgmt     | DB-gespeichert + Jinja2, live editierbar           | Kein Deploy für Prompt-Updates |
 | Observability   | Sentry (FE + BE), Slack-Webhooks, structlog JSON   | Fehler + Business-Events |
 | CI/CD           | GitHub Actions                                     | Pre-Commit: mypy, ruff, commitlint |
-| Coverage        | >= 66 % (CI-Gate, Backend)                         | Pflicht-Schwelle für Merge |
+| Coverage        | >= 65 % (CI-Gate, Backend)                         | Pflicht-Schwelle für Merge |
 | Hosting         | Hetzner CX23 Helsinki, Docker Compose              | EU, DSGVO, kostengünstig |
 | TLS             | Caddy + Let's Encrypt                              | Automatisch, zero-config |
 | Analytics       | Plausible (EU-Cloud)                               | DSGVO-konform, kein Cookie-Banner |
@@ -340,7 +340,7 @@ Anthropic wurde vollständig entfernt (August 2026). Alle LLM-Calls laufen über
 |------------|---------------------------------|---|
 | OpenAI     | gpt-4.1-mini                    | Primärer Chat-Provider (Standard) |
 | OpenAI     | gpt-4o                          | LLM-Eval |
-| OpenAI     | gpt-5.6-terra                   | LLM-Eval |
+| OpenAI     | gpt-4o-mini                     | LLM-Eval |
 | Mistral    | mistral-large-latest            | LLM-Eval (EU-Provider) |
 | Mistral    | mistral-small-latest            | LLM-Eval (EU-Provider) |
 
@@ -667,4 +667,4 @@ Vollständige ADRs unter `docs/adr/`.
 
 ---
 
-*Letzte Aktualisierung: 4. August 2026*
+*Letzte Aktualisierung: 8. August 2026*
