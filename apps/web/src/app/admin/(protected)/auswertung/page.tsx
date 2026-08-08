@@ -1,7 +1,7 @@
 export const dynamic = "force-dynamic"
 
 import { BarChart2, TrendingUp, Users } from "lucide-react"
-import { UserDownloadButtons, DownloadAllCsvButton } from "./DownloadButtons"
+import { UserDownloadButtons, DownloadAllCsvButton, DownloadInterimCsvButton } from "./DownloadButtons"
 
 const API = process.env.INTERNAL_API_URL ?? process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000/api"
 
@@ -267,11 +267,19 @@ export default async function AuswertungPage() {
       )}
 
       {/* Footer: bulk download */}
-      <div className="flex items-center justify-between pt-4 border-t border-border">
-        <p className="text-xs text-muted-foreground">
-          CSV enthält alle Rohdaten (GSE-Items, MSLQ-Subskalen, Deltas) — direkt für R/SPSS/Python nutzbar.
-        </p>
-        <DownloadAllCsvButton />
+      <div className="flex flex-col gap-3 pt-4 border-t border-border">
+        <div className="flex items-center justify-between">
+          <p className="text-xs text-muted-foreground">
+            Nur Abgeschlossene (Post-Fragebogen ausgefüllt) — R/SPSS-ready mit allen Deltas.
+          </p>
+          <DownloadAllCsvButton />
+        </div>
+        <div className="flex items-center justify-between">
+          <p className="text-xs text-muted-foreground">
+            Alle aktiven Studienteilnehmenden — Post-Spalten leer wenn noch nicht ausgefüllt.
+          </p>
+          <DownloadInterimCsvButton />
+        </div>
       </div>
 
     </div>

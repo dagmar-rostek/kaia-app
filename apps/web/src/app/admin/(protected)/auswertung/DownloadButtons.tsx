@@ -104,6 +104,43 @@ export function UserDownloadButtons({ userId, participantId }: UserDownloadButto
 
 // ── "Alle als CSV" footer button ───────────────────────────────────────────
 
+export function DownloadInterimCsvButton() {
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+
+  async function handleClick() {
+    setLoading(true)
+    setError(null)
+    const err = await triggerDownload(
+      "/admin/api/export/participants/interim-csv",
+      "kaia_interim_export.csv"
+    )
+    setError(err)
+    setLoading(false)
+  }
+
+  return (
+    <div className="flex items-center gap-3">
+      <button
+        onClick={handleClick}
+        disabled={loading}
+        className="inline-flex items-center gap-2 rounded-lg border border-border
+          px-4 py-2.5 text-sm font-medium text-muted-foreground
+          hover:bg-muted/40 hover:text-foreground transition-colors disabled:opacity-50"
+      >
+        {loading
+          ? <Loader2 className="h-4 w-4 animate-spin" />
+          : <Download className="h-4 w-4" />
+        }
+        {loading ? "Wird erstellt…" : "Zwischenstand CSV (alle aktiven)"}
+      </button>
+      {error && (
+        <p className="text-xs text-red-400">{error}</p>
+      )}
+    </div>
+  )
+}
+
 export function DownloadAllCsvButton() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)

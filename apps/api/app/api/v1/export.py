@@ -326,6 +326,37 @@ async def get_participants_summary(
     )
 
 
+async def _get_active_study_users(db: AsyncSession) -> list[User]:
+    """All active study participants regardless of completion status."""
+    result = await db.execute(
+        select(User)
+        .where(
+            User.status == UserStatus.ACTIVE,
+            User.is_simulation.is_(False),
+            User.study_participant.is_(True),
+        )
+        .order_by(User.created_at)
+    )
+    return list(result.scalars().all())
+
+
+@router.get("/export/participants-interim.csv")
+async def export_interim_participants_csv(
+    db: Annotated[AsyncSession, Depends(get_db)],
+) -> Response:
+    """Download all active study participants as CSV — including incomplete ones (post columns empty)."""
+    users = await _get_active_study_users(db)
+    rows = [await _build_row(f"P{idx + 1:02d}", user, db) for idx, user in enumerate(users)]
+    today = date.today().isoformat()
+    return Response(
+        content=_rows_to_csv(rows).encode("utf-8"),
+        media_type="text/csv",
+        headers={
+            "Content-Disposition": f'attachment; filename="kaia_interim_export_{today}.csv"',
+        },
+    )
+
+
 @router.get("/export/participants.csv")
 async def export_all_participants_csv(
     db: Annotated[AsyncSession, Depends(get_db)],
