@@ -28,6 +28,11 @@ class LoginRequest(BaseModel):
     password: str
 
 
+class ChangePasswordRequest(BaseModel):
+    current_password: str
+    new_password: _Password
+
+
 class TokenResponse(BaseModel):
     access_token: str
     token_type: str = "bearer"  # noqa: S105

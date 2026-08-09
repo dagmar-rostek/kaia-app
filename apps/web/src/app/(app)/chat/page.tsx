@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
-import { AlertCircle, CheckCircle2, Download, HelpCircle, LogOut, Loader2, Send } from "lucide-react"
+import { AlertCircle, CheckCircle2, Download, HelpCircle, KeyRound, LogOut, Loader2, Send } from "lucide-react"
 import Link from "next/link"
 import { LegalFooter } from "@/components/LegalFooter"
 import { tokenStore, authFetch, apiLogout } from "@/lib/auth"
@@ -837,6 +837,14 @@ export default function ChatPage() {
           >
             <AlertCircle className="h-4 w-4" />
           </button>
+          <a
+            href="/passwort-aendern"
+            title="Passwort ändern"
+            aria-label="Passwort ändern"
+            className="p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+          >
+            <KeyRound className="h-4 w-4" />
+          </a>
           <button
             onClick={() => void handleLogout()}
             title="Abmelden"

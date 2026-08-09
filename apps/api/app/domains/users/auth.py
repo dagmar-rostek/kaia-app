@@ -12,6 +12,7 @@ from app.domains.users.repository import (
     UserRepository,
 )
 from app.domains.users.schemas import (
+    ChangePasswordRequest,
     ForgotPasswordRequest,
     LoginRequest,
     RegisterRequest,
@@ -141,6 +142,18 @@ async def reset_password(
 ) -> None:
     try:
         await svc.reset_password(data.token, data.password)
+    except AuthError as e:
+        raise HTTPException(e.status_code, e.message) from e
+
+
+@router.post("/change-password", status_code=204)
+async def change_password(
+    data: ChangePasswordRequest,
+    current_user: CurrentUser,
+    svc: Annotated[AuthService, Depends(_auth_service)],
+) -> None:
+    try:
+        await svc.change_password(current_user, data.current_password, data.new_password)
     except AuthError as e:
         raise HTTPException(e.status_code, e.message) from e
 

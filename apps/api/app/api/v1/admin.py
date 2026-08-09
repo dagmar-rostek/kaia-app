@@ -454,6 +454,23 @@ async def seed_completion(
         )
 
 
+@router.post("/users/{user_id}/reset-password", status_code=200)
+async def admin_reset_password(
+    user_id: int,
+    db: Annotated[AsyncSession, Depends(get_db)],
+) -> dict[str, str]:
+    """Set a new random temporary password for a user. Returns the plain-text password once."""
+    user = await UserRepository(db).get_by_id(user_id)
+    if not user:
+        raise HTTPException(404, "User nicht gefunden.")
+    temp_password = secrets.token_urlsafe(10)
+    user.password_hash = hash_password(temp_password)
+    user.failed_login_count = 0
+    user.locked_until = None
+    await UserRepository(db).save(user)
+    return {"temp_password": temp_password}
+
+
 @router.delete("/reset-test-user", status_code=204)
 async def reset_test_user(
     db: Annotated[AsyncSession, Depends(get_db)],

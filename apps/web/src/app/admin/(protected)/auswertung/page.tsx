@@ -1,7 +1,7 @@
 export const dynamic = "force-dynamic"
 
 import { BarChart2, TrendingUp, Users } from "lucide-react"
-import { UserDownloadButtons, DownloadAllCsvButton, DownloadInterimCsvButton } from "./DownloadButtons"
+import { UserDownloadButtons, DownloadAllCsvButton, DownloadInterimCsvButton, AdminResetPasswordButton } from "./DownloadButtons"
 
 const API = process.env.INTERNAL_API_URL ?? process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000/api"
 
@@ -251,7 +251,11 @@ export default async function AuswertungPage() {
                       <DeltaBadge delta={p.gse_delta} />
                     </td>
                     <td className="px-4 py-3">
-                      <div className="flex justify-end">
+                      <div className="flex justify-end items-center gap-3">
+                        <AdminResetPasswordButton
+                          userId={p.user_id}
+                          displayName={p.display_name}
+                        />
                         <UserDownloadButtons
                           userId={p.user_id}
                           participantId={p.participant_id}

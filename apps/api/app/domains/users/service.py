@@ -231,6 +231,16 @@ class AuthService:
         await self._tokens.revoke_all_for_user(user.id, "password_reset")
         log.info("password_reset_completed", user_id=user.id)
 
+    async def change_password(self, user: User, current_password: str, new_password: str) -> None:
+        if not verify_password(current_password, user.password_hash):
+            raise AuthError("Aktuelles Passwort ist falsch.", 400)
+        user.password_hash = hash_password(new_password)
+        user.failed_login_count = 0
+        user.locked_until = None
+        await self._users.save(user)
+        await self._tokens.revoke_all_for_user(user.id, "password_change")
+        log.info("password_changed", user_id=user.id)
+
     async def acknowledge_disclosure(self, user: User) -> User:
         user.ki_disclosure_seen_at = datetime.now(UTC)
         return await self._users.save(user)

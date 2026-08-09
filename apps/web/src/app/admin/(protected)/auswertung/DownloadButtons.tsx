@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { FileText, FileSpreadsheet, Download, Loader2 } from "lucide-react"
+import { FileText, FileSpreadsheet, Download, Loader2, KeyRound } from "lucide-react"
 
 // ── Shared download helper ─────────────────────────────────────────────────
 
@@ -98,6 +98,50 @@ export function UserDownloadButtons({ userId, participantId }: UserDownloadButto
         }
         CSV
       </button>
+    </div>
+  )
+}
+
+// ── Admin: Passwort zurücksetzen ───────────────────────────────────────────
+
+export function AdminResetPasswordButton({ userId, displayName }: { userId: number; displayName: string }) {
+  const [loading, setLoading] = useState(false)
+  const [tempPassword, setTempPassword] = useState<string | null>(null)
+  const [error, setError] = useState<string | null>(null)
+
+  async function handleClick() {
+    if (!confirm(`Passwort für ${displayName} zurücksetzen?`)) return
+    setLoading(true)
+    setError(null)
+    setTempPassword(null)
+    try {
+      const res = await fetch(`/admin/api/users/${userId}/reset-password`, { method: "POST" })
+      if (!res.ok) { setError("Reset fehlgeschlagen"); return }
+      const data = await res.json()
+      setTempPassword(data.temp_password)
+    } catch {
+      setError("Verbindungsfehler")
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  return (
+    <div className="flex flex-col gap-1">
+      <button
+        onClick={handleClick}
+        disabled={loading}
+        className="inline-flex items-center gap-1.5 rounded border border-border px-2.5 py-1
+          text-xs text-muted-foreground hover:bg-muted/40 hover:text-foreground
+          transition-colors disabled:opacity-50"
+      >
+        {loading ? <Loader2 className="h-3 w-3 animate-spin" /> : <KeyRound className="h-3 w-3" />}
+        PW reset
+      </button>
+      {tempPassword && (
+        <span className="font-mono text-xs text-emerald-400 select-all">{tempPassword}</span>
+      )}
+      {error && <span className="text-xs text-red-400">{error}</span>}
     </div>
   )
 }
