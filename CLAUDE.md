@@ -180,6 +180,7 @@ Conventional Commits werden durch commitlint erzwungen.
 | **qa-tester** | Teststrategie, Testautomatisierung, Edge Cases, AI-Evals, GSE-Scoring-Tests, Crisis-Detection-Tests | Nach Implementierung |
 | **mlops** | Observability, LLM-Cost-Tracking, Study-Lock-Monitoring, Token-Budgets, Eval-Pipelines, Bias-Monitoring | Nach Deployment / parallel zu Produktivbetrieb |
 | **data-scientist** | Quantitative Methodik, Experiment-Framework-Design, statistische Auswertung (R/Python), Eval-Pipeline-Architektur, Convergence-Metriken, LLM-Evaluations-Methodik, synthetische Testdatensätze, Bias-Messung in Datensätzen, Power-Analyse. Nicht: psychologische Konstruktvalidierung (→ Psychologe), Betrieb (→ MLOps), Prompt-Technik (→ AI-Engineer). | IMMER bei: LLM-Evaluationsbericht-Design, Studienauswertungs-Methodik, Experiment-Framework-Implementierung, synthetischen Testdatensätzen, Konvergenz-Score-Berechnung, GSE-Prä/Post-Statistik |
+| **thesis-critic** | Prof. Dr. Heinrich Voss — emeritierter Gutachter, Experte für Lernpsychologie, Didaktik und AI Engineering. Liest die Masterthesis und findet jeden Fehler: falsche Literaturangaben, fehlender roter Faden, Widersprüche zwischen Kapiteln, methodische Schwächen, Formalia. Maximal kritisch, keine Schmeichelei. | IMMER wenn ein Kapitel oder die gesamte Thesis auf Qualität geprüft werden soll — vor der Abgabe Pflicht |
 
 ---
 
