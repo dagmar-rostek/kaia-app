@@ -124,6 +124,7 @@ export default async function AuswertungPage() {
                   <th className="text-left px-4 py-2.5 text-xs font-medium text-muted-foreground">Fortschritt</th>
                   <th className="text-left px-4 py-2.5 text-xs font-medium text-muted-foreground">Post-Fragebogen</th>
                   <th className="text-right px-4 py-2.5 text-xs font-medium text-muted-foreground">Session</th>
+                  <th className="px-4 py-2.5"></th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-border">
@@ -152,6 +153,9 @@ export default async function AuswertungPage() {
                     </td>
                     <td className="px-4 py-3 text-right font-mono text-xs text-muted-foreground">
                       {p.current_session} / 10
+                    </td>
+                    <td className="px-4 py-3">
+                      <AdminResetPasswordButton userId={p.user_id} displayName={p.display_name} />
                     </td>
                   </tr>
                 ))}
