@@ -1,7 +1,7 @@
 # Kapitel 1 — Einleitung
 
 **Version:** 2.0  
-**Stand:** 20. Juli 2026  
+**Stand:** 09. August 2026  
 **Geplanter Umfang:** ca. 2.500 Wörter
 
 ---
@@ -49,7 +49,7 @@ Diese Frage verbindet den technischen Entwurf — persistentes Nutzerprofil, kum
 **FF3 — LLM-Architekturvergleich:**  
 Welches der evaluierten großen Sprachmodelle zeigt unter kontrollierten Bedingungen die höchste Qualität in den Dimensionen Empathie, sokratische Gesprächsführung, Konsistenz und Crisis-Detection-Sicherheit?
 
-Diese Frage zielt auf den systematischen Vergleich von sieben Sprachmodellen: Claude Sonnet 4.6 und Claude Haiku 4.5 (Anthropic), GPT-4o, GPT-5.6 Terra und GPT-4.1 mini (OpenAI) sowie Mistral Large und Mistral Small (Mistral AI). Die Evaluation erfolgt über eine Crash-Persona-Simulation mit zehn definierten Testpersönlichkeiten sowie eine strukturierte Eval-Matrix mit vier Metriken. Der Vergleich schließt eine Bewertung der datenschutzrechtlichen Eignung der Anbieter für einen EU-Einsatzkontext ein.
+Diese Frage zielt auf den systematischen Vergleich von Sprachmodellen aus drei Anbietern: Claude Sonnet 4.6 und Claude Haiku 4.5 (Anthropic), GPT-4o, GPT-5.6 Terra und GPT-4.1-mini (OpenAI) sowie Mistral Large und Mistral Small (Mistral AI). Die Evaluation erfolgt über eine Crash-Persona-Simulation mit zehn definierten Testpersönlichkeiten sowie eine strukturierte Eval-Matrix mit acht Metriken (M1–M8). Der Vergleich schließt eine Bewertung der datenschutzrechtlichen Eignung der Anbieter für einen EU-Einsatzkontext ein. Für den Produktionsbetrieb der Pilotstudie wurde aufgrund signifikanter Latenzprobleme bei Claude Sonnet 4.6 (bis zu 60 Sekunden Antwortzeit unter Produktionsbedingungen) eine separate Modellentscheidung getroffen: Die Pilotstudie läuft ausschließlich auf GPT-4.1-mini; der LLM-Vergleich wird als eigenständiger Evidenzstrang über die Eval-Matrix adressiert (vgl. Kapitel 4b).
 
 ### 1.2.2 Zielsetzung
 
@@ -125,7 +125,7 @@ Die Doppelrolle Entwicklerin/Forscherin bringt methodische Risiken mit sich: Con
 
 **Transparenz gegenüber Teilnehmenden:** Alle Studienteilnehmenden werden im Rahmen des Multi-Step-Consents über die Doppelrolle der Forscherin informiert. Die Teilnahmevereinbarung enthält einen expliziten Hinweis darauf, dass die Forscherin ein persönliches Interesse an positiven Studienergebnissen haben könnte. Die Teilnahme ist freiwillig und ohne Angabe von Gründen jederzeit widerrufbar, ohne dass der Widerruf Konsequenzen für das Verhältnis zur Forscherin hat.
 
-**Datenhaltung:** Sämtliche Nutzerdaten werden ausschließlich auf EU-Servern (Hetzner Cloud, Helsinki) gespeichert. Nach Abschluss der Studie werden alle personenbezogenen Daten entsprechend der dokumentierten Löschfristen entfernt. Datenverarbeitungsverträge (DPAs) bestehen mit Anthropic, OpenAI und Mistral AI. Während der Studienlaufzeit sind Prompt- und Schemaänderungen technisch gesperrt (Study-Lock ab 28. Juli 2026).
+**Datenhaltung:** Sämtliche Nutzerdaten werden ausschließlich auf EU-Servern (Hetzner Cloud, Helsinki) gespeichert. Nach Abschluss der Studie werden alle personenbezogenen Daten entsprechend der dokumentierten Löschfristen entfernt. Für die LLM-Evaluation wurden Datenverarbeitungsverträge (DPAs) mit Anthropic, OpenAI und Mistral AI abgeschlossen. Im Produktivsystem der Pilotstudie werden ausschließlich OpenAI (GPT-4.1-mini) und Mistral AI eingesetzt; der Anthropic-DPA ist nach Entfernung des Claude-Modells aus dem Produktionssystem (04. August 2026) für die laufende Studie nicht mehr aktiv. Während der Studienlaufzeit sind Prompt- und Schemaänderungen technisch gesperrt (Study-Lock ab 08. August 2026).
 
 ---
 

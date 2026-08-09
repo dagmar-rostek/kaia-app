@@ -90,9 +90,15 @@ Am 13. April 2026 wurde ein vorläufiger Empathie-Akzeptanztest mit drei Modelle
 
 **Vollständige Ergebnistabelle:** Anhang L.
 
-### 5.2.6 Modellauswahl für die Hauptstudie
+### 5.2.6 Modellauswahl für die Pilotstudie
 
-Die Pilotstudie (Studienstart 01.08.2026) implementiert einen Between-Subjects-Vergleich mit zwei Flaggschiff-Modellen: **Claude Sonnet 4.6** (Anthropic) und **GPT-4o** (OpenAI). Diese Zweier-Auswahl repräsentiert zwei qualitativ vergleichbare Modelle von unterschiedlichen US-Anbietern. Mistral wurde im Rahmen des vorläufigen Akzeptanztests (April 2026) aus Sicherheitsgründen ausgeschlossen (vgl. Abschnitt 5.2.5, Anhang L). Die finale Modellbestätigung erfolgt auf Basis der Pre-Studie-Eval-Ergebnisse (M1–M7) und wird in einem Architecture Decision Record dokumentiert.
+Ursprünglich war für die Pilotstudie ein Between-Subjects-Vergleich zwischen **Claude Sonnet 4.6** (Anthropic) und **GPT-4o** (OpenAI) geplant. Im Rahmen der Pre-Studie-Testläufe (Juli/August 2026) zeigte sich jedoch ein entscheidender praktischer Befund: Claude Sonnet 4.6 erzeugte Antwortlatenzen von bis zu 60 Sekunden pro Gesprächszug unter realen Produktionsbedingungen (Hetzner CX23, Helsinki; SSE-Streaming).
+
+Diese Latenz ist für den sokratischen Lernkontext methodisch inakzeptabel. Sokratische Gesprächsführung setzt eine natürliche Dialogdynamik voraus — lange Wartezeiten unterbrechen den kognitiven Fluss, beeinflussen das Stresserleben der Nutzenden (Lazarus, 1993) und gefährden damit genau jene psychologischen Zustände, die KAIA adressieren soll. Eine Wartezeit von bis zu einer Minute zwischen Nutzereingabe und KI-Antwort wäre für Teilnehmende nicht zumutbar und würde die ökologische Validität der Studie untergraben.
+
+**Entscheidung:** Die Pilotstudie wird ausschließlich mit **GPT-4.1-mini** (`gpt-4.1-mini`, OpenAI) durchgeführt. GPT-4.1-mini zeigte in den Pre-Studie-Tests deutlich kürzere Antwortlatenzen bei vertretbarer Gesprächsqualität. Der ursprünglich geplante Between-Subjects-Vergleich zwischen zwei Modellen entfällt; die Pilotstudie ist damit als Single-Arm-Studie konzipiert, die das Gesamtsystem (KAIA mit GPT-4.1-mini) explorativ evaluiert.
+
+Das Anthropic-SDK wurde daraufhin am 04. August 2026 vollständig aus dem Produktionssystem entfernt. Der LLM-Vergleich (FF3) wird ausschließlich über die systematische Crash-Persona-Evaluation (M1–M7, Abschnitt 5.3) adressiert — als separater Evidenzstrang, unabhängig von der Pilotstudie. Diese Trennung ist methodisch sauber: Die Eval-Matrix vergleicht Modellqualität unter kontrollierten Bedingungen; die Pilotstudie evaluiert das Gesamtsystem unter Alltagsbedingungen. Die Latenz-bedingte Modellentscheidung ist in Architecture Decision Record ADR-003 dokumentiert.
 
 ---
 
