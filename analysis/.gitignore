@@ -1,0 +1,6 @@
+# Echte Studien-CSVs — nie committen (DSGVO)
+data/*.csv
+
+# Generierte Outputs — nie committen (binary)
+output/figures/*.png
+output/tables/*.docx
