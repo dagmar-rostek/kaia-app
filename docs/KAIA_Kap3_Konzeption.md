@@ -19,17 +19,17 @@ Kapitel 3.7 bis 3.9 beschreiben die technische Realisierung des konzeptionellen 
 
 ## 3.1 Vom theoretischen Rahmen zu Designanforderungen
 
-Die in Kapitel 2 entwickelten Theorien ergeben sechs operative Designanforderungen:
+Die in Kapitel 2 entwickelten Theorien ergeben sieben operative Designanforderungen:
 
 1. **Eigenleistung schützen** — Antworten ersetzen kognitiven Eigenanteil; KAIA sollte ihn fördern (Kalyuga et al., 2003)
 2. **Modus an Zustand anpassen** — dieselbe Frage erzeugt bei Überforderung Stress, bei Flow Erkenntnisfreude (Lazarus & Folkman, 1984; Csikszentmihalyi, 1990)
 3. **Scaffolding für Novizen** — rein sokratische Begleitung überfordert Anfänger; es braucht ein Spektrum (Vygotsky, 1978; Wood et al., 1976)
 4. **Ressourcenwahrnehmung stärken** — nicht Anforderungen reduzieren, sondern wahrgenommene Handlungsfähigkeit aufbauen (Bandura, 1997; Lazarus, 1993)
-5. **Selbstregulation unterstützen** — explizite Ziele und ein Fortschrittsrahmen fördern Selbstwirksamkeit und Metakognition (Zimmermann, 2000; Locke & Latham, 1990)
-6. **Transparent kommunizieren** — KAIA ist eine KI; computational empathy ist nicht echtes Mitgefühl (Decety & Jackson, 2004)
+5. **Selbstregulation unterstützen** — explizite Ziele und ein Fortschrittsrahmen fördern Selbstwirksamkeit und Metakognition (Zimmerman, 2000; Locke & Latham, 1990)
+6. **Transparent kommunizieren** — KAIA ist eine KI; computational empathy ist nicht echtes Mitgefühl (Picard, 1997; Decety & Jackson, 2004)
 7. **Wissen in Handeln überführen** — Der Knowing-Doing Gap (Pfeffer & Sutton, 2000) ist das Kernproblem der KAIA-Zielgruppe: nicht fehlendes Wissen, sondern fehlende Umsetzung. Sheerans (2002) Intention-Behavior Gap-Forschung zeigt, dass zwischen Absicht und Verhalten systematische Lücken entstehen. KAIAs Primäraufgabe ist die Überbrückung dieser Lücke — durch Implementation Intentions (Gollwitzer, 1999), den Erster-Schritt-Loop und die konsequente Verankerung jeder Session in konkreten Alltagssituationen.
 
-Diese sechs Anforderungen strukturieren das Rahmenwerk in vier Komponenten.
+Diese sieben Anforderungen strukturieren das Rahmenwerk in fünf Komponenten.
 
 ---
 
@@ -146,7 +146,7 @@ Die sechs Fragetypen sind die Mindestspezifikation für Reproduzierbarkeit. Im L
 
 #### 3.3.6.1 Strukturelle Grundentscheidung: Warum 10 Sessions?
 
-Das ursprüngliche Konzept implizierte drei Sessions ohne explizite Progression. Dieses Design ist didaktisch nicht ausreichend begründet. Drei Sitzungen ermöglichen allenfalls einen ersten Orientierungsdialog, aber keinen messbaren Lernfortschritt im Sinne einer Bloom-Eskalation. Die Mindestrequirements für einen nachweisbaren Kompetenzaufbau ergeben sich aus zwei Quellen: dem Spaced-Learning-Prinzip (Cepeda et al., 2006), das verteiltes Üben über Zeit als Voraussetzung nachhaltiger Enkodierung beschreibt, und der kumulativen Logik der Bloom-Taxonomie (Anderson & Krathwohl, 2001), die höhere kognitive Operationen (Analysieren, Bewerten, Erschaffen) nur auf einer gefestigten Wissens- und Verstehensbasis erlaubt. Aus diesen beiden Anforderungen ergibt sich eine Mindestarchitektur von 10 Sessions.
+Das ursprüngliche Konzept implizierte drei Sessions ohne explizite Progression. Dieses Design ist didaktisch nicht ausreichend begründet. Drei Sitzungen ermöglichen allenfalls einen ersten Orientierungsdialog, aber keinen messbaren Lernfortschritt im Sinne einer Bloom-Eskalation. Die Mindestrequirements für einen nachweisbaren Kompetenzaufbau ergeben sich aus zwei Quellen: dem Spaced-Learning-Prinzip (Cepeda et al., 2006), das verteiltes Üben über Zeit als Voraussetzung nachhaltiger Enkodierung beschreibt, und der kumulativen Logik der Bloom-Taxonomie (Anderson & Krathwohl, 2001), die höhere kognitive Operationen (Analysieren, Evaluieren, Erschaffen) nur auf einer gefestigten Wissens- und Verstehensbasis erlaubt. Aus diesen beiden Anforderungen ergibt sich eine Mindestarchitektur von 10 Sessions.
 
 #### 3.3.6.2 Drei didaktische Phasen und Bloom-Progression über die 10 Sessions
 
@@ -156,11 +156,11 @@ Die 10 Sessions sind in drei didaktische Phasen gegliedert, die jeweils eine Blo
 
 Ziel dieser Sessions ist nicht Wissensvermittlung, sondern epistemische Verortung: Welche Vorannahmen, welches Vorwissen und welche Lücken bringt der Lernende mit? Session 2 beginnt obligatorisch mit einem Callback auf Session 1: *"Du hast beim letzten Mal gesagt, dass X — ist das noch so, oder hat sich deine Einschätzung verschoben?"* Dieser Callback dient zwei Zwecken: Er aktiviert Spaced Retrieval (Cepeda et al., 2006) und signalisiert dem Lernenden, dass das System erinnert und ernst nimmt, was gesagt wurde. Methodisch dominieren Anamnese-Fragen (Typ 6) und Klärungsfragen (Typ 1) aus dem sokratischen Fragetypenrepertoire.
 
-**Phase 2 — Transfer und Analyse (Sessions 4–7): Bloom-Stufen 2–5 (Verstehen, Anwenden, Analysieren, Bewerten)**
+**Phase 2 — Transfer und Analyse (Sessions 4–7): Bloom-Stufen 2–5 (Verstehen, Anwenden, Analysieren, Evaluieren)**
 
 Ab Session 4 verschiebt sich der Schwerpunkt von der Verortung zur Anwendung. Systemische Fragen (Typ 4) und Erste-Schritt-Fragen (Typ 5) dominieren. Der Erster-Schritt-Loop (Abschnitt 3.3.7) entfaltet hier seine volle Wirkung: jede Session endet mit einem konkreten Handlungsauftrag, jede Folgesession beginnt mit der Überprüfung. **Session 5** markiert die Halbzeit und enthält einen obligatorischen Spiegel: *"Was weißt du jetzt, das du vor fünf Sessions noch nicht wusstest?"* Diese Frage operiert auf Bloom-Stufe 2 (Verstehen) und bereitet die Analysephase vor, indem sie Wissensfortschritt explizit sichtbar macht. Ab Session 6 dominieren Widerspruchsfragen (Typ 3): KAIA arbeitet aktiv aus dem Profil-Gedächtnis: *"In Session 3 hast du gesagt, dass X. Jetzt sagst du Y. Was hat sich verändert?"* Diese cross-sessionalen Widerspruchsfragen erzeugen kognitive Dissonanz (Festinger, 1957) ohne Bedrohungsappraisal, weil sie auf selbstgeäußertes Material zurückgreifen, nicht auf Fremdurteile. Die dafür erforderlichen stärksten Nutzerzitate werden durch die Funktion `load_historical_quotes()` als `historical_quotes`-Feld aus den Session-Zusammenfassungen aller Vorsessions bereitgestellt.
 
-**Phase 3 — Synthese (Sessions 8–10): Bloom-Stufen 5–6 (Bewerten, Erschaffen)**
+**Phase 3 — Abschluss: Evaluieren und Erschaffen (Sessions 8–10): Bloom-Stufen 5–6 (Evaluieren, Erschaffen)**
 
 Die Abschlussphase richtet sich explizit auf Transfer-Autonomie: Was hat der Lernende erarbeitet, und wie wird er nach dem Ende der Studienphase damit weiterarbeiten? **Session 10** enthält drei simultane strukturelle Aufgaben, die vom Systemprompt (via `is_final_session=True`) aktiviert werden: (1) Die Gegenüberstellung wörtlicher Nutzerzitate aus Session 1 und der aktuellen Session — der Lernende sieht seine eigene kognitive Entwicklung in seinen eigenen Worten; diese Gegenüberstellung ist das stärkste Selbstwirksamkeits-Instrument des gesamten Designs (Bandura, 1997: Mastery Experience durch Reflexion auf eigene Leistung). (2) Die Autonomisierungsfrage: *"Wie wirst du ohne mich weiterlernen?"* — sie operiert auf Bloom-Stufe 6 (Erschaffen) und erzwingt die Produktion einer eigenen Lernstrategie. (3) Die explizite Constraint-Regel: kein GSE-Priming — Session 10 stellt keine Fragen, die auf Selbstwirksamkeits-Erleben hinweisen oder die Teilnehmenden an die bevorstehende Post-Messung erinnern, um die Unabhängigkeit der GSE-Post-Erhebung zu sichern.
 
@@ -175,7 +175,7 @@ Unabhängig von der übergreifenden Bloom-Progression folgt jede einzelne Sessio
 **Phase 1 — Aktivierung (erste 60–90 Sekunden):**
 Einstiegsfrage: *"Was möchtest du nach dieser Session verstanden oder weitergedacht haben?"* Diese Frage aktiviert Vorwissen (Ausubel, 1968), erzwingt eine Lernintention (Locke & Latham, 1990) und orientiert das LLM auf den aktuellen Fokus. Ab Session 2 wird die Aktivierungsphase durch den Callback auf den offenen Schritt der Vorwoche ersetzt oder ergänzt.
 
-Die Formulierung der Einstiegsfrage ist konzeptuell präzise zu unterscheiden von einer Task-Frage. Nach Hattie & Timperley (2007) ist die *Learning Intention* — "Was werde ich dadurch können oder verstehen?" — didaktisch wirksamer als die bloße Task-Benennung — "Was werde ich heute tun?" (d=0.54 für Lernintentionen, d=0.50 für Zielsetzung, beide über dem Wirksamkeitsschwellenwert von d=0.40). KAIA fragt daher nicht "Was willst du heute besprechen?" (Task), sondern explizit nach dem intendierten Kompetenz- oder Verständniszustand.
+Die Formulierung der Einstiegsfrage ist konzeptuell präzise zu unterscheiden von einer Task-Frage. Nach Hattie (2009, *Visible Learning*) ist die *Learning Intention* — "Was werde ich dadurch können oder verstehen?" — didaktisch wirksamer als die bloße Task-Benennung — "Was werde ich heute tun?" (d=0.54 für Lernintentionen, d=0.50 für Zielsetzung, beide über dem Wirksamkeitsschwellenwert von d=0.40). KAIA fragt daher nicht "Was willst du heute besprechen?" (Task), sondern explizit nach dem intendierten Kompetenz- oder Verständniszustand.
 
 **Phase 2 — Arbeitsphase (Kernzeit der Session):**
 KAIA wechselt nach Lazarus-Signal in den jeweils angemessenen Modus (sokratisch / scaffolding / herausfordernd). Maximal eine Frage pro Antwort. Antworten unter 80 Wörtern (Scaffolding-Modus: unter 120 Wörtern). Keine Listen. Keine Bullet Points.
@@ -187,7 +187,7 @@ Abschlussfrage: *"Was würdest du jemandem erklären, der nicht dabei war?"* Die
 
 ### 3.3.7 Erster-Schritt-Loop: Der GSE-Aufbau-Mechanismus
 
-Der Erster-Schritt-Loop ist KAIAs operative Antwort auf den Knowing-Doing Gap (Pfeffer & Sutton, 2000). Pfeffer und Sutton zeigen, dass Wissen allein nicht zu Handeln führt — die Lücke zwischen Wissen und Tun entsteht durch fehlende konkrete Handlungsplanung, Komplexitätsvermeidung und mangelnde situative Verankerung. Sheerans (2002) Meta-Analyse zum Intention-Behavior Gap belegt, dass starke Verhaltensintentionen durchschnittlich nur 28% der Verhaltensvarianz erklären. Der Loop transformiert abstrakte Lernintentionen in spezifische, situativ verankerte Handlungsschritte.
+Der Erster-Schritt-Loop ist KAIAs operative Antwort auf den Knowing-Doing Gap (Pfeffer & Sutton, 2000). Pfeffer und Sutton zeigen, dass Wissen allein nicht zu Handeln führt — die Lücke zwischen Wissen und Tun entsteht durch fehlende konkrete Handlungsplanung, Komplexitätsvermeidung und mangelnde situative Verankerung. Sheerans (2002) Übersicht zum Intention-Behavior Gap belegt, dass starke Verhaltensintentionen durchschnittlich nur 28% der Verhaltensvarianz erklären. Der Loop transformiert abstrakte Lernintentionen in spezifische, situativ verankerte Handlungsschritte.
 
 #### 3.3.7.1 Konzeptuelle Trias: Lernziel — Lernschritt — Erfolgskriterium
 
@@ -203,7 +203,7 @@ Die Unterscheidung schützt vor zwei didaktischen Fehlern: (1) dem Verwechseln v
 
 #### 3.3.7.2 Implementation Intentions: Robustheit der Zielbindung
 
-Die Wirksamkeit von Lernschritten steigt erheblich, wenn sie nicht nur als Absicht ("Ich will X beobachten") formuliert werden, sondern als *Implementation Intention* (Gollwitzer, 1999): eine Wenn-Dann-Verknüpfung, die den Ausführungskontext explizit macht. Gollwitzer & Sheeran (2006) belegen über 94 Studien einen mittleren Effekt von d=.65 für die Steigerung von Zielerreichungsraten durch Implementation Intentions — die robusteste Einzelkomponente in der Motivationsforschung zur Handlungsinitiierung.
+Die Wirksamkeit von Lernschritten steigt erheblich, wenn sie nicht nur als Absicht ("Ich will X beobachten") formuliert werden, sondern als *Implementation Intention* (Gollwitzer, 1999): eine Wenn-Dann-Verknüpfung, die den Ausführungskontext explizit macht. Gollwitzer & Sheeran (2006) belegen über 94 Studien einen mittleren Effekt von d=.65 für die Steigerung von Zielerreichungsraten durch Implementation Intentions.
 
 Für KAIA bedeutet dies: Die Erste-Schritt-Frage (Fragetyp 5) endet nicht mit der Absichtsformulierung, sondern mit einer Kontextualisierungsfrage: *"Wann genau, in welcher Situation, könntest du das ausprobieren?"* Erst wenn Wann, Wo und Wie benannt sind, ist der Lernschritt im Sinne einer Implementation Intention operationalisiert. Dieser Schritt wird als `first_step`-Feld in der Session-Zusammenfassung persistiert und bildet den Einstieg der nächsten Session.
 
@@ -349,7 +349,7 @@ Die Lernroadmap ist ein nutzerseitig befülltes, strukturiertes Dokument, das f�
 
 1. *Zielstruktur* — explizite Lernziele (Goal-Setting, Locke & Latham, 1990, 2002) verhindern aimless chatting und geben KAIA pro Session einen konkreten Kontext
 2. *Fortschrittserfahrung* — selbst eingeschätzter Fortschritt (0–100%) ist eine direkte Handlungsergebniserfahrung (Bandura, 1997) — Voraussetzung für Selbstwirksamkeitsstärkung
-3. *Metakognitive Aktivierung* — das Befüllen und Aktualisieren der Roadmap fördert Selbstregulation (Zimmermann, 2000)
+3. *Metakognitive Aktivierung* — das Befüllen und Aktualisieren der Roadmap fördert Selbstregulation (Zimmerman, 2000)
 
 ### 3.4.2 Struktur der Lernroadmap
 
@@ -546,7 +546,7 @@ Die Abstraktion erfolgt über eine `_provider(model: str)`-Funktion im Service-L
 
 **Anthropic Prompt Caching:** Systemprompts werden mit `cache_control: ephemeral` an die Anthropic API übergeben. Das System logt `cache_creation_input_tokens` und `cache_read_input_tokens` aus dem Anthropic-Usage-Objekt — beides für das Cost-Tracking relevant (gecachte Token kosten ca. 10% der normalen Input-Token-Rate).
 
-**Vier Stream-Funktionen:** Alle LLM-Aufrufe laufen über eine von vier SSE-Stream-Funktionen: `stream_opening` (Begrüßung/Einstieg), `stream_response` (Hauptantwort auf User-Nachricht), `stream_closing` (Session-Abschluss), `stream_meta_question` (ausgelöst durch EMA-Feedback `stuck` oder `unclear`). Alle vier Funktionen akzeptieren einen `model_override`-Parameter für Per-Request-Modell-Zuweisung.
+**Vier Stream-Funktionen:** Alle LLM-Aufrufe laufen über eine von vier SSE-Stream-Funktionen: `stream_opening` (Begrüßung/Einstieg), `stream_response` (Hauptantwort auf User-Nachricht), `stream_closing` (Session-Abschluss), `stream_meta_question` (ausgelöst durch In-Session-Feedback `stuck` oder `unclear`). Alle vier Funktionen akzeptieren einen `model_override`-Parameter für Per-Request-Modell-Zuweisung.
 
 ### 3.7.3 KAIA-Charaktere als nutzergetriebene Stilauswahl
 
@@ -564,9 +564,9 @@ Die Charaktere sind keine Ersetzung der vier Interaktionsmodi (Abschnitt 3.3.1),
 
 Das Prompt-Management in der Datenbank (live editierbar ohne Redeploy, versioniert) erlaubt während der Studie gezieltes Prompt-Finetuning ohne Deployment-Unterbrechung. Im Study-Lock-Modus (`STUDY_MODE=locked`) werden neue Prompt-Versionen vom CI-Gate blockiert — die Prompts sind für die Datenerhebungsphase eingefroren.
 
-### 3.7.4 EMA-Feedback-Protokoll
+### 3.7.4 In-Session-Feedback-Protokoll
 
-Das Ecological Momentary Assessment (EMA) ist in KAIA als Feedback-Button-Interface in der Chat-UX implementiert. Vier Feedback-Typen stehen nach jeder KAIA-Antwort zur Verfügung:
+Das In-Session-Feedback ist in KAIA als Feedback-Button-Interface in der Chat-UX implementiert. Vier Feedback-Typen stehen nach jeder KAIA-Antwort zur Verfügung:
 
 | Button | Technischer Name | Semantik | LLM-Reaktion |
 |---|---|---|---|
@@ -577,14 +577,16 @@ Das Ecological Momentary Assessment (EMA) ist in KAIA als Feedback-Button-Interf
 
 `transfer_marker` und `wow` sind passive Signale: Sie werden persistiert und fließen in die Session-Extraktion (Abschnitt 3.5.3) ein, lösen aber keine direkte LLM-Reaktion aus. `stuck` und `unclear` hingegen triggern unmittelbar einen separaten LLM-Call via `stream_meta_question` — das System reformuliert oder elaboriert ohne die Hauptkonversation zu unterbrechen.
 
-Das EMA-Feedback ist ein zentrales Forschungs-Datenerfassungselement: Die Häufigkeit von `stuck`- und `wow`-Markierungen über die Sessions hinweg liefert einen Proxy-Indikator für Challenge-Skill-Balance (Csikszentmihalyi, 1990) unabhängig von der FKS-Erhebung.
+Das In-Session-Feedback ist ein zentrales Forschungs-Datenerfassungselement: Die Häufigkeit von `stuck`- und `wow`-Markierungen über die Sessions hinweg liefert einen Proxy-Indikator für Challenge-Skill-Balance (Csikszentmihalyi, 1990) unabhängig von der FKS-Erhebung.
+
+*Begriffsabgrenzung:* Ecological Momentary Assessment (EMA) im engeren Sinne bezeichnet eine Methode mit zufallsgesteuerten oder zeitplanbasierten Prompts über den Alltag hinweg (Stone & Shiffman, 1994). KAIAs Vier-Button-Interface erfüllt diese Kriterien nicht: Es handelt sich um reaktives, nutzungsgetriggertes Feedback unmittelbar nach Systemantworten, nicht um EMA im methodologischen Sinne.
 
 ### 3.7.5 Chat-Interface-Komponenten
 
 Drei dedizierte UI-Komponenten strukturieren die Chat-UX:
 
 - **ChatDayBanner:** Zeigt "Session N von 10 · [Phasenhinweis]" am Session-Start, dismissible. Informiert über die übergreifende Bloom-Phase ohne die interne Mikrostruktur preiszugeben.
-- **ChatInfoPanel:** Anleitung auf Abruf — erklärt die drei Charaktere, die Gesprächsregeln (keine Antworten, nur Fragen) und die EMA-Feedback-Buttons. Nicht beim ersten Start aufgezwungen; jederzeit zugänglich.
+- **ChatInfoPanel:** Anleitung auf Abruf — erklärt die drei Charaktere, die Gesprächsregeln (keine Antworten, nur Fragen) und die Feedback-Buttons. Nicht beim ersten Start aufgezwungen; jederzeit zugänglich.
 - **ChatReportModal:** Ermöglicht die Meldung problematischer Gesprächsverläufe über `POST /api/v1/chat/sessions/{id}/report` mit Slack-Webhook-Benachrichtigung an die Forscherin. Enthält einen expliziten Crisis-Detection-Disclaimer (Verweis auf Telefonseelsorge 0800 111 0 111).
 
 ---
@@ -593,7 +595,7 @@ Drei dedizierte UI-Komponenten strukturieren die Chat-UX:
 
 ### 3.8.1 Designprinzip: Mehrschichtige Messung
 
-Die Messinfrastruktur von KAIA operiert auf drei zeitlichen Ebenen: Prä/Post-Messung (vor Session 1 und nach Session 10), Verlaufsmessung (FKS nach Sessions 2, 5, 8, 10) und kontinuierliche In-Session-Datenerfassung (EMA-Feedback). Diese Kombination erlaubt sowohl einen Gesamtvergleich (Prä vs. Post) als auch eine Längsschnittanalyse des Verlaufs.
+Die Messinfrastruktur von KAIA operiert auf drei zeitlichen Ebenen: Prä/Post-Messung (vor Session 1 und nach Session 10), Verlaufsmessung (FKS nach Sessions 2, 5, 8, 10) und kontinuierliche In-Session-Datenerfassung (Feedback-Buttons nach jeder Antwort). Diese Kombination erlaubt sowohl einen Gesamtvergleich (Prä vs. Post) als auch eine Längsschnittanalyse des Verlaufs.
 
 Bei N≈20 ohne Kontrollgruppe und ohne Randomisierung sind kausale Wirksamkeitsaussagen methodisch nicht zulässig. Die Messung dient der explorativen Deskription und der Hypothesengenerierung für zukünftige Studien — nicht der konfirmatorischen Hypothesenprüfung. Diese Einschränkung ist in Kapitel 6 explizit zu kommunizieren.
 
@@ -628,6 +630,8 @@ Der MSLQ (Pintrich et al., 1991, 1993) ist ein etabliertes Instrument zur Erfass
 - **Gütekriterien:** Pintrich et al. (1993) belegen α ≥ .62 für alle 15 Originalsubskalen; konvergente und diskriminante Validität in Hochschulstichproben belegt
 - **Messzeitpunkte:** Prä (nach Consent, vor Session 1) und Post (unmittelbar nach Session 10)
 - **Persistierung:** Alle vier Subskalen-Scores in `user_learning_profiles.subscale_scores` (JSONB) — für die Thesis-Auswertung vollständig verfügbar
+
+**Limitierung der KAIA-Adaptation:** Die domänenunspezifische Neuformulierung der Items und die Reduktion auf vier Subskalen (30 Items) sind eine pragmatische Anpassung für das informelle Erwachsenenlernen ohne spezifischen Kurskontext. Diese Adaptation ist nicht formal validiert: Faktorstruktur, interne Konsistenz und konvergente Validität der KAIA-Version sind für die vorliegende Stichprobe und den vorliegenden Kontext nicht durch separate Validierungsstudien belegt. Die Messwerte sind daher als explorative Indikatoren zu interpretieren, nicht als psychometrisch gleichwertig mit dem validierten Original (Pintrich et al., 1991, 1993). Diese Einschränkung ist in Kapitel 6 zu kommunizieren.
 
 ### 3.8.4 Flow-Kurzskala (FKS)
 
@@ -727,7 +731,7 @@ Boekaerts, M. (2011). Emotions, emotion regulation, and self-regulation of learn
 
 Cepeda, N. J., Pashler, H., Vul, E., Wixted, J. T., & Rohrer, D. (2006). Distributed practice in verbal recall tasks: A review and quantitative synthesis. *Psychological Bulletin, 132*(3), 354–380.
 
-Cohen, P. A. (1989). Teaching academic skills through tutoring. *Review of Educational Research, 59*(1), 77–97.
+Cohen, R. L. (1989). Memory for action events: The power of enactment. *Psychological Research, 51*(1), 18–24.
 
 Craik, F. I. M., & Lockhart, R. S. (1972). Levels of processing: A framework for memory research. *Journal of Verbal Learning and Verbal Behavior, 11*(6), 671–684.
 
@@ -756,6 +760,8 @@ Festinger, L. (1957). *A Theory of Cognitive Dissonance*. Stanford University Pr
 Gollwitzer, P. M. (1999). Implementation intentions: Strong effects of simple plans. *American Psychologist, 54*(7), 493–503.
 
 Gollwitzer, P. M., & Sheeran, P. (2006). Implementation intentions and goal achievement: A meta-analysis of effects and processes. *Advances in Experimental Social Psychology, 38*, 69–119.
+
+Hattie, J. (2009). *Visible Learning: A Synthesis of over 800 Meta-Analyses Relating to Achievement*. Routledge.
 
 Hattie, J., & Timperley, H. (2007). The power of feedback. *Review of Educational Research, 77*(1), 81–112.
 
@@ -797,6 +803,10 @@ Pekrun, R. (2006). The control-value theory of achievement emotions: Assumptions
 
 Perkins, D. N., & Salomon, G. (1989). Are cognitive skills context-bound? *Educational Researcher, 18*(1), 16–25.
 
+Pfeffer, J., & Sutton, R. I. (2000). *The Knowing-Doing Gap: How Smart Companies Turn Knowledge into Action*. Harvard Business School Press.
+
+Picard, R. W. (1997). *Affective Computing*. MIT Press.
+
 Pintrich, P. R., Smith, D. A. F., Garcia, T., & McKeachie, W. J. (1991). *A Manual for the Use of the Motivated Strategies for Learning Questionnaire (MSLQ)*. National Center for Research to Improve Postsecondary Teaching and Learning, University of Michigan. (ERIC Document Reproduction Service No. ED338122)
 
 Pintrich, P. R., Smith, D. A. F., Garcia, T., & McKeachie, W. J. (1993). Reliability and predictive validity of the Motivated Strategies for Learning Questionnaire (MSLQ). *Educational and Psychological Measurement, 53*(3), 801–813.
@@ -806,6 +816,8 @@ Rheinberg, F., Vollmeyer, R., & Engeser, S. (2003). Die Erfassung des Flow-Erleb
 Ryan, R. M., & Deci, E. L. (2000). Intrinsic and extrinsic motivations: Classic definitions and new directions. *Contemporary Educational Psychology, 25*(1), 54–67.
 
 Ryan, R. M., Legate, N., Weinstein, N., & Hemric, M. (2023). Self-determination theory as a macro-level theory of motivation and well-being: Review and meta-analysis across 486 samples. *Psychological Bulletin, 149*(9–10), 513–545.
+
+Sheeran, P. (2002). Intention–behavior relations: A conceptual and empirical review. *European Review of Social Psychology, 12*(1), 1–36. https://doi.org/10.1080/14792772143000003
 
 Schimpf, C., Voigt, S., & Bohné, T. (2026). AI-assisted goal setting improves goal achievement: A randomized controlled trial. *arXiv preprint arXiv:2603.17887*.
 
@@ -831,4 +843,4 @@ Yerkes, R. M., & Dodson, J. D. (1908). The relation of strength of stimulus to r
 
 Zheng, L., Chiang, W.-L., Sheng, Y., Zhuang, S., Wu, Z., Zhuang, Y., Lin, Z., Li, Z., Li, D., Xing, E. P., Zhang, H., Gonzalez, J. E., & Stoica, I. (2023). Judging LLM-as-a-Judge with MT-Bench and Chatbot Arena. *Advances in Neural Information Processing Systems, 36*, 46595–46623.
 
-Zimmermann, B. J. (2000). Attaining self-regulation: A social cognitive perspective. In M. Boekaerts, P. R. Pintrich, & M. Zeidner (Hrsg.), *Handbook of Self-Regulation* (S. 13–39). Academic Press.
+Zimmerman, B. J. (2000). Attaining self-regulation: A social cognitive perspective. In M. Boekaerts, P. R. Pintrich, & M. Zeidner (Hrsg.), *Handbook of Self-Regulation* (S. 13–39). Academic Press.
