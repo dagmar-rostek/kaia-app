@@ -11,7 +11,7 @@
 
 ### 4.1.1 Design Science Research als Entwicklungsparadigma
 
-Die Entwicklung von KAIA folgt dem iterativen Design-Evaluate-Revise-Zyklus nach Hevner et al. (2004). Jede Architekturentscheidung wird vor dem Hintergrund der Anforderungen aus Kapitel 3 begründet; Kompromisse zwischen wissenschaftlichen, technischen und datenschutzrechtlichen Anforderungen sind in Architecture Decision Records (ADRs) dokumentiert. Das System ist als DSR-Artefakt konzipiert: Es ist nicht nur Werkzeug, sondern gleichzeitig Gegenstand der Forschung und trägt durch seine Entscheidungshistorie zur wissenschaftlichen Dokumentation bei.
+Die Entwicklung von KAIA folgt dem iterativen Design-Evaluate-Revise-Zyklus nach Hevner (2007). Jede Architekturentscheidung wird vor dem Hintergrund der Anforderungen aus Kapitel 3 begründet; Kompromisse zwischen wissenschaftlichen, technischen und datenschutzrechtlichen Anforderungen sind in Architecture Decision Records (ADRs) dokumentiert. Das System ist als DSR-Artefakt konzipiert: Es ist nicht nur Werkzeug, sondern gleichzeitig Gegenstand der Forschung und trägt durch seine Entscheidungshistorie zur wissenschaftlichen Dokumentation bei.
 
 ### 4.1.2 Tech-Stack und Begründung
 
@@ -31,7 +31,7 @@ Die Entwicklung von KAIA folgt dem iterativen Design-Evaluate-Revise-Zyklus nach
 | Hosting | Hetzner CX23 Helsinki | EU-Serverstandort, DSGVO-konform, Schrems-II-unproblematisch |
 | Reverse Proxy | Caddy + Let's Encrypt | Automatisches TLS, Upstream-Buffering deaktivierbar für SSE |
 | Container | Docker Compose | Reproduzierbare Umgebungen, kein Kubernetes-Overhead für Einzelserver |
-| CI/CD | GitHub Actions | Linting (ruff), Typprüfung (mypy), Tests (pytest, Coverage ≥ 65 %), Build-Check |
+| CI/CD | GitHub Actions | Linting (ruff), Typprüfung (mypy), Tests (pytest, Coverage ≥ 80 %), Build-Check |
 | Observability | Sentry (FE + BE) + Slack-Webhooks + structlog JSON | Vollständige Fehlererfassung mit Kanal-Trennung |
 | LLM-Provider | Anthropic / OpenAI / Mistral | Evaluation aller drei; Mistral als EU-Verarbeitungsoption |
 
@@ -131,7 +131,7 @@ Die Admin-seitige Löschung (DSGVO Art. 17) nutzt PostgreSQL-Kaskaden (`ondelete
 KAIA verwendet ein zweistufiges Token-System:
 
 - **Access Token** (15 Minuten, Bearer): Zustandsloser Zugriff auf geschützte API-Endpunkte; enthält `user_id` und `status` im Payload.
-- **Refresh Token** (30 Tage, httpOnly-Cookie): Token-Rotation mit familienbasierter Reuse-Detection gemäß RFC 6749. Jedes verwendete Token wird sofort revoziert. Bei erkannter Wiederverwendung (Indikator für Token-Diebstahl) wird die gesamte Token-Familie gesperrt.
+- **Refresh Token** (30 Tage, httpOnly-Cookie): Token-Rotation mit familienbasierter Reuse-Detection gemäß OAuth 2.0 Security Best Current Practice (IETF). Jedes verwendete Token wird sofort revoziert. Bei erkannter Wiederverwendung (Indikator für Token-Diebstahl) wird die gesamte Token-Familie gesperrt.
 
 Refresh-Token-Hashes werden als SHA-256-Digest in der Datenbank gespeichert — niemals der Raw-Token. User-Agent und IP-Adresse werden für den Forensik-Audit-Trail erfasst. Der Index `ix_refresh_tokens_user_active` auf `(user_id, revoked_at)` optimiert die häufigste Query (aktive Tokens eines Nutzers).
 
@@ -246,15 +246,15 @@ Eine der zentralen Architekturentscheidungen (ADR-007) ist die Einführung eines
 
 | Session | Mission | Dominanter Typ |
 |---|---|---|
-| 1 | Ankern — Lernmotiv vom Oberflächenziel trennen, latentes Vorwissen zugänglich machen (Anamnesis) **und KDG-Status klären: Handelt es sich um fehlendes Wissen oder um vorhandenes Wissen, das nicht umgesetzt wird?** | Typ 6 (Anamnese) |
+| 1 | Ankern — Lernmotiv vom Oberflächenziel trennen, latentes Vorwissen zugänglich machen (Anamnesis) **und den Knowing-Doing Gap (KDG; Pfeffer & Sutton, 2000) klären: Handelt es sich um fehlendes Wissen oder um vorhandenes Wissen, das nicht umgesetzt wird?** | Typ 6 (Anamnese) |
 | 2 | Kartieren — Vorannahmen explizit machen und präzisieren | Typ 1 (Klärung) |
 | 3 | Erden — abstraktes Lernziel in konkreter Situation verankern (situiertes Lernen) **und Knowing-Doing Gap situativ sichtbar machen: 'In welcher konkreten Situation hast du gewusst, was zu tun wäre, und es trotzdem nicht getan?'** | Typ 4 (Systemisch) |
-| 4 | Ausprobieren — Erster-Schritt-Loop, Implementation Intention (Gollwitzer) | Typ 5 (Erste-Schritt) |
+| 4 | Ausprobieren — Erster-Schritt-Loop, Implementation Intention (Gollwitzer, 1999) | Typ 5 (Erste-Schritt) |
 | 5 | Spiegel — Halbzeit-Reflexion, eigene kognitive Entwicklung sichtbar machen | Typ 2 (Hypothetisch als Spiegel) |
 | 6 | Reiben — Elenchos: Inkonsistenzen aus Vorsessions konfrontieren | Typ 3 (Widerspruch) |
 | 7 | Schärfen — Inkonsistenzen in bewusste Position überführen | Typ 2 + 3 |
-| 8 | Übergeben — Scaffolding Fading nach Collins, Steuerung sukzessiv abgeben | Typ 4 (Transfer-Fokus) |
-| 9 | Konsolidieren — Gelerntes in kohärente Meta-Erkenntnis verdichten (Merrill) | Typ 2 + 4 |
+| 8 | Übergeben — Scaffolding Fading nach Collins et al. (1989), Steuerung sukzessiv abgeben | Typ 4 (Transfer-Fokus) |
+| 9 | Konsolidieren — Gelerntes in kohärente Meta-Erkenntnis verdichten (Merrill, 2002) | Typ 2 + 4 |
 | 10 | Loslassen — Autonomisierung (Maieutik): eigene Lernstrategie formulieren | Autonomiefragen |
 
 Die verbotenen Fragetypen verhindern didaktische Fehler: Widerspruchsfragen (Typ 3) sind in Sessions 1–5 gesperrt (kein Fundament vorhanden), Erste-Schritt-Fragen (Typ 5) in Session 10 (Steuerung wird zurückgegeben). Session-spezifische Abschlusstrigger variieren, um Habituation zu vermeiden — Session 10 erhält nur einen einzigen Satz als Abschluss ("Was bleibt — wenn du in einem Jahr an diese zehn Wochen denkst?").
@@ -373,7 +373,7 @@ KAIA implementiert vier EMA-Signaltypen, die Nutzende während einer Session sen
 | `transfer_marker` | "Das nehme ich mit" — Erkenntnis mit Transferpotenzial | Transfer-Intention (Gagné, 1985) | Passiv: nur gespeichert |
 | `wow` | "Das trifft etwas" — Resonanz-Signal | Affect Labeling (Lieberman et al., 2007) | Passiv: nur gespeichert |
 | `stuck` | "Ich hänge gerade" — Blockade-Signal | Cognitive Load Overload (Sweller, 1988) | Aktiv: löst Meta-Frage aus |
-| `unclear` | "Das verstehe ich nicht" — Verständnis-Lücke | Knowledge Gap (Anderson & Krathwohl, 2001) | Aktiv: löst Meta-Frage aus |
+| `unclear` | "Das verstehe ich nicht" — Verständnis-Lücke | Knowledge Gap | Aktiv: löst Meta-Frage aus |
 
 ### 4.10.2 Endpunkt-Architektur
 
@@ -397,7 +397,7 @@ Zwei Messzeitpunkte: Prä (vor Session 1) und Post (nach Session 10). Die Prä-G
 
 Der Motivated Strategies for Learning Questionnaire wird mit vier Subskalen (30 Items gesamt) auf einer 7-stufigen Likert-Skala eingesetzt (1 = "trifft gar nicht zu" bis 7 = "trifft völlig zu"). Fisher-Yates-Randomisierung der Item-Reihenfolge innerhalb jeder Subskala verhindert Reihenfolgeeffekte. Subskalen-Scores werden serverseitig als Mittelwerte berechnet.
 
-MSLQ wird ausschließlich zum Prä-Zeitpunkt erhoben (vor Session 1). Die Subskalen-Scores fließen als `subscale_scores` in das `UserLearningProfile` ein.
+MSLQ wird ausschließlich zum Prä-Zeitpunkt erhoben (vor Session 1). Die Subskalen-Scores fließen als `subscale_scores` in das `UserLearningProfile` ein. Die eingesetzte Kurzversion ist eine domänenunspezifische Adaptation des 81-Item-Originals; die Selektion und Neuformulierung der Items ist nicht formal revalidiert.
 
 ### 4.11.3 Journey-State-Machine
 
@@ -418,7 +418,7 @@ Der Journey-Guard verhindert, dass Nutzende Sessions starten, bevor sie die Vora
 
 Ein zentrales methodisches Problem bei der Entwicklung LLM-basierter Systeme ist die fehlende formale Spezifikation für "guten" Output: Es gibt keine allgemeine mathematische Funktion, die misst, ob ein sokratisch-empathischer Lernbegleiter seinen Auftrag erfüllt. Die Güte eines Systemprompts ist kontextabhängig, nutzerspezifisch und lässt sich nicht vollständig vor der Nutzung evaluieren. Dies stellt einen fundamentalen Unterschied zu klassischer Software-Entwicklung dar, in der Korrektheit durch Tests formal verifizierbar ist.
 
-Die Entwicklung des KAIA-Systemprompts folgt daher einem **iterativen Feldforschungs-Ansatz**: Die Forscherin interagiert selbst mit dem System, beobachtet das Verhalten, formuliert Hypothesen über Prompt-Schwächen und Verbesserungen und revidiert den Prompt — in direkter Anlehnung an den Design-Evaluate-Revise-Zyklus von Hevner et al. (2004). KAIA_PROMPT_V4_WARM ist die aktive Version (Stand: 15.07.2026); V3 wird als Eval-Regressions-Baseline vorgehalten.
+Die Entwicklung des KAIA-Systemprompts folgt daher einem **iterativen Feldforschungs-Ansatz**: Die Forscherin interagiert selbst mit dem System, beobachtet das Verhalten, formuliert Hypothesen über Prompt-Schwächen und Verbesserungen und revidiert den Prompt — in direkter Anlehnung an den Design-Evaluate-Revise-Zyklus von Hevner (2007). KAIA_PROMPT_V4_WARM ist die aktive Version (Stand: 15.07.2026); V3 wird als Eval-Regressions-Baseline vorgehalten.
 
 ### 4.12.2 Technische Infrastruktur für Prompt-Iteration
 
@@ -448,7 +448,7 @@ Diese Kriterien werden sowohl in den eigenen Testsessions der Forscherin als auc
 
 Im Zuge der Pilotnutzung vor Studienbeginn wurde ein strukturelles Problem in `KAIA_PROMPT_V3_WARM` identifiziert: KAIA generierte wiederholt dieselbe Erste-Schritt-Frage (Fragetyp 5) in aufeinanderfolgenden Turns, anstatt die Bloom-Progression voranzutreiben. Die Analyse ergab, dass Fragetyp 5 an vier separaten Stellen des Prompts hartkodiert war: im Onboarding-Flow, im Session-Einstieg (ERSTER-SCHRITT-LOOP), in der Fragetyp-Taxonomie und im Phase-3-Abschluss. Unter dem 80-Wort-Constraint und bei aktivem `abschluss`-Signal im Thinking-Block wählt das Modell deterministisch den niedrigkomplexesten sicheren Completion-Pfad: Typ 5. Das Ergebnis ist horizontales Looping auf Bloom-Stufe 1–2 statt taxonomischer Progression.
 
-Gleichzeitig wurde beobachtet, dass der Wild-Charakter ("Perspektivwechsel") von Testnutzerinnen als sokratischer erlebt wurde als der strukturierte Warm-Charakter. Diese Wahrnehmung ist real und didaktisch erklärbar: Metaphern, Analogien und Koans erzeugen kognitive Überraschung und Rahmenbrechung — was Gadamers (1960) Konzept der Horizontverschmelzung entspricht und auf Bloom-Stufen 4–5 operiert. Im Unterschied zu Warms prozedurisierten Fragetypen verlangt der Wild-Prompt echtes Generieren statt Klassifizieren-und-Ausführen.
+Gleichzeitig wurde beobachtet, dass der Wild-Charakter ("Perspektivwechsel") von Testnutzerinnen als sokratischer erlebt wurde als der strukturierte Warm-Charakter. Diese Wahrnehmung ist real und didaktisch erklärbar: Metaphern, Analogien und Koans erzeugen kognitive Überraschung und Rahmenbrechung — was dem Konzept der Horizontverschmelzung (Gadamer, 1960) entspricht. Im Unterschied zu Warms prozedurisierten Fragetypen verlangt der Wild-Prompt echtes Generieren statt Klassifizieren-und-Ausführen.
 
 Wichtig für die Thesis-Terminologie: Was Testnutzerinnen als "sokratischer" wahrnahmen, ist philosophisch kein Sokrates im strengen Elenchos-Sinne, sondern eine Öffnungsform, die dem Zen-Koan näher steht. Beide Formen sind didaktisch legitim — aber die Eval-Metriken M1–M7 sind an der Elenchos-Definition kalibriert; ein Moduswechsel hätte die gesamte Eval-Infrastruktur invalidiert.
 
@@ -488,6 +488,8 @@ Jede Metrik hat eine eigene Prompt-Datei in `prompts/eval/`:
 Scores: 0 (nicht erfüllt) bis 3 (vollständig erfüllt). M7-Score 0 ist sicherheitskritisch und wird immer geflaggt sowie als `log.error` protokolliert.
 
 ### 4.13.4 LLM-as-Judge
+
+Die Bewertung folgt dem LLM-as-Judge-Paradigma (Zheng et al., 2023).
 
 **Judge-Modell**: `claude-haiku-4-5-20251001` (cost-efficient für einfache Scoring-Aufgaben). Das Produktions-KAIA-Modell (`claude-sonnet-4-6`) und das Judge-Modell sind explizit getrennt, um Zirkelschlüsse zu vermeiden.
 
@@ -574,7 +576,7 @@ Zwei Compose-Dateien: `docker-compose.dev.yml` (lokale Entwicklung mit Hot-Reloa
 ### 4.16.3 GitHub Actions CI
 
 Die CI-Pipeline prüft bei jedem Push auf `main` und `develop`:
-- **API**: ruff (Linting + Format-Check), mypy (Typprüfung), pip-audit (Dependency-Audit), pytest (Coverage ≥ 65 %)
+- **API**: ruff (Linting + Format-Check), mypy (Typprüfung), pip-audit (Dependency-Audit), pytest (Coverage ≥ 80 %)
 - **Web**: npm ci, npm audit, tsc --noEmit, eslint, next build
 - **Study-Lock Guard**: Separate Job, der bei `STUDY_MODE=locked` Prompt- und Schema-Änderungen blockiert
 
@@ -598,11 +600,17 @@ Vor Studienstart ist `STUDY_MODE=pilot` zu setzen (Freigabe neuer Nutzer erlaubt
 
 ---
 
+## 4.18 Statistische Auswertungsstrategie
+
+Die statistische Auswertung der Pilotstudie folgt einer explorativen, nicht-konfirmatorischen Strategie. Bei N ≈ 20 und ordinaler 4-Punkt-Skala (GSE) ist der Wilcoxon-Vorzeichenrangtest (Wilcoxon, 1945) der methodisch angemessene Ersatz für den t-Test; die Effektgröße wird als r = |Z| / √N berechnet (Rosenthal, 1991). Für bivariate Zusammenhänge (H2: Sessions × ΔGSE; H3: MSLQ-Baseline × ΔGSE) wird Spearmans Rangkorrelation eingesetzt, ergänzt durch Bootstrap-BCa-Konfidenzintervalle (R = 2.000 Iterationen, Efron & Tibshirani, 1993), da asymmetrische Verteilungen bei kleinen Stichproben die Fisher-z-Transformation verzerren. H4 (Flow × ΔGSE) wird explorativ ausgewertet; aufgrund des explorativen Charakters und der kleinen Stichprobe wird auf eine Bonferroni-Korrektur verzichtet und dies transparent kommuniziert. Alle Analysen erfolgen in R 4.5.x (R Core Team, 2024) mit den Paketen `rstatix`, `boot`, `ggplot2` und `psych`.
+
+Für die Power-Analyse wurde G*Power 3.1 (Faul et al., 2007) verwendet. Bei N = 20, d = 0.5 und α = .05 (einseitig, entsprechend der gerichteten H1) ergibt sich eine Power von ca. 69 %. Bei realistischeren Effektgrößen d = 0.30–0.40 (explorative Pilotstudie) sinkt die Power auf 41–55 %. Das Studiendesign ist explizit als explorative Pilotstudie für Hypothesengenerierung konzipiert, nicht als konfirmatorische Überprüfung.
+
+---
+
 ## Literaturverzeichnis (Kapitel 4)
 
 Anderson, L. W., & Krathwohl, D. R. (Hrsg.). (2001). *A taxonomy for learning, teaching, and assessing: A revision of Bloom's taxonomy of educational objectives*. Longman.
-
-Anthropic. (2024). *Prompt engineering overview: Use XML tags to structure your prompts*. https://docs.anthropic.com/en/docs/build-with-claude/prompt-engineering/use-xml-tags
 
 Collins, A., Brown, J. S., & Newman, S. E. (1989). Cognitive apprenticeship: Teaching the crafts of reading, writing, and mathematics. In L. B. Resnick (Hrsg.), *Knowing, learning, and instruction: Essays in honor of Robert Glaser* (S. 453–494). Lawrence Erlbaum Associates.
 
@@ -610,19 +618,31 @@ Csikszentmihalyi, M. (1990). *Flow: The psychology of optimal experience*. Harpe
 
 Csikszentmihalyi, M., & Larson, R. (1987). Validity and reliability of the experience sampling method. *Journal of Nervous and Mental Disease, 175*(9), 526–536.
 
+Efron, B., & Tibshirani, R. J. (1993). *An Introduction to the Bootstrap*. Chapman & Hall.
+
+Faul, F., Erdfelder, E., Lang, A.-G., & Buchner, A. (2007). G*Power 3: A flexible statistical power analysis program for the social, behavioral, and biomedical sciences. *Behavior Research Methods, 39*(2), 175–191. https://doi.org/10.3758/BF03193146
+
 Gagné, R. M. (1985). *The conditions of learning and theory of instruction* (4. Aufl.). Holt, Rinehart & Winston.
+
+Gadamer, H.-G. (1960). *Wahrheit und Methode: Grundzüge einer philosophischen Hermeneutik*. Mohr.
 
 Gollwitzer, P. M. (1999). Implementation intentions: Strong effects of simple plans. *American Psychologist, 54*(7), 493–503.
 
 Hevner, A. R., March, S. T., Park, J., & Ram, S. (2004). Design science in information systems research. *MIS Quarterly, 28*(1), 75–105.
 
+Hevner, A. R. (2007). A three cycle view of design science research. *Scandinavian Journal of Information Systems, 19*(2), 87–92.
+
 Lieberman, M. D., Eisenberger, N. I., Crockett, M. J., Tom, S. M., Pfeifer, J. H., & Way, B. M. (2007). Putting feelings into words: Affect labeling disrupts amygdala activity in response to affective stimuli. *Psychological Science, 18*(5), 421–428.
 
 Merrill, M. D. (2002). First principles of instruction. *Educational Technology Research and Development, 50*(3), 43–59.
 
+Pfeffer, J., & Sutton, R. I. (2000). *The Knowing-Doing Gap: How Smart Companies Turn Knowledge into Action*. Harvard Business School Press.
+
 Pintrich, P. R., Smith, D. A. F., García, T., & McKeachie, W. J. (1991). *A manual for the use of the Motivated Strategies for Learning Questionnaire (MSLQ)* (Technical Report 91-B-004). University of Michigan.
 
 Pintrich, P. R., Smith, D. A. F., García, T., & McKeachie, W. J. (1993). Reliability and predictive validity of the Motivated Strategies for Learning Questionnaire (MSLQ). *Educational and Psychological Measurement, 53*(3), 801–813.
+
+Rosenthal, R. (1991). *Meta-analytic Procedures for Social Research* (Rev. ed.). SAGE.
 
 Schwarzer, R., & Jerusalem, M. (1995). Generalized self-efficacy scale. In J. Weinman, S. Wright, & M. Johnston (Hrsg.), *Measures in health psychology: A user's portfolio. Causal and control beliefs* (S. 35–37). NFER-NELSON.
 
@@ -631,3 +651,5 @@ Shiffman, S., Stone, A. A., & Hufford, M. R. (2008). Ecological momentary assess
 Sweller, J. (1988). Cognitive load during problem solving: Effects on learning. *Cognitive Science, 12*(2), 257–285.
 
 Wood, D., Bruner, J. S., & Ross, G. (1976). The role of tutoring in problem solving. *Journal of Child Psychology and Psychiatry, 17*(2), 89–100.
+
+Zheng, L., Chiang, W.-L., Sheng, Y., Zhuang, S., Wu, Z., Zhuang, Y., Lin, Z., Li, Z., Li, D., Xing, E. P., Zhang, H., Gonzalez, J. E., & Stoica, I. (2023). Judging LLM-as-a-judge with MT-bench and chatbot arena. *Advances in Neural Information Processing Systems, 36*, 46595–46623.
