@@ -10,13 +10,13 @@
 
 Die Verbreitung großer Sprachmodelle (Large Language Models, LLMs) hat in den vergangenen drei Jahren eine neue Phase in der Diskussion über KI-gestützte Bildungstechnologien eingeleitet. Systeme wie ChatGPT (OpenAI, 2022), Khanmigo (Khan Academy, 2023) oder Google Gemini (Google, 2024) werden zunehmend als tutorielle Begleiter im Selbststudium eingesetzt — häufig ohne empirische Validierung ihrer pädagogischen Wirksamkeit und ohne hinreichende Berücksichtigung datenschutzrechtlicher Anforderungen, wie sie die Datenschutz-Grundverordnung (DSGVO) und der EU-AI-Act (European Parliament, 2024) stellen (Holmes et al., 2022; Zawacki-Richter et al., 2019).
 
-Die lernpsychologische Forschung verweist dabei auf ein grundlegendes Spannungsfeld: Adaptive Systeme, die Lernende durch Inhalte führen, können Selbstwirksamkeit ebenso stärken wie untergraben. Kalyuga (2007) zeigt, dass elaborierte Scaffolding-Interventionen bei fortschreitender Expertise den Lerneffekt umkehren können — das System wird zur kognitiven Krücke statt zum Katalysator. Für den Hochschulkontext, in dem Selbstregulation und Metakognition zentrale Kompetenzziele darstellen (Zimmerman, 2002; Pintrich, 2004), ist dies besonders relevant: Ein System, das denkt, bevor der Lernende es tut, unterminiert genau das, was Hochschulbildung fördern soll.
+Die lernpsychologische Forschung verweist dabei auf ein grundlegendes Spannungsfeld: Adaptive Systeme, die Lernende durch Inhalte führen, können Selbstwirksamkeit ebenso stärken wie untergraben. Kalyuga (2007) zeigt, dass elaborierte Scaffolding-Interventionen bei fortschreitender Expertise den Lerneffekt umkehren können — das System wird zur kognitiven Krücke statt zum Katalysator. Für den Hochschulkontext, in dem Selbstregulation und Metakognition zentrale Kompetenzziele darstellen (Zimmerman, 2002; Pintrich, 2004), ist dies besonders relevant. Ein System, das denkt, bevor der Lernende es tut, unterminiert genau das, was Hochschulbildung fördern soll.
 
 Hinzu kommt die Rolle des subjektiven Stresserlebens. Lazarus (1993) zeigt in seiner kognitiv-transaktionalen Stresstheorie, dass nicht objektive Anforderungen, sondern deren subjektive Bewertung — die kognitive Appraisal-Sequenz — das Stresserleben und damit das Lernverhalten maßgeblich prägen (Lazarus & Folkman, 1984). Ein Lernbegleiter, der situative Stresszustände ignoriert und rein inhaltsgetrieben operiert, verfehlt damit einen wesentlichen Einflusskanal auf Lernerfolg und Motivation. Teigen (1994) ergänzt mit dem Yerkes-Dodson-Prinzip, dass sowohl Unter- als auch Überforderung den Lerntransfer hemmen; ein optimal kalibriertes Aktivierungsniveau ist Voraussetzung für nachhaltiges Lernen.
 
 Schließlich ist die Frage der Empathie in KI-Systemen zu stellen. Decety und Jackson (2004) unterscheiden zwischen affektiver und kognitiver Empathie; was in KI-Systemen erzeugt werden kann, ist — in der Tradition des Affective Computing (Picard, 1997) — eine Form von *computational empathy*: die modellierte Repräsentation emotionaler Zustände als Grundlage adaptiver Reaktionen. Ob und unter welchen Bedingungen diese Form der Empathie in tutoriellen Systemen lernförderlich wirkt, ist empirisch weitgehend ungeklärt.
 
-Vor diesem Hintergrund entstand KAIA (Kinetic AI Agent) — ein empathischer KI-Lernbegleiter, der eine spezifische Lücke adressiert: den **Knowing-Doing Gap** (Sheeran, 2002; Pfeffer & Sutton, 2000): Menschen scheitern im Lernkontext selten daran, dass ihnen Wissen fehlt — sie scheitern daran, vorhandenes Wissen in konkretes Alltagshandeln zu überführen (Intention-Behavior Gap; Sheeran, 2002). KAIA ist nicht für den Wissensaufbau von Null konzipiert. KAIA begleitet Menschen, die bereits wissen, was sie tun sollten, und genau dort nicht handeln. Die sokratische Gesprächsführung aktiviert latentes Vorwissen; Implementation Intentions (Gollwitzer, 1999) überführen Erkenntnisse in konkrete Handlungsschritte.
+Vor diesem Hintergrund entstand KAIA (Kinetic AI Agent) — ein empathischer KI-Lernbegleiter, der eine spezifische Lücke adressiert: den **Knowing-Doing Gap** (Sheeran, 2002; Pfeffer & Sutton, 2000). Menschen scheitern im Lernkontext selten daran, dass ihnen Wissen fehlt — sie scheitern daran, vorhandenes Wissen in konkretes Alltagshandeln zu überführen (Intention-Behavior Gap; Sheeran, 2002). KAIA ist nicht für den Wissensaufbau von Null konzipiert. KAIA begleitet Menschen, die bereits wissen, was sie tun sollten, und genau dort nicht handeln. Die sokratische Gesprächsführung aktiviert latentes Vorwissen; Implementation Intentions (Gollwitzer, 1999) überführen Erkenntnisse in konkrete Handlungsschritte.
 
 ### Terminologische Grundlagen dieser Arbeit
 
@@ -129,56 +129,4 @@ Die Doppelrolle Entwicklerin/Forscherin bringt methodische Risiken mit sich: Con
 
 ---
 
-## Literaturverzeichnis (Kapitel 1)
-
-Anderson, L. W., & Krathwohl, D. R. (Hrsg.). (2001). *A taxonomy for learning, teaching, and assessing: A revision of Bloom's educational objectives*. Longman.
-
-Bandura, A. (1997). *Self-efficacy: The exercise of control*. Freeman.
-
-Decety, J., & Jackson, P. L. (2004). The functional architecture of human empathy. *Behavioral and Cognitive Neuroscience Reviews*, *3*(2), 71–100. https://doi.org/10.1177/1534582304267187
-
-Deutsche Forschungsgemeinschaft. (2022). *Leitlinien zur Sicherung guter wissenschaftlicher Praxis* (2. Aufl.). DFG. https://doi.org/10.5281/zenodo.6472827
-
-European Parliament. (2024). *Regulation (EU) 2024/1689 of the European Parliament and of the Council of 13 June 2024 laying down harmonised rules on artificial intelligence (Artificial Intelligence Act)*. Official Journal of the European Union.
-
-Gollwitzer, P. M. (1999). Implementation intentions: Strong effects of simple plans. *American Psychologist*, *54*(7), 493–503. https://doi.org/10.1037/0003-066X.54.7.493
-
-Google. (2024). *Gemini*. Google DeepMind. https://gemini.google.com
-
-Hevner, A. R. (2007). A three cycle view of design science research. *Scandinavian Journal of Information Systems*, *19*(2), 87–92.
-
-Hevner, A. R., March, S. T., Park, J., & Ram, S. (2004). Design science in information systems research. *MIS Quarterly*, *28*(1), 75–105. https://doi.org/10.2307/25148625
-
-Holmes, W., Porayska-Pomsta, K., Holstein, K., Sutherland, E., Baker, T., Buckingham Shum, S., Santos, O. C., Rodrigo, M. T., Cukurova, M., Bittencourt, I. I., & Koedinger, K. R. (2022). Ethics of AI in education: Towards a community-wide agenda. *Journal of Learning Analytics*, *9*(1), 163–181. https://doi.org/10.18608/jla.2022.7227
-
-Kalyuga, S. (2007). Expertise reversal effect and its implications for learner-tailored instruction. *Educational Psychology Review*, *19*(4), 509–539. https://doi.org/10.1007/s10648-007-9054-3
-
-Lazarus, R. S., & Folkman, S. (1984). *Stress, appraisal, and coping*. Springer.
-
-Lazarus, R. S. (1993). From psychological stress to the emotions: A history of changing outlooks. *Annual Review of Psychology*, *44*(1), 1–21. https://doi.org/10.1146/annurev.ps.44.020193.000245
-
-Oliveira, W., & Hamari, J. (2024). Flow in educational gamification: A systematic review. *Computers & Education*, *213*, 104998. https://doi.org/10.1016/j.compedu.2024.104998
-
-Pfeffer, J., & Sutton, R. I. (2000). *The knowing-doing gap: How smart companies turn knowledge into action*. Harvard Business School Press.
-
-Picard, R. W. (1997). *Affective computing*. MIT Press.
-
-Pintrich, P. R., Smith, D. A. F., Garcia, T., & McKeachie, W. J. (1991). *A manual for the use of the Motivated Strategies for Learning Questionnaire (MSLQ)* (ERIC Document Reproduction Service No. ED338122). University of Michigan.
-
-Pintrich, P. R., Smith, D. A. F., Garcia, T., & McKeachie, W. J. (1993). Reliability and predictive validity of the Motivated Strategies for Learning Questionnaire (MSLQ). *Educational and Psychological Measurement*, *53*(3), 801–813. https://doi.org/10.1177/0013164493053003024
-
-Pintrich, P. R. (2004). A conceptual framework for assessing motivation and self-regulated learning in college students. *Educational Psychology Review*, *16*(4), 385–407. https://doi.org/10.1023/B:EDPR.0000049023.56678.c3
-
-Schwarzer, R., & Jerusalem, M. (1995). Generalized Self-Efficacy Scale. In J. Weinman, S. Wright & M. Johnston (Hrsg.), *Measures in health psychology: A user's portfolio. Causal and control beliefs* (S. 35–37). NFER-Nelson.
-
-Sheeran, P. (2002). Intention-behavior relations: A conceptual and empirical review. *European Review of Social Psychology*, *12*(1), 1–36. https://doi.org/10.1080/14792772143000003
-
-Teigen, K. H. (1994). Yerkes-Dodson: A law for all seasons. *Theory & Psychology*, *4*(4), 525–547. https://doi.org/10.1177/0959354394044004
-
-VanLehn, K. (2011). The relative effectiveness of human tutoring, intelligent tutoring systems, and other tutoring systems. *Educational Psychologist*, *46*(4), 197–221. https://doi.org/10.1080/00461520.2011.611369
-
-Yerkes, R. M., & Dodson, J. D. (1908). The relation of strength of stimulus to rapidity of habit-formation. *Journal of Comparative Neurology and Psychology*, *18*(5), 459–482. https://doi.org/10.1002/cne.920180503
-
-Zawacki-Richter, O., Marín, V. I., Bond, M., & Gouverneur, F. (2019). Systematic review of research on artificial intelligence applications in higher education – where are the educators? *International Journal of Educational Technology in Higher Education*, *16*(1), 39. https://doi.org/10.1186/s41239-019-0171-0
-
-Zimmerman, B. J. (2002). Becoming a self-regulated learner: An overview. *Theory Into Practice*, *41*(2), 64–70. https://doi.org/10.1207/s15430421tip4102_2
+*Literaturangaben dieses Kapitels sind im konsolidierten Literaturverzeichnis am Ende der Thesis aufgeführt.*

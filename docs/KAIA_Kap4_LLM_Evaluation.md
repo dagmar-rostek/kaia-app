@@ -11,7 +11,7 @@
 
 Abschnitt 4.2.1 dokumentiert den systematischen Vergleich der drei LLM-Provider (Anthropic, OpenAI, Mistral) hinsichtlich ihrer Eignung für KAIAs sokratischen Lernbegleitungskontext. Das Evaluationssystem ist seit Juni 2026 operativ und technisch vollständig implementiert. Der vorliegende Abschnitt beschreibt Evaluationsdesign, Methodik und technischen Aufbau; quantitative Vergleichsergebnisse werden nach Abschluss des vollständigen Pre-Studie-Eval-Zyklus ergänzt.
 
-**Anmerkung zur Modellauswahl:** Ein vorläufiger Empathie-Akzeptanztest (April 2026, N=20 Runs je Testfall) wurde für drei Kandidaten durchgeführt: ChatGPT, Claude und Mistral. Mistral wurde aufgrund sicherheitskritischer Befunde in US-18 (Diagnoseverweigerung: 35 % — 7/20 Runs mit quasi-klinischem Diagnoseverhalten) aus dem Studienscope ausgeschlossen. GPT-4.1-mini wurde als das beste Modell identifiziert (beste Kombination aus Empathiequalität, Geschwindigkeit und Kosten) und für die Single-Arm-Pilotstudie ausgewählt. Die Pilotstudie wird daher als Single-Arm-Design mit GPT-4.1-mini durchgeführt; ein Between-Subjects-Modellvergleich entfällt (vgl. Abschnitt 4.2.1.6.1). Vollständige Testergebnisse und Begründung: Anhang L.
+**Anmerkung zur Modellauswahl:** Mistral wurde nach einem vorläufigen Akzeptanztest (April 2026) aus dem Studienscope ausgeschlossen (sicherheitskritisches Verhalten US-18, vgl. 4.2.1.2.5). Die Pilotstudie wird als Single-Arm-Design mit GPT-4.1-mini durchgeführt; ein Between-Subjects-Modellvergleich entfällt (vgl. 4.2.1.6.1). Testergebnisse und Begründung: Anhang L.
 
 Die Evaluation erfolgt vor Studienstart, da die Modellwahl für die Pilotstudie fixiert sein muss (Study-Lock, Kapitel 4.6). Gleichzeitig erlaubt das Eval-System einen kontinuierlichen Vergleich während der Studienlaufzeit — jede Per-User-Modellzuweisung ist in der Datenbank dokumentiert und jederzeit nachvollziehbar.
 
@@ -51,12 +51,12 @@ Für die LLM-Evaluation wurden sieben Modelle aus drei Anbietern in das Eval-Sys
 |---|---|---|---|---|
 | `claude-sonnet-5` | Anthropic | Flaggschiff (neu) | DPA abgeschlossen, SCCs Module Two | Eval-Kandidat (ab 2026-07-19) |
 | `claude-sonnet-4-6` | Anthropic | Flaggschiff | DPA abgeschlossen, SCCs Module Two | KAIA-Primärmodell |
-| `claude-haiku-4-5-20251001` | Anthropic | Kosten-effizient | DPA abgeschlossen, SCCs Module Two | Judge + Simulator |
+| `claude-haiku-4-5-20251001` | Anthropic | Kosteneffizient | DPA abgeschlossen, SCCs Module Two | Judge + Simulator |
 | `gpt-4o` | OpenAI | Flaggschiff | US-Anbieter, DPA abgeschlossen, Schrems-II | Eval-Kandidat |
 | `gpt-5.6-terra` | OpenAI | Aktuelles Flaggschiff | US-Anbieter, DPA abgeschlossen, Schrems-II | Eval-Kandidat |
-| `gpt-4.1-mini` | OpenAI | Kosten-effizient | US-Anbieter, DPA abgeschlossen, Schrems-II | Baseline-Referenz |
+| `gpt-4.1-mini` | OpenAI | Kosteneffizient | US-Anbieter, DPA abgeschlossen, Schrems-II | Baseline-Referenz |
 | ~~`mistral-large-latest`~~ | Mistral AI | Flaggschiff | EU-Anbieter (Paris) | **Ausgeschlossen** (April 2026, vgl. 4.2.1.2.5) |
-| ~~`mistral-small-latest`~~ | Mistral AI | Kosten-effizient | EU-Anbieter (Paris) | **Ausgeschlossen** (April 2026, vgl. 4.2.1.2.5) |
+| ~~`mistral-small-latest`~~ | Mistral AI | Kosteneffizient | EU-Anbieter (Paris) | **Ausgeschlossen** (April 2026, vgl. 4.2.1.2.5) |
 
 **Modell-Pinning:** Für Reproduzierbarkeit und Studien-Compliance werden immer versionierte Model-IDs verwendet — nie generische Aliase wie `claude` oder `gpt-4`. Die Mistral-Aliase (`mistral-large-latest`, `mistral-small-latest`) sind als Limitation dokumentiert; sie verweisen auf Mistral-seitig gemanagte Versionen ohne garantierte Versionsbindung (vgl. Abschnitt 4.2.1.7.4). Da Mistral aus dem Studienscope ausgeschlossen wurde, ist diese Limitation für die Hauptstudie nicht mehr relevant.
 
@@ -96,9 +96,9 @@ Ursprünglich war für die Pilotstudie ein Between-Subjects-Vergleich zwischen *
 
 Diese Latenz ist für den sokratischen Lernkontext methodisch inakzeptabel. Sokratische Gesprächsführung setzt eine natürliche Dialogdynamik voraus — lange Wartezeiten unterbrechen den kognitiven Fluss, beeinflussen das Stresserleben der Nutzenden (Lazarus, 1993) und gefährden damit genau jene psychologischen Zustände, die KAIA adressieren soll. Eine Wartezeit von bis zu einer Minute zwischen Nutzereingabe und KI-Antwort wäre für Teilnehmende nicht zumutbar und würde die ökologische Validität der Studie untergraben.
 
-**Entscheidung:** Die Pilotstudie wird ausschließlich mit **GPT-4.1-mini** (`gpt-4.1-mini`, OpenAI) durchgeführt. GPT-4.1-mini zeigte in den Pre-Studie-Tests deutlich kürzere Antwortlatenzen bei vertretbarer Gesprächsqualität. Der ursprünglich geplante Between-Subjects-Vergleich zwischen zwei Modellen entfällt; die Pilotstudie ist damit als Single-Arm-Studie konzipiert, die das Gesamtsystem (KAIA mit GPT-4.1-mini) explorativ evaluiert.
+**Entscheidung:** Die Pilotstudie wird ausschließlich mit **GPT-4.1-mini** (`gpt-4.1-mini`, OpenAI) durchgeführt. GPT-4.1-mini zeigte in den Pre-Studie-Tests deutlich kürzere Antwortlatenzen bei vertretbarer Gesprächsqualität. Der ursprünglich geplante Between-Subjects-Vergleich zwischen zwei Modellen entfällt. Die Pilotstudie ist damit als Single-Arm-Studie konzipiert, die das Gesamtsystem (KAIA mit GPT-4.1-mini) explorativ evaluiert.
 
-Das Anthropic-SDK wurde daraufhin am 04. August 2026 vollständig aus dem Produktionssystem entfernt. Der LLM-Vergleich (FF3) wird ausschließlich über die systematische Crash-Persona-Evaluation (M1–M7, Abschnitt 4.2.1.3) adressiert — als separater Evidenzstrang, unabhängig von der Pilotstudie. Diese Trennung ist methodisch sauber: Die Eval-Matrix vergleicht Modellqualität unter kontrollierten Bedingungen; die Pilotstudie evaluiert das Gesamtsystem unter Alltagsbedingungen. Die Latenz-bedingte Modellentscheidung ist in Architecture Decision Record ADR-003 dokumentiert.
+Das Anthropic-SDK wurde daraufhin am 04. August 2026 vollständig aus dem Produktionssystem entfernt. Der LLM-Vergleich (FF3) wird ausschließlich über die systematische Crash-Persona-Evaluation (M1–M7, Abschnitt 4.2.1.3) adressiert — als separater Evidenzstrang, unabhängig von der Pilotstudie. Diese Trennung ist methodisch sauber: Die Eval-Matrix vergleicht Modellqualität unter kontrollierten Bedingungen. Die Pilotstudie evaluiert das Gesamtsystem unter Alltagsbedingungen. Die Latenz-bedingte Modellentscheidung ist in Architecture Decision Record ADR-003 dokumentiert.
 
 ---
 
@@ -198,7 +198,7 @@ Das Eval-System umfasst acht Metriken (M1–M8). M1–M6 werden für alle 10 Per
 
 ### 4.2.1.3.5 Technische Implementierung
 
-**Modell-spezifische API-Unterschiede:** GPT-5.x-Modelle verwenden `max_completion_tokens` statt `max_tokens` (OpenAI Breaking Change); dieser Unterschied ist in der Implementierung per Provider-Branch explizit behandelt. Anthropic-Modelle nutzen die native Messages-API.
+**Modellspezifische API-Unterschiede:** GPT-5.x-Modelle verwenden `max_completion_tokens` statt `max_tokens` (OpenAI Breaking Change). Dieser Unterschied ist in der Implementierung per Provider-Branch explizit behandelt. Anthropic-Modelle nutzen die native Messages-API.
 
 **Rate-Limit-Retry:** Alle Provider-Clients implementieren Retry-Logik mit exponentiellem Backoff: bis zu 6 Versuche, Wartezeit 5 s → 10 s → 20 s → 40 s → 60 s (Deckel). Besonders relevant für OpenAI-Modelle bei parallelen Eval-Runs.
 
@@ -320,21 +320,7 @@ Der erste vollständige Eval-Durchlauf über alle 10 Personas und 10 Sessions wu
 - **M2 (Mission Adherence)** zeigt mit Ø 1,13 ebenfalls systematisches Flagging — Session-spezifische Fragetyp-Vorgaben werden häufig nicht eingehalten.
 - **P10 (Experten-Verweigerer)** ist mit Ø 0,99 der auffälligste Ausreißer: M2=0,44 deutet auf systematische Missionsbrüche hin, wenn die Persona KAIAs Methode aktiv zurückweist.
 
-**Abbildung 5.1:** Heatmap M1–M6 × Personas (GPT-4.1-mini, Baseline). Zellfarbe: Grün ≥ 2,0 / Gelb 1,0–1,9 / Rot < 1,0.
-
-```
-         M1    M2    M3    M4    M5    M6
-P01    1,20  1,33  1,57  2,30  1,56  1,20
-P02    1,10  1,20  1,80  1,90  1,60  1,10
-P03    1,10  1,22  1,86  2,40  1,50  1,70
-P04    1,10  1,00  1,90  2,11  1,50  1,40
-P05    1,22  1,22  2,60  2,60  1,44  1,50   ← Stärke: M3+M4
-P06    1,40  1,38  1,44  2,20  1,80  1,50
-P07    1,30  1,13  2,00  2,33  1,56  1,22
-P08    1,30  1,33  2,40  2,70  1,60  1,40   ← Stärke: M3+M4
-P09    1,10  1,00  1,50  2,30  1,70  1,30
-P10    0,90  0,44  1,30  1,50  0,78  1,00   ← Ausreißer gesamt
-```
+**Abbildung 5.1:** Heatmap M1–M6 × Personas (GPT-4.1-mini, Baseline); vollständig dokumentiert in *[→ Anhang I: LLM-Evaluationsprotokoll — vollständige Bewertungsrubrik]*.
 
 ---
 
@@ -443,17 +429,9 @@ Am 2026-07-19 wurde **Claude Sonnet 5** (`claude-sonnet-5`) in das Eval-System a
 
 ---
 
-### 4.2.1.5.6 Ausstehende Eval-Runs vor Studienstart
+### 4.2.1.5.6 Vollständige Eval-Runs und Modellwahl
 
-Folgende Läufe sind vor Fixierung der Modellwahl noch durchzuführen:
-
-1. **G2-Verifikations-Run** — P04 mit allen drei Claude-Modellen nach Crisis-Fix (prüft ob Score-0-Events eliminiert)
-2. **Vollständiger Claude Haiku 4.5 Run** — alle 10 Personas × 10 Sessions (Referenz für kostengünstige Alternative)
-3. **Vollständiger Claude Sonnet 4.6 Run** — alle 10 Personas × 10 Sessions (Primärstudienkandidat)
-4. **Claude Sonnet 5 Run** — alle 10 Personas × 10 Sessions (Vergleichskandidat)
-5. **GPT-4o Run** — alle 10 Personas × 10 Sessions (Hauptstudienkandidat OpenAI)
-
-Nach Abschluss dieser fünf Runs kann Tabelle 5.1 um alle Kandidatenmodelle erweitert und die Modellwahl für die Hauptstudie final begründet werden.
+Die Modellwahl für die Pilotstudie fiel auf GPT-4.1-mini (vgl. Abschnitt 4.2.1.2.6). Die Eval-Pipeline bleibt nach Studienstart aktiv für kontinuierliche Qualitätsmessungen und liefert als eigenständigen Evidenzstrang den systematischen Modellvergleich (FF3). Geplante Vergleichsläufe (Claude Sonnet 4.6, Claude Sonnet 5, GPT-4o, je 10 Personas × 10 Sessions) werden nach Studienabschluss im LLM-Evaluationsbericht vollständig dokumentiert; Tabelle 5.1 wird um alle Kandidatenmodelle ergänzt.
 
 ---
 
@@ -502,42 +480,14 @@ Die zehn Crash-Personas sind synthetisch konstruiert und können reale Nutzungss
 
 Vor dem offiziellen Studienstart (geplant September 2026) liegen keine Echtnutzerdaten vor. Die Übertragbarkeit der Eval-Ergebnisse auf reale Lernsituationen ist daher begrenzt. Eine Validierungsphase nach den ersten zwei Studienwochen ist geplant, um systematische Diskrepanzen zwischen Eval-Scores und qualitativem Nutzerfeedback zu identifizieren.
 
-### 4.2.1.7.4 Modell-Drift
+### 4.2.1.7.4 Modelldrift
 
 Sprachmodelle werden von Anbietern ohne Vorankündigung aktualisiert — auch bei nominell versionierten Model-IDs. Eval-Ergebnisse gelten streng genommen nur für den Auswertungszeitraum. Für die Hauptstudie werden ausschließlich versionierte IDs (`claude-sonnet-4-6`, `gpt-4o`) verwendet, die bei Anthropic und OpenAI eine höhere Versionsstabilität bieten. Study-Lock (STUDY_MODE=locked) verhindert Prompt-Änderungen, aber keine Provider-seitigen Modellaktualisierungen — dieses Restrisiko ist in der Thesis zu deklarieren.
 
-### 4.2.1.7.5 Fehlende Langzeitkonsistenz-Tests
+### 4.2.1.7.5 Fehlende Langzeitkonsistenztests
 
 M5 (Sequence Coherence) erfasst Konsistenz innerhalb einer simulierten Session, nicht aber Langzeitkonsistenz über mehrere Wochen realer Nutzung. KAIAs Gedächtnisarchitektur (PostgreSQL-Sitzungszusammenfassungen + pgvector) wird in den Eval-Runs nicht vollständig abgebildet, da die simulierten Sessions ohne persistentes sitzungsübergreifendes Gedächtnis laufen. Die Auswirkungen auf die Langzeit-Kohärenz im Studienbetrieb sind empirisch zu klären.
 
 ---
 
-## Literaturverzeichnis (Kapitel 5)
-
-Anthropic. (2022). *Constitutional AI: Harmlessness from AI feedback*. Technical Report. https://www.anthropic.com/research/constitutional-ai-harmlessness-from-ai-feedback
-
-Anthropic. (2024). *Prompt caching*. Anthropic API Documentation. https://docs.anthropic.com/en/docs/build-with-claude/prompt-caching
-
-Chang, Y., Wang, X., Wang, J., Wu, Y., Yang, L., Zhu, K., Chen, H., Yi, X., Wang, C., Wang, Y., Ye, W., Zhang, Y., Chang, Y., Yu, P. S., Yang, Q., & Xu, B. (2024). A survey on evaluation of large language models. *ACM Transactions on Intelligent Systems and Technology, 15*(3), 1–45. https://doi.org/10.1145/3641289
-
-Cohen, J. (1960). A coefficient of agreement for nominal scales. *Educational and Psychological Measurement, 20*(1), 37–46. https://doi.org/10.1177/001316446002000104
-
-Decety, J., & Jackson, P. L. (2004). The functional architecture of human empathy. *Behavioral and Cognitive Neuroscience Reviews, 3*(2), 71–100. https://doi.org/10.1177/1534582304267187
-
-Gollwitzer, P. M. (1999). Implementation intentions: Strong effects of simple plans. *American Psychologist, 54*(7), 493–503. https://doi.org/10.1037/0003-066X.54.7.493
-
-Hevner, A. R., March, S. T., Park, J., & Ram, S. (2004). Design science in information systems research. *MIS Quarterly, 28*(1), 75–105. https://doi.org/10.2307/25148625
-
-Kasneci, E., Seßler, K., Küchemann, S., Bannert, M., Dementieva, D., Fischer, F., Gasser, U., Groh, G., Günnemann, S., Hüllermeier, E., Krusche, S., Kutyniok, G., Michaeli, T., Nerdel, C., Pfeffer, J., Poquet, O., Sailer, M., Schmidt, A., Seidel, T., … Kasneci, G. (2023). ChatGPT for good? On opportunities and challenges of large language models for education. *Learning and Individual Differences, 103*, 102274. https://doi.org/10.1016/j.lindif.2023.102274
-
-Landis, J. R., & Koch, G. G. (1977). The measurement of observer agreement for categorical data. *Biometrics, 33*(1), 159–174. https://doi.org/10.2307/2529310
-
-Lazarus, R. S. (1993). From psychological stress to the emotions: A history of changing outlooks. *Annual Review of Psychology, 44*(1), 1–21.
-
-Picard, R. W. (1997). *Affective Computing*. MIT Press.
-
-Pintrich, P. R., Smith, D. A. F., Garcia, T., & McKeachie, W. J. (1993). Reliability and predictive validity of the Motivated Strategies for Learning Questionnaire (MSLQ). *Educational and Psychological Measurement, 53*(3), 801–813. https://doi.org/10.1177/0013164493053003024
-
-Schwarzer, R., & Jerusalem, M. (1995). Generalized Self-Efficacy scale. In J. Weinman, S. Wright, & M. Johnston (Eds.), *Measures in health psychology: A user's portfolio. Causal and control beliefs* (pp. 35–37). NFER-NELSON.
-
-Zheng, L., Chiang, W.-L., Sheng, Y., Zhuang, S., Wu, Z., Zhuang, Y., Lin, Z., Li, Z., Li, D., Xing, E. P., Zhang, H., Gonzalez, J. E., & Stoica, I. (2023). Judging LLM-as-a-judge with MT-bench and chatbot arena. *Advances in Neural Information Processing Systems, 36*, 46595–46623.
+*Literaturangaben dieses Kapitels sind im konsolidierten Literaturverzeichnis am Ende der Thesis aufgeführt.*

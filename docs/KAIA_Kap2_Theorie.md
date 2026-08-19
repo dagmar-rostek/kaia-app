@@ -81,7 +81,7 @@ KAIA operiert primär auf den Niveaus Verstehen (2), Anwenden (3) und Analysiere
 
 Gagné (1965, 1977) hat eine lerntheoretisch fundierte Systematik des Instruktionsdesigns entwickelt, die zwischen verschiedenen Lernergebnistypen (verbale Information, intellektuelle Fertigkeiten, kognitive Strategien, motorische Fertigkeiten, Einstellungen) und neun Unterrichtsereignissen unterscheidet. Die neun Ereignisse — Aufmerksamkeit gewinnen, Lernziel mitteilen, Vorwissen aktivieren, Stimulus darbieten, Lernhilfe geben, Leistung hervorrufen, Rückmeldung geben, Leistung beurteilen, Behalten und Transfer sichern — beschreiben eine vollständige Lernsequenz, die externe Lernanlässe und interne Verarbeitungsprozesse koordiniert.
 
-Für KAIA ist dieses Modell auf Session-Ebene instruktiv. KAIAs sokratische Fragen übernehmen die Funktion mehrerer Gagné-Ereignisse gleichzeitig: Sie aktivieren Vorwissen, geben implizite Lernhilfe und rufen Eigenleistung hervor. Der Halbzeit-Spiegel in Session 5 und die Triple-Task-Abschlussgestaltung in Session 10 (Abschnitt 2.13) entsprechen Gagnés Ereignissen "Behalten und Transfer sichern". Das kumulative Gedächtnis (session_summary, historical_quotes) operationalisiert die Aktivierung von Vorwissen über Sessiongrenzen hinweg — ein Mechanismus, für den Gagné keine technische Lösung anbieten konnte, der jedoch direkt aus seiner Lerntheorie ableitbar ist.
+Für KAIA ist dieses Modell auf Session-Ebene instruktiv. KAIAs sokratische Fragen übernehmen die Funktion mehrerer Gagné-Ereignisse gleichzeitig: Sie aktivieren Vorwissen, geben implizite Lernhilfe und rufen Eigenleistung hervor. Der Halbzeitspiegel in Session 5 und die Triple-Task-Abschlussgestaltung in Session 10 (Abschnitt 2.13) entsprechen Gagnés Ereignissen "Behalten und Transfer sichern". Das kumulative Gedächtnis (session_summary, historical_quotes) operationalisiert die Aktivierung von Vorwissen über Sessiongrenzen hinweg — ein Mechanismus, für den Gagné keine technische Lösung anbieten konnte, der jedoch direkt aus seiner Lerntheorie ableitbar ist.
 
 ### 2.4.3 First Principles of Instruction nach Merrill
 
@@ -233,7 +233,7 @@ Die Session-Architektur V3 gliedert den Lernprozess in drei didaktisch distinkte
 
 **Phase 1 — Erkunden (Sessions 1–2):** Adressiert Bloom-Niveaus 1–2 (Erinnern, Verstehen). Lernende erkunden das selbstgewählte Thema, artikulieren Vorkenntnisse und Zielsetzungen. KAIA arbeitet primär im "warm/Begleitend"-Charakter: aufbauende Fragen, die semantische Anker setzen und das kumulative Gedächtnis für Folgesessions aufbauen. Didaktisch entspricht dies der Aktivierungsphase nach Merrill (2002) und den Unterrichtsereignissen 3 (Vorwissen aktivieren) und 6 (Leistung hervorrufen) nach Gagné (1977).
 
-**Phase 2 — Transfer und Analyse (Sessions 3–8):** Adressiert Bloom-Niveaus 3–4 (Anwenden, Analysieren). Die Kernarbeit des Lernprozesses findet hier statt: Konzepte werden auf persönliche Situationen angewendet, Annahmen werden hinterfragt, Verbindungen zwischen Konzepten werden hergestellt. KAIA wechselt zwischen "warm/Begleitend" und "challenging/Konfrontierend". Session 5 ist als obligatorischer Halbzeit-Spiegel konzipiert: KAIA leitet eine strukturierte Reflexion ein, in der Lernende ihre Entwicklung seit Session 1 einschätzen. Dies entspricht Schöns (1983) Konzept der "reflection-on-action" — der bewussten Analyse vergangener Erfahrungen, die metakognitive Regulation schult. Zimmerman (2000) belegt, dass diese Form der mid-process-Überwachung ein zentraler Selbstregulationsmechanismus ist. In der EMA-Logik (Abschnitt 2.6.2) verankert Session 5 damit einen evaluativen Momentaufnahme-Punkt.
+**Phase 2 — Transfer und Analyse (Sessions 3–8):** Adressiert Bloom-Niveaus 3–4 (Anwenden, Analysieren). Die Kernarbeit des Lernprozesses findet hier statt: Konzepte werden auf persönliche Situationen angewendet, Annahmen werden hinterfragt, Verbindungen zwischen Konzepten werden hergestellt. KAIA wechselt zwischen "warm/Begleitend" und "challenging/Konfrontierend". Session 5 ist als obligatorischer Halbzeitspiegel konzipiert: KAIA leitet eine strukturierte Reflexion ein, in der Lernende ihre Entwicklung seit Session 1 einschätzen. Dies entspricht Schöns (1983) Konzept der "reflection-on-action" — der bewussten Analyse vergangener Erfahrungen, die metakognitive Regulation schult. Zimmerman (2000) belegt, dass diese Form der mid-process-Überwachung ein zentraler Selbstregulationsmechanismus ist. In der EMA-Logik (Abschnitt 2.6.2) verankert Session 5 damit einen evaluativen Momentaufnahme-Punkt.
 
 **Phase 3 — Abschluss: Evaluieren und Erschaffen (Sessions 9–10):** Adressiert Bloom-Niveaus 5–6 (Evaluieren, Erschaffen). Session 10 operationalisiert drei simultane Aufgaben: (a) Gegenüberstellung von Session 1 und der aktuellen Position (longitudinale Reflexion, metakognitive Wachstumsbewertung), (b) Autonomisierungsfrage — explizite Reflexion darüber, welche Erkenntnisse die lernende Person eigenständig weiterentwickeln kann und wird (Zimmerman, 2000; Knowles, 1984), (c) keine GSE-Priming-Instruktion vor der Messung, um Reaktivitätseffekte (demand characteristics) zu minimieren. Diese Triple-Task-Abschlussgestaltung entspricht Gagnés neuntem Unterrichtsereignis (Behalten und Transfer sichern) und Merrills Integrationsprinzip (2002).
 
@@ -280,140 +280,4 @@ Die in den vorangegangenen Abschnitten dargestellten Theorien sind nicht additiv
 
 ---
 
-## Literaturverzeichnis
-
-Alexander, R. (2008). *Towards dialogic teaching: Rethinking classroom talk* (4. Aufl.). Dialogos.
-
-Anderson, L. W., & Krathwohl, D. R. (Hrsg.). (2001). *A taxonomy for learning, teaching, and assessing: A revision of Bloom's taxonomy of educational objectives*. Longman.
-
-Ausubel, D. P. (1968). *Educational psychology: A cognitive view*. Holt, Rinehart & Winston.
-
-Bandura, A. (1977). Self-efficacy: Toward a unifying theory of behavioral change. *Psychological Review, 84*(2), 191–215. https://doi.org/10.1037/0033-295X.84.2.191
-
-Bandura, A. (1997). *Self-efficacy: The exercise of control*. Freeman.
-
-Black, P., & Wiliam, D. (1998). Assessment and classroom learning. *Assessment in Education: Principles, Policy & Practice, 5*(1), 7–74. https://doi.org/10.1080/0969595980050102
-
-Bloom, B. S., Engelhart, M. D., Furst, E. J., Hill, W. H., & Krathwohl, D. R. (1956). *Taxonomy of educational objectives: The classification of educational goals. Handbook I: Cognitive domain*. David McKay.
-
-Brown, J. S., & Burton, R. R. (1978). Diagnostic models for procedural bugs in basic mathematical skills. *Cognitive Science, 2*(2), 155–192. https://doi.org/10.1207/s15516709cog0202_4
-
-Bruner, J. S. (1961). The act of discovery. *Harvard Educational Review, 31*(1), 21–32.
-
-Carbonell, J. R. (1970). AI in CAI: An artificial intelligence approach to computer-assisted instruction. *IEEE Transactions on Man-Machine Systems, 11*(4), 190–202.
-
-Cepeda, N. J., Pashler, H., Vul, E., Wixted, J. T., & Rohrer, D. (2006). Distributed practice in verbal recall tasks: A review and quantitative synthesis. *Psychological Bulletin, 132*(3), 354–380. https://doi.org/10.1037/0033-2909.132.3.354
-
-Collins, A., Brown, J. S., & Newman, S. E. (1989). Cognitive apprenticeship: Teaching the crafts of reading, writing, and mathematics. In L. B. Resnick (Hrsg.), *Knowing, learning, and instruction: Essays in honor of Robert Glaser* (S. 453–494). Erlbaum.
-
-Csikszentmihalyi, M. (1990). *Flow: The psychology of optimal experience*. Harper & Row.
-
-Decety, J., & Jackson, P. L. (2004). The functional architecture of human empathy. *Behavioral and Cognitive Neuroscience Reviews, 3*(2), 71–100. https://doi.org/10.1177/1534582304267187
-
-Deci, E. L. (1971). Effects of externally mediated rewards on intrinsic motivation. *Journal of Personality and Social Psychology, 18*(1), 105–115. https://doi.org/10.1037/h0030644
-
-Deci, E. L., & Ryan, R. M. (1985). *Intrinsic motivation and self-determination in human behavior*. Plenum.
-
-Deci, E. L., & Ryan, R. M. (2000). The "what" and "why" of goal pursuits: Human needs and the self-determination of behavior. *Psychological Inquiry, 11*(4), 227–268. https://doi.org/10.1207/S15327965PLI1104_01
-
-Dunlosky, J., Rawson, K. A., Marsh, E. J., Nathan, M. J., & Willingham, D. T. (2013). Improving students' learning with effective learning techniques: Promising directions from cognitive and educational psychology. *Psychological Science in the Public Interest, 14*(1), 4–58. https://doi.org/10.1177/1529100612453266
-
-Dweck, C. S. (1999). *Self-theories: Their role in motivation, personality, and development*. Psychology Press.
-
-Erpenbeck, J., & Rosenstiel, L. v. (Hrsg.). (2007). *Handbuch Kompetenzmessung* (2. Aufl.). Schäffer-Poeschel.
-
-Fairclough, S. H. (2009). Fundamentals of physiological computing. *Interacting with Computers, 21*(1–2), 133–145. https://doi.org/10.1016/j.intcom.2008.10.011
-
-Flavell, J. H. (1979). Metacognition and cognitive monitoring: A new area of cognitive-developmental inquiry. *American Psychologist, 34*(10), 906–911. https://doi.org/10.1037/0003-066X.34.10.906
-
-Gagné, R. M. (1965). *The conditions of learning*. Holt, Rinehart & Winston.
-
-Gagné, R. M. (1977). *The conditions of learning* (3. Aufl.). Holt, Rinehart & Winston.
-
-Gollwitzer, P. M. (1999). Implementation intentions: Strong effects of simple plans. *American Psychologist, 54*(7), 493–503. https://doi.org/10.1037/0003-066X.54.7.493
-
-Gollwitzer, P. M., & Sheeran, P. (2006). Implementation intentions and goal achievement: A meta-analysis of effects and processes. *Advances in Experimental Social Psychology, 38*, 69–119. https://doi.org/10.1016/S0065-2601(06)38002-1
-
-Hattie, J. (2009). *Visible learning: A synthesis of over 800 meta-analyses relating to achievement*. Routledge.
-
-Hattie, J., & Timperley, H. (2007). The power of feedback. *Review of Educational Research, 77*(1), 81–112. https://doi.org/10.3102/003465430298487
-
-Heimann, P., Otto, G., & Schulz, W. (1965). *Unterricht: Analyse und Planung*. Schroedel.
-
-Hevner, A. R., March, S. T., Park, J., & Ram, S. (2004). Design science in information systems research. *MIS Quarterly, 28*(1), 75–105. https://doi.org/10.2307/25148625
-
-Jerusalem, M., & Schwarzer, R. (1992). Self-efficacy as a resource factor in stress appraisal processes. In R. Schwarzer (Hrsg.), *Self-efficacy: Thought control of action* (S. 195–213). Hemisphere.
-
-Kalyuga, S. (2007). Expertise reversal effect and its implications for learner-tailored instruction. *Educational Psychology Review, 19*(4), 509–539. https://doi.org/10.1007/s10648-007-9054-3
-
-Kalyuga, S., Ayres, P., Chandler, P., & Sweller, J. (2003). The expertise reversal effect. *Educational Psychologist, 38*(1), 23–31. https://doi.org/10.1207/S15326985EP3801_4
-
-Kasneci, E., Seßler, K., Küchemann, S., Bannert, M., Dementieva, D., Fischer, F., & Kasneci, G. (2023). ChatGPT for good? On opportunities and challenges of large language models for education. *Learning and Individual Differences, 103*, 102274. https://doi.org/10.1016/j.lindif.2023.102274
-
-Kirschner, P. A., Sweller, J., & Clark, R. E. (2006). Why minimal guidance during instruction does not work: An analysis of the failure of constructivist, discovery, problem-based, experiential, and inquiry-based teaching. *Educational Psychologist, 41*(2), 75–86. https://doi.org/10.1207/s15326985ep4102_1
-
-Klafki, W. (1958). Didaktische Analyse als Kern der Unterrichtsvorbereitung. *Die Deutsche Schule, 50*(10), 450–471.
-
-Klafki, W. (1985). *Neue Studien zur Bildungstheorie und Didaktik*. Beltz.
-
-Knowles, M. S. (1980). *The modern practice of adult education: From pedagogy to andragogy* (2. Aufl.). Cambridge.
-
-Knowles, M. S. (1984). *The adult learner: A neglected species* (3. Aufl.). Gulf.
-
-Lazarus, R. S. (1993). From psychological stress to the emotions: A history of changing outlooks. *Annual Review of Psychology, 44*(1), 1–21. https://doi.org/10.1146/annurev.ps.44.020193.000245
-
-Lazarus, R. S., & Folkman, S. (1984). *Stress, appraisal, and coping*. Springer.
-
-Lepper, M. R., Greene, D., & Nisbett, R. E. (1973). Undermining children's intrinsic interest with extrinsic reward: A test of the "overjustification" hypothesis. *Journal of Personality and Social Psychology, 28*(1), 129–137. https://doi.org/10.1037/h0035519
-
-Merrill, M. D. (2002). First principles of instruction. *Educational Technology Research and Development, 50*(3), 43–59. https://doi.org/10.1007/BF02505024
-
-Multon, K. D., Brown, S. D., & Lent, R. W. (1991). Relation of self-efficacy beliefs to academic outcomes: A meta-analytic investigation. *Journal of Counseling Psychology, 38*(1), 30–38. https://doi.org/10.1037/0022-0167.38.1.30
-
-Oliveira, W., & Hamari, J. (2022). Flow states in digital learning environments: A systematic review. *Computers & Education, 192*, 104650. https://doi.org/10.1016/j.compedu.2022.104650
-
-Pajares, F. (1996). Self-efficacy beliefs in academic settings. *Review of Educational Research, 66*(4), 543–578. https://doi.org/10.3102/00346543066004543
-
-Perkins, D. N., & Salomon, G. (1989). Are cognitive skills context-bound? *Educational Researcher, 18*(1), 16–25. https://doi.org/10.3102/0013189X018001016
-
-Pfeffer, J., & Sutton, R. I. (2000). *The knowing-doing gap: How smart companies turn knowledge into action*. Harvard Business School Press.
-
-Piaget, J. (1952). *The origins of intelligence in children*. International Universities Press.
-
-Piaget, J. (1985). *The equilibration of cognitive structures: The central problem of intellectual development*. University of Chicago Press.
-
-Picard, R. W. (1997). *Affective computing*. MIT Press.
-
-Pintrich, P. R., Smith, D. A. F., Garcia, T., & McKeachie, W. J. (1991). *A manual for the use of the Motivated Strategies for Learning Questionnaire (MSLQ)*. National Center for Research to Improve Postsecondary Teaching and Learning. (ERIC Document Reproduction Service No. ED338122)
-
-Pintrich, P. R., Smith, D. A. F., Garcia, T., & McKeachie, W. J. (1993). Reliability and predictive validity of the Motivated Strategies for Learning Questionnaire (MSLQ). *Educational and Psychological Measurement, 53*(3), 801–813. https://doi.org/10.1177/0013164493053003024
-
-Pintrich, P. R. (2004). A conceptual framework for assessing motivation and self-regulated learning in college students. *Educational Psychology Review, 16*(4), 385–407. https://doi.org/10.1023/B:EDPR.0000034022.16721.a3
-
-Schön, D. A. (1983). *The reflective practitioner: How professionals think in action*. Basic Books.
-
-Schwarzer, R., & Jerusalem, M. (1995). Generalized Self-Efficacy scale. In J. Weinman, S. Wright, & M. Johnston (Hrsg.), *Measures in health psychology: A user's portfolio* (S. 35–37). NFER-NELSON.
-
-Sheeran, P. (2002). Intention-behavior relations: A conceptual and empirical review. *European Review of Social Psychology, 12*(1), 1–36. https://doi.org/10.1080/14792772143000003
-
-Shiffman, S., Stone, A. A., & Hufford, M. R. (2008). Ecological momentary assessment. *Annual Review of Clinical Psychology, 4*, 1–32. https://doi.org/10.1146/annurev.clinpsy.3.022806.091415
-
-Sweller, J. (1988). Cognitive load during problem solving: Effects on learning. *Cognitive Science, 12*(2), 257–285. https://doi.org/10.1207/s15516709cog1202_4
-
-Sweller, J. (2010). Element interactivity and intrinsic, extraneous, and germane cognitive load. *Educational Psychology Review, 22*(2), 123–138. https://doi.org/10.1007/s10648-010-9128-5
-
-Sweller, J., Ayres, P., & Kalyuga, S. (2011). *Cognitive load theory*. Springer. https://doi.org/10.1007/978-1-4419-8126-4
-
-Sweller, J., van Merriënboer, J. J. G., & Paas, F. G. W. C. (1998). Cognitive architecture and instructional design. *Educational Psychology Review, 10*(3), 251–296. https://doi.org/10.1023/A:1022193728205
-
-Teigen, K. H. (1994). Yerkes-Dodson: A law for all seasons. *Theory & Psychology, 4*(4), 525–547. https://doi.org/10.1177/0959354394044004
-
-Vygotsky, L. S. (1978). *Mind in society: The development of higher psychological processes*. Harvard University Press.
-
-Weiner, B. (1985). An attributional theory of achievement motivation and emotion. *Psychological Review, 92*(4), 548–573. https://doi.org/10.1037/0033-295X.92.4.548
-
-Wood, D., Bruner, J. S., & Ross, G. (1976). The role of tutoring in problem solving. *Journal of Child Psychology and Psychiatry, 17*(2), 89–100. https://doi.org/10.1111/j.1469-7610.1976.tb00381.x
-
-Yerkes, R. M., & Dodson, J. D. (1908). The relation of strength of stimulus to rapidity of habit-formation. *Journal of Comparative Neurology and Psychology, 18*(5), 459–482. https://doi.org/10.1002/cne.920180503
-
-Zimmerman, B. J. (2000). Attaining self-regulation: A social cognitive perspective. In M. Boekaerts, P. R. Pintrich, & M. Zeidner (Hrsg.), *Handbook of self-regulation* (S. 13–39). Academic Press.
+*Literaturangaben dieses Kapitels sind im konsolidierten Literaturverzeichnis am Ende der Thesis aufgeführt.*

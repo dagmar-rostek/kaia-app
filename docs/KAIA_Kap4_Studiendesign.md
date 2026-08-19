@@ -145,13 +145,13 @@ Innerhalb jeder Session stehen Teilnehmenden vier diskrete Feedback-Marker zur V
 
 **Wissenschaftliche Grundlage:** Metacognitive Monitoring als Lernprozessvariable (Flavell, 1979; Dunlosky & Metcalfe, 2009); In-situ-Signale als Ergänzung zu Post-hoc-Selbstberichten (Larson & Csikszentmihalyi, 1983).
 
-**Kritische methodische Einschränkung:** Die vier EMA-Marker sind keine validierten psychometrischen Skalen. Sie sind verhaltensnahe Selbstsignale ohne standardisierte Gütekriterien. Ihre Konstruktbezüge in der Tabelle oben sind theoretisch begründet, nicht empirisch validiert. Jede Auswertung dieser Daten ist rein explorativ-deskriptiv; inferenzstatistische Schlüsse auf Basis dieser Marker sind nicht vorgesehen und nicht gerechtfertigt.
+**Kritische methodische Einschränkung:** Die vier EMA-Marker sind keine validierten psychometrischen Skalen. Sie sind verhaltensnahe Selbstsignale ohne standardisierte Gütekriterien. Ihre Konstruktbezüge in der Tabelle oben sind theoretisch begründet, nicht empirisch validiert. Jede Auswertung dieser Daten ist rein explorativ-deskriptiv. Inferenzstatistische Schlüsse auf Basis dieser Marker sind nicht vorgesehen und nicht gerechtfertigt.
 
 ### 4.2.3.3.4 Qualitative Daten
 
 **Session-Transkripte:** Vollständige Chat-Verläufe jeder KAIA-Session, pseudonymisiert gespeichert. Basis für die qualitative Thematische Analyse (Braun & Clarke, 2006) ausgewählter Verläufe.
 
-**Session-Summaries:** Von KAIA nach jeder Session automatisiert generierte Zusammenfassungen des Gesprächsverlaufs und identifizierter Lernmomente. Werden ergänzend zu den Transkripten für die qualitative Analyse herangezogen; ihr generativer Ursprung wird bei der Interpretation berücksichtigt.
+**Session-Summaries:** Von KAIA nach jeder Session automatisiert generierte Zusammenfassungen des Gesprächsverlaufs und identifizierter Lernmomente. Werden ergänzend zu den Transkripten für die qualitative Analyse herangezogen. Ihr generativer Ursprung wird bei der Interpretation berücksichtigt.
 
 **Triangulation:** Qualitative Befunde aus Transkripten und Summaries werden mit den quantitativen EMA- und GSE-Daten trianguliert, um widersprüchliche Muster sichtbar zu machen.
 
@@ -192,17 +192,16 @@ Die KAIA-Session wird nicht fortgeführt. Diese Maßnahme ist nicht optional —
 - **Betroffenenrechte:** DSGVO Art. 15–21 vollständig implementiert (Auskunft, Berichtigung, Löschung, Einschränkung, Datenübertragbarkeit, Widerspruch)
 - **Serverstandort:** Hetzner CX23, Helsinki (EU) — kein US-Datentransfer für Nutzerdaten
 - **LLM-Training:** Nutzerdaten werden nicht für LLM-Training verwendet (Data Processing Agreements; s. 6.4.5)
-- **Löschfrist:** Pseudonymisierte Studiendaten werden 6 Monate nach Studienabschluss gelöscht; Löschprotokoll wird geführt
+- **Löschfrist:** Pseudonymisierte Studiendaten werden 6 Monate nach Studienabschluss gelöscht. Löschprotokoll wird geführt.
 - **Schrems-II:** Risikoabschätzung für Drittlanddatenübermittlung (LLM-API-Calls) in der Datenschutzerklärung dokumentiert
 
 ### 4.2.3.4.5 Data Processing Agreements (DPAs)
 
-DPAs mit Anthropic und OpenAI sind abgeschlossen; DPA mit Mistral AI ist in Bearbeitung (Stand: 13. Juli 2026):
-- Anthropic (Claude Sonnet 4.6)
-- OpenAI (GPT-4o)
-- Mistral AI (Mistral Large)
+DPAs mit Anthropic und OpenAI sind abgeschlossen (Stand: Juli 2026). Mistral AI ist aus dem Studienscope ausgeschlossen (vgl. Abschnitt 4.2.1.2.5), daher ist kein Mistral-DPA erforderlich.
+- Anthropic (Claude Sonnet 4.6, Eval-Pipeline)
+- OpenAI (GPT-4.1-mini, Pilotstudie)
 
-Die DPAs müssen vor dem Study-Lock am 28. Juli 2026 vollständig abgeschlossen und dokumentiert sein. Kein Studienbeginn ohne unterzeichnete DPAs — dies ist eine nicht verhandelbare Voraussetzung.
+Kein Studienbeginn ohne unterzeichnete DPAs — dies ist eine nicht verhandelbare Voraussetzung.
 
 ### 4.2.3.4.6 Conflict of Interest — Deklaration
 
@@ -223,7 +222,7 @@ Die Forscherin ist gleichzeitig Entwicklerin von KAIA und potenzielle Kommerzial
 | September – Oktober 2026 | Datenauswertung, qualitative Analyse, Ergebniskapitel | Geplant |
 | **3. Oktober 2026** | **Abgabe Masterthesis** (SRH Fernhochschule Riedlingen) | Deadline |
 
-**Kritischer Hinweis (Stand 15. Juli 2026):** Die Studie hat noch NICHT begonnen. DPAs mit Anthropic und OpenAI sind abgeschlossen. Offene kritische Voraussetzungen: Datenschutzerklärung, Impressum, Password-Reset-Flow, Postgres-Backup, Study-Lock. Ohne Abschluss dieser Punkte vor dem 28. Juli 2026 verschiebt sich der Studienstart. Eine Verschiebung über den 8. August 2026 hinaus würde den Thesis-Abgabetermin gefährden.
+**Stand August 2026:** Study-Lock aktiv seit 28. Juli 2026. Studienstart erfolgte planmäßig am 8. August 2026. Aktive Studienphase läuft.
 
 ---
 
@@ -265,21 +264,18 @@ Nach Studie          Auswertung | 6-Monate-Löschfrist beginnt
 - Erster-Schritt-Loop: Rückbezug auf Lernschritt + Evidenzanker-Abgleich
 - EMA-Marker kontinuierlich nutzbar
 
-**Mindestvorgabe für Auswertbarkeit:** Mindestens 3 abgeschlossene Chat-Sessions innerhalb der 3 Wochen. Teilnehmende mit weniger als 3 Sessions werden als Dropout klassifiziert und im Intent-to-Treat-Reporting ausgewiesen. Für die Verlaufsanalyse der EMA-Daten sind mindestens 5 Sessions erforderlich; der Zielwert von 10 Sessions ermöglicht erst eine sinnvoll interpretierbare Zeitreihe.
+**Mindestvorgabe für Auswertbarkeit:** Mindestens 3 abgeschlossene Chat-Sessions innerhalb der 3 Wochen. Teilnehmende mit weniger als 3 Sessions werden als Dropout klassifiziert und im Intent-to-Treat-Reporting ausgewiesen. Für die Verlaufsanalyse der EMA-Daten sind mindestens 5 Sessions erforderlich. Der Zielwert von 10 Sessions ermöglicht erst eine sinnvoll interpretierbare Zeitreihe.
 
 **Zeitaufwand für Teilnehmende (Schätzung):**
 MSLQ Prä (12 Min.) + GSE Prä/Post (2 × 5 Min.) + Sessions 1–2 (2 × 25 Min.) + Sessions 3–10 (8 × 12 Min.) = 12 + 10 + 50 + 96 = **ca. 168 Minuten ≈ 2,8 Stunden** über 3 Wochen.
 
 **Keine inhaltlichen Vorgaben:** Teilnehmende wählen selbst, welche Lernthemen sie mit KAIA bearbeiten. Das entspricht dem explorativen Charakter der Studie und der ökologischen Validität des Feldeinsatzes. Die Heterogenität der Lernthemen wird als Confounder dokumentiert.
 
-### 4.2.3.6.3 LLM-Modell-Zuweisung (explorativ)
+### 4.2.3.6.3 LLM-Modellwahl für die Pilotstudie
 
-Die technische Infrastruktur ermöglicht eine per-User-Modell-Zuweisung. Für die Pilotstudie sind folgende Modelle verfügbar:
-- Claude Sonnet 4.6 (Anthropic)
-- GPT-4o (OpenAI)
-- Mistral Large (Mistral AI)
+Die Pilotstudie wird als Single-Arm-Design mit **GPT-4.1-mini** (OpenAI) durchgeführt. Die finale Modellwahl ist in Abschnitt 4.2.1.2.6 begründet (Latenzkriterium unter Produktionsbedingungen). Ein Between-Subjects-Vergleich zwischen LLM-Modellen entfällt.
 
-**Methodische Einschränkung:** Mit N ≈ 20 Teilnehmenden ist kein statistisch robuster Gruppenvergleich nach LLM-Modell möglich. Selbst bei perfekter Aufteilung (N ≈ 7 pro Gruppe) wäre die Power für Gruppenunterschiede vernachlässigbar. LLM-spezifische Unterschiede können in dieser Pilotstudie nicht von KAIA-Design-Effekten, individuellen Unterschieden oder Themeneffekten getrennt werden. Der LLM-Vergleich ist daher rein explorativ-deskriptiv und dient der Vorbereitung des Hauptstudiendesigns für eine Folgestudie mit adäquater Power und echtem Gruppendesign.
+**Methodische Einschränkung:** Mit N ≈ 20 Teilnehmenden wäre kein statistisch robuster Modellvergleich möglich. LLM-spezifische Unterschiede können nicht von KAIA-Design-Effekten, individuellen Unterschieden oder Themeneffekten getrennt werden. Der Modellvergleich (FF3) wird als separater Evidenzstrang über die Eval-Pipeline adressiert (Abschnitt 4.2.1).
 
 ---
 
@@ -318,19 +314,9 @@ Die technische Infrastruktur ermöglicht eine per-User-Modell-Zuweisung. Für di
 
 ## 4.2.3.9 Erwartete Ergebnisse
 
-Angesichts des explorativen Charakters und der bekannten Unterpower werden folgende Ergebnismuster als methodisch plausibel eingeschätzt. Dies sind keine Prognosen, sondern Planungshilfen für die Ergebnisinterpretation.
+Angesichts des explorativen Charakters und der bekannten Unterpower sind konfirmatorische Befunde nicht intendiert. Plausible Muster: eine GSE-Verbesserungstendenz ohne zwingend signifikantes Ergebnis (Power ≈ 69 %, einseitig; H1); moderate positive MSLQ-GSE-Konvergenz (r = .30–.50; H3); hohe Variabilität in Nutzungshäufigkeit × ΔGSE (H2). Qualitativ sind Nutzungsmuster, Systemstärken und -schwächen sowie strukturelle Nutzungsbarrieren zu erwarten.
 
-**Quantitative Befunde:**
-- GSE Prä-Post (H1): Eine Verbesserungstendenz ist möglich; statistisch signifikant wird sie angesichts Power ≈ 69 % (einseitig) nicht zwingend. Ein nicht-signifikantes Ergebnis schließt einen realen Effekt nicht aus.
-- MSLQ-GSE-Konvergenz (H3): Eine moderate positive Korrelation zwischen MSLQ-Selbstwirksamkeit und GSE-Prä ist theoretisch begründet und konstruktvalide zu erwarten (r = .30–.50).
-- Nutzungshäufigkeit × GSE-Differenz (H2): Hohe Variabilität in der Nutzungsintensität erwartet; Zusammenhang unsicher.
-
-**Qualitative Befunde:**
-- Identifikation von Nutzungsmustern und strukturellen Nutzungsbarrieren
-- Hinweise auf Stärken und Schwächen der sokratischen Gesprächsführung in KAIA
-- Deskriptive Unterschiede zwischen LLM-Modellen im Gesprächsstil (nicht statistisch belastbar)
-
-**Zentraler Erkenntnisbeitrag:** Der Wert dieser Pilotstudie liegt nicht in statistischen Signifikanzentscheidungen. Er liegt in der Systemvalidierung, der Beschreibung realweltlicher Nutzungsmuster und der Generierung präziser Hypothesen für eine Folgestudie mit adäquater Power, echter Kontrollgruppe und repräsentativerer Stichprobe.
+**Zentraler Erkenntnisbeitrag:** Der Wert dieser Pilotstudie liegt in der Systemvalidierung, der Beschreibung realweltlicher Nutzungsmuster und der Generierung präziser Hypothesen für eine Folgestudie mit adäquater Power, echter Kontrollgruppe und repräsentativerer Stichprobe — nicht in statistischen Signifikanzentscheidungen.
 
 ---
 
@@ -360,7 +346,7 @@ Als Trait-Instrument reagiert die GSE möglicherweise nicht sensitiv auf kurzfri
 Die eingesetzte 34-Item-Kurzversion ist ohne eigene Validierungsstudie. Interne Konsistenzwerte werden post-hoc berechnet; die Gütekriterien des Originalinstruments (81 Items) gelten nicht automatisch. Bei α < .70 in einzelnen Subskalen sind die entsprechenden Scores nicht sinnvoll interpretierbar.
 
 **8. EMA-Marker ohne psychometrische Validierung**
-Die vier Session-Feedback-Marker sind keine validierten Skalen. Ihre Konstruktbezüge sind theoretisch, nicht empirisch belegt. Auswertungen sind rein deskriptiv; inferenzstatistische Schlüsse sind nicht zulässig.
+Die vier Session-Feedback-Marker sind keine validierten Skalen. Ihre Konstruktbezüge sind theoretisch, nicht empirisch belegt. Auswertungen sind rein deskriptiv. Inferenzstatistische Schlüsse sind nicht zulässig.
 
 **9. LLM-Effekt nicht isolierbar**
 Der Effekt des zugrundeliegenden Sprachmodells (Claude vs. GPT-4o vs. Mistral) ist bei N ≈ 20 nicht von KAIA-Design-Effekten, individuellen Unterschieden oder Themeneffekten zu trennen. LLM-bezogene Aussagen in dieser Studie haben rein explorativen und hypothesengenerierenden Charakter.
@@ -375,87 +361,16 @@ Mangels zeitlicher Ressourcen (Thesis-Deadline 3. Oktober 2026) ist kein Follow-
 
 ## 4.2.3.11 Ergebnisse
 
-*[Dieser Abschnitt wird nach Abschluss der Post-Befragung (4. September 2026) befüllt. Datenlage: frühestens ab 5. September 2026 vollständig.]*
+*[Wird nach Abschluss der Post-Befragung (September 2026) befüllt.]*
 
-### 4.2.3.11.1 Stichprobenbeschreibung
-
-*Platzhalter: N, Altersverteilung, Geschlecht, Lernthemen, Dropout-Rate, Nutzungsintensität*
-
-### 4.2.3.11.2 Deskriptive Statistik
-
-*Platzhalter: GSE Prä/Post (M, SD, Median, IQR); MSLQ-Subskalen (M, SD, α); EMA-Marker-Häufigkeiten*
-
-### 4.2.3.11.3 Hypothesenprüfung
-
-*Platzhalter — H1 (Wilcoxon), H2 (Spearman-Rho), H3 (Konstruktkonvergenz MSLQ × GSE), H4 (EMA-Verlauf, deskriptiv), H5 (KDG-Verlauf, deskriptiv)*
-
-### 4.2.3.11.4 Qualitative Befunde
-
-*Platzhalter: Thematische Analyse ausgewählter Transkripte; Nutzungsmuster; Systemstärken/-schwächen*
+**Geplante Unterabschnitte:** 4.2.3.11.1 Stichprobenbeschreibung (N, Altersverteilung, Lernthemen, Dropout-Rate) · 4.2.3.11.2 Deskriptive Statistik (GSE Prä/Post, MSLQ-Subskalen, In-Session-Marker-Häufigkeiten) · 4.2.3.11.3 Hypothesenprüfung (H1–H5) · 4.2.3.11.4 Qualitative Befunde (Thematische Analyse ausgewählter Transkripte)
 
 ---
 
 ## 4.2.3.12 Diskussion
 
-*[Wird nach Fertigstellung von Abschnitt 4.2.3.11 verfasst.]*
-
-Geplante Abschnitte:
-- 6.12.1 Interpretation der Ergebnisse (vor dem Hintergrund von H1–H4 und der DSR-Evaluation)
-- 6.12.2 Kritische Reflexion: Limitationen, Positionality, Bias-Diskussion
-- 6.12.3 Implikationen für die Praxis (KAIA-Weiterentwicklung)
-- 6.12.4 Implikationen für die Forschung (Folgestudiendesign mit adäquater Power)
-- 6.12.5 Gesamtfazit
+*[Wird nach Fertigstellung von Abschnitt 4.2.3.11 verfasst. Geplante Inhalte: Ergebnisinterpretation vor DSR-Hintergrund (H1–H5), Limitationen- und Positionality-Reflexion, Implikationen für Praxis und Forschung, Gesamtfazit.]*
 
 ---
 
-## Literaturverzeichnis (Kapitel 4)
-
-Bandura, A. (1997). *Self-efficacy: The exercise of control*. Freeman.
-
-Braun, V., & Clarke, V. (2006). Using thematic analysis in psychology. *Qualitative Research in Psychology, 3*(2), 77–101. https://doi.org/10.1191/1478088706qp063oa
-
-Cohen, J. (1988). *Statistical power analysis for the behavioral sciences* (2. Aufl.). Lawrence Erlbaum.
-
-Craik, F. I. M., & Lockhart, R. S. (1972). Levels of processing: A framework for memory research. *Journal of Verbal Learning and Verbal Behavior, 11*(6), 671–684. https://doi.org/10.1016/S0022-5371(72)80001-X
-
-Decety, J., & Jackson, P. L. (2004). The functional architecture of human empathy. *Behavioral and Cognitive Neuroscience Reviews, 3*(2), 71–100.
-
-Dunlosky, J., & Metcalfe, J. (2009). *Metacognition*. SAGE.
-
-Flavell, J. H. (1979). Metacognition and cognitive monitoring: A new area of cognitive-developmental inquiry. *American Psychologist, 34*(10), 906–911.
-
-Gollwitzer, P. M. (1999). Implementation intentions: Strong effects of simple plans. *American Psychologist, 54*(7), 493–503.
-
-Gregor, S., & Hevner, A. R. (2013). Positioning and presenting design science research for maximum impact. *MIS Quarterly, 37*(2), 337–355.
-
-Hevner, A. R., March, S. T., Park, J., & Ram, S. (2004). Design science in information systems research. *MIS Quarterly, 28*(1), 75–105.
-
-Jerusalem, M., & Schwarzer, R. (1992). Self-efficacy as a resource factor in stress appraisal processes. In R. Schwarzer (Hrsg.), *Self-efficacy: Thought control of action* (S. 195–213). Hemisphere.
-
-Jerusalem, M., & Schwarzer, R. (1999). *Allgemeine Selbstwirksamkeitserwartung*. In R. Schwarzer & M. Jerusalem (Hrsg.), *Skalen zur Erfassung von Lehrer- und Schülermerkmalen* (S. 13–14). Freie Universität Berlin.
-
-Larson, R., & Csikszentmihalyi, M. (1983). The experience sampling method. *New Directions for Methodology of Social and Behavioral Science, 15*, 41–56.
-
-Multon, K. D., Brown, S. D., & Lent, R. W. (1991). Relation of self-efficacy beliefs to academic outcomes: A meta-analytic investigation. *Journal of Counseling Psychology, 38*(1), 30–38.
-
-Pintrich, P. R., & De Groot, E. V. (1990). Motivational and self-regulated learning components of classroom academic performance. *Journal of Educational Psychology, 82*(1), 33–40.
-
-Pintrich, P. R., Smith, D. A. F., Garcia, T., & McKeachie, W. J. (1991). *A manual for the use of the Motivated Strategies for Learning Questionnaire (MSLQ)* (ERIC Document ED338122). University of Michigan.
-
-Picard, R. W. (1997). *Affective Computing*. MIT Press.
-
-Pintrich, P. R., Smith, D. A. F., Garcia, T., & McKeachie, W. J. (1993). Reliability and predictive validity of the Motivated Strategies for Learning Questionnaire (MSLQ). *Educational and Psychological Measurement, 53*(3), 801–813. https://doi.org/10.1177/0013164493053003024
-
-Schwarzer, R. (1992). Self-efficacy in the adoption and maintenance of health behaviors: Theoretical approaches and a new model. In R. Schwarzer (Hrsg.), *Self-efficacy: Thought control of action* (S. 217–243). Hemisphere.
-
-Schwarzer, R., & Jerusalem, M. (1995). Generalized Self-Efficacy scale. In J. Weinman, S. Wright, & M. Johnston (Hrsg.), *Measures in health psychology: A user's portfolio* (S. 35–37). NFER-NELSON.
-
-Shiffman, S., Stone, A. A., & Hufford, M. R. (2008). Ecological momentary assessment. *Annual Review of Clinical Psychology, 4*, 1–32. https://doi.org/10.1146/annurev.clinpsy.3.022806.091415
-
-Stanton, J. M., Sinar, E. F., Balzer, W. K., & Smith, P. C. (2002). Issues and strategies for reducing the length of self-report scales. *Personnel Psychology, 55*(1), 167–194.
-
-Stone, A. A., & Shiffman, S. (1994). Ecological Momentary Assessment (EMA) in behavorial medicine. *Annals of Behavioral Medicine, 16*(3), 199–202.
-
-Stöber, J. (1999). Die Soziale-Erwünschtheits-Skala-17 (SES-17): Entwicklung und erste Befunde zu Reliabilität und Validität. *Diagnostica, 45*(4), 173–177.
-
-*[Weitere Quellen werden nach Durchführung der Studie ergänzt.]*
+*Literaturangaben dieses Kapitels sind im konsolidierten Literaturverzeichnis am Ende der Thesis aufgeführt.*
