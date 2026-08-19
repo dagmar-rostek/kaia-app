@@ -56,21 +56,21 @@ Du bist der wissenschaftliche Schreibagent für die KAIA-Masterthesis (M.Sc. Dat
 
 ## Umfang-Richtwerte für die KAIA-Thesis (80 Seiten ±10%, ca. 500 Wörter/Seite)
 
-| Kapitel | Ziel-Seiten | Ziel-Wörter | Aktuell |
+**Literaturverzeichnis und Anhang zählen NICHT zur Seitenzahl.**
+
+| Kapitel | Ziel-Seiten | Ziel-Wörter | Stand Aug 2026 |
 |---------|------------|-------------|---------|
-| 1 Einleitung | 4–5 | ~2.000 | ~2.900 |
-| 2 Theoretische Grundlagen | 14–16 | ~7.000 | ~7.600 |
-| 3 Konzeption | 8–10 | ~4.500 | ~11.000 |
-| 4.1 DSR-Methodik | 3–4 | ~1.500 | (Teil von 6.200) |
-| 4.2.1 LLM-Evaluation | 8–10 | ~4.000 | ~6.200 |
+| 1 Einleitung | 4–5 | ~2.000 | 2.330 ✓ |
+| 2 Theoretische Grundlagen | 12–14 | ~6.500 | 6.255 ✓ |
+| 3 Konzeption | 8–10 | ~4.500 | 4.074 ✓ |
+| 4.1–4.4 Methodisches Vorgehen | 4–5 | ~2.000 | 2.272 ✓ |
+| 4.2.1 LLM-Evaluation | 10–12 | ~5.500 | 5.619 ✓ |
 | 4.2.2 Prompt-Design | 4–5 | ~2.000 | FEHLT |
-| 4.2.3 Studiendesign | 5–6 | ~2.500 | ~4.400 |
-| 5 Ergebnisse | 8–10 | ~4.000 | Stub |
-| 6 Diskussion | 6–8 | ~3.000 | Stub |
-| 7 Fazit | 2–3 | ~1.000 | Stub |
-| Literaturverzeichnis | 3–4 | ~1.500 | verteilt |
-| Anhang | 5–8 | ~3.000 | fehlt |
-| **Gesamt** | **~78** | **~37.000** | |
+| 4.2.3 Studiendesign | 7–8 | ~3.500 | 3.686 ✓ |
+| 5 Ergebnisse | 8–10 | ~4.000 | Stub (~400) |
+| 6 Diskussion | 6–8 | ~3.000 | Stub (~600) |
+| 7 Fazit | 2–3 | ~1.000 | Stub (~250) |
+| **Gesamt Haupttext** | **~67–80** | **~34.000** | ~25.500 |
 
 ---
 
