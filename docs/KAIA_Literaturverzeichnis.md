@@ -52,7 +52,7 @@ Cohen, J. (1960). A coefficient of agreement for nominal scales. *Educational an
 
 Cohen, J. (1988). *Statistical power analysis for the behavioral sciences* (2. Aufl.). Lawrence Erlbaum.
 
-Cohen, R. L. (1989). Memory for action events: The power of enactment. *Psychological Research, 51*(1), 18–24.
+Cohen, R. L. (1989). Memory for action events: The power of enactment. *Educational Psychology Review, 1*, 57–80.
 
 Collins, A., Brown, J. S., & Newman, S. E. (1989). Cognitive apprenticeship: Teaching the crafts of reading, writing, and mathematics. In L. B. Resnick (Hrsg.), *Knowing, learning, and instruction: Essays in honor of Robert Glaser* (S. 453–494). Erlbaum.
 
@@ -130,7 +130,7 @@ Hevner, A. R. (2007). A three cycle view of design science research. *Scandinavi
 
 Hevner, A. R., March, S. T., Park, J., & Ram, S. (2004). Design science in information systems research. *MIS Quarterly, 28*(1), 75–105. https://doi.org/10.2307/25148625
 
-Holmes, W., Porayska-Pomsta, K., Holstein, K., Sutherland, E., Baker, T., Buckingham Shum, S., Santos, O. C., Rodrigo, M. T., Cukurova, M., Bittencourt, I. I., & Koedinger, K. R. (2022). Ethics of AI in education: Towards a community-wide agenda. *Journal of Learning Analytics, 9*(1), 163–181. https://doi.org/10.18608/jla.2022.7227
+Holmes, W., Porayska-Pomsta, K., Holstein, K., Sutherland, E., Baker, T., Buckingham Shum, S., Santos, O. C., Rodrigo, M. T., Cukurova, M., Bittencourt, I. I., & Koedinger, K. R. (2022). Ethics of AI in education: Towards a community-wide framework. *International Journal of Artificial Intelligence in Education, 32*(3), 504–526. https://doi.org/10.1007/s40593-021-00239-1
 
 Jerusalem, M., & Schwarzer, R. (1992). Self-efficacy as a resource factor in stress appraisal processes. In R. Schwarzer (Hrsg.), *Self-efficacy: Thought control of action* (S. 195–213). Hemisphere.
 
@@ -186,9 +186,7 @@ Multon, K. D., Brown, S. D., & Lent, R. W. (1991). Relation of self-efficacy bel
 
 Nakamura, J., & Csikszentmihalyi, M. (2002). The concept of flow. In C. R. Snyder & S. J. Lopez (Hrsg.), *Handbook of positive psychology* (S. 89–105). Oxford University Press.
 
-Oliveira, W., & Hamari, J. (2022). Flow states in digital learning environments: A systematic review. *Computers & Education, 192*, 104650. https://doi.org/10.1016/j.compedu.2022.104650
-
-Oliveira, W., & Hamari, J. (2024). Flow in educational gamification: A systematic review. *Computers & Education, 213*, 104998. https://doi.org/10.1016/j.compedu.2024.104998
+Oliveira, W., & Hamari, J. (2025). Flow experience in gameful approaches: A systematic literature review, scientometric analysis, and research agenda. *International Journal of Human–Computer Interaction*. https://doi.org/10.1080/10447318.2025.2470279
 
 Orne, M. T. (1962). On the social psychology of the psychological experiment: With particular reference to demand characteristics and their implications. *American Psychologist, 17*(11), 776–783.
 
@@ -212,7 +210,7 @@ Pintrich, P. R., Smith, D. A. F., Garcia, T., & McKeachie, W. J. (1991). *A manu
 
 Pintrich, P. R., Smith, D. A. F., Garcia, T., & McKeachie, W. J. (1993). Reliability and predictive validity of the Motivated Strategies for Learning Questionnaire (MSLQ). *Educational and Psychological Measurement, 53*(3), 801–813. https://doi.org/10.1177/0013164493053003024
 
-Pintrich, P. R. (2004). A conceptual framework for assessing motivation and self-regulated learning in college students. *Educational Psychology Review, 16*(4), 385–407. *(Anmerkung: Zwei abweichende DOIs in verschiedenen Kapiteln der Thesis — B:EDPR.0000049023.56678.c3 und B:EDPR.0000034022.16721.a3; Überprüfung vor Abgabe empfohlen.)*
+Pintrich, P. R. (2004). A conceptual framework for assessing motivation and self-regulated learning in college students. *Educational Psychology Review, 16*(4), 385–407. https://doi.org/10.1007/s10648-004-0006-x
 
 Rheinberg, F., Vollmeyer, R., & Engeser, S. (2003). Die Erfassung des Flow-Erlebens. In J. Stiensmeier-Pelster & F. Rheinberg (Hrsg.), *Diagnostik von Motivation und Selbstkonzept* (S. 261–279). Hogrefe.
 
@@ -220,9 +218,9 @@ Rosenthal, R. (1991). *Meta-analytic procedures for social research* (Rev. Aufl.
 
 Ryan, R. M., & Deci, E. L. (2000). Intrinsic and extrinsic motivations: Classic definitions and new directions. *Contemporary Educational Psychology, 25*(1), 54–67.
 
-Ryan, R. M., Legate, N., Weinstein, N., & Hemric, M. (2023). Self-determination theory as a macro-level theory of motivation and well-being: Review and meta-analysis across 486 samples. *Psychological Bulletin, 149*(9–10), 513–545.
+Ryan, R. M., Duineveld, J. J., Di Domenico, S. I., Ryan, W. S., Steward, B. A., & Bradshaw, E. L. (2023). We know this much is (meta-analytically) true: A meta-review of meta-analytic findings evaluating self-determination theory. *Psychological Bulletin, 148*(11–12), 813–842. https://doi.org/10.1037/bul0000385
 
-Schimpf, C., Voigt, S., & Bohné, T. (2026). AI-assisted goal setting improves goal achievement: A randomized controlled trial. *arXiv preprint arXiv:2603.17887*.
+Schimpf, M., Voigt, J., & Bohné, T. (2026). AI-assisted goal setting improves goal progress through social accountability. *arXiv preprint arXiv:2603.17887*. https://arxiv.org/abs/2603.17887 *(Hinweis: nicht peer-reviewed)*
 
 Schön, D. A. (1983). *The reflective practitioner: How professionals think in action*. Basic Books.
 

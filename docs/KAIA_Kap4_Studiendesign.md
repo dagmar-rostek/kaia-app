@@ -58,7 +58,7 @@ Die fehlende Kontrollgruppe ist systematisch begründet: Bei N ≈ 20 Teilnehmen
 Power-Analyse durchgeführt mit R (Paket `pwr` v1.3, Skript: `docs/power_analyse.R`). Details: Studienprotokoll v2.0, Kapitel 3.
 
 **Bewertung — bewusste Unterpower:**
-Die Pilotstudie ist bewusst unterpowert. Bei d = 0.5 (mittlerer Effekt nach Cohen, 1988) und N = 20 beträgt die Power ca. 69 %; bei d = 0.4 — einer konservativen Schätzung für eine junge Systemintervention ohne externe Baseline-Evidenz — sinkt sie auf ca. 37 %. Das bedeutet konkret: Selbst wenn ein realer Effekt vorliegt, wird er mit hoher Wahrscheinlichkeit statistisch nicht signifikant. Dies ist kein methodischer Fehler, sondern eine strukturelle Realität einer Masterthesis-Pilotstudie. Der Erkenntnisbeitrag dieser Studie liegt in der qualitativen Exploration und der Systemvalidierung, nicht in der statistischen Bestätigung von Hypothesen. Wer aus dieser Studie konfirmatorische Schlüsse zieht, überdehnt die Datenlage.
+Bei d = 0.5 und N = 20 beträgt die Power ca. 69 %; bei d = 0.4 sinkt sie auf ca. 37 %. Das bedeutet: Auch bei realem Effekt ist ein statistisch nicht-signifikantes Ergebnis wahrscheinlich. Das ist kein methodischer Fehler, sondern eine strukturelle Realität dieser Pilotstudie — ihr Erkenntnisbeitrag liegt in der qualitativen Exploration und Systemvalidierung, nicht in der Hypothesenbestätigung.
 
 ### 4.2.3.2.3 Positionality Statement und Bias-Kontrolle
 
@@ -70,18 +70,18 @@ Die Forscherin ist gleichzeitig Entwicklerin von KAIA und potenzielle Kommerzial
 3. Expliziter Hinweis in der Einwilligungserklärung auf die Erwünschtheit ehrlicher, auch negativer Rückmeldungen
 4. Zurückhaltende und explizit selbstkritische Ergebnisinterpretation gemäß APA 7 Reporting Standards
 
-**Social-Desirability-Bias:** Die Rekrutierung aus dem persönlichen Netzwerk der Forscherin begünstigt systematische Verzerrung durch soziale Erwünschtheit strukturell. Teilnehmende könnten Selbstberichte unbewusst an wahrgenommenen Erwartungen der Forscherin ausrichten. Dieser Bias ist durch die technischen Maßnahmen in Punkt 3 und 4 lediglich reduziert, nicht eliminiert. Eine zusätzliche Skala zur sozialen Erwünschtheit (Stöber, 1999) wird für die Pilotierung nicht eingesetzt, um den Fragebogenumfang nicht weiter zu erhöhen; die damit verbundene Einschränkung wird in Abschnitt 4.2.3.10 vollständig ausgewiesen.
+**Social-Desirability-Bias:** Teilnehmende aus dem Bekanntenkreis könnten Selbstberichte unbewusst an wahrgenommenen Erwartungen der Forscherin ausrichten. Die Maßnahmen in Punkt 3 und 4 reduzieren diesen Bias, eliminieren ihn nicht. Auf eine Skala zur sozialen Erwünschtheit wird verzichtet (Fragebogenökonomie); vgl. Abschnitt 4.2.3.10.
 
 ---
 
 ## 4.2.3.3 Messinstrumente
 
-### 4.2.3.3.1 Motivierte Lernstrategien — MSLQ (Kurzversion, Prä-Messung)
+### 4.2.3.3.1 Motivierte Lernstrategien — MSLQ (Kurzversion, Prämessung)
 
 **Instrument:** Motivated Strategies for Learning Questionnaire, KAIA-Kurzversion (Pintrich et al., 1991, 1993)
 **Fassung:** 34-Item-Adaptation mit 5 Subskalen, dokumentiert in docs/STUDIENPROTOKOLL.md
 **Skalierung:** 7-stufige Likert-Skala (1 = gar nicht zutreffend, 7 = sehr zutreffend)
-**Erhebungszeitpunkt:** Einmalig als Prä-Messung vor der ersten Session; kein Post-MSLQ
+**Erhebungszeitpunkt:** Einmalig als Prämessung vor der ersten Session; kein Post-MSLQ
 
 **Subskalen:**
 
@@ -93,15 +93,10 @@ Die Forscherin ist gleichzeitig Entwicklerin von KAIA und potenzielle Kommerzial
 | Kognitive Verarbeitungstiefe | Tiefenorientierte Informationsverarbeitung, kritisches Denken | 8 | .80 (Pintrich et al., 1993) |
 | **Kontrollüberzeugungen für Lernen** | Glaube, dass Anstrengung und Lernstrategien den Lernerfolg bestimmen (internale Attribution) | 4 | .68 (Pintrich et al., 1993) |
 
-**Gütekriterien (Originalinstrument):**
-- Interne Konsistenz: Cronbachs α zwischen .62 und .93 je Subskala (Pintrich et al., 1993)
-- Konstruktvalidität: Konfirmatorische Faktorenanalyse bestätigt Skalenstruktur (Pintrich et al., 1993)
-- Prädiktive Validität: Positive Zusammenhänge mit Studienleistung nachgewiesen (Pintrich & De Groot, 1990)
-- Normierung: Amerikanische College-Stichprobe (N > 400); keine repräsentative deutschsprachige Normstichprobe verfügbar — Vergleiche mit Normwerten sind nicht möglich
-- Lizenzbedingungen: MSLQ ist frei verfügbar für Forschungszwecke (keine kommerziellen Lizenzkosten; Pintrich et al., 1991); Quellenangabe Pflicht
+**Gütekriterien:** Cronbachs α .62–.93 je Subskala; Skalenstruktur durch konfirmatorische Faktorenanalyse bestätigt; prädiktive Validität belegt (Pintrich et al., 1993; Pintrich & De Groot, 1990). Keine deutschsprachige Normstichprobe. Frei verfügbar für Forschungszwecke; Quellenangabe Pflicht. *[→ Anhang B: MSLQ-Items]*
 
 **Kritische psychometrische Einschränkungen der KAIA-Adaptation:**
-Die in KAIA eingesetzte 34-Item-Version ist eine Selektion und Kürzung des 81-Item-Originalinstruments. Für diese Adaptation liegt keine eigenständige Validierungsstudie vor. Die Gütekriterien des Originalinstruments sind nicht automatisch auf eine gekürzte Version übertragbar (Stanton et al., 2002). Bei Kürzungen können Faktorstruktur, Reliabilität und Validität erheblich von der Originalversion abweichen. Die Subskalen-Cronbachs-Alphas werden aus den erhobenen Pilotdaten post-hoc berechnet und transparent berichtet. Sollten die internen Konsistenzwerte unter α = .70 fallen, ist die Aussagekraft der Subskalen-Scores stark eingeschränkt.
+Die 34-Item-Version ist eine Selektion des 81-Item-Originals ohne eigenständige Validierungsstudie. Gütekriterien des Originalinstruments sind nicht automatisch übertragbar (Stanton et al., 2002); bei Kürzungen können Faktorstruktur und Reliabilität abweichen. Subskalen-Cronbachs-Alphas werden post-hoc aus den Pilotdaten berechnet; bei α < .70 ist die Aussagekraft des jeweiligen Subskalen-Scores stark eingeschränkt.
 
 **Funktionen in dieser Studie:**
 - Deskriptive Stichprobencharakterisierung: Lernmotivationsprofil der Teilnehmenden zu Studieneintritt
@@ -110,29 +105,23 @@ Die in KAIA eingesetzte 34-Item-Version ist eine Selektion und Kürzung des 81-I
 
 **Was MSLQ-Werte nicht leisten:** Auf Basis von MSLQ-Scores lassen sich keine Vorhersagen über individuelle Lernerfolge, Kompetenzniveaus oder Potenziale ableiten, die über die durch Validierungsstudien belegte Korrelationsstruktur hinausgehen.
 
-### 4.2.3.3.2 Allgemeine Selbstwirksamkeitserwartung — GSE (Prä- und Post-Messung)
+### 4.2.3.3.2 Allgemeine Selbstwirksamkeitserwartung — GSE (Prä- und Postmessung)
 
 **Instrument:** General Self-Efficacy Scale, deutschsprachige Originalversion (Schwarzer & Jerusalem, 1995)
 **Items:** 10 (Beispielitem: "Wenn ich mit einem Problem konfrontiert werde, habe ich meist mehrere Ideen, wie ich damit fertig werde.")
 **Skalierung:** 4-stufige Likert-Skala (1 = stimmt nicht, 4 = stimmt genau)
-**Erhebungszeitpunkte:** Prä-Messung (vor erster Session, ab 8. August 2026) und Post-Messung (1.–4. September 2026)
+**Erhebungszeitpunkte:** Prämessung (vor erster Session, ab 8. August 2026) und Postmessung (1.–4. September 2026)
 
-**Gütekriterien (Originalinstrument):**
-- Interne Konsistenz: Cronbachs α = .80–.90 in zahlreichen Validierungsstudien (N > 1.000; Schwarzer & Jerusalem, 1995)
-- Test-Retest-Reliabilität: r = .55–.75 je nach Erhebungsintervall (Schwarzer, 1992); hinreichend stabil für Prä-Post-Design
-- Konstruktvalidität: Konvergente Validität mit verwandten Selbstwirksamkeitskonstrukten nachgewiesen; diskriminante Validität gegenüber Optimismus, Depressivität und Ängstlichkeit belegt (Schwarzer & Jerusalem, 1995)
-- Normierung: Deutschsprachige Bevölkerungsstichprobe (Jerusalem & Schwarzer, 1999); Normen nach Geschlecht vorhanden, Alters- und Bildungsnormen eingeschränkt
-- Lizenzbedingungen: Frei verfügbar für Forschungszwecke; Quellenangabe Pflicht; ITC-Richtlinien zur Testnutzung eingehalten
-- ITC-Konformität: Instrument ist für digital selbst-administrierte Erhebung geeignet (kein verändernder Einfluss des Erhebungsmodus bei Selbstauskunft)
+**Gütekriterien:** Cronbachs α = .80–.90 (Schwarzer & Jerusalem, 1995); Test-Retest-Reliabilität r = .55–.75 (Schwarzer, 1992); konvergente und diskriminante Validität nachgewiesen. Deutschsprachige Normstichprobe verfügbar (Jerusalem & Schwarzer, 1999). Frei verfügbar für Forschungszwecke; ITC-konform für digital selbst-administrierte Erhebung. *[→ Anhang A: GSE-Items]*
 
 **Methodische Diskussion — Trait-Stabilität als Sensitivitätsproblem:**
-Die GSE ist konzeptionell als generalisierendes Trait-Konstrukt angelegt: Sie erfasst stabile Überzeugungen über die eigene Handlungsfähigkeit, keine situativen Zustände (Bandura, 1997). Dies erzeugt ein strukturelles Sensitivitätsproblem — eine 4-wöchige Intervention erzeugt möglicherweise nicht hinreichend starke Mastery Experiences, um stabile Trait-Überzeugungen zu verändern. Empirisch belegt ist jedoch, dass Trait-Selbstwirksamkeit auf intensive Kompetenz- und Mastery-Erfahrungen reagiert (Jerusalem & Schwarzer, 1992; Bandura, 1997, Kap. 3). Die Wahl der allgemeinen GSE gegenüber einer domänenspezifischen Skala ist dadurch begründet, dass KAIA als bereichsübergreifender Lernbegleiter konzipiert ist; eine domänenspezifische Skala würde nur den konkreten Lerninhalt der Teilnehmenden erfassen, nicht die transferierbare Lernkompetenzüberzeugung. Das Sensitivitätsproblem wird als bekannte Limitation akzeptiert und in Abschnitt 4.2.3.10 vollständig ausgewiesen.
+Die GSE erfasst stabile Überzeugungen über die eigene Handlungsfähigkeit, keine situativen Zustände (Bandura, 1997). Eine 4-wöchige Intervention erzeugt möglicherweise nicht hinreichend starke Mastery Experiences, um diese Überzeugungen zu verschieben — obwohl Trait-Selbstwirksamkeit grundsätzlich auf intensive Mastery-Erfahrungen reagiert (Jerusalem & Schwarzer, 1992; Bandura, 1997). Die allgemeine GSE wurde gegenüber domänenspezifischen Skalen bevorzugt, weil KAIA als bereichsübergreifender Lernbegleiter konzipiert ist. Das Sensitivitätsproblem wird als bekannte Limitation ausgewiesen (Abschnitt 4.2.3.10).
 
 **Wichtige Abgrenzung:** Die GSE misst Selbstwirksamkeitserwartungen — keine Kompetenz, keine Leistung, kein Lernpotenzial. Aus GSE-Werten lassen sich keine Leistungsprognosen ableiten, die über den durch Meta-Analysen belegten Zusammenhang hinausgehen (r ≈ .38; Multon et al., 1991).
 
-### 4.2.3.3.3 In-Session-Feedback (Session-Feedback-Marker)
+### 4.2.3.3.3 In-Session-Feedback (Sessionfeedbackmarker)
 
-Innerhalb jeder Session stehen Teilnehmenden vier diskrete Feedback-Marker zur Verfügung. Diese werden im Folgenden als In-Session-Feedback-Marker bezeichnet — nicht als EMA im methodologischen Sinne (Stone & Shiffman, 1994; Shiffman et al., 2008), da die Voraussetzungen zeitrandomisierter Mehrfachmessungen im natürlichen Umfeld nicht erfüllt sind. Es handelt sich um verhaltensnahe In-situ-Prozessindikatoren ohne EMA-konforme Stichproben-Randomisierung.
+Innerhalb jeder Session stehen Teilnehmenden vier diskrete Feedback-Marker zur Verfügung. Diese sind keine EMA im methodologischen Sinne (Stone & Shiffman, 1994) — die Voraussetzungen zeitrandomisierter Messung im Feld sind nicht erfüllt. Es handelt sich um verhaltensnahe In-situ-Prozessindikatoren.
 
 | Marker | Kürzel | Konstruktnähe |
 |---|---|---|
@@ -145,17 +134,15 @@ Innerhalb jeder Session stehen Teilnehmenden vier diskrete Feedback-Marker zur V
 
 **Wissenschaftliche Grundlage:** Metacognitive Monitoring als Lernprozessvariable (Flavell, 1979; Dunlosky & Metcalfe, 2009); In-situ-Signale als Ergänzung zu Post-hoc-Selbstberichten (Larson & Csikszentmihalyi, 1983).
 
-**Kritische methodische Einschränkung:** Die vier EMA-Marker sind keine validierten psychometrischen Skalen. Sie sind verhaltensnahe Selbstsignale ohne standardisierte Gütekriterien. Ihre Konstruktbezüge in der Tabelle oben sind theoretisch begründet, nicht empirisch validiert. Jede Auswertung dieser Daten ist rein explorativ-deskriptiv. Inferenzstatistische Schlüsse auf Basis dieser Marker sind nicht vorgesehen und nicht gerechtfertigt.
+**Kritische methodische Einschränkung:** Die vier Marker sind keine validierten psychometrischen Skalen; ihre Konstruktbezüge sind theoretisch begründet, nicht empirisch belegt. Auswertungen sind rein explorativ-deskriptiv; inferenzstatistische Schlüsse sind nicht zulässig.
 
 ### 4.2.3.3.4 Qualitative Daten
 
-**Session-Transkripte:** Vollständige Chat-Verläufe jeder KAIA-Session, pseudonymisiert gespeichert. Basis für die qualitative Thematische Analyse (Braun & Clarke, 2006) ausgewählter Verläufe.
+**Sessiontranskripte:** Vollständige Chat-Verläufe jeder KAIA-Session, pseudonymisiert gespeichert. Basis für die qualitative Thematische Analyse (Braun & Clarke, 2006) ausgewählter Verläufe.
 
-**Session-Summaries:** Von KAIA nach jeder Session automatisiert generierte Zusammenfassungen des Gesprächsverlaufs und identifizierter Lernmomente. Werden ergänzend zu den Transkripten für die qualitative Analyse herangezogen. Ihr generativer Ursprung wird bei der Interpretation berücksichtigt.
+**Session-Summaries:** Von KAIA nach jeder Session automatisch generierte Zusammenfassungen; ergänzend zu Transkripten für die qualitative Analyse, generativer Ursprung bei der Interpretation berücksichtigt.
 
-**Triangulation:** Qualitative Befunde aus Transkripten und Summaries werden mit den quantitativen EMA- und GSE-Daten trianguliert, um widersprüchliche Muster sichtbar zu machen.
-
-Im Erfahrungsbericht am Studienende (optional) wird explizit erfragt: 'Gab es Bereiche, in denen du durch KAIA etwas in deinen Alltag übertragen hast, das vorher wissenstheoretisch klar, aber praktisch nicht umgesetzt war?' Diese qualitative Frage operationalisiert den KDG-Effekt ohne standardisiertes Instrument.
+**Triangulation:** Qualitative Befunde aus Transkripten und Summaries werden mit quantitativen EMA- und GSE-Daten trianguliert. Im optionalen Erfahrungsbericht am Studienende wird der KDG-Effekt qualitativ operationalisiert: "Gab es Bereiche, in denen du durch KAIA etwas in deinen Alltag übertragen hast, das vorher wissenstheoretisch klar, aber praktisch nicht umgesetzt war?"
 
 ### 4.2.3.3.5 Nutzungsstatistiken (Kovariaten)
 
@@ -230,52 +217,19 @@ Die Forscherin ist gleichzeitig Entwicklerin von KAIA und potenzielle Kommerzial
 
 ### 4.2.3.6.1 Phasenübersicht
 
-```
-Datum                Aktivität
-─────────────────────────────────────────────────────────────────────
-Vor Studie           DPAs abgeschlossen (Anthropic, OpenAI) ✓
-28. Juli 2026        Study-Lock: Prompt-Freeze
-8. August 2026       Registrierung | KI-Disclosure | Multi-Step-Consent
-                     MSLQ Prä (34 Items, ≈ 12 Min.) + GSE Prä (10 Items, ≈ 5 Min.)
-                     Erste Session möglich
-8. August – 1. September 2026   Strukturierte KAIA-Nutzung
-                       Mindest-Sessions: 3 (Auswertbarkeitsgrenze)
-                       Ziel-Sessions: 10 (für Verlaufsanalyse erforderlich)
-                       Max. 1 Session pro Tag
-                       EMA-Marker kontinuierlich verfügbar
-1. September 2026      Letzte mögliche Session | Studienende
-29. Aug.–5. Sep.     GSE Post (10 Items, ≈ 5 Min.) | optionaler Erfahrungsbericht
-Nach Studie          Auswertung | 6-Monate-Löschfrist beginnt
-```
+Meilensteine und Termine: vgl. Timeline 4.2.3.5. Zum Studienstart (8. August 2026) durchlaufen Teilnehmende Registrierung, KI-Disclosure und Multi-Step-Consent, gefolgt von MSLQ-Prämessung (34 Items, ≈ 12 Min.) und GSE-Prämessung (10 Items, ≈ 5 Min.).
 
 ### 4.2.3.6.2 Sessionstruktur
 
-**Sessions 1–2: Foundation-Sessions (ca. 20–30 Minuten)**
-- Motiv-Dialog: Probing nach dem Lernziel hinter dem Lernziel
-- Learning Intention formulieren (nicht bloße Task-Benennung)
-- Lernschritt + Implementation Intention: Wann, wo, wie (Gollwitzer, 1999)
-- Evidenzanker definieren: "Woran würdest du merken, dass du es wirklich verstanden hast?"
-- Lerntyp-Routing, Standortbestimmung
+**Sessions 1–2: Foundation-Sessions (ca. 20–30 Minuten).** Motiv-Dialog (Lernziel hinter dem Lernziel), Learning Intention, Implementation Intention (Gollwitzer, 1999), Evidenzanker ("Woran würdest du merken, dass du es wirklich verstanden hast?") und Standortbestimmung. KAIA fragt explizit, in welchen Situationen die Person weiß, was zu tun wäre, es aber nicht tut — dieser KDG-Spiegel bildet die Grundlage für alle Folgesessions.
 
-**KDG-Exploration als expliziter Bestandteil:** KAIA fragt früh, was die Person bereits über das Thema weiß und in welchen Situationen sie weiß, was zu tun wäre, es aber nicht tut. Dieser KDG-Spiegel bildet die Grundlage für alle Folge-Sessions.
+**Sessions 3–10: Micro-Sessions (ca. 10–15 Minuten).** Cross-Session-Memory übernimmt den Kontextaufbau; EMA-Marker sind kontinuierlich verfügbar.
 
-**Sessions 3–10: Micro-Sessions (ca. 10–15 Minuten)**
-- Cross-Session-Memory übernimmt Kontextaufbau (kein erneutes Onboarding)
-- Erster-Schritt-Loop: Rückbezug auf Lernschritt + Evidenzanker-Abgleich
-- EMA-Marker kontinuierlich nutzbar
-
-**Mindestvorgabe für Auswertbarkeit:** Mindestens 3 abgeschlossene Chat-Sessions innerhalb der 3 Wochen. Teilnehmende mit weniger als 3 Sessions werden als Dropout klassifiziert und im Intent-to-Treat-Reporting ausgewiesen. Für die Verlaufsanalyse der EMA-Daten sind mindestens 5 Sessions erforderlich. Der Zielwert von 10 Sessions ermöglicht erst eine sinnvoll interpretierbare Zeitreihe.
-
-**Zeitaufwand für Teilnehmende (Schätzung):**
-MSLQ Prä (12 Min.) + GSE Prä/Post (2 × 5 Min.) + Sessions 1–2 (2 × 25 Min.) + Sessions 3–10 (8 × 12 Min.) = 12 + 10 + 50 + 96 = **ca. 168 Minuten ≈ 2,8 Stunden** über 3 Wochen.
-
-**Keine inhaltlichen Vorgaben:** Teilnehmende wählen selbst, welche Lernthemen sie mit KAIA bearbeiten. Das entspricht dem explorativen Charakter der Studie und der ökologischen Validität des Feldeinsatzes. Die Heterogenität der Lernthemen wird als Confounder dokumentiert.
+**Auswertbarkeitsgrenze:** Mindestens 3 abgeschlossene Sessions (sonst Dropout, Intent-to-Treat-Reporting); für EMA-Verlaufsanalyse mindestens 5 Sessions; Zielwert 10 Sessions für interpretierbare Zeitreihe. Gesamtaufwand für Teilnehmende: ≈ 168 Minuten über 3 Wochen. Lernthemen werden von Teilnehmenden selbst gewählt (ökologische Validität; Themen-Heterogenität als Confounder dokumentiert).
 
 ### 4.2.3.6.3 LLM-Modellwahl für die Pilotstudie
 
-Die Pilotstudie wird als Single-Arm-Design mit **GPT-4.1-mini** (OpenAI) durchgeführt. Die finale Modellwahl ist in Abschnitt 4.2.1.2.6 begründet (Latenzkriterium unter Produktionsbedingungen). Ein Between-Subjects-Vergleich zwischen LLM-Modellen entfällt.
-
-**Methodische Einschränkung:** Mit N ≈ 20 Teilnehmenden wäre kein statistisch robuster Modellvergleich möglich. LLM-spezifische Unterschiede können nicht von KAIA-Design-Effekten, individuellen Unterschieden oder Themeneffekten getrennt werden. Der Modellvergleich (FF3) wird als separater Evidenzstrang über die Eval-Pipeline adressiert (Abschnitt 4.2.1).
+Die Pilotstudie wird als Single-Arm-Design mit **GPT-4.1-mini** (OpenAI) durchgeführt; die Modellwahl ist in 4.2.1.2.6 begründet (Latenzkriterium). LLM-spezifische Unterschiede können bei N ≈ 20 nicht von KAIA-Design-Effekten getrennt werden; der Modellvergleich (FF3) wird als separater Evidenzstrang über die Eval-Pipeline adressiert (Abschnitt 4.2.1).
 
 ---
 
@@ -283,15 +237,15 @@ Die Pilotstudie wird als Single-Arm-Design mit **GPT-4.1-mini** (OpenAI) durchge
 
 **H1 (primär, gerichtet):** Die GSE nach drei Wochen KAIA-Nutzung ist signifikant höher als vor der Nutzung (Wilcoxon-Vorzeichenrangtest, einseitig, α = .05, Power ≈ 69 %).
 
-*Methodische Anmerkung: Angesichts der Unterpower (Power ≈ 69 % bei d = 0.5, N = 20, einseitig) ist ein statistisch nicht-signifikantes Ergebnis möglich — auch wenn ein realer Effekt vorliegen sollte. Die Signifikanzentscheidung wird daher durch Effektgröße (r = z / √N) und deskriptive Statistik ergänzt und nicht isoliert interpretiert.*
+*Angesichts der Unterpower wird die Signifikanzentscheidung durch Effektgröße (r = z / √N) und deskriptive Statistik ergänzt und nicht isoliert interpretiert.*
 
 **H2 (explorativ, ungerichtet):** Es besteht ein positiver Zusammenhang zwischen Nutzungshäufigkeit (Anzahl abgeschlossener Sessions) und GSE-Veränderung (Spearman-Rho).
 
-**H3 (explorativ, konstruktiv):** Die MSLQ-Selbstwirksamkeits-Subskala korreliert positiv mit der GSE-Prä-Messung (Konstruktkonvergenz; Spearman-Rho). Diese Hypothese dient ausschließlich der Plausibilitätsprüfung der MSLQ-Kurzversion — ein substantieller Zusammenhang zwischen zwei Selbstwirksamkeitsskalen ist theoretisch zu erwarten (Bandura, 1997).
+**H3 (explorativ, konstruktiv):** Die MSLQ-Selbstwirksamkeits-Subskala korreliert positiv mit der GSE-Prämessung (Konstruktkonvergenz; Spearman-Rho). Dient ausschließlich der Plausibilitätsprüfung der MSLQ-Kurzversion (Bandura, 1997).
 
 **H4 (explorativ, prozessbezogen):** Die relative Häufigkeit von `transfer_marker`- und `wow`-EMA-Signalen (positive Indikatoren) nimmt über die Studienlaufzeit im Verhältnis zu `stuck`- und `unclear`-Signalen (Distress-Indikatoren) zu. Diese Hypothese wird ausschließlich deskriptiv ausgewertet.
 
-**H5 (explorativ, KDG-spezifisch):** Die subjektiv wahrgenommene Häufigkeit, mit der Teilnehmende das Lernthema im Alltag aktiv anwenden, steigt über die Studienlaufzeit (Selbstbericht am Studienende im Vergleich zu Session 1). Diese Hypothese wird ausschließlich deskriptiv ausgewertet und dient der direkten Operationalisierung des Knowing-Doing Gaps.
+**H5 (explorativ, KDG-spezifisch):** Die subjektiv wahrgenommene Alltagsanwendungshäufigkeit steigt über die Studienlaufzeit (Selbstbericht Studienende vs. Session 1). Ausschließlich deskriptiv; operationalisiert den Knowing-Doing Gap.
 
 ---
 
@@ -325,31 +279,31 @@ Angesichts des explorativen Charakters und der bekannten Unterpower sind konfirm
 Die Limitationen dieser Studie sind substanziell. Sie werden vollständig und ohne Relativierung kommuniziert — nicht als Formsache, sondern weil die Interpretation der Ergebnisse ohne Kenntnis dieser Einschränkungen irreführend wäre.
 
 **1. Statistische Unterpower**
-N ≈ 20 ist für konfirmatorische Hypothesenprüfung unzureichend. Power für H1 bei d = 0.5 liegt bei ca. 69 % (einseitig), bei d = 0.4 bei ca. 37 %. Statistisch nicht-signifikante Ergebnisse schließen reale Effekte nicht aus. Statistisch signifikante Ergebnisse sind bei dieser Stichprobengröße mit Vorsicht zu interpretieren (erhöhte Falsch-Positiv-Rate bei Multiple Testing).
+N ≈ 20 ist für konfirmatorische Hypothesenprüfung unzureichend. Power für H1 bei d = 0.5 liegt bei ca. 69 % (einseitig), bei d = 0.4 bei ca. 37 %. Statistisch nicht-signifikante Ergebnisse schließen reale Effekte nicht aus; signifikante Befunde sind bei dieser Stichprobengröße mit Vorsicht zu interpretieren (erhöhte Falsch-Positiv-Rate bei Multiple Testing).
 
 **2. Convenience Sample — eingeschränkte externe Validität**
-Die Stichprobe entstammt dem persönlichen Netzwerk der Forscherin. Soziodemografische Merkmale, Bildungsniveau, Technikaffinität und Lernmotivation dieser Gruppe weichen systematisch von einer Zufallsstichprobe der Zielpopulation ab. Generalisierbarkeit der Ergebnisse auf andere Nutzungsgruppen ist nicht gegeben.
+Die Stichprobe entstammt dem persönlichen Netzwerk der Forscherin und weicht in Bildungsniveau, Technikaffinität und Lernmotivation systematisch von einer Zufallsstichprobe ab. Generalisierbarkeit ist nicht gegeben.
 
 **3. Social-Desirability-Bias**
-Teilnehmende aus dem Bekanntenkreis der Forscherin sind strukturell motiviert, positiver zu bewerten als sie es bei einem anonymen System täten. Technische Gegenmaßnahmen (anonymisierte Dateneingabe) reduzieren diesen Bias, eliminieren ihn nicht.
+Bekannte der Forscherin bewerten strukturell positiver. Anonymisierte Dateneingabe reduziert diesen Bias, eliminiert ihn nicht.
 
 **4. Dreifacher Interessenkonflikt**
-Die Forscherin ist gleichzeitig Entwicklerin und potenzielle Kommerzialisiererin. Trotz Vorregistrierung und standardisierter Instrumente ist eine vollständige Neutralisierung dieses Konflikts nicht möglich. Alle Schlussfolgerungen dieser Studie sind vor diesem Hintergrund zu rezipieren.
+Die Forscherin ist gleichzeitig Entwicklerin und potenzielle Kommerzialisiererin. Eine vollständige Neutralisierung ist nicht möglich; alle Schlussfolgerungen sind vor diesem Hintergrund zu rezipieren.
 
 **5. Fehlende Kontrollgruppe**
-Ohne Kontrollgruppe können beobachtete GSE-Veränderungen nicht kausal auf KAIA zurückgeführt werden. Reifung, Regression zur Mitte, Hawthorne-Effekt, parallele Lernerfahrungen und andere Störvariablen sind nicht kontrolliert.
+Ohne Kontrollgruppe können GSE-Veränderungen nicht kausal auf KAIA zurückgeführt werden. Reifung, Regression zur Mitte, Hawthorne-Effekt und parallele Lernerfahrungen sind nicht kontrolliert.
 
 **6. Trait-Stabilität der GSE — Sensitivitätsproblem**
-Als Trait-Instrument reagiert die GSE möglicherweise nicht sensitiv auf kurzfristige Interventionseffekte einer 4-wöchigen Nutzungsphase. Eine mangelnde Veränderung kann Systemversagen oder Instrumentensensitivität widerspiegeln — beides ist auf Basis dieser Studie nicht unterscheidbar.
+Als Trait-Instrument reagiert die GSE möglicherweise nicht sensitiv auf eine 4-wöchige Intervention. Ausbleibende Veränderung kann Systemversagen oder Instrumentensensitivität widerspiegeln — auf Basis dieser Studie nicht unterscheidbar.
 
 **7. MSLQ-Adaptation ohne eigenständige Validierung**
-Die eingesetzte 34-Item-Kurzversion ist ohne eigene Validierungsstudie. Interne Konsistenzwerte werden post-hoc berechnet; die Gütekriterien des Originalinstruments (81 Items) gelten nicht automatisch. Bei α < .70 in einzelnen Subskalen sind die entsprechenden Scores nicht sinnvoll interpretierbar.
+Die 34-Item-Kurzversion liegt ohne Validierungsstudie vor; Gütekriterien des Originals gelten nicht automatisch. Bei α < .70 in einzelnen Subskalen sind die Scores nicht interpretierbar.
 
-**8. EMA-Marker ohne psychometrische Validierung**
-Die vier Session-Feedback-Marker sind keine validierten Skalen. Ihre Konstruktbezüge sind theoretisch, nicht empirisch belegt. Auswertungen sind rein deskriptiv. Inferenzstatistische Schlüsse sind nicht zulässig.
+**8. Sessionfeedbackmarker ohne psychometrische Validierung**
+Keine validierten Skalen; Konstruktbezüge theoretisch, nicht empirisch belegt; Auswertungen rein deskriptiv.
 
 **9. LLM-Effekt nicht isolierbar**
-Der Effekt des zugrundeliegenden Sprachmodells (Claude vs. GPT-4o vs. Mistral) ist bei N ≈ 20 nicht von KAIA-Design-Effekten, individuellen Unterschieden oder Themeneffekten zu trennen. LLM-bezogene Aussagen in dieser Studie haben rein explorativen und hypothesengenerierenden Charakter.
+Der Effekt des zugrundeliegenden Sprachmodells ist bei N ≈ 20 nicht von KAIA-Design-Effekten oder individuellen Unterschieden zu trennen. LLM-bezogene Aussagen in dieser Studie haben rein hypothesengenerierenden Charakter.
 
 **10. Nur deutschsprachige Teilnehmende**
 Alle Instrumente und KAIA selbst sind auf Deutsch. Generalisierbarkeit auf andere Sprachgruppen ist nicht gegeben.

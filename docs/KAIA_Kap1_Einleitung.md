@@ -1,8 +1,8 @@
 # Kapitel 1 — Einleitung
 
-**Version:** 2.0  
-**Stand:** 09. August 2026  
-**Geplanter Umfang:** ca. 2.500 Wörter
+**Version:** 3.0  
+**Stand:** 19. August 2026  
+**Geplanter Umfang:** ca. 1.800 Wörter
 
 ---
 
@@ -16,15 +16,15 @@ Hinzu kommt die Rolle des subjektiven Stresserlebens. Lazarus (1993) zeigt in se
 
 Schließlich ist die Frage der Empathie in KI-Systemen zu stellen. Decety und Jackson (2004) unterscheiden zwischen affektiver und kognitiver Empathie; was in KI-Systemen erzeugt werden kann, ist — in der Tradition des Affective Computing (Picard, 1997) — eine Form von *computational empathy*: die modellierte Repräsentation emotionaler Zustände als Grundlage adaptiver Reaktionen. Ob und unter welchen Bedingungen diese Form der Empathie in tutoriellen Systemen lernförderlich wirkt, ist empirisch weitgehend ungeklärt.
 
-Vor diesem Hintergrund entstand KAIA (Kinetic AI Agent) — ein empathischer KI-Lernbegleiter, der eine spezifische Lücke adressiert: den **Knowing-Doing Gap** (Sheeran, 2002; Pfeffer & Sutton, 2000). Menschen scheitern im Lernkontext selten daran, dass ihnen Wissen fehlt — sie scheitern daran, vorhandenes Wissen in konkretes Alltagshandeln zu überführen (Intention-Behavior Gap; Sheeran, 2002). KAIA ist nicht für den Wissensaufbau von Null konzipiert. KAIA begleitet Menschen, die bereits wissen, was sie tun sollten, und genau dort nicht handeln. Die sokratische Gesprächsführung aktiviert latentes Vorwissen; Implementation Intentions (Gollwitzer, 1999) überführen Erkenntnisse in konkrete Handlungsschritte.
+Vor diesem Hintergrund entstand KAIA (Kinetic AI Agent) — ein empathischer KI-Lernbegleiter, der den **Knowing-Doing Gap** adressiert (Pfeffer & Sutton, 2000): die Unfähigkeit, vorhandenes Wissen konsequent in Alltagshandeln zu überführen (Sheeran, 2002). KAIA richtet sich an Menschen, die bereits wissen, was zu tun wäre, und genau dort stocken. Sokratische Gesprächsführung und Implementation Intentions (Gollwitzer, 1999) sind die methodischen Hebel.
 
 ### Terminologische Grundlagen dieser Arbeit
 
-Zwei Begriffe des Titels sind für das Verständnis dieser Arbeit terminologisch zu präzisieren, da sie in unterschiedlichen Kontexten unterschiedliche Bedeutungen tragen.
+Zwei Begriffe des Titels sind terminologisch zu präzisieren, da sie in unterschiedlichen Kontexten unterschiedliche Bedeutungen tragen.
 
-**Zum Begriff „neuroadaptiv":** In dieser Arbeit bezeichnet „neuroadaptiv" die Fähigkeit des Systems, Stresssignale aus der Gesprächshistorie der Nutzenden zu erkennen und sein Antwortverhalten adaptiv an den so erschlossenen Stresszustand anzupassen. Die theoretische Grundlage bilden die kognitiv-transaktionale Stresstheorie (Lazarus & Folkman, 1984; Lazarus, 1993) — Stresserleben entsteht durch kognitive Bewertung von Situationen, nicht durch objektive Anforderungen — sowie das Yerkes-Dodson-Prinzip (Yerkes & Dodson, 1908; Teigen, 1994), das ein optimales Aktivierungsniveau als Voraussetzung für Lernerfolg beschreibt. KAIA erkennt diesen Stresszustand ausschließlich textbasiert aus der Gesprächshistorie; das Ergebnis wird nach jeder Session als Prompt-Parameter gespeichert und beeinflusst die Kalibrierung der Folgesession. Eine ausführliche Konzeptualisierung findet sich in Kapitel 3.3 und 3.4.
+**Zum Begriff „neuroadaptiv":** In dieser Arbeit bezeichnet „neuroadaptiv" die Fähigkeit des Systems, Stresssignale aus der Gesprächshistorie der Nutzenden zu erkennen und sein Antwortverhalten adaptiv an den so erschlossenen Stresszustand anzupassen. Die theoretische Grundlage bilden die kognitiv-transaktionale Stresstheorie (Lazarus & Folkman, 1984; Lazarus, 1993) sowie das Yerkes-Dodson-Prinzip (Yerkes & Dodson, 1908; Teigen, 1994), das ein optimales Aktivierungsniveau als Voraussetzung für Lernerfolg beschreibt. KAIA erkennt diesen Stresszustand ausschließlich textbasiert aus der Gesprächshistorie; das Ergebnis wird nach jeder Session als Prompt-Parameter gespeichert und beeinflusst die Kalibrierung der Folgesession. Eine ausführliche Konzeptualisierung findet sich in Kapitel 3.3 und 3.4.
 
-**Zum Begriff „Lernbegleitung" und seiner Reichweite:** Der Begriff „Lernbegleitung" wird in dieser Arbeit weit und explizit auf die höheren Stufen des Lernzyklus bezogen: KAIA adressiert nicht primär die Ebenen Erinnern und Verstehen (Bloom-Stufen 1–2; Anderson & Krathwohl, 2001), sondern die höheren kognitiven Ebenen Anwenden, Analysieren, Evaluieren und Erschaffen (Bloom-Stufen 3–6). Konkret meint „Lernbegleitung" hier die Begleitung des Transfers von der deklarativen Wissensebene in die Handlungsebene — die Überwindung des Knowing-Doing Gap (Pfeffer & Sutton, 2000). Diese Präzisierung schränkt den Begriff nicht ein, sondern verortet ihn: Nicht das Lernen von Neuem, sondern das Umsetzen des bereits Erlernten ist KAIAs Domäne.
+**Zum Begriff „Lernbegleitung":** KAIA adressiert nicht die unteren Bloom-Niveaus (Erinnern, Verstehen; Anderson & Krathwohl, 2001), sondern die höheren: Anwenden, Analysieren, Evaluieren, Erschaffen. „Lernbegleitung" meint hier den Transfer von deklarativem Wissen in konkrete Handlung — die Überwindung des Knowing-Doing Gap. Nicht das Lernen von Neuem ist KAIAs Domäne, sondern das Umsetzen des Erlernten.
 
 ---
 
@@ -39,7 +39,7 @@ Aus der skizzierten Problemstellung ergeben sich drei aufeinander aufbauende For
 **FF1 — Sokratische KI-Begleitung ohne Autonomieverlust:**  
 Wie kann ein KI-Lernbegleiter sokratische Gesprächsführung operationalisieren, ohne die Lernautonomie der Nutzenden zu reduzieren?
 
-Diese Frage adressiert das didaktische Kernproblem: Sokratik bedeutet, dass Erkenntnisse durch den Lernenden selbst entstehen — ein KI-System, das diesen Prozess zu stark vorstrukturiert, widerspricht dem Prinzip methodisch. Die Arbeit untersucht, welche Interaktionsarchitektur (drei konfigurierbare Charaktermodi: Begleitend, Konfrontierend, Perspektivwechselnd), welches Prompt-Design und welche Session-Sequenzierung dieses Gleichgewicht herzustellen vermögen. Die Arbeit untersucht, wie sokratische Begleitung spezifisch den Intention-Behavior Gap (Sheeran, 2002) überbrückt: nicht durch Wissensvermittlung, sondern durch Handlungsplanung und Reflexion auf vorhandenes, nicht umgesetztes Wissen.
+Diese Frage adressiert das didaktische Kernproblem: Sokratik bedeutet, dass Erkenntnisse durch den Lernenden selbst entstehen — ein KI-System, das diesen Prozess zu stark vorstrukturiert, widerspricht dem Prinzip methodisch. Die Arbeit untersucht, welche Interaktionsarchitektur (drei konfigurierbare Charaktermodi: Begleitend, Konfrontierend, Perspektivwechselnd), welches Prompt-Design und welche Sessionsequenzierung dieses Gleichgewicht herzustellen vermögen — und wie sokratische Begleitung spezifisch den Intention-Behavior Gap (Sheeran, 2002) überbrückt: nicht durch Wissensvermittlung, sondern durch Handlungsplanung und Reflexion auf vorhandenes, nicht umgesetztes Wissen.
 
 **FF2 — Neuroadaptive Personalisierung unter DSGVO-Bedingungen:**  
 Welche Formen neuroadaptiver Personalisierung sind in einem DSGVO-konformen System technisch umsetzbar und für Lernende akzeptabel?
@@ -65,33 +65,25 @@ Drittens die Durchführung einer explorativen Pilotstudie (N ≈ 20) mit Prä/Po
 
 ## 1.3 Aufbau der Arbeit
 
-Die vorliegende Arbeit gliedert sich in sieben Kapitel und folgt der im Exposé vorgeschlagenen und mit dem Betreuer abgestimmten Gliederung (Exposé § 1.10). Das Exposé sah fünf inhaltliche Kapitel vor; die tatsächliche Umsetzung hat Kapitel 4 (Methodisches Vorgehen) in drei thematisch fokussierte Detaildokumente ausdifferenziert, die gemeinsam dieses Kapitel bilden. Diese Erweiterung ist begründet und im Rahmen der mit dem Betreuer abgestimmten Gliederung dokumentiert.
+**Kapitel 1** legt Forschungslücke, Forschungsfragen und Zielsetzung dar und klärt die terminologischen Grundlagen zu „neuroadaptiv" und „Lernbegleitung"; der Interessenkonflikt wird hier deklariert.
 
-**Kapitel 1** legt die Forschungslücke, die Zielsetzung, die drei Forschungsfragen und den Aufbau der Arbeit dar. Es klärt die terminologischen Grundlagen (§ 1.1, Begriffsklärung zu „neuroadaptiv" und „Lernbegleitung"), beschreibt das DSR-Forschungsparadigma und deklariert den Interessenkonflikt.
+**Kapitel 2** erarbeitet das theoretische Fundament: selbstreguliertes Lernen, Selbstwirksamkeitserwartung (Bandura, 1997; Schwarzer & Jerusalem, 1995), motivationale Lernstrategien (MSLQ; Pintrich et al., 1991, 1993), sokratische Didaktik, kognitives Stressmodell (Lazarus, 1993), Flow und computational empathy sowie aktuelle Forschung zu LLMs im Bildungskontext.
 
-**Kapitel 2 — Theoretische Grundlagen** erarbeitet die wissenschaftlichen Fundamente: selbstreguliertes Lernen und Selbstwirksamkeitserwartung (Bandura, 1997; Schwarzer & Jerusalem, 1995), motivationale Lernstrategien (MSLQ; Pintrich et al., 1991, 1993), sokratische Didaktik, Stress und kognitive Bewertung (Lazarus, 1993), computational empathy (Decety & Jackson, 2004), Flow-Kalibrierung (Oliveira & Hamari, 2024) sowie aktuelle Forschung zu LLMs im Bildungskontext. Das Kapitel entspricht Exposé-Kapitel 2.
+**Kapitel 3** dokumentiert den konzeptionellen Entwurf von KAIA: Designanforderungen aus den wissenschaftlichen Spannungsfeldern, Systemarchitektur, sokratische Adaptionslogik, Gedächtnislayer und Compliance-Design.
 
-**Kapitel 3 — Konzeption** dokumentiert den konzeptionellen Entwurf des KAIA-Systems: Designanforderungen aus den drei wissenschaftlichen Spannungsfeldern, Minimum Viable Architecture, textbasierte Zustandserkennung, sokratische Adaptionslogik und Flow-Kalibrierung, Gedächtnis-Layer (pgvector) sowie Compliance-Design (DSGVO-Artt. 15–21, EU AI Act). Das Kapitel entspricht Exposé-Kapitel 3.
+**Kapitel 4** umfasst das gesamte methodische Vorgehen: technischen Implementierungsbericht des Prototyps, LLM-Evaluationsbericht (Crash-Persona-Simulation, Eval-Matrix, Modellvergleich) sowie Studiendesign und Pilotstudie-Protokoll.
 
-**Kapitel 4 — Methodisches Vorgehen** umfasst das gesamte methodische Vorgehen der Arbeit, gegliedert in drei thematische Dokumente: (4a) den technischen Implementierungsbericht des Prototyps einschließlich DSR-Rahmung und Tech-Stack; (4b) den ausführlichen LLM-Evaluationsbericht (§ 4.2.1: Crash-Persona-Simulation, Eval-Matrix, Modellvergleich); sowie (4c) das Studiendesign und Pilotstudie-Protokoll (§§ 4.2.3–4.4: Stichprobe, Messinstrumente, Datenerhebung, Auswertungsverfahren). Das Kapitel entspricht Exposé-Kapitel 4; die Aufteilung in Detaildokumente trägt dem Umfang des DSR-Artefakts Rechnung.
+**Kapitel 5** stellt die empirischen Befunde der Pilotstudie dar und wird nach Studienabschluss (geplant: 29. August 2026) fertiggestellt.
 
-**Kapitel 5 — Ergebnisse** stellt die empirischen Befunde der Pilotstudie dar: technische Validierung des Systems, GSE Prä/Post-Messung und thematische Analyse der abschließenden Interviews. Das Kapitel wird nach Studienabschluss (geplant: 29. August 2026) fertiggestellt. Das Kapitel entspricht Exposé-Kapitel 5.
+**Kapitel 6** diskutiert die Ergebnisse, beantwortet die drei Forschungsfragen und reflektiert Limitationen.
 
-**Kapitel 6 — Diskussion** reflektiert die Ergebnisse vor dem Hintergrund der theoretischen Grundlagen, beantwortet die drei Forschungsfragen, diskutiert Limitationen (darunter den Interessenkonflikt, die Stichprobengröße und die terminologischen Grenzen des „neuroadaptiven" Ansatzes) und leitet Implikationen für Forschung und Praxis ab. Das Kapitel entspricht Exposé-Kapitel 6.
-
-**Kapitel 7 — Fazit und Ausblick** fasst die Erkenntnisse der Arbeit zusammen und skizziert den Weg zu einer Hauptstudie. Das Kapitel entspricht Exposé-Kapitel 7.
+**Kapitel 7** fasst die Erkenntnisse zusammen und skizziert den Weg zur Hauptstudie.
 
 ---
 
 ## 1.4 Methodik: Design Science Research
 
-Die Arbeit folgt dem Paradigma des Design Science Research (DSR) nach Hevner et al. (2004). DSR verbindet die Konstruktion eines nützlichen Artefakts mit der Gewinnung wissenschaftlichen Wissens über seine Gestaltungsprinzipien. Im Gegensatz zu rein explanatorischer Forschung steht beim DSR die Frage im Vordergrund: Wie muss ein System beschaffen sein, um in einem definierten Kontext wirksam zu sein?
-
-Für KAIA bedeutet dies konkret die Umsetzung der drei DSR-Zyklen nach Hevner (2007):
-
-- **Relevance Cycle:** Die Anforderungen entstammen der lernpsychologischen Forschung zu Selbstregulation, Stresserleben und Selbstwirksamkeit sowie dem praktischen Bedarf nach DSGVO-konformen KI-Tutorsystemen im deutschsprachigen Hochschulraum.
-- **Design Cycle:** Iterative Entwicklung des KAIA-Prototyps über mehrere Versionen der Session-Architektur. Die dritte Version (Session-Architektur v3) implementiert persistente Nutzerprofile auf MSLQ-Basis, kumulatives semantisches Gedächtnis (pgvector) und ein versioniertes Prompt-Management-System mit Jinja2-Templates.
-- **Rigor Cycle:** Theoretische Fundierung in Lernpsychologie (Lazarus, 1993; Kalyuga, 2007; Teigen, 1994), Didaktik (sokratische Methode, Bloom'sche Taxonomie; Anderson & Krathwohl, 2001), Empathieforschung (Decety & Jackson, 2004) und Flow-Theorie (Oliveira & Hamari, 2024).
+Die Arbeit folgt dem Paradigma des Design Science Research (DSR) nach Hevner et al. (2004). DSR verbindet die Konstruktion eines nützlichen Artefakts mit der Gewinnung wissenschaftlichen Wissens über seine Gestaltungsprinzipien — im Gegensatz zu rein explanatorischer Forschung steht nicht die Erklärung einer gegebenen Realität im Vordergrund, sondern die Frage: Wie muss ein System beschaffen sein, um in einem definierten Kontext wirksam zu sein? DSR operiert über drei iterative Zyklen (Hevner, 2007): Der Relevance Cycle verankert Anforderungen in der lernpsychologischen Forschung und im Bedarf nach DSGVO-konformen KI-Tutorsystemen im deutschsprachigen Hochschulraum; der Design Cycle steuert die iterative Prototypenentwicklung; der Rigor Cycle sichert die theoretische Fundierung in Lernpsychologie, Didaktik und KI-Forschung.
 
 Das DSR-Paradigma ist für diese Arbeit besonders geeignet, weil der Forschungsgegenstand — ein neuartiges KI-Lernsystem — nicht a priori existiert, sondern erst durch den Entwurfsprozess konstituiert wird. Erkenntnisse entstehen iterativ aus Entwurf, Implementierung, Test und Reflexion; die Trennung zwischen Forschung und Entwicklung ist dabei strukturell aufgehoben, nicht methodisch ignoriert.
 
@@ -119,7 +111,7 @@ Die folgenden Abgrenzungen sind für das Verständnis dieser Arbeit konstitutiv:
 
 Die Verfasserin dieser Arbeit ist gleichzeitig in drei Rollen tätig: als **Entwicklerin** des Systems, als **Forscherin** der Pilotstudie und als **potenzielle Kommerzialisiererin** einer späteren Produktversion. Dieser dreifache Interessenkonflikt ist in Übereinstimmung mit den Standards wissenschaftlicher Integrität (Deutsche Forschungsgemeinschaft, 2022) offenzulegen und zu reflektieren.
 
-Die Doppelrolle Entwicklerin/Forscherin bringt methodische Risiken mit sich: Confirmation Bias bei der Interpretation der Ergebnisse, Selektivität bei der Berichterstattung von Befunden, und eine mögliche unbewusste Beeinflussung des Studiendesigns zugunsten erwarteter Ergebnisse. Das Potenzial einer späteren Kommerzialisierung verstärkt diesen Anreiz strukturell.
+Die Doppelrolle Entwicklerin/Forscherin bringt methodische Risiken mit sich: Confirmation Bias bei der Interpretation der Ergebnisse, Selektivität bei der Berichterstattung von Befunden und eine mögliche unbewusste Beeinflussung des Studiendesigns zugunsten erwarteter Ergebnisse. Das Potenzial einer späteren Kommerzialisierung verstärkt diesen Anreiz strukturell.
 
 **Konsequenzen für das Forschungsdesign:** Die Pilotstudie ist bewusst explorativ angelegt und erhebt keinen Anspruch auf kausale Wirksamkeitsnachweise. Alle Messinstrumente sind validierte, extern entwickelte Skalen (GSE: Schwarzer & Jerusalem, 1995; MSLQ: Pintrich et al., 1991). Die Befunddarstellung erfolgt unter expliziter Benennung der methodischen Einschränkungen, die sich aus dem Rollenmix ergeben. Negative und neutrale Befunde werden gleichwertig berichtet.
 

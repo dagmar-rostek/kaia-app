@@ -20,7 +20,7 @@ Die Wahl von DSR gegenüber klassisch-empirischen Ansätzen ist inhaltlich begr�
 Hevner (2007) beschreibt DSR als Dreizyklus-Modell mit drei interagierenden Zyklen:
 
 - **Relevance-Zyklus:** Verankerung im Anwendungskontext. Für KAIA: Masterstudierende mit Lernblockaden im selbstorganisierten Lernen, insbesondere der Knowing-Doing Gap (Pfeffer & Sutton, 2000) zwischen vorhandenem Wissen und tatsächlich verändertem Verhalten.
-- **Rigor-Zyklus:** Fundierung in der wissenschaftlichen Wissensbasis. Für KAIA: sokratische Gesprächsführung, Selbstwirksamkeitstheorie (Bandura, 1997), Cognitive Load Theory (Sweller, 1988), Implementation Intention (Gollwitzer, 1999), Flow-Kalibrierung (Oliveira & Hamari, 2024) und DSGVO-Anforderungen.
+- **Rigor-Zyklus:** Fundierung in der wissenschaftlichen Wissensbasis. Für KAIA: sokratische Gesprächsführung, Selbstwirksamkeitstheorie (Bandura, 1997), Cognitive Load Theory (Sweller, 1988), Implementation Intention (Gollwitzer, 1999), Flow-Kalibrierung (Oliveira & Hamari, 2025) und DSGVO-Anforderungen.
 - **Design-Zyklus:** Iterative Konstruktion und Evaluation des Artefakts. Für KAIA: drei Entwicklungsiterationen mit eingebetteten Evaluationsschritten (Abschnitt 4.1.3).
 
 ### 4.1.3 Die drei Entwicklungsiterationen
