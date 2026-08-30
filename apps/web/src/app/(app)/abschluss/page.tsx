@@ -540,7 +540,7 @@ export default function AbschlussPage() {
           <p className="text-xs font-semibold text-indigo-500 uppercase tracking-wider">Abschluss</p>
           <h1 className="text-3xl font-bold tracking-tight">Glückwunsch, {displayName}.</h1>
           <p className="text-muted-foreground leading-relaxed">
-            Du hast 10 Sessions mit KAIA abgeschlossen.
+            Du hast {sessions.length} {sessions.length === 1 ? "Session" : "Sessions"} mit KAIA abgeschlossen.
             {user?.learning_topic && (
               <> Dein Lernthema war: <span className="text-foreground font-medium">{user.learning_topic}</span>.</>
             )}
@@ -751,7 +751,7 @@ export default function AbschlussPage() {
         {sessions.length > 0 && (
           <section className="space-y-4">
             <h2 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
-              Deine 10 Sessions
+              Deine {sessions.length} {sessions.length === 1 ? "Session" : "Sessions"}
             </h2>
             <div className="space-y-3">
               {sessions.map((s) => (

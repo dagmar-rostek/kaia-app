@@ -905,7 +905,7 @@ def _build_report_html(
 
   <div class="cover">
     <h1>KAIA Abschlussbericht</h1>
-    <p class="subtitle">Persönlicher Lernbericht · 10 Sessions</p>
+    <p class="subtitle">Persönlicher Lernbericht · {len(sessions)} {"Session" if len(sessions) == 1 else "Sessions"}</p>
     <p class="meta">
       Name: <strong>{_h(display_name)}</strong><br>
       Lernthema: <strong>{_h(user.learning_topic or "—")}</strong><br>
