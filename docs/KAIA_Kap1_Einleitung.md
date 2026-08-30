@@ -1,123 +1,53 @@
 # Kapitel 1 — Einleitung
 
-**Version:** 3.0  
-**Stand:** 19. August 2026  
-**Geplanter Umfang:** ca. 1.800 Wörter
+**Version:** 4.0 — Finale Pre-Results-Freeze-Fassung
+**Stand:** 28. August 2026
 
 ---
 
-## 1.1 Forschungslücke und Spannungsfelder
+## 1.1 Problemstellung und wissenschaftliche Relevanz
 
-Die Verbreitung großer Sprachmodelle (Large Language Models, LLMs) hat in den vergangenen drei Jahren eine neue Phase in der Diskussion über KI-gestützte Bildungstechnologien eingeleitet. Systeme wie ChatGPT (OpenAI, 2022), Khanmigo (Khan Academy, 2023) oder Google Gemini (Google, 2024) werden zunehmend als tutorielle Begleiter im Selbststudium eingesetzt — häufig ohne empirische Validierung ihrer pädagogischen Wirksamkeit und ohne hinreichende Berücksichtigung datenschutzrechtlicher Anforderungen, wie sie die Datenschutz-Grundverordnung (DSGVO) und der EU-AI-Act (European Parliament, 2024) stellen (Holmes et al., 2022; Zawacki-Richter et al., 2019).
+Generative Sprachmodelle erweitern die Möglichkeiten digitaler Lernbegleitung, weil sie offene Dialoge verarbeiten und Antworten kontextbezogen erzeugen können. Für Lernanwendungen entsteht daraus jedoch nicht automatisch ein lernförderliches System. Ein Sprachmodell kann Aufgaben erklären, Lösungen formulieren oder nächste Schritte vorgeben und damit kurzfristig Unterstützung leisten. Dieselbe Unterstützung kann jedoch den kognitiven Eigenanteil der lernenden Person reduzieren, wenn das System dauerhaft die Strukturierung, Bewertung und Lösungsbildung übernimmt. Für eine Lernbegleitung, die Selbstregulation unterstützen soll, besteht deshalb ein Gestaltungsproblem zwischen hilfreicher Adaptation und dem Erhalt eigener kognitiver Aktivität. Die Forschung zu selbstreguliertem Lernen hebt die aktive Steuerung eigener Lernprozesse hervor, während Arbeiten zur Selbstwirksamkeit die Bedeutung wahrgenommener eigener Bewältigungsfähigkeit für zielgerichtetes Handeln beschreiben (Bandura, 1997; Pintrich, 2004).
 
-Die lernpsychologische Forschung verweist dabei auf ein grundlegendes Spannungsfeld: Adaptive Systeme, die Lernende durch Inhalte führen, können Selbstwirksamkeit ebenso stärken wie untergraben. Kalyuga (2007) zeigt, dass elaborierte Scaffolding-Interventionen bei fortschreitender Expertise den Lerneffekt umkehren können — das System wird zur kognitiven Krücke statt zum Katalysator. Für den Hochschulkontext, in dem Selbstregulation und Metakognition zentrale Kompetenzziele darstellen (Zimmerman, 2002; Pintrich, 2004), ist dies besonders relevant. Ein System, das denkt, bevor der Lernende es tut, unterminiert genau das, was Hochschulbildung fördern soll.
+Für das vorliegende Forschungsproblem reicht es daher nicht aus, einen allgemein leistungsfähigen Chatbot bereitzustellen. Erforderlich ist eine Gesprächslogik, die Unterstützung an die konkrete Interaktion anpasst und zugleich vermeidet, die zentrale Denkleistung systematisch zu übernehmen. Scaffolding beschreibt Unterstützung, die an den aktuellen Bedarf angepasst und mit wachsender Selbstständigkeit zurückgenommen wird (Wood et al., 1976). Für sprachmodellbasierte Systeme stellt sich zusätzlich die Frage, wie eine solche Anpassung erfolgen kann, wenn keine validierte psychologische Diagnostik und keine physiologische Zustandserfassung vorliegen. Das in dieser Arbeit entwickelte Forschungsartefakt nutzt deshalb ausschließlich textbasierte Gesprächssignale als heuristische Adaptionsgrundlage. Hinweise auf mögliche Frustration, Unsicherheit oder positive Aktivierung können die Auswahl der Gesprächsstrategie beeinflussen. Aus diesen Signalen wird jedoch kein Anspruch auf eine valide Messung emotionaler oder psychologischer Zustände abgeleitet.
 
-Hinzu kommt die Rolle des subjektiven Stresserlebens. Lazarus (1993) zeigt in seiner kognitiv-transaktionalen Stresstheorie, dass nicht objektive Anforderungen, sondern deren subjektive Bewertung — die kognitive Appraisal-Sequenz — das Stresserleben und damit das Lernverhalten maßgeblich prägen (Lazarus & Folkman, 1984). Ein Lernbegleiter, der situative Stresszustände ignoriert und rein inhaltsgetrieben operiert, verfehlt damit einen wesentlichen Einflusskanal auf Lernerfolg und Motivation. Teigen (1994) ergänzt mit dem Yerkes-Dodson-Prinzip, dass sowohl Unter- als auch Überforderung den Lerntransfer hemmen; ein optimal kalibriertes Aktivierungsniveau ist Voraussetzung für nachhaltiges Lernen.
+Der im festgelegten Titel verwendete Begriff der neuroadaptiven Lernbegleitung ist vor diesem Hintergrund eng zu operationalisieren. In der Forschung zu physiologischem Computing bezeichnet Adaptation typischerweise Systeme, die physiologische oder psychophysiologische Informationen zur laufenden Systemanpassung verwenden (Fairclough, 2009). Das hier untersuchte Forschungsartefakt erhebt weder neuronale Aktivität noch physiologische Messgrößen. Neuroadaptivität bezeichnet in dieser Arbeit daher die konzeptionelle Orientierung an einer zustandsabhängigen Lernbegleitung. Ihre technische Umsetzung erfolgt ausschließlich über textbasierte Adaptionssignale und darf nicht mit neurophysiologischer Zustandserfassung gleichgesetzt werden. Diese begriffliche Begrenzung ist für die Interpretation des Systems wesentlich.
 
-Schließlich ist die Frage der Empathie in KI-Systemen zu stellen. Decety und Jackson (2004) unterscheiden zwischen affektiver und kognitiver Empathie; was in KI-Systemen erzeugt werden kann, ist — in der Tradition des Affective Computing (Picard, 1997) — eine Form von *computational empathy*: die modellierte Repräsentation emotionaler Zustände als Grundlage adaptiver Reaktionen. Ob und unter welchen Bedingungen diese Form der Empathie in tutoriellen Systemen lernförderlich wirkt, ist empirisch weitgehend ungeklärt.
+Ein zweites Gestaltungsproblem betrifft empathisches Systemverhalten. Empathie bezeichnet beim Menschen ein mehrdimensionales psychologisches Konstrukt, das nicht ohne Weiteres auf technische Systeme übertragen werden kann (Decety & Jackson, 2004). Für den Agenten wird Empathie deshalb nicht als subjektives Erleben verstanden. Gemeint ist beobachtbares Gesprächsverhalten, das Äußerungen der lernenden Person kontextsensitiv aufgreift und Tonalität sowie Unterstützungsintensität anpasst. Damit verbindet die Arbeit adaptive Gesprächsführung, sokratische Unterstützung und persistente Personalisierung zu einem Forschungsartefakt. Die wissenschaftliche Aufgabe besteht nicht darin, die Überlegenheit einer solchen Architektur vorauszusetzen, sondern ihre Designentscheidungen theoretisch zu begründen, technisch zu operationalisieren und ihr Verhalten systematisch zu evaluieren.
 
-Vor diesem Hintergrund entstand KAIA (Kinetic AI Agent) — ein empathischer KI-Lernbegleiter, der den **Knowing-Doing Gap** adressiert (Pfeffer & Sutton, 2000): die Unfähigkeit, vorhandenes Wissen konsequent in Alltagshandeln zu überführen (Sheeran, 2002). KAIA richtet sich an Menschen, die bereits wissen, was zu tun wäre, und genau dort stocken. Sokratische Gesprächsführung und Implementation Intentions (Gollwitzer, 1999) sind die methodischen Hebel.
-
-### Terminologische Grundlagen dieser Arbeit
-
-Zwei Begriffe des Titels sind terminologisch zu präzisieren, da sie in unterschiedlichen Kontexten unterschiedliche Bedeutungen tragen.
-
-**Zum Begriff „neuroadaptiv":** In dieser Arbeit bezeichnet „neuroadaptiv" die Fähigkeit des Systems, Stresssignale aus der Gesprächshistorie der Nutzenden zu erkennen und sein Antwortverhalten adaptiv an den so erschlossenen Stresszustand anzupassen. Die theoretische Grundlage bilden die kognitiv-transaktionale Stresstheorie (Lazarus & Folkman, 1984; Lazarus, 1993) sowie das Yerkes-Dodson-Prinzip (Yerkes & Dodson, 1908; Teigen, 1994), das ein optimales Aktivierungsniveau als Voraussetzung für Lernerfolg beschreibt. KAIA erkennt diesen Stresszustand ausschließlich textbasiert aus der Gesprächshistorie; das Ergebnis wird nach jeder Session als Prompt-Parameter gespeichert und beeinflusst die Kalibrierung der Folgesession. Eine ausführliche Konzeptualisierung findet sich in Kapitel 3.3 und 3.4.
-
-**Zum Begriff „Lernbegleitung":** KAIA adressiert nicht die unteren Bloom-Niveaus (Erinnern, Verstehen; Anderson & Krathwohl, 2001), sondern die höheren: Anwenden, Analysieren, Evaluieren, Erschaffen. „Lernbegleitung" meint hier den Transfer von deklarativem Wissen in konkrete Handlung — die Überwindung des Knowing-Doing Gap. Nicht das Lernen von Neuem ist KAIAs Domäne, sondern das Umsetzen des Erlernten.
+Die Forschungslücke wird entsprechend nicht über die pauschale Behauptung begründet, vergleichbare Systeme seien bislang nicht untersucht worden. Kapitel 2 zeigt vielmehr, dass Ansätze zu Selbstwirksamkeit, Selbstregulation, Scaffolding, adaptiver Unterstützung und empathischem Systemverhalten unterschiedliche Teilprobleme adressieren, deren Verbindung für das konkrete Forschungsproblem operationalisiert werden muss. Der wissenschaftliche Beitrag der Arbeit liegt deshalb auf drei Ebenen. Erstens werden diese Anforderungen in eine dokumentierte Artefaktlogik für einen sokratisch und situationsabhängig adaptierenden LLM-Agenten übersetzt. Zweitens werden technische und dialogbezogene Artefaktkriterien getrennt von psychologischen Outcomes evaluiert. Drittens ergänzt eine explorative Pilotstudie die Artefaktevaluation um reale Nutzungsdaten und eine Prä-Post-Untersuchung der allgemeinen Selbstwirksamkeitserwartung. Die Arbeit verbindet damit Designwissen, technische Verhaltensprüfung und begrenzte empirische Evidenz, ohne aus einer dieser Ebenen allein einen Wirksamkeitsnachweis abzuleiten.
 
 ---
 
 ## 1.2 Zielsetzung und Forschungsfragen
 
-Aus der in Abschnitt 1.1 skizzierten Forschungslücke leiten sich die Zielsetzung dieser Arbeit und die drei zentralen Forschungsfragen ab. Im Sinne des Design Science Research-Paradigmas (Hevner et al., 2004) sind Zielsetzung und Forschungsfragen keine unabhängigen Elemente, sondern aufeinander bezogene Komponenten eines Entwurfs-Erkenntnis-Zyklus.
+Ziel der Arbeit ist die theoriegeleitete Konzeption, prototypische Entwicklung und Evaluation eines empathisch und adaptiv gestalteten LLM-basierten Agenten für die individuelle Lernbegleitung. Das Forschungsartefakt soll Unterstützung nicht primär durch direkte Lösungsproduktion leisten, sondern durch eine sokratisch orientierte Gesprächsführung, situationsabhängige Anpassung und sitzungsübergreifende Kontextnutzung. Die Entwicklung folgt dabei keinem Anspruch auf eine bereits validierte Gesamtarchitektur. Vielmehr werden theoretische Anforderungen in konkrete Designentscheidungen überführt und anschließend auf ihre technische und dialogbezogene Umsetzung geprüft.
 
-### 1.2.1 Forschungsfragen
+Die übergeordnete Forschungsfrage lautet, wie ein LLM-basierter Agent für die individuelle Lernbegleitung so gestaltet und technisch evaluiert werden kann, dass er adaptive und sokratische Unterstützung ermöglicht, und welche explorativen Hinweise sich aus seiner Nutzung für Veränderungen der allgemeinen Selbstwirksamkeitserwartung ergeben.
 
-Aus der skizzierten Problemstellung ergeben sich drei aufeinander aufbauende Forschungsfragen:
+Zur Bearbeitung dieser Frage werden drei Teilforschungsfragen unterschieden. FF1 untersucht, wie theoretisch begründete Anforderungen an Selbstregulation, adaptive Unterstützung, sokratische Gesprächsführung und empathisches Systemverhalten in ein LLM-basiertes Forschungsartefakt übersetzt werden können. FF2 untersucht, in welchem Umfang das implementierte System die definierten Kriterien der technischen und dialogbezogenen Artefaktevaluation erfüllt. FF3 untersucht, welche Veränderungen der allgemeinen Selbstwirksamkeitserwartung innerhalb der explorativen Pilotstichprobe zwischen Prä- und Post-Messung beobachtet werden.
 
-**FF1 — Sokratische KI-Begleitung ohne Autonomieverlust:**  
-Wie kann ein KI-Lernbegleiter sokratische Gesprächsführung operationalisieren, ohne die Lernautonomie der Nutzenden zu reduzieren?
-
-Diese Frage adressiert das didaktische Kernproblem: Sokratik bedeutet, dass Erkenntnisse durch den Lernenden selbst entstehen — ein KI-System, das diesen Prozess zu stark vorstrukturiert, widerspricht dem Prinzip methodisch. Die Arbeit untersucht, welche Interaktionsarchitektur (drei konfigurierbare Charaktermodi: Begleitend, Konfrontierend, Perspektivwechselnd), welches Prompt-Design und welche Sessionsequenzierung dieses Gleichgewicht herzustellen vermögen — und wie sokratische Begleitung spezifisch den Intention-Behavior Gap (Sheeran, 2002) überbrückt: nicht durch Wissensvermittlung, sondern durch Handlungsplanung und Reflexion auf vorhandenes, nicht umgesetztes Wissen.
-
-**FF2 — Neuroadaptive Personalisierung unter DSGVO-Bedingungen:**  
-Welche Formen neuroadaptiver Personalisierung sind in einem DSGVO-konformen System technisch umsetzbar und für Lernende akzeptabel?
-
-Diese Frage verbindet den technischen Entwurf — persistentes Nutzerprofil, kumulatives Gedächtnis über pgvector-Embeddings, MSLQ-basierte motivationale Profilierung — mit den normativen Anforderungen des europäischen Datenschutzrechts. Besondere Relevanz kommt der Frage zu, wo die Grenze zwischen lernförderlicher Personalisierung und unzulässiger Profilierung im Sinne des EU-AI-Acts liegt, sowie welche Datensparsamkeitsprinzipien die Systemarchitektur strukturieren.
-
-**FF3 — LLM-Architekturvergleich:**  
-Welches der evaluierten großen Sprachmodelle zeigt unter kontrollierten Bedingungen die höchste Qualität in den Dimensionen Empathie, sokratische Gesprächsführung, Konsistenz und Crisis-Detection-Sicherheit?
-
-Diese Frage zielt auf den systematischen Vergleich von Sprachmodellen aus drei Anbietern: Claude Sonnet 4.6 und Claude Haiku 4.5 (Anthropic), GPT-4o, GPT-5.6 Terra und GPT-4.1-mini (OpenAI) sowie Mistral Large und Mistral Small (Mistral AI). Die Evaluation erfolgt über eine Crash-Persona-Simulation mit zehn definierten Testpersönlichkeiten sowie eine strukturierte Eval-Matrix mit acht Metriken (M1–M8). Der Vergleich schließt eine Bewertung der datenschutzrechtlichen Eignung der Anbieter für einen EU-Einsatzkontext ein. Für den Produktionsbetrieb der Pilotstudie wurde eine eigenständige Modellentscheidung getroffen: Die Pilotstudie läuft ausschließlich auf GPT-4.1-mini; der LLM-Vergleich als Antwort auf FF3 wird als eigenständiger Evidenzstrang über die Eval-Matrix adressiert (vgl. Kapitel 4b). Die Begründung der Modellentscheidung findet sich in Kapitel 4b, Abschnitt 5.2.6 (ADR-003).
-
-### 1.2.2 Zielsetzung
-
-Ziel dieser Arbeit ist die Entwicklung, Implementierung und explorative Evaluation eines sokratisch konfigurierten KI-Lernbegleiters (KAIA) nach den Prinzipien des Design Science Research (Hevner et al., 2004). Im Mittelpunkt stehen drei komplementäre Ziele:
-
-Erstens die Konstruktion eines funktionsfähigen Prototyps als Design-Artefakt: eine DSGVO-konforme Webanwendung, die sokratische Gesprächsführung mit neuroadaptiver Personalisierung verbindet. Der Prototyp ist nicht als Proof-of-Concept angelegt, sondern als studientaugliches System mit vollständigem Consent-Flow, Datenlöschung auf Anfrage und prüfbarer Serverinfrastruktur in der EU.
-
-Zweitens eine systematische Evaluation der verwendeten LLMs hinsichtlich pädagogischer Qualitätsmerkmale — als Grundlage für begründete Modellentscheidungen in Folgestudien und als Beitrag zur noch dünnen empirischen Literatur zu LLM-Qualität im Bildungskontext.
-
-Drittens die Durchführung einer explorativen Pilotstudie (N ≈ 20) mit Prä/Post-Messung allgemeiner Selbstwirksamkeitserwartung (GSE; Schwarzer & Jerusalem, 1995) und motivationaler Lernstrategien (MSLQ; Pintrich et al., 1991, 1993). Die Studie ist als Pilotstudie angelegt; statistisch belastbare Kausalaussagen sind bei der geplanten Stichprobengröße nicht möglich und nicht intendiert. Ziel ist die Gewinnung erster Hinweise auf Wirkrichtungen sowie die methodische Vorbereitung einer späteren Hauptstudie.
+Die drei Fragen besitzen unterschiedliche Erkenntnisansprüche. FF1 richtet sich auf die Konstruktion und Begründung des Artefakts. FF2 betrifft die spezifizierte Funktionsweise des implementierten Systems. FF3 betrifft die empirische Beobachtung innerhalb einer kleinen Pilotstichprobe. Aus FF3 wird in Kapitel 2 eine gerichtete Forschungsannahme zur Veränderung des GSE-Gesamtscores abgeleitet. Aufgrund des einarmigen Prä-Post-Designs erlaubt eine beobachtete Veränderung jedoch keine eindeutige kausale Zuschreibung zum Agenten.
 
 ---
 
-## 1.3 Aufbau der Arbeit
+## 1.3 Abgrenzung der Untersuchung
 
-**Kapitel 1** legt Forschungslücke, Forschungsfragen und Zielsetzung dar und klärt die terminologischen Grundlagen zu „neuroadaptiv" und „Lernbegleitung"; der Interessenkonflikt wird hier deklariert.
+Die Arbeit untersucht einen Forschungsprototyp für individuelle Lernbegleitung und kein therapeutisches, diagnostisches oder klinisches System. Textbasierte Gesprächssignale werden als heuristische Hinweise für die Auswahl einer Gesprächsstrategie verwendet. Sie sind keine validierten Messungen von Emotion, Stress, Persönlichkeit oder anderen psychologischen Zuständen. Entsprechend werden weder psychologische Diagnosen gestellt noch Aussagen über neuronale Zustände der Nutzenden getroffen.
 
-**Kapitel 2** erarbeitet das theoretische Fundament: selbstreguliertes Lernen, Selbstwirksamkeitserwartung (Bandura, 1997; Schwarzer & Jerusalem, 1995), motivationale Lernstrategien (MSLQ; Pintrich et al., 1991, 1993), sokratische Didaktik, kognitives Stressmodell (Lazarus, 1993), Flow und computational empathy sowie aktuelle Forschung zu LLMs im Bildungskontext.
+Auch die empirische Reichweite ist begrenzt. Die Pilotstudie untersucht die allgemeine Selbstwirksamkeitserwartung mit der GSE als primäres quantitatives Outcome. Problemlösekompetenz, Handlungskontrolle, Flow und metakognitive Regulation werden nicht als eigenständige validierte Outcomes geprüft. Das ursprünglich im Exposé vorgesehene Abschlussinterview und die sitzungsspezifische Selbstberichtsmessung für eine zweite Forschungsannahme wurden im finalen Erhebungsdesign nicht umgesetzt. Diese Planabweichungen werden in Kapitel 4 transparent dokumentiert und nicht durch nachträgliche Ersatzoperationalisierungen verdeckt.
 
-**Kapitel 3** dokumentiert den konzeptionellen Entwurf von KAIA: Designanforderungen aus den wissenschaftlichen Spannungsfeldern, Systemarchitektur, sokratische Adaptionslogik, Gedächtnislayer und Compliance-Design.
+Das Studiendesign umfasst keine Kontrollgruppe und ist nicht als konfirmatorischer Wirksamkeitsnachweis angelegt. Veränderungen zwischen Prä- und Post-Messung können daher neben der Nutzung des Agenten auch durch Zeit, Wiederholungsmessung, Erwartungen, parallele Erfahrungen oder andere nicht kontrollierte Einflüsse erklärt werden. Die Ergebnisse werden entsprechend als explorative Evidenz innerhalb der untersuchten Stichprobe interpretiert. Eine Generalisierung auf andere Populationen oder ein Nachweis langfristiger Transferwirkungen ist nicht Gegenstand der Untersuchung.
 
-**Kapitel 4** umfasst das gesamte methodische Vorgehen: technischen Implementierungsbericht des Prototyps, LLM-Evaluationsbericht (Crash-Persona-Simulation, Eval-Matrix, Modellvergleich) sowie Studiendesign und Pilotstudie-Protokoll.
-
-**Kapitel 5** stellt die empirischen Befunde der Pilotstudie dar und wird nach Studienabschluss (geplant: 29. August 2026) fertiggestellt.
-
-**Kapitel 6** diskutiert die Ergebnisse, beantwortet die drei Forschungsfragen und reflektiert Limitationen.
-
-**Kapitel 7** fasst die Erkenntnisse zusammen und skizziert den Weg zur Hauptstudie.
+Die rechtliche und ethische Gestaltung wird als Bestandteil der Artefaktentwicklung berücksichtigt. Die Arbeit beansprucht jedoch keine formale Zertifizierung vollständiger Rechtskonformität. Datenschutzrechtliche und regulatorische Anforderungen werden in Designentscheidungen übersetzt und deren Umsetzung soweit dokumentierbar geprüft. Festgestellte Abweichungen werden als Limitationen der prototypischen Implementierung ausgewiesen.
 
 ---
 
-## 1.4 Methodik: Design Science Research
+## 1.4 Forschungslogik und Aufbau der Arbeit
 
-Die Arbeit folgt dem Paradigma des Design Science Research (DSR) nach Hevner et al. (2004). DSR verbindet die Konstruktion eines nützlichen Artefakts mit der Gewinnung wissenschaftlichen Wissens über seine Gestaltungsprinzipien — im Gegensatz zu rein explanatorischer Forschung steht nicht die Erklärung einer gegebenen Realität im Vordergrund, sondern die Frage: Wie muss ein System beschaffen sein, um in einem definierten Kontext wirksam zu sein? DSR operiert über drei iterative Zyklen (Hevner, 2007): Der Relevance Cycle verankert Anforderungen in der lernpsychologischen Forschung und im Bedarf nach DSGVO-konformen KI-Tutorsystemen im deutschsprachigen Hochschulraum; der Design Cycle steuert die iterative Prototypenentwicklung; der Rigor Cycle sichert die theoretische Fundierung in Lernpsychologie, Didaktik und KI-Forschung.
+Die Arbeit folgt einer Design-Science-Forschungslogik, in der die Entwicklung und Evaluation eines Artefakts miteinander verbunden werden (Hevner et al., 2004; Hevner, 2007). Kapitel 2 entwickelt die theoretischen Grundlagen und grenzt die zentralen Konstrukte voneinander ab. Daraus werden Anforderungen an adaptive Unterstützung, Selbstregulation, empathisches Systemverhalten und die empirische Untersuchung der Selbstwirksamkeit abgeleitet. Kapitel 3 übersetzt diese Anforderungen in die Konzeption des Forschungsartefakts. Beschrieben werden insbesondere Architektur, textbasierte Adaptionssignale, sokratische Gesprächslogik, persistente Personalisierung und Compliance-Design.
 
-Das DSR-Paradigma ist für diese Arbeit besonders geeignet, weil der Forschungsgegenstand — ein neuartiges KI-Lernsystem — nicht a priori existiert, sondern erst durch den Entwurfsprozess konstituiert wird. Erkenntnisse entstehen iterativ aus Entwurf, Implementierung, Test und Reflexion; die Trennung zwischen Forschung und Entwicklung ist dabei strukturell aufgehoben, nicht methodisch ignoriert.
-
----
-
-## 1.5 Abgrenzung
-
-Die folgenden Abgrenzungen sind für das Verständnis dieser Arbeit konstitutiv:
-
-**Kein klinisches System.** KAIA ist nicht für die Begleitung psychischer Erkrankungen konzipiert und ersetzt keine psychotherapeutische Behandlung. Die implementierte Crisis-Detection leitet bei entsprechenden Signalen an professionelle Hilfsangebote weiter (Telefonseelsorge 0800 111 0 111); eine inhaltliche Krisenintervention findet nicht statt. Nutzende mit akuten psychischen Erkrankungen sind aus der Studie ausgeschlossen.
-
-**Kein repräsentatives Experiment.** Die Pilotstudie mit N ≈ 20 Personen aus dem persönlichen Netzwerk der Forscherin ermöglicht keine statistisch generalisierbaren Kausalaussagen. Eine Stichprobengröße dieser Größenordnung erlaubt keine ausreichende statistische Power für inferenzstatistische Schlüsse; die Ergebnisse sind als explorativ zu verstehen. Power-Analysen (G*Power) dienen der Vorbereitung einer Folgestudie, nicht der Validierung der vorliegenden.
-
-**Kein vollständiges adaptives Tutorsystem.** KAIA implementiert keine automatisierte Leistungsdiagnose, keine domänenspezifische Wissensbasis und kein vollständiges Intelligent Tutoring System (ITS) im Sinne von VanLehn (2011). Die Personalisierung basiert auf motivationalen Profilen (MSLQ) und semantischem Gedächtnis; eine kompetenzdiagnostische Modellierung des Lernenden findet nicht statt.
-
-**Kein Wissensvermittlungssystem.** KAIA ist nicht für den Aufbau von Fachwissen konzipiert. Zielgruppe sind Menschen mit vorhandenem Wissen in einem Lernbereich, das im Alltag nicht konsequent umgesetzt wird (Knowing-Doing Gap; Pfeffer & Sutton, 2000). Wer grundlegendes Domänenwissen erst erwerben muss, ist nicht KAIAs primäre Zielgruppe.
-
-**Kein generisches Mehrsprachensystem.** KAIA ist explizit für den deutschsprachigen Einsatz konfiguriert. Englischsprachige Nutzung ist bis zum Abschluss der Thesis nicht vorgesehen; alle Prompts, Benutzeroberflächen und Studienunterlagen sind in deutscher Sprache verfasst.
-
-**Kein Produktivsystem.** Der Prototyp ist für eine definierte Pilotstudie konzipiert. Ein öffentliches Release für nicht-studienteilnehmende Nutzerinnen und Nutzer erfolgt erst nach Abschluss der Thesis und nach einer ethischen Neubewertung im Rahmen einer möglichen Kommerzialisierung.
-
----
-
-## 1.6 Interessenkonflikt
-
-Die Verfasserin dieser Arbeit ist gleichzeitig in drei Rollen tätig: als **Entwicklerin** des Systems, als **Forscherin** der Pilotstudie und als **potenzielle Kommerzialisiererin** einer späteren Produktversion. Dieser dreifache Interessenkonflikt ist in Übereinstimmung mit den Standards wissenschaftlicher Integrität (Deutsche Forschungsgemeinschaft, 2022) offenzulegen und zu reflektieren.
-
-Die Doppelrolle Entwicklerin/Forscherin bringt methodische Risiken mit sich: Confirmation Bias bei der Interpretation der Ergebnisse, Selektivität bei der Berichterstattung von Befunden und eine mögliche unbewusste Beeinflussung des Studiendesigns zugunsten erwarteter Ergebnisse. Das Potenzial einer späteren Kommerzialisierung verstärkt diesen Anreiz strukturell.
-
-**Konsequenzen für das Forschungsdesign:** Die Pilotstudie ist bewusst explorativ angelegt und erhebt keinen Anspruch auf kausale Wirksamkeitsnachweise. Alle Messinstrumente sind validierte, extern entwickelte Skalen (GSE: Schwarzer & Jerusalem, 1995; MSLQ: Pintrich et al., 1991). Die Befunddarstellung erfolgt unter expliziter Benennung der methodischen Einschränkungen, die sich aus dem Rollenmix ergeben. Negative und neutrale Befunde werden gleichwertig berichtet.
-
-**Transparenz gegenüber Teilnehmenden:** Alle Studienteilnehmenden werden im Rahmen des Multi-Step-Consents über die Doppelrolle der Forscherin informiert. Die Teilnahmevereinbarung enthält einen expliziten Hinweis darauf, dass die Forscherin ein persönliches Interesse an positiven Studienergebnissen haben könnte. Die Teilnahme ist freiwillig und ohne Angabe von Gründen jederzeit widerrufbar, ohne dass der Widerruf Konsequenzen für das Verhältnis zur Forscherin hat.
-
-**Datenhaltung:** Sämtliche Nutzerdaten werden ausschließlich auf EU-Servern (Hetzner Cloud, Helsinki) gespeichert. Nach Abschluss der Studie werden alle personenbezogenen Daten entsprechend der dokumentierten Löschfristen entfernt. Für die LLM-Evaluation wurden Datenverarbeitungsverträge (DPAs) mit Anthropic, OpenAI und Mistral AI abgeschlossen. Im Produktivsystem der Pilotstudie werden ausschließlich OpenAI (GPT-4.1-mini) und Mistral AI eingesetzt; der Anthropic-DPA ist nach Entfernung des Claude-Modells aus dem Produktionssystem (04. August 2026) für die laufende Studie nicht mehr aktiv. Während der Studienlaufzeit sind Prompt- und Schemaänderungen technisch gesperrt (Study-Lock ab 08. August 2026).
+Kapitel 4 beschreibt das methodische Vorgehen. Es trennt die Design-Science-Entwicklung von der technischen und dialogbezogenen Evaluation sowie von der explorativen Pilotstudie. Die technische Evaluation prüft das System anhand synthetischer Personas und projektspezifischer Kriterien. Die Pilotstudie untersucht reale Nutzungsdaten und die Veränderung der allgemeinen Selbstwirksamkeitserwartung zwischen Prä- und Post-Messung. Kapitel 5 berichtet die Ergebnisse dieser Evaluationsstränge getrennt. Kapitel 6 interpretiert die Befunde im Verhältnis zu den Forschungsfragen und diskutiert alternative Erklärungen, methodische Grenzen und Implikationen. Kapitel 7 fasst den Beitrag der Arbeit zusammen und leitet den weiteren Forschungsbedarf ab.
 
 ---
 
