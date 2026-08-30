@@ -213,42 +213,42 @@ if (!is.null(df_gse)) {
   # 4.2 Wilcoxon-Vorzeichenrangtest (gerichtet: Post > Prä)
   cat("\n  Wilcoxon-Vorzeichenrangtest:\n")
 
-  # Exakter Test mit coin (für kleine N)
-  wt_exact <- wilcox_test(
-    data      = df_gse_complete,
-    formula   = gse_post - gse_pre ~ 1,  # gepaarter Test als Differenz
-    mu        = 0,
-    alternative = "greater",             # H1: gerichtet
+  # Differenzwerte berechnen
+  df_gse_complete <- df_gse_complete |>
+    mutate(diff = gse_post - gse_pre)
+
+  # Exakter Test mit coin::wilcoxsign_test (gepaart, einseitig)
+  wt_exact <- coin::wilcoxsign_test(
+    gse_post ~ gse_pre,
+    data         = df_gse_complete,
+    alternative  = "greater",
     distribution = "exact"
   )
 
-  # Alternativ: rstatix für einfache Ausgabe
-  wt_rstat <- df_gse_complete |>
-    wilcox_test(gse_post ~ 1,
-                mu = mean(df_gse_complete$gse_pre),
-                alternative = "greater")
-
   # Effektgröße: matched-ranks biserial correlation (NICHT Cohen's d)
-  eff <- df_gse_complete |>
-    wilcox_effsize(
-      formula     = gse_post - gse_pre ~ 1,
-      alternative = "greater"
-    )
+  eff <- rstatix::wilcox_effsize(
+    data        = df_gse_complete,
+    formula     = diff ~ 1,
+    alternative = "greater"
+  )
 
-  cat(sprintf("  W  = %.0f\n", statistic(wt_exact)))
-  cat(sprintf("  p  = %.4f (einseitig, exakt)\n", pvalue(wt_exact)))
+  W_stat <- as.numeric(coin::statistic(wt_exact))
+  p_val  <- as.numeric(coin::pvalue(wt_exact))
+
+  cat(sprintf("  W  = %.2f\n", W_stat))
+  cat(sprintf("  p  = %.4f (einseitig, exakt)\n", p_val))
   cat(sprintf("  r  = %.3f (matched-ranks biserial correlation)\n", eff$effsize))
   cat(sprintf("  Interpretation Effektgröße: %s\n", eff$magnitude))
 
   # Tab 5.3 — Testergebnis
   tab_wilcox <- tibble(
-    Test             = "Wilcoxon-Vorzeichenrangtest",
-    Richtung         = "einseitig (Post > Prä)",
-    N                = n_gse,
-    W                = round(statistic(wt_exact), 0),
-    p_einseitig_exakt = round(pvalue(wt_exact), 4),
-    r_biserial       = round(eff$effsize, 3),
-    Effektgroesse    = as.character(eff$magnitude)
+    Test              = "Wilcoxon-Vorzeichenrangtest",
+    Richtung          = "einseitig (Post > Prä)",
+    N                 = n_gse,
+    W                 = round(W_stat, 2),
+    p_einseitig_exakt = round(p_val, 4),
+    r_biserial        = round(eff$effsize, 3),
+    Effektgroesse     = as.character(eff$magnitude)
   )
   write.csv(tab_wilcox, file.path(OUTPUT_DIR, "tab_5_3_wilcoxon.csv"), row.names = FALSE)
 
@@ -262,11 +262,8 @@ if (!is.null(df_gse)) {
     mutate(
       zeitpunkt = factor(zeitpunkt, levels = c("gse_pre", "gse_post"),
                          labels = c("Prä", "Post")),
-      delta_dir = ifelse(df_gse_complete$delta[match(username, df_gse_complete$username)] > 0,
-                         "Zunahme", ifelse(
-                           df_gse_complete$delta[match(username, df_gse_complete$username)] < 0,
-                           "Abnahme", "unverändert"
-                         ))
+      delta_dir = ifelse(delta > 0, "Zunahme",
+                         ifelse(delta < 0, "Abnahme", "unverändert"))
     )
 
   # Abb 5.3 — Slopegraph (individuelle Verläufe)
@@ -298,7 +295,7 @@ if (!is.null(df_gse)) {
     labs(
       title    = "Abbildung 5.4: GSE-Verteilung Prä vs. Post (Boxplot + Einzelwerte)",
       subtitle = paste0("N = ", n_gse, "  |  Wilcoxon p = ",
-                        round(pvalue(wt_exact), 3),
+                        round(p_val, 3),
                         "  |  r = ", round(eff$effsize, 3)),
       x        = "Messzeitpunkt",
       y        = "GSE-Gesamtscore (Skala 10–40)"
@@ -360,7 +357,7 @@ if (!is.null(df_mslq)) {
     geom_errorbar(aes(ymin = M - SD, ymax = M + SD), width = 0.2, color = FARBE_GRAU) +
     geom_text(aes(label = round(M, 2)), hjust = -0.2, size = 3.5) +
     coord_flip() +
-    scale_y_continuous(limits = c(1, 7.5)) +
+    scale_y_continuous(limits = c(0, 8.5)) +
     labs(
       title    = "Abbildung 5.6: MSLQ-Subskalen-Profil (M ± SD)",
       subtitle = "Skala 1–7 (höher = stärker ausgeprägt)",
@@ -421,7 +418,7 @@ write.csv(judge_p10_vergleich, file.path(OUTPUT_DIR, "tab_5_6_p10_modellvergleic
 judge_long <- judge_gpt41mini |>
   pivot_longer(cols = M1:M6, names_to = "Metrik", values_to = "Score") |>
   mutate(
-    Persona = factor(Persona, levels = rev(paste0("P0", 1:9), "P10")),
+    Persona = factor(Persona, levels = rev(c(paste0("P0", 1:9), "P10"))),
     Flagging = Score <= 1
   )
 
