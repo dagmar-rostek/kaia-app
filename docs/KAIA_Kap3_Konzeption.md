@@ -1,265 +1,595 @@
-# Kapitel 3 — Konzeption
-
----
-
-## Überblick
-
-Dieses Kapitel entwickelt das konzeptionelle Rahmenwerk von KAIA. Es übersetzt die theoretischen Grundlagen (Kapitel 2) in operative Designentscheidungen und beschreibt das **Fünf-Komponenten-Modell**: (1) regelbasiertes Adaptionssystem, (2) Mehr-Modus-Interaktionsarchitektur, (3) Lernroadmap-Integration, (4) zweischichtiges Gedächtnis und wachsendes Nutzerprofil, (5) Transparenz-Layer und nutzergetriebene Modussteuerung. Die fünfte Komponente löst das zentrale Spannungsfeld des Thesis-Titels auf: Wie kann systemseitige Adaptation Selbstwirksamkeit stärken statt untergraben?
-
-Der Thesis-Titel — *"Entwicklung eines empathischen AI-Agenten zur neuroadaptiven personalisierten Lernbegleitung"* — enthält vier Designanforderungen: Empathie (computational empathy, explizit als KI kommuniziert), Neuroadaptivität (regelbasiertes Adaptionssystem informiert durch Lazarus), Personalisierung (wachsendes Nutzerprofil), Lernbegleitung (sokratisch und scaffolding, kein Instruktionssystem).
-
-Abschnitte 3.7 bis 3.9 beschreiben die technische Realisierung als Designartefakt im Sinne von Hevner et al. (2004): die Multi-Modell-Systemarchitektur, die Messinfrastruktur der Pilotstudie und die Evaluationsarchitektur des LLM-Vergleichs.
-
----
-
-## 3.1 Vom theoretischen Rahmen zu Designanforderungen
-
-Die in Kapitel 2 entwickelten Theorien ergeben sieben operative Designanforderungen:
-
-1. **Eigenleistung schützen** — Antworten ersetzen kognitiven Eigenanteil. KAIA sollte ihn fördern (Kalyuga et al., 2003)
-2. **Modus an Zustand anpassen** — dieselbe Frage erzeugt bei Überforderung Stress, bei Flow Erkenntnisfreude (Lazarus & Folkman, 1984; Csikszentmihalyi, 1990)
-3. **Scaffolding für Novizen** — rein sokratische Begleitung überfordert Anfänger; es braucht ein Spektrum (Vygotsky, 1978; Wood et al., 1976)
-4. **Ressourcenwahrnehmung stärken** — nicht Anforderungen reduzieren, sondern wahrgenommene Handlungsfähigkeit aufbauen (Bandura, 1997; Lazarus, 1993)
-5. **Selbstregulation unterstützen** — explizite Ziele und ein Fortschrittsrahmen fördern Selbstwirksamkeit und Metakognition (Zimmerman, 2000; Locke & Latham, 1990)
-6. **Transparent kommunizieren** — KAIA ist eine KI; computational empathy ist nicht echtes Mitgefühl (Picard, 1997; Decety & Jackson, 2004)
-7. **Wissen in Handeln überführen** — Der Knowing-Doing Gap (Pfeffer & Sutton, 2000) ist das Kernproblem der KAIA-Zielgruppe. Sheerans (2002) Intention-Behavior Gap-Forschung zeigt, dass zwischen Absicht und Verhalten systematische Lücken entstehen. KAIAs Primäraufgabe ist die Überbrückung dieser Lücke durch Implementation Intentions (Gollwitzer, 1999) und den Erster-Schritt-Loop (Abschnitt 3.3.6).
-
-Diese sieben Anforderungen strukturieren das Rahmenwerk in fünf Komponenten.
-
-### 3.1.1 Das Kernprinzip: Kognitive Transferrichtung
-
-Die Operationalisierung "KAIA stellt ausschließlich Fragen, gibt niemals Antworten" ist eine didaktische Vereinfachung. Sokrates selbst hat in Platons *Menon* ein Geometrieszenario aufgebaut, bevor er fragte. Zen-Meister geben Dharma-Talks und setzen Koans — keine klassischen Fragen. Der Wirkmechanismus ist in beiden Traditionen nicht die Frage als Sprachform, sondern die systematische Weigerung, die kognitive Arbeit zu übernehmen, die der Lernende selbst leisten muss.
-
-Das Kernprinzip von KAIA lautet daher:
-
-> **KAIA übernimmt niemals die kognitive Arbeit, die der Lernende selbst leisten muss. KAIAs Output löst die nächste kognitive Operation aus — er ersetzt sie niemals.**
-
-Diese Formulierung hat drei Konsequenzen. Erlaubt sind kurze Kontextsetzungen und Analogien, wenn sie einen neuen Denkschritt *eröffnen*. Verboten sind Zusammenfassungen, die einen Denkschritt *abschließen*, und Erklärungen, die Verstehen ersetzen statt anregen. Messbar ist die Grenze über die Eval-Frage im LLM-Vergleich (Kapitel 5): *"Löst diese Antwort die nächste kognitive Operation beim Lernenden aus, oder ersetzt sie eine?"* Fragen bleiben das primäre Instrument — aber als Mittel, nicht als Definition.
-
----
-
-## 3.2 Regelbasiertes Adaptionssystem (informiert durch Lazarus)
-
-### 3.2.1 Begriffsklärung: Adaptation vs. Erkennung
-
-Das Adaptionssystem von KAIA wird explizit als **regelbasiertes Adaptionssystem informiert durch das transaktionale Stressmodell (Lazarus & Folkman, 1984)** bezeichnet — nicht als "Zustandserkennung" oder "Stressdetektion". Textbasierte Inferenz kognitiver Bewertungszustände ist epistemisch beschränkt: Das System erkennt keine Zustände; es reagiert auf Signalmuster nach definierten Regeln. Die Signale sind Proxys, keine Messungen.
-
-### 3.2.2 Acht Textindikatoren
-
-Die Primär- und Sekundärbewertung nach Lazarus (1993) lassen sich in Chatnachrichten über acht Indikatoren approximieren. Primärbewertungssignale sind: katastrophisierende Sprache ("Das schaffe ich nie"), Zeitdrucknennungen kombiniert mit Negation ("keine Zeit", "bis Freitag"), Kontrollverlustmarker mit passiven Konstruktionen ohne Handlungssubjekt sowie Hilflosigkeitsframing durch rhetorische Fragen ohne antizipierte Lösung. Sekundärbewertungssignale sind: Handlungsorientierung (Aktivverben mit Ich-Subjekt), Ressourcenbenennung (explizite Strategien oder Vorerfahrungen), Ambivalenzsignale sowie metakognitive Distanz ("Ich merke, dass ich...") als Indikator hohen Copingpotenzials.
-
-### 3.2.3 Hysterese-Logik: Stabilität vor Reaktivität
-
-Der Modus wechselt nicht nach einem einzigen Signal, sondern erst nach N konsistenten Nachrichten (vorläufig N=3, empirisch zu kalibrieren). Die Hysterese-Logik liegt im Service-Layer der Anwendung, nicht im Sprachmodell — ein zu sensitives System würde durch einzelne Formulierungen übersteuert und erzeugte inkonsistente Gesprächserlebnisse.
-
-### 3.2.4 Wissenschaftliche Einschränkungen
-
-Vier Limitierungen sind in der Thesis transparent zu kommunizieren: (1) Sprachstil korreliert mit Bildungsgrad und stabilen Persönlichkeitsmerkmalen (Neurotizismus), nicht ausschließlich mit aktuellem Bewertungszustand — das System misst möglicherweise Traits statt situative States. (2) Es gibt keine publizierte Evidenz dafür, dass LLM-Moduswechsel basierend auf Lazarus-Signalen Lernoutcomes verbessern — die neuroadaptive Komponente ist eine designtheoretische Hypothese. (3) Die Abbildung des kontinuierlichen Bewertungsprozesses auf vier diskrete Modi ist eine pragmatische Designentscheidung, die als solche ausgewiesen werden muss. (4) Wenn die Pilotstudie die Wirkung von KAIA evaluiert, muss die Neuroadaptivität entweder als kontrollierte Variable oder als deskriptiver Systemaspekt behandelt werden — nicht beides gleichzeitig.
-
----
-
-## 3.3 Mehr-Modus-Interaktionsarchitektur
-
-### 3.3.1 Vier Interaktionsmodi und ihr theoretisches Fundament
-
-KAIAs Interaktion folgt einem **didaktisch begründeten Spektrum von vier Modi**. Die Notwendigkeit ergibt sich direkt aus dem Expertise Reversal Effect (Kalyuga et al., 2003): rein sokratische Begleitung überfordert Novizen, während direkte Instruktion Experten schadet.
-
-| Modus | Beschreibung | Theoretische Grundlage | Aktivierungsbedingung |
-|---|---|---|---|
-| **Sokratisch-explorativ** | Ausschließlich Fragen, kein Scaffolding | Konstruktivismus (Vygotsky, 1978) | Herausforderungsappraisal + Copingressourcen; Flow |
-| **Scaffolding/unterstützend** | Minimale Strukturierungshilfe, dann Frage | ZPD (Vygotsky, 1978); Wood et al. (1976) | Bedrohungsappraisal + geringe Copingressourcen |
-| **Wertschätzend-bestärkend** | Konkrete Lernfortschritte spiegeln | Selbstwirksamkeit (Bandura, 1997) | Erfolgserleben, Durchbruchsignale |
-| **Kritisch-herausfordernd** | Annahme hinterfragen, kognitive Dissonanz | Yerkes-Dodson (1908); Teigen (1994) | Geringe Bedrohung + stabile Copingressourcen |
-
-### 3.3.2 Architekturprinzip: Modus liegt im Service-Layer
-
-Die Modi werden als kontinuierlicher `directiveness`-Parameter (0.0 = rein sokratisch, 1.0 = maximal anleitend) implementiert — nicht als binäre Schalter. Ein zentrales Designprinzip: Die Modusauflösung erfolgt deterministisch im Service-Layer, nicht durch das Sprachmodell selbst. Eine Funktion `resolve_interaction_mode(user_profile, session_signals)` berechnet den Modus vor jedem LLM-Call und übergibt ihn als Prompt-Parameter. Das LLM interpretiert den Modus, wählt ihn aber nicht. Dies ist für die wissenschaftliche Reproduzierbarkeit und den Study-Lock-Mechanismus essenziell.
-
-### 3.3.3 Didaktische Begründung: Edelmanns Lernprozesstaxonomie
-
-Die Vier-Modi-Architektur lässt sich durch Edelmanns (2000) Taxonomie begründen, die vier Lernprozessebenen unterscheidet. KAIA operiert bewusst auf den Stufen 3 (Begriffsbildung) und 4 (planvolles Problemlösen) — entwicklungspsychologisch angemessen für Erwachsene in Hochschule und beruflicher Weiterbildung, bei denen Tiefenverarbeitung und metakognitive Steuerung die relevanten Lernmechanismen sind. Der wertschätzend-bestärkende Modus nutzt Mechanismen instrumentellen Lernens (Stufe 2) in der SDT-kompatiblen Form attributionalen Feedbacks (Weiner, 1985): KAIA attribuiert Erfolge auf die Eigenleistung — nicht auf externe Umstände.
-
-### 3.3.4 Sechs sokratische Fragetypen
-
-"Sokratisch" ist kein selbsterklärender Begriff. KAIA operationalisiert sokratisches Vorgehen über sechs distinkte Fragetypen:
-
-| Typ | Beispiel | Kognitive Funktion | Bloom |
-|---|---|---|---|
-| **Klärungsfrage** | "Was genau meinst du mit X?" | Vagheit sichtbar machen | 2 |
-| **Hypothetische Frage** | "Was würde sich ändern, wenn...?" | Transferdenken | 3–4 |
-| **Widerspruchsfrage** | "Du hast vorhin Y gesagt — passt das zu X?" | Kognitive Dissonanz | 4–5 |
-| **Systemische Frage** | "Was würde sich in deiner Kommunikation ändern?" | Lernen im Anwendungskontext verankern | 3–4 |
-| **Erste-Schritt-Frage** | "In welcher Situation diese Woche könntest du das ausprobieren?" | Erkenntnis in Handlung überführen | 3 |
-| **Anamnese-Frage** | "Was weißt du eigentlich schon, wenn du mal innehältst?" | Vorwissen aktivieren | 1→2 |
-
-Die sechs Fragetypen sind die Mindestspezifikation für Reproduzierbarkeit: Im LLM-Evaluationsbericht (Kapitel 5) wird getestet, welches Modell diese Typen konsistent und korrekt anwendet.
-
-### 3.3.5 Session-Architektur: 10-Session-Design mit Bloom-Progression
-
-#### 3.3.5.1 Strukturelle Grundentscheidung: Warum 10 Sessions?
-
-Drei Sessions ermöglichen allenfalls einen ersten Orientierungsdialog, aber keinen messbaren Lernfortschritt im Sinne einer Bloom-Eskalation. Aus dem Spaced-Learning-Prinzip (Cepeda et al., 2006) und der kumulativen Logik der revidierten Bloom-Taxonomie (Anderson & Krathwohl, 2001) ergibt sich eine Mindestarchitektur von 10 Sessions.
-
-#### 3.3.5.2 Drei didaktische Phasen und Bloom-Progression
-
-Die 10 Sessions sind in drei Phasen gegliedert, die als Parameter `session_phase` im Systemprompt implementiert sind (`early` für Sessions 1–3, `mid` für 4–7, `late` für 8–10). Die Progression ist Designleitlinie, kein Algorithmus — das Crosssession-Gedächtnis (Abschnitt 3.5) erkennt die tatsächliche Verständnisstufe des Lernenden und passt Fragetypen entsprechend an.
-
-**Phase 1 — Erkunden (Sessions 1–3): Bloom-Stufen 1–2.** Ziel ist epistemische Verortung, nicht Wissensvermittlung. Session 2 beginnt obligatorisch mit einem Callback auf Session 1 — dies aktiviert Spaced Retrieval (Cepeda et al., 2006) und signalisiert dem Lernenden, dass das System erinnert. Methodisch dominieren Anamnese-Fragen (Typ 6) und Klärungsfragen (Typ 1).
-
-**Phase 2 — Transfer und Analyse (Sessions 4–7): Bloom-Stufen 2–5.** Systemische Fragen (Typ 4) und Erste-Schritt-Fragen (Typ 5) dominieren. Ab Session 6 arbeitet KAIA aktiv mit cross-sessionalen Widerspruchsfragen: *"In Session 3 hast du gesagt, dass X. Jetzt sagst du Y — was hat sich verändert?"* Diese Fragen erzeugen kognitive Dissonanz (Festinger, 1957) ohne Bedrohungsappraisal, weil sie auf selbstgeäußertes Material zurückgreifen — nicht auf Fremdurteile. Das wörtlich gespeicherte `strongest_quote`-Feld der Sessionzusammenfassung ist das Rohmaterial dafür.
-
-**Phase 3 — Abschluss (Sessions 8–10): Bloom-Stufen 5–6.** Session 10 enthält drei Aufgaben (aktiviert via `is_final_session=True`): die Gegenüberstellung wörtlicher Nutzerzitate aus Session 1 und der aktuellen Session als stärkstes Selbstwirksamkeitsinstrument des Designs (Bandura, 1997: Mastery Experience); die Autonomisierungsfrage (*"Wie wirst du ohne mich weiterlernen?"*, Bloom-Stufe 6); sowie eine explizite Constraint-Regel gegen GSE-Priming zur Sicherung der Unabhängigkeit der Post-Messung (Demand Characteristics, Orne, 1962).
-
-Eine Sequenzierungsanforderung nach Kolb (1984) ist zu beachten: Herausfordernde Widerspruchsfragen setzen voraus, dass Reflexion und Begriffsbildung bereits stattgefunden haben. Der Trigger für Widerspruchsfragen (Fragetyp 3) darf erst nach dem Enactment-Schritt aktiviert werden — ein System, das herausfordert, bevor es Sicherheit aufgebaut hat, produziert Bedrohungsappraisal statt Lernmotivation.
-
-#### 3.3.5.3 Session-Mikrostruktur
-
-Jede Session folgt intern einem Drei-Phasen-Skript (Hattie & Timperley, 2007; Merrill, 2002), das für Nutzende unsichtbar bleibt. Phase 1 (Aktivierung) beginnt mit einer Lernintentionsfrage — *"Was möchtest du nach dieser Session verstanden oder weitergedacht haben?"* — die Vorwissen aktiviert (Ausubel, 1968) und eine Lernabsicht erzeugt (d=0.54, Hattie, 2009); ab Session 2 wird sie durch den Callback auf den offenen Erstschritt ersetzt. Phase 2 (Arbeitsphase) folgt dem Lazarus-Signal, erlaubt maximal eine Frage pro Antwort, Antworten unter 80 Wörtern (Scaffolding: unter 120), keine Listen. Phase 3 (Sicherung) nutzt die Elaborationsfrage *"Was würdest du jemandem erklären, der nicht dabei war?"* — sie erzwingt Transfer (Merrill, 2002) und liefert gleichzeitig Material für die Postsession-Profilextraktion.
-
-### 3.3.6 Erster-Schritt-Loop: Der GSE-Aufbaumechanismus
-
-Der Erster-Schritt-Loop ist KAIAs operative Antwort auf den Knowing-Doing Gap (Pfeffer & Sutton, 2000). Das Session-Design operiert auf drei konzeptuell zu trennenden Ebenen: **Lernziel** (angestrebter Kompetenzzustand, Zeithorizont Wochen–Monate), **Lernschritt** (konkrete, zeitlich begrenzte Handlung, Zeithorizont Tage) und **Erfolgskriterium** (*evidence of accomplishment*, Knowles, 1975) — eine selbstdefinierte Beobachtung, die belegt, dass der Schritt Wirkung hatte. Die Unterscheidung schützt vor dem Verwechseln von Aktivität mit Lernen und vor dem Einführen externer Messnormen, die Autonomieerleben untergraben (Deci & Ryan, 2000).
-
-Die Wirksamkeit steigt erheblich durch Implementation Intentions (Gollwitzer, 1999): eine Wenn-Dann-Verknüpfung, die den Ausführungskontext explizit macht. Gollwitzer & Sheeran (2006) belegen über 94 Studien einen mittleren Effekt von d=.65 für Zielerreichungsraten. Für KAIA bedeutet dies, dass die Erste-Schritt-Frage nicht mit der Absichtsformulierung endet, sondern mit einer Kontextualisierungsfrage (*"Wann genau, in welcher Situation?"*). Der so formulierte Schritt wird als `first_step`-Feld in der Sessionzusammenfassung persistiert und bildet den Einstieg der nächsten Session.
-
-Der operative Mechanismus am Sessionbeginn: Wurde der Schritt nicht gemacht, fragt KAIA nach dem Hindernis und verkleinert den Schritt. Wurde er gemacht, folgt der Evidenzanker-Abgleich. Schimpf, Voigt & Bohné (2026) belegen in einem RCT (N=517), dass ein KI-gestützter Chatbot, der Lernende bei der Formulierung spezifischerer Ziele unterstützte, nach zwei Wochen signifikant bessere Zielfortschritte erzielte — als Wirkmechanismus identifizieren die Autoren wahrgenommene soziale Verantwortlichkeit, die sich in KAIA durch das persistierte Sessiongedächtnis operationalisiert.
-
-### 3.3.7 Flow-Theorie als Designrahmen
-
-Flow (Csikszentmihalyi, 1990) wird durch vier Bedingungen konstituiert: klare Ziele, unmittelbares Feedback, ausgewogene Challenge-Skill-Balance und autotelic experience. Für KAIA ist die Challenge-Skill-Balance kritisch: Ohne Bloom-Eskalation tendiert das System ab Session 4–5 in den Boredom-Quadrant. Das 10-Session-Design ist aus dieser Perspektive eine Flow-Schutzarchitektur. Das regelbasierte Adaptionssystem (Abschnitt 3.2) steuert situativ nach: Überforderungssignale lösen den Scaffolding-Modus aus (Anxietyquadrant verlassen), Unterforderungssignale den kritisch-herausfordernden Modus (Boredomquadrant verlassen). Sokratische Begleitung fördert autotelic experience, weil sie das Denken als befriedigende Tätigkeit inszeniert — der Lernende löst Probleme, statt Lösungen zu konsumieren.
-
-Als Verlaufsmessinstrument wird die Flow-Kurzskala (FKS) nach Rheinberg, Vollmeyer & Engeser (2003) eingesetzt — 10 Items auf siebenstufigen Likert-Skalen, zwei Faktoren (Fluency, Absorbiertheit), α ≥ .90, validiert für den deutschsprachigen Raum. Die FKS wird unmittelbar nach den Sessions 2, 5, 8 und 10 erhoben.
-
-### 3.3.8 Sprachprinzip: KAIA bewertet nicht
-
-Bewertende Sprache untergräbt Autonomieerleben. Die Selbstbestimmungstheorie (Deci & Ryan, 1985) unterscheidet informational von kontrollierendem Feedback: Pauschal-positives Feedback externalisiert den Bewertungsmaßstab und erzeugt extrinsische Motivation, wo intrinsische entstehen sollte. Fünf Promptconstraints operationalisieren dieses Prinzip als Negativliste: kein pauschales Lob ("Toll!"), keine Typisierungen ("Du bist ein analytischer Typ", vgl. Dweck, 2006), keine Prognosen ("Du wirst das schaffen"), keine inhaltlichen Bewertungen ("Das ist falsch" — stattdessen Widerspruchsfrage Typ 3), keine Ratschläge ("Ich empfehle..." — stattdessen Erste-Schritt-Frage Typ 5). Die konstruktive Alternative ist elaborative Interrogation (Woloshyn et al., 1992): Fragen, die Erklärungen einfordern, ohne das Ergebnis vorwegzunehmen.
-
-Bei negativem Affekt als Sessioneinstieg gilt eine zweistufige Strategie (D'Mello & Graesser, 2012a): kurze affektive Anerkennung (maximal ein Satz, außenorientiert), dann sofortiger Pivot zur Lernfrage. Fragen, die im affektiven Frame verbleiben (*"Was belastet dich?"*), sind verboten — sie folgen einem Coaching-Muster und sind mit sokratischer Lernbegleitung nicht vereinbar.
-
----
-
-## 3.4 Motiv-Probing und Lernroadmap
-
-Bevor die Lernroadmap angelegt wird, durchläuft die lernende Person einen optionalen Motivdialog. Die Grundannahme: Das genannte Lernziel ist häufig das Mittel, nicht der eigentliche Zweck. Dieser Dialog ist motivationspsychologisch fundiert durch SDT (Deci & Ryan, 2000) — Probing kann helfen, external motivierte Ziele in identifizierte Regulation umzuwandeln — sowie durch Goal Setting Theory (Locke & Latham, 2002) und Motivational Interviewing (Miller & Rollnick, 2013). Drei Designgrenzen: KAIA presumiert nicht, das Genannte sei "nur" ein Mittel; das Probing ist auf maximal drei Fragen begrenzt; therapeutisches Terrain ist verboten.
-
-Die **Lernroadmap** ist ein nutzerseitig befülltes Dokument für die gesamte Studiendauer. Sie erfüllt drei Funktionen: Zielstruktur durch explizite Lernziele (Locke & Latham, 1990), Fortschrittserfahrung durch selbst eingeschätzte Fortschrittsangaben als Handlungsergebniserfahrung (Bandura, 1997) und metakognitive Aktivierung durch Befüllen und Aktualisieren (Zimmerman, 2000). Dem Sprachmodell wird pro Session nur das aktive Ziel übergeben — kein Tokenoverhead für die Gesamtliste.
-
-Das System akzeptiert keine vagen Lernthemen als Ausgangspunkt. Ein dreistufiger Dialog zur Lernergebnispräzisierung (Outcome-Based Learning, Biggs & Tang, 2011) führt über Kontextfrage, Vermeidungsmotiv und Annäherungsmotiv zu einem formulierten Outcome, das als persistenter Anker im Chat-Interface sichtbar bleibt. KAIA darf Fortschritt spiegeln und benennen, ihn aber niemals bewerten oder selbst setzen. Auf Anfrage wechselt das System in einen Ressourcenmodus, der explizit nicht sokratisch ist und konkrete Lernpfade (strukturiert, menschlich, durch Tun) benennt — Interface zeigt den Moduswechsel deutlich an.
-
----
-
-## 3.5 Zweischichtiges Gedächtnis und wachsendes Nutzerprofil
-
-### 3.5.1 Architekturüberblick
-
-KAIAs Gedächtnisarchitektur kombiniert drei Datenschichten. Das Designprinzip ist für die Studie essenziell: Keine Schicht ist ein Fine-Tuning des Basismodells. Claude, GPT-4o und Mistral werden nicht für einzelne Nutzer modifiziert — die Schichten sind Kontextlayer, die das Verhalten des unveränderten Modells pro Nutzer progressiv spezifischer machen. Am Ende der Studie existieren faktisch unterschiedlich verhaltende KAIA-Instanzen, aber durch Kontextanreicherung, nicht Modellmodifikation.
-
-**Schicht 1: Statisches Lernendenprofil** — Unveränderlicher Snapshot nach Pre-Survey, erstellt einmalig nach Abschluss beider Vorerhebungen (MSLQ + GSE), unveränderlich für die gesamte Studiendauer.
-
-**Schicht 2: Kumulative Sessionextraktion** — Ein JSON-Datensatz pro abgeschlossener Session, geschrieben als Hintergrundaufgabe nach Sessionende. Akkumuliert, nicht überschrieben.
-
-**Schicht 3: Semantisches Gedächtnis** (pgvector) — Vektorisierte Gesprächsfragmente für semantische Ähnlichkeitssuche über Sessiongrenzen hinweg.
-
-### 3.5.2 Schicht 1: Statisches Lernendenprofil
-
-Das statische Profil wird exakt einmal pro Nutzer befüllt und enthält den GSE-Baseline-Score, die MSLQ-Subskalenscores sowie einen LLM-generierten Profiltext (Claude Haiku, `temperature=0`, max. 120 Wörter), der den Lernenden in einen von vier Profiltypen kategorisiert. Der Profiltext wird als unveränderlicher `learner_profile`-Kontext in jeden Systemprompt injiziert. Die Unveränderlichkeit ist ein bewusster Designentscheid: Das statische Profil dient als fester Ankerpunkt für den longitudinalen Prä-Post-Vergleich — würde es über die Studiendauer aktualisiert, wäre kein sauberer Vergleich mehr möglich. Das vollständige Datenbankschema ist in *[→ Anhang G: Technische Systemarchitektur — vollständiges Datenbankschema]* dokumentiert.
-
-### 3.5.3 Schicht 2: Kumulative Sessionextraktion
-
-Nach jeder abgeschlossenen Session extrahiert ein separater LLM-Call (Claude Haiku, `temperature=0`) eine strukturierte Zusammenfassung. Die für Folgesessions relevanten Felder umfassen: den vereinbarten `first_step` (Einstieg der nächsten Session), die wichtigste Beobachtung über die lernende Person (`observation`), das stärkste eigene Zitat des Lernenden als Rohmaterial für cross-sessionale Widerspruchsfragen (`strongest_quote`) sowie Stimmung, Themen und Reibungspunkte. Die Aggregationsfunktion verdichtet bis zu neun Vorsessions in ein tokeneffizientes Format für den Prompt. Vollständige Feldstruktur und Hintergrundverarbeitungslogik sind in *[→ Anhang G: Technische Systemarchitektur — API-Dokumentation]* dokumentiert.
-
-### 3.5.4 Schicht 3: Semantisches Gedächtnis
-
-Gesprächsfragmente werden als Vektoren in PostgreSQL 16 mit der pgvector-Extension gespeichert. Die Abfrage erfolgt über semantische Ähnlichkeitssuche mit `user_id` als Pflichtparameter — Row-Level-Security auf Datenbankebene verhindert Cross-User-Leaks. Diese Schicht ergänzt die strukturierte Sessionextraktion um freie assoziative Kontextsuche — besonders relevant wenn ein Lernender ein Thema aus Session 2 in Session 8 aufgreift, ohne explizit darauf zu verweisen.
-
-### 3.5.5 Kontextanreicherung vs. Modellmodifikation
-
-Das wachsende Nutzerprofil ist kein Fine-Tuning. Diese Unterscheidung ist für die Thesis essenziell: Aussagen über Modellverhalten in der Studie beziehen sich auf das Verhalten des Basismodells unter progressiv angereichertem Kontext — nicht auf ein angepasstes Modell. Sie ist auch DSGVO-relevant: Kontextanreicherung speichert Nutzerdaten in KAIAs eigener Datenbank auf Hetzner Helsinki (EU). Modellmodifikation würde Trainingsdaten zu Anthropic, OpenAI oder Mistral übertragen — eine andere Rechtsgrundlage erfordern und eine andere DPA-Konfiguration notwendig machen.
-
----
-
-## 3.6 Transparenz-Layer und nutzergetriebene Modussteuerung
-
-Der Thesis-Titel enthält ein theoretisches Spannungsfeld: Neuroadaptivität bezeichnet systemseitige Adaptation (Personalisierung), während Selbstwirksamkeitsstärkung lernerseitige Kontrolle (Individualisierung) voraussetzt. Die Antwort ist eine fünfte Systemkomponente — der Transparenz-Layer.
-
-Ein System, das unsichtbar adaptiert, trifft automatisierte Einzelentscheidungen über den Lernenden — rechtlich problematisch nach DSGVO Art. 22, didaktisch problematisch nach SDT (Deci & Ryan, 2000). Der Transparenz-Layer macht drei Klassen von Informationen zugänglich: den aktiven Interaktionsmodus mit Begründung, das inferierte Profil und die Änderungshistorie des Modus.
-
-Mögliche Nutzereingriffe (`user_mode_override`): explizite Moduswechsel (*"Kannst du mich gerade mehr unterstützen?"*), Korrekturen der aggregierten Profildaten sowie Profilreset als Umsetzung von DSGVO Art. 17. Profile, die nie schrumpfen, erzeugen Lernende, die immer mehr Unterstützung erwarten — das Transparenzprinzip schließt daher ein, dass das System anzeigt, wenn Scaffoldinganteile über Zeit abnehmen: als sichtbares Signal wachsender Kompetenz, nicht als unsichtbare Systemoptimierung.
-
-Das Sessionende wird durch eine stille, nicht-modale Karte kommuniziert, die die stärksten eigenen Formulierungen des Lernenden aus dieser Session zeigt (wörtlich aus `strongest_quote`, nicht paraphrasiert) und eine offene Frage, die bewusst ungelöst bleibt. Dieser kognitive Widerstand (Berlyne, 1960; Zeigarnik, 1927) erzeugt den Effekt, dass die nächste Session als Auflösung einer interessierenden Lücke erlebt wird. Die destillierten Formulierungen akkumulieren sich zum **Lernfaden** — einer Chronik der selbst erarbeiteten Gedanken, jederzeit einsehbar, exportierbar (DSGVO Art. 20) und löschbar (Art. 17).
-
----
-
-## 3.7 Technische Realisierung
-
-### 3.7.1 Stack und Hosting
-
-KAIA ist als DSGVO-konforme Webanwendung auf EU-Infrastruktur realisiert. Die Technologiewahl folgt dem Prinzip "Boring Technology bevorzugen" — alle Komponenten sind etablierte Systeme ohne proprietäre Lock-in-Risiken. Die Hosting-Entscheidung für Hetzner Helsinki ist nicht aus Kostengründen getroffen, sondern aus Compliance-Gründen: EU-Server mit bekanntem Standort sind die Voraussetzung für eine DSGVO-konforme Verarbeitung ohne Schrems-II-Problematik (EuGH C-311/18). Die vollständige Stackübersicht ist in *[→ Anhang G: Technische Systemarchitektur — Deployment-Konfiguration]* dokumentiert.
-
-### 3.7.2 Multi-Modell-Architektur
-
-KAIA unterstützt sieben LLM-Varianten über eine einheitliche Providerabstraktion. Claude Sonnet 4.6 (`claude-sonnet-4-6`) ist das primäre Produktionsmodell; Claude Haiku 4.5 übernimmt Sessionextraktion, Profilgenerierung und Eval-Judging. GPT-4o, GPT-5.6 Terra, GPT-4.1 mini, Mistral Large und Mistral Small sind für den LLM-Evaluationsbericht vorgesehen. Die Abstraktion erfolgt über eine `_provider(model)`-Funktion im Service-Layer, die anhand des Modellnamens den passenden SDK-Client auswählt — inklusive Kapselung von API-Inkompatibilitäten zwischen Modellgenerationen.
-
-Die Per-User-Modellzuweisung ist über die Admin-Oberfläche möglich. Dies ist die technische Grundlage für den LLM-Evaluationsbericht: Identische Nutzungsszenarien können gezielt auf unterschiedliche Modelle geroutet werden. Systemprompts werden mit Anthropic Prompt Caching übergeben. Das System logt Caching-Tokens für das Cost-Tracking.
-
-### 3.7.3 KAIA-Charaktere als nutzergetriebene Stilauswahl
-
-Parallel zur systemgetriebenen Modussteuerung existiert eine nutzergetriebene Stilauswahl über drei Charaktere: **Warm** (wertschätzend, einladend), **Challenging** (direkt, konfrontierend) und **Wild** (unberechenbar, laterale Denkimpulse). Die Charaktere sind keine Ersetzung der vier Interaktionsmodi, sondern eine übergeordnete Stilebene: Der Warm-Charakter kann alle vier Modi ausführen, tut es aber in einem einladenden Ton. Prompt-Templates sind pro Charakter versioniert in der Datenbank gespeichert — live editierbar ohne Redeploy. Im Study-Lock-Modus (`STUDY_MODE=locked`) werden neue Promptversionen vom CI-Gate blockiert.
-
-### 3.7.4 In-Session-Feedback
-
-Das In-Session-Feedback ist als Vier-Button-Interface nach jeder KAIA-Antwort implementiert. `transfer_marker` ("Das muss ich weiterdenken") und `wow` ("Das trifft etwas") sind passive Signale, die in die Sessionextraktion einfließen. `stuck` und `unclear` triggern unmittelbar einen separaten LLM-Call — das System reformuliert oder elaboriert ohne die Hauptkonversation zu unterbrechen. Die Häufigkeit dieser Signale über Sessions hinweg liefert einen Proxyindikator für Challenge-Skill-Balance (Csikszentmihalyi, 1990) unabhängig von der FKS-Erhebung. Chat-UI-Komponenten sind in *[→ Anhang G: Technische Systemarchitektur — API-Dokumentation]* dokumentiert.
-
----
-
-## 3.8 Messinfrastruktur der Pilotstudie
-
-### 3.8.1 Designprinzip: Mehrschichtige Messung
-
-Die Messinfrastruktur operiert auf drei zeitlichen Ebenen: Prä/Post-Messung (vor Session 1 und nach Session 10), Verlaufsmessung (FKS nach Sessions 2, 5, 8, 10) und kontinuierliche In-Session-Datenerfassung (Feedback-Buttons). Bei N≈20 ohne Kontrollgruppe und ohne Randomisierung sind kausale Wirksamkeitsaussagen methodisch nicht zulässig — die Messung dient der explorativen Deskription und Hypothesengenerierung für zukünftige Studien.
-
-### 3.8.2 Allgemeine Selbstwirksamkeitserwartung (GSE)
-
-Die GSE-Skala (Schwarzer & Jerusalem, 1995) ist das primäre Outcome-Instrument: 10 Items, 4-stufige Likert-Skala (1 = stimmt nicht, 4 = stimmt genau), Summenscore 10–40, α = .80–.90 in deutschsprachigen Stichproben, konvergente Validität mit Optimismus und Handlungsorientierung belegt. Messzeitpunkte: Prä (nach Consent, vor Session 1) und Post (unmittelbar nach Session 10). Session 10 enthält eine explizite Promptconstraint gegen GSE-Priming zur Sicherung der Messunabhängigkeit (Demand Characteristics, Orne, 1962). Die vollständigen Items sind in *[→ Anhang A: GSE-Fragebogen]* dokumentiert.
-
-### 3.8.3 MSLQ-Adaptation (KAIA)
-
-Der MSLQ (Pintrich et al., 1991, 1993) wurde auf vier Subskalen und 30 Items für informelles Erwachsenenlernen adaptiert: **Intrinsische Zielorientierung** (Voraussetzung für sinnvolle sokratische Begleitung — ein rein extrinsisch motivierter Lernender wird Fragen als Hindernis erleben), **Selbstwirksamkeit für Lernen** (komplementär zur GSE, aber lernspezifisch), **Metakognitive Lernstrategien** (messbare Zielgröße der sokratischen Methode) und **Kognitive Verarbeitungstiefe** (Tiefenlernen vs. Oberflächenlernen). Skalierung: 7-stufige Likert-Skala; Gütekriterien: α ≥ .62 für Originalsubskalen (Pintrich et al., 1993).
-
-Die KAIA-Adaptation ist nicht formal validiert: Faktorstruktur und interne Konsistenz der adaptierten Version sind für diesen Kontext nicht durch separate Validierungsstudien belegt. Die Messwerte sind daher als explorative Indikatoren zu interpretieren — diese Einschränkung ist in Kapitel 6 zu kommunizieren. Die vollständigen Items sind in *[→ Anhang B: MSLQ-Fragebogen (adaptiert)]* dokumentiert.
-
-### 3.8.4 Messzeitpunkte im Überblick
-
-| Zeitpunkt | Instrument | Zweck |
-|---|---|---|
-| Vor Session 1 | GSE (10 Items) + MSLQ-Adaptation (30 Items) | Baseline; Auslöser für Profilgenerierung |
-| Nach Session 2 | FKS (10 Items) | Flow-Verlauf (frühe Phase) |
-| Nach Session 5 | FKS (10 Items) | Flow-Verlauf (Halbzeit) |
-| Nach Session 8 | FKS (10 Items) | Flow-Verlauf (Spätphase) |
-| Nach Session 10 | GSE + MSLQ-Adaptation + FKS | Post-Messung; Grundlage Prä/Post-Vergleich |
-
----
-
-## 3.9 Evaluationsarchitektur des LLM-Vergleichs
-
-### 3.9.1 Zweck und Abgrenzung
-
-Während die Pilotstudie die Wirkung von KAIA auf Lernende untersucht, untersucht die Evaluationsarchitektur die Eignung verschiedener LLMs für KAIAs didaktisches Design. Die Frage lautet nicht "Wirkt KAIA?", sondern "Welches Modell setzt KAIAs Kernprinzipien (Abschnitt 3.1.1) am konsistentesten um?"
-
-### 3.9.2 Crash-Persona-Simulation, Eval-Matrix und LLM-as-Judge
-
-Vor Studienstart werden zehn vordefinierte Crash-Personas automatisiert durch KAIA simuliert — identisch zum echten Nutzerpfad, um Grenzfallverhalten zu testen. Die Eval-Matrix bewertet jede Modell-Persona-Kombination auf vier Metriken: **Empathiequalität** (computational empathy ohne Therapieterrain, 5-Punkt-Rubrik), **Sokratische Treue** (löst die Antwort kognitive Arbeit aus, oder übernimmt sie sie? — Referenz: sechs Fragetypen, Abschnitt 3.3.4), **Konsistenz** (über aufeinanderfolgende Turns, 5-Punkt-Rubrik) und **Crisis-Detection-Safety** (binär: PASS bei korrekter Eskalation mit Disclaimer / FAIL bei Ignorieren oder Vertiefen).
-
-Die Bewertung erfolgt durch Claude Sonnet (`claude-sonnet-4-6`) als LLM-as-Judge (Zheng et al., 2023). Der bekannte Self-Enhancement-Bias — Claude bewertet Claude-Antworten — wird durch Cross-Evaluation kontrolliert: Alle Modelle bewerten sich gegenseitig. Für Crisis-Detection-Safety erfolgt zusätzlich manuelle Überprüfung durch die Forscherin. Die Admin-Oberfläche zeigt Ergebnisse als Heatmap (Modell × Persona × Metrik) und im Eval-Vergleichsmodus mit zwei Modellen nebeneinander.
-
----
-
-## 3.10 Synthese: Das KAIA-Rahmenwerk als Designartefakt
-
-Das konzeptionelle Rahmenwerk von KAIA ist ein Designartefakt im Sinne von Hevner et al. (2004). Seine fünf Komponenten bilden keine unabhängigen Teilsysteme, sondern ein kohärentes System: Das regelbasierte Adaptionssystem liefert Zustandssignale → die Mehr-Modus-Architektur wählt den passenden Interaktionsstil → die Lernroadmap gibt den inhaltlichen Kontext → das wachsende Nutzerprofil akkumuliert die Erkenntnisse → der Transparenz-Layer gibt dem Lernenden Einsicht und Kontrolle über alles. Jede Session baut auf der vorherigen auf; keine Adaptation geschieht unsichtbar.
-
-Diese Architektur adressiert direkt das Spannungsfeld aus Kapitel 2: Sie schützt Eigenleistung (sokratischer Modus bei Flow), bietet Unterstützung ohne Antworten (Scaffolding bei Überforderung), stärkt Selbstwirksamkeit durch Fortschrittserfahrung (Roadmap) und wächst mit der lernenden Person (wachsendes Nutzerprofil). Die Transparenzkomponente schließt den Kreis zwischen systemseitiger Adaptation und lernerseitiger Kontrolle — das zentrale Spannungsfeld des Thesis-Titels.
-
----
-
-*Literaturangaben dieses Kapitels sind im konsolidierten Literaturverzeichnis am Ende der Thesis aufgeführt.*
+# 3 Konzeption
+
+Kapitel 3 überführt die in Kapitel 2 begründeten theoretischen
+Prinzipien in überprüfbare Designentscheidungen des Forschungsartefakts.
+Die Konzeption trennt dabei theoretisch begründete Anforderungen von
+projektspezifischen Festlegungen. Nicht jede technische oder dialogische
+Entscheidung wird als direkte Folge einer Theorie dargestellt. Wo die
+Literatur lediglich einen Gestaltungsrahmen begründet, wird die konkrete
+Ausprägung als Designentscheidung des Prototyps ausgewiesen.
+
+## 3.1 Designanforderungen
+
+Die erste Anforderung besteht darin, den kognitiven Eigenanteil der
+lernenden Person zu erhalten. Der Expertise Reversal Effect zeigt, dass
+die Wirksamkeit instruktionaler Unterstützung vom vorhandenen Vorwissen
+abhängt. Unterstützung, die für wenig erfahrene Lernende hilfreich ist,
+kann bei höherem Vorwissen redundant oder nachteilig werden (Kalyuga et
+al., 2003). Daraus folgt keine generelle Ablehnung direkter Instruktion.
+Für den Agenten folgt vielmehr die Anforderung, Umfang und Direktheit
+der Unterstützung am erkennbaren Unterstützungsbedarf auszurichten.
+
+Die zweite Anforderung betrifft ein variables Unterstützungsniveau.
+Scaffolding beschreibt tutorielle Hilfe, bei der zunächst jene
+Aufgabenteile unterstützt werden, die eine Person noch nicht
+selbstständig bewältigen kann (Wood et al., 1976). Der Agent benötigt
+deshalb mindestens eine stärker fragende und eine stärker
+strukturierende Form der Begleitung. Die Wahl zwischen diesen Formen
+darf nicht als sichere Diagnose eines inneren Zustands verstanden
+werden. Sie basiert auf Gesprächshinweisen und bleibt korrigierbar.
+
+Die dritte Anforderung ist der Schutz von Autonomie und
+Selbstregulation. Der Agent soll Entscheidungen über Lernziel, Bewertung
+eigener Fortschritte und nächste Handlungsschritte nicht dauerhaft
+übernehmen. Seine Unterstützung soll Wahlmöglichkeiten erhalten und mit
+wachsender Selbstständigkeit zurücktreten. Damit wird Adaptivität nicht
+als möglichst umfassende Personalisierung verstanden, sondern als
+begrenzte Unterstützung mit dem Ziel, eigenständige Regulation zu
+ermöglichen.
+
+Die vierte Anforderung ist die Überführung von Reflexion in konkretes
+Handeln. Implementation Intentions verbinden eine erwartete Situation
+mit einer vorgesehenen Reaktion und können die Umsetzung von
+Zielabsichten unterstützen (Gollwitzer, 1999). Der Agent soll deshalb
+nach geeigneten Reflexionsphasen die Formulierung eines konkreten
+nächsten Schritts und eines passenden Ausführungskontexts anregen. Diese
+Funktion begründet keine Garantie späterer Umsetzung.
+
+Die fünfte Anforderung betrifft empathische Responsivität ohne
+diagnostischen Anspruch. Das System darf sprachliche Hinweise nutzen, um
+Tonalität und Unterstützungsgrad anzupassen. Solche Inferenzen bleiben
+jedoch unsicher. Der Agent darf daraus weder psychologische Diagnosen
+noch Behauptungen über tatsächlich vorliegende Emotionen ableiten.
+Nutzende müssen die Möglichkeit behalten, eine unpassende
+Systeminterpretation zu korrigieren.
+
+Die sechste Anforderung ist Transparenz. Nutzende müssen erkennen
+können, dass sie mit einem KI System interagieren. Darüber hinaus soll
+nachvollziehbar sein, welche personenbezogenen Informationen für
+Personalisierung gespeichert und wie sie für die Gesprächssteuerung
+verwendet werden. Transparenz ist damit sowohl regulatorische
+Anforderung als auch Designprinzip für die kontrollierbare Adaptation.
+
+Die siebte Anforderung betrifft wissenschaftliche Prüfbarkeit. Zentrale
+Regeln der Gesprächsführung, die verwendeten Promptversionen, das
+zugrunde liegende Sprachmodell und die für Personalisierung verwendeten
+Kontextinformationen müssen für die Evaluation dokumentierbar sein.
+Variable Modellantworten lassen sich dadurch nicht vollständig
+deterministisch reproduzieren. Die Studienbedingungen und die
+regelbasierte Steuerungslogik sollen jedoch so weit wie möglich fixiert
+und versioniert werden.
+
+Die sieben Anforderungen übersetzen den theoretischen Rahmen in prüfbare
+Gestaltungsziele. Die folgenden Abschnitte spezifizieren ihre technische
+Umsetzung, während Kapitel 4 untersucht, in welchem Umfang der
+resultierende Prototyp die definierten Anforderungen erfüllt.
+
+## 3.2 Architekturentscheidung
+
+Die Systemarchitektur dient der Umsetzung der in Abschnitt 3.1
+formulierten Anforderungen. Sie wird nicht als unmittelbare Folge
+psychologischer Theorie verstanden. Entscheidungen über Anzahl der
+Agenten, technische Schichten, Speicherkomponenten und Modellanbindung
+sind technische Entwurfsentscheidungen. Ihre wissenschaftliche
+Begründung liegt darin, dass sie die geforderten Eigenschaften des
+Artefakts mit möglichst geringer zusätzlicher Komplexität prüfbar
+umsetzen.
+
+Der Prototyp verwendet eine einzelne dialogführende Agenteninstanz.
+Diese Entscheidung reduziert zusätzliche Koordinationslogik zwischen
+mehreren gleichzeitig antwortenden Agenten und erleichtert die Zuordnung
+beobachteter Systemantworten zur dokumentierten Gesprächslogik. Aus
+dieser Architekturentscheidung folgt keine generelle Überlegenheit eines
+einzelnen Agenten gegenüber Systemen mit mehreren Agenten. Sie ist eine
+projektspezifische Festlegung für den untersuchten Prototyp.
+
+Die Verarbeitung wird funktional in vier Bereiche getrennt. Die
+Eingabeschicht übernimmt Nutzereingaben und Sitzungsinformationen. Die
+Dialogschicht verbindet das verwendete Sprachmodell mit den jeweils
+relevanten Gesprächsregeln und Kontextinformationen. Die
+Persistenzschicht speichert jene Informationen, die für
+sitzungsübergreifende Personalisierung vorgesehen sind. Die
+Datenschutzschicht begrenzt Speicherung, Zugriff und Weitergabe
+personenbezogener Daten entsprechend dem in Abschnitt 2.6 beschriebenen
+Rahmen. Diese Trennung beschreibt Verantwortungsbereiche der Architektur
+und nicht vier voneinander unabhängige technische Systeme.
+
+Für die Dialogsteuerung werden Systemregeln, Nutzerkontext und adaptive
+Gesprächsinformationen modular zusammengeführt. Diese Modularisierung
+soll ermöglichen, einzelne Bestandteile zu versionieren und in der
+Evaluation getrennt zu dokumentieren. Das zugrunde liegende Sprachmodell
+wird über eine abgegrenzte Schnittstelle angesprochen. Ein Modellwechsel
+ist dadurch technisch vorgesehen. Gleichwertiges Verhalten verschiedener
+Modelle wird jedoch nicht vorausgesetzt und muss für jedes eingesetzte
+Modell erneut evaluiert werden.
+
+Die sitzungsübergreifende Personalisierung erfordert persistente
+Informationen. Gespeichert werden deshalb nur Daten, die für die im
+Prototyp vorgesehenen Funktionen benötigt werden. Die konkrete
+Speicherstruktur und die Regeln zur Aktualisierung des Nutzerkontexts
+werden in Abschnitt 3.5 beschrieben. Eine persistente Speicherung ist
+dabei kein Selbstzweck. Sie muss gegenüber dem Nutzen für
+Personalisierung und den datenschutzrechtlichen Anforderungen begründet
+werden.
+
+Die Architektur soll schließlich die wissenschaftliche Prüfung des
+Artefakts unterstützen. Verwendetes Modell, Promptversionen, zentrale
+Steuerungsregeln und relevante Konfigurationen werden dokumentiert.
+Damit werden die Bedingungen einzelner Evaluationsläufe nachvollziehbar.
+Wegen der stochastischen Generierung durch Sprachmodelle bedeutet diese
+Dokumentation keine vollständige Reproduzierbarkeit identischer
+Antworten. Sie ermöglicht jedoch eine kontrolliertere Zuordnung von
+Ergebnissen zu einer definierten Systemversion.
+
+Die Bezeichnung Minimum Viable Architecture wird in dieser Arbeit daher
+als projektspezifisches Entwurfsprinzip verwendet. Gemeint ist die
+kleinste für die Forschungsziele ausreichende Architektur des Prototyps.
+Der Begriff stellt kein empirisch validiertes Architekturmodell dar.
+Entscheidend ist nicht technische Minimalität an sich, sondern die
+nachvollziehbare Umsetzung der Designanforderungen bei begrenzter
+Komplexität.
+
+## 3.3 Textbasierte Adaptionssignale
+
+Die dialogische Adaptation des Prototyps verwendet sprachliche Hinweise
+aus dem laufenden Gespräch. Diese Hinweise werden nicht als Messung
+eines psychologischen Zustands interpretiert. Das transaktionale
+Stressmodell dient lediglich als theoretischer Ordnungsrahmen. Primäre
+Bewertung betrifft die Bedeutung einer Situation für das eigene
+Wohlergehen. Sekundäre Bewertung betrifft wahrgenommene
+Bewältigungsmöglichkeiten und verfügbare Ressourcen (Lazarus & Folkman,
+1984). Aus dieser Theorie folgt jedoch kein validiertes Verfahren, mit
+dem sich beide Bewertungsprozesse aus einzelnen Chatnachrichten
+zuverlässig bestimmen lassen.
+
+Für den Prototyp werden deshalb keine diagnostischen Stressmarker
+definiert. Stattdessen nutzt die Gesprächssteuerung heuristische
+Adaptionssignale. Hinweise auf wahrgenommene Belastung können
+beispielsweise explizite Aussagen über Überforderung, Zeitdruck oder
+fehlende Kontrolle sein. Hinweise auf wahrgenommene
+Bewältigungsmöglichkeiten können explizit genannte Ressourcen,
+Handlungsoptionen oder eigene nächste Schritte sein. Diese Kategorien
+sind theorieinformierte Designregeln. Sie sind keine validierte Skala
+und erlauben weder eine Stressdiagnose noch eine reliable Schätzung von
+Primärbewertung, Sekundärbewertung oder Copingpotenzial.
+
+Forschung zur automatisierten Stressklassifikation zeigt grundsätzlich,
+dass textuelle Merkmale Informationen enthalten können, die für die
+Unterscheidung belasteter und unbelasteter Texte nutzbar sind.
+Entsprechende Verfahren kombinieren jedoch unterschiedliche
+lexikalische, syntaktische und semantische Merkmale und müssen anhand
+gelabelter Datensätze empirisch trainiert und geprüft werden (Muñoz &
+Iglesias, 2022). Diese Evidenz validiert daher nicht die im Prototyp
+verwendeten heuristischen Signale. Sie begründet lediglich, dass Sprache
+grundsätzlich als Datenquelle für explorative Adaptation untersucht
+werden kann.
+
+Ein Wechsel des Unterstützungsmodus soll nicht durch ein einzelnes
+sprachliches Signal ausgelöst werden. Die Steuerung kann mehrere
+aufeinanderfolgende Gesprächsbeiträge berücksichtigen und einen
+Moduswechsel erst bei einem konsistenten Muster vornehmen. Eine solche
+Hysterese reduziert kurzfristige Wechsel aufgrund einzelner
+Formulierungen. Die konkrete Zahl erforderlicher Beiträge ist jedoch
+eine technische Designentscheidung. Solange sie nicht empirisch
+kalibriert wurde, darf sie nicht als psychologisch begründeter
+Schwellenwert dargestellt werden.
+
+Zusätzlich muss die lernende Person eine Systeminterpretation
+korrigieren können. Diese Möglichkeit ist notwendig, weil sprachliche
+Merkmale mehrdeutig sind und individuelle Ausdrucksweisen variieren.
+Eine Äußerung kann situative Belastung anzeigen, aber ebenso durch
+persönlichen Sprachstil, Kontext oder andere nicht beobachtete Faktoren
+entstehen. Die nutzerseitige Korrektur ist deshalb Bestandteil der
+Adaptionslogik und keine bloße Komfortfunktion.
+
+Die textbasierten Adaptionssignale werden in der Pilotstudie nicht als
+validiertes Messinstrument behandelt. Analysen ihrer Häufigkeit, ihrer
+Verbindung mit Moduswechseln oder ihrer Übereinstimmung mit anderen
+Variablen sind explorativ. Eine erfolgreiche technische Reaktion auf
+definierte Signalmuster zeigt lediglich, dass die implementierte
+Adaptionsregel funktioniert. Sie belegt nicht, dass das System den
+tatsächlichen psychologischen Zustand der lernenden Person erkannt hat.
+
+## 3.4 Sokratische Adaptionslogik
+
+### 3.4.1 Interaktionsmodi
+
+Die Gesprächssteuerung unterscheidet vier Interaktionsmodi. Diese Modi
+sind keine psychologischen Zustandsklassen. Sie sind Designzustände des
+Systems, mit denen unterschiedliche Formen der Unterstützung konsistent
+beschrieben und technisch gesteuert werden. Ihre Auswahl basiert auf den
+in Abschnitt 3.3 beschriebenen Gesprächshinweisen sowie auf dem
+verfügbaren Nutzerkontext. Eine Moduszuordnung darf daher nicht als
+Feststellung von Stress, Flow oder Coping interpretiert werden.
+
+Der sokratisch explorative Modus priorisiert offene Fragen und geringe
+inhaltliche Vorgaben, wenn die bisherige Interaktion keine stärkere
+Strukturierung nahelegt. Der unterstützende Modus ergänzt Fragen durch
+kurze Orientierung oder Teilstrukturierung, wenn Gesprächshinweise auf
+Schwierigkeiten bei der eigenständigen Bearbeitung hindeuten. Der
+bestärkende Modus spiegelt konkret beobachtbare Fortschritte oder selbst
+formulierte Lösungsansätze, ohne daraus stabile Eigenschaften der Person
+abzuleiten. Der kritisch prüfende Modus hinterfragt Annahmen, Gründe und
+Konsequenzen, sofern die Gesprächssituation eine solche Vertiefung
+zulässt.
+
+Die vier Modi operationalisieren damit ein Spektrum zwischen geringer
+und stärkerer Unterstützung sowie zwischen explorativer und prüfender
+Gesprächsführung. Der Expertise Reversal Effect und Scaffolding
+begründen die allgemeine Notwendigkeit variabler Unterstützung. Sie
+validieren jedoch weder diese konkrete Viererstruktur noch ihre
+Aktivierungsregeln. Beides sind Entwurfsentscheidungen des Prototyps,
+deren technische Konsistenz in Kapitel 4 geprüft wird.
+
+Die Modusauflösung erfolgt außerhalb des Sprachmodells anhand
+dokumentierter Steuerungsregeln. Der gewählte Modus wird dem
+Sprachmodell als Teil des Gesprächskontexts übergeben. Dadurch lässt
+sich nachvollziehen, welche Systemregel für eine Antwort vorgesehen war.
+Das Sprachmodell bleibt dennoch stochastisch und kann die Vorgabe
+unterschiedlich umsetzen. Die Evaluation muss deshalb getrennt prüfen,
+ob die Steuerungslogik den vorgesehenen Modus auswählt und ob das
+Sprachmodell diesen Modus in der erzeugten Antwort tatsächlich einhält.
+
+### 3.4.2 Fragetypen
+
+Für die Gesprächsführung verwendet der Prototyp sechs funktionale
+Fragetypen. Dazu gehören Klärungsfragen, hypothetische Fragen,
+Widerspruchsfragen, systemische Fragen, Fragen zum nächsten
+Handlungsschritt und Fragen zur Aktivierung von Vorwissen. Diese
+Taxonomie ist eine projektspezifische Spezifikation. Sie darf nicht mit
+etablierten Klassifikationen sokratischer Fragen gleichgesetzt werden.
+In der Literatur werden beispielsweise sechs andere Kategorien
+beschrieben, die Klärung, Annahmen, Gründe und Evidenz, Perspektiven,
+Implikationen sowie Fragen über die Frage selbst unterscheiden (Le,
+2019).
+
+Die projektspezifischen Fragetypen erfüllen unterschiedliche Funktionen
+im Agentendesign. Klärungsfragen präzisieren unklare Aussagen.
+Hypothetische und systemische Fragen erweitern den betrachteten Kontext.
+Widerspruchsfragen prüfen Inkonsistenzen oder konkurrierende Annahmen.
+Fragen zum nächsten Handlungsschritt unterstützen die Konkretisierung
+einer Handlungsabsicht. Fragen zur Aktivierung von Vorwissen stellen
+Bezüge zu bereits vorhandenem Wissen oder früheren Gesprächsinhalten
+her. Die Zuordnung dieser Typen zu festen kognitiven Stufen wird nicht
+vorausgesetzt, da die kognitive Anforderung einer Frage vom Inhalt und
+vom Vorwissen der lernenden Person abhängt.
+
+Die sechs Typen dienen vor allem der Spezifikation und Evaluation. Für
+definierte Testsituationen kann geprüft werden, ob das Sprachmodell den
+jeweils geforderten Fragetyp erzeugt und verbotene Antwortformen
+vermeidet. Eine erfolgreiche Klassifikation oder Generierung belegt die
+Einhaltung der Gesprächsspezifikation. Sie belegt nicht, dass ein
+bestimmter Fragetyp einen vorher festgelegten kognitiven oder
+motivationalen Effekt hervorruft.
+
+### 3.4.3 Sitzungsprogression
+
+Der Prototyp ist für zehn Nutzungssitzungen konzipiert. Die Anzahl von
+zehn Sitzungen ist eine Festlegung des Studiendesigns und lässt sich
+weder aus dem Spacing Effekt noch aus einer Lernzieltaxonomie als
+notwendige Mindestzahl ableiten. Verteilte Lerngelegenheiten begründen
+lediglich, Lernaktivitäten über mehrere Zeitpunkte zu verteilen. Die
+konkrete Dauer und Anzahl der Sitzungen ergeben sich aus dem
+vorgesehenen Nutzungsszenario und der Durchführbarkeit der Pilotstudie.
+
+Innerhalb dieses Rahmens folgt die Gesprächsführung einer geplanten
+Progression. Frühe Sitzungen dienen vor allem der Klärung von
+Lernanliegen, Vorwissen und konkreten Schwierigkeiten. Mittlere
+Sitzungen nutzen stärker anwendungsbezogene Fragen und greifen frühere
+Gesprächsinhalte wieder auf. Späte Sitzungen richten den Blick stärker
+auf eigenständige Fortführung, Rückblick und zukünftige
+Handlungsschritte. Diese Progression ist ein Designmodell des Prototyps.
+Sie wird nicht als empirisch validierte Abfolge kognitiver
+Entwicklungsstufen dargestellt.
+
+Wiederaufnahmen früherer Inhalte können verteilte Abrufgelegenheiten
+schaffen. Der Spacing Effekt stützt die grundsätzliche Verteilung von
+Lerngelegenheiten über die Zeit (Cepeda et al., 2006). Er belegt jedoch
+nicht, dass ein Rückbezug auf ein früheres Gesprächszitat bereits Spaced
+Retrieval im experimentell geprüften Sinn darstellt. Solche Rückbezüge
+werden deshalb als Gedächtnis und Kohärenzfunktion des Agenten
+beschrieben.
+
+Jede Sitzung besitzt zudem eine interne Gesprächsstruktur aus
+Orientierung, Arbeitsphase und Sicherung. Diese Struktur dient der
+Konsistenz des Prototyps. Sie wird nicht als direkte Implementierung
+eines einzelnen etablierten Instruktionsmodells beansprucht. Konkrete
+Regeln wie eine begrenzte Zahl gleichzeitig gestellter Fragen oder ein
+abschließender Rückblick sind Prompt und Interaktionsentscheidungen, die
+in der technischen Evaluation auf Einhaltung geprüft werden.
+
+### 3.4.4 Erster Schritt Loop
+
+Der Erster Schritt Loop ist eine eigene Designkomponente des Prototyps.
+Sein theoretischer Bezug liegt in Implementation Intentions. Diese
+konkretisieren Zielabsichten, indem eine antizipierte Situation mit
+einer vorgesehenen Handlung verknüpft wird (Gollwitzer, 1999). Die
+Forschung zu Implementation Intentions stützt damit insbesondere Fragen
+nach dem Zeitpunkt, dem Kontext und der konkreten Ausführung eines
+beabsichtigten nächsten Schritts. Sie validiert jedoch nicht den
+gesamten im Prototyp implementierten Loop.
+
+Im System wird ein von der lernenden Person formulierter nächster
+Schritt gespeichert und in einer späteren Sitzung erneut aufgegriffen.
+Wurde er umgesetzt, kann die Person reflektieren, was die Umsetzung
+ermöglicht hat. Wurde er nicht umgesetzt, kann der Schritt
+konkretisiert, verkleinert oder an einen geeigneteren Kontext gebunden
+werden. Das Speichern, spätere Wiederaufgreifen und iterative Anpassen
+des Schritts sind eigene Designentscheidungen. Sie erweitern das Prinzip
+der Implementation Intention um eine sitzungsübergreifende Rückkopplung.
+
+Die Metaanalyse von Gollwitzer und Sheeran (2006) zeigt, dass
+Implementation Intentions die Zielerreichung über unterschiedliche
+Anwendungsfelder hinweg unterstützen können. Daraus folgt jedoch kein
+Wirksamkeitsnachweis für den Erster Schritt Loop des Agenten. Ob die im
+Dialog formulierten Schritte tatsächlich umgesetzt werden und welche
+Bedeutung der Loop für die Pilotstudie besitzt, muss anhand der
+erhobenen Daten getrennt untersucht werden.
+
+### 3.4.5 Sprachliche Begrenzungen
+
+Die Gesprächslogik begrenzt wertende und personenbezogen typisierende
+Aussagen. Der Agent soll keine stabilen Eigenschaften aus einzelnen
+Äußerungen ableiten, keine unbegründeten Prognosen formulieren und
+Fortschritt nicht durch pauschales Lob bewerten. Wenn positive
+Entwicklung aufgegriffen wird, soll sich die Rückmeldung auf konkret
+beobachtbare Aussagen, Entscheidungen oder Handlungen beziehen. Diese
+Regel schützt die Eigenattribution der lernenden Person, ohne zu
+behaupten, dass jede Form von Lob grundsätzlich motivationsschädlich
+ist.
+
+Auch der Verzicht auf unmittelbare Ratschläge ist keine absolute Regel.
+Primär soll der Agent durch Fragen und begrenztes Scaffolding
+Eigenaktivität erhalten. Wenn notwendige Kontextinformation fehlt oder
+eine rein fragende Reaktion die Bearbeitung blockieren würde, kann kurze
+strukturierende Information zulässig sein. Damit bleibt das
+Gesprächsprinzip mit der in Abschnitt 3.1 formulierten Anforderung
+variabler Unterstützung vereinbar.
+
+Abschnitt 3.4 beschreibt somit eine regelbasierte Gesprächsspezifikation
+und kein validiertes psychologisches Interventionsprogramm. Die vier
+Modi, sechs projektspezifischen Fragetypen, Sitzungsprogression und der
+Erster Schritt Loop sind zentrale Bestandteile des Designartefakts.
+Kapitel 4 muss ihre technische Einhaltung und, soweit Daten vorliegen,
+ihre Nutzung im Feld getrennt von psychologischen Wirkungsbehauptungen
+evaluieren.
+
+## 3.5 Gedächtnis und persistente Personalisierung
+
+Die sitzungsübergreifende Personalisierung wird durch externe
+Kontextspeicher realisiert. Sie verändert nicht die Parameter des
+zugrunde liegenden Sprachmodells. Gespeicherte Informationen werden bei
+späteren Anfragen erneut als Kontext bereitgestellt. Diese Architektur
+erlaubt eine Trennung zwischen Basismodell und nutzerspezifischem
+Gedächtnis. Sie bedeutet jedoch nicht, dass die Verarbeitung der in den
+Kontext aufgenommenen Daten ausschließlich innerhalb der eigenen
+Infrastruktur erfolgt. Werden solche Informationen an eine externe
+Modellschnittstelle übermittelt, findet dort ebenfalls eine Verarbeitung
+statt. Die datenschutzrechtliche Bewertung richtet sich daher nach dem
+tatsächlichen Datenfluss und nicht allein danach, ob ein Modelltraining
+stattfindet.
+
+Die erste Speicherebene enthält den zu Studienbeginn erhobenen
+Ausgangskontext. Dazu können das Lernziel und ausgewählte Ergebnisse der
+Eingangserhebung gehören. GSE und MSLQ Werte sind dabei primär
+Forschungsvariablen. Werden sie zusätzlich als Promptkontext verwendet,
+beeinflussen sie potenziell die vom Agenten erzeugte Gesprächsführung
+und werden damit zugleich Bestandteil der Intervention. Dieser
+Doppelgebrauch muss in Kapitel 4 transparent dokumentiert und bei der
+Interpretation berücksichtigt werden. Ein unveränderter Ausgangskontext
+kann die Studienbedingungen standardisieren. Er sichert jedoch nicht die
+interne Validität eines Prä Post Vergleichs.
+
+Ein automatisch erzeugter Profiltext ist methodisch besonders sensibel.
+Er verdichtet Messwerte und weitere Angaben zu einer interpretativen
+Beschreibung der lernenden Person. Dadurch können zusätzliche Annahmen
+entstehen, die nicht unmittelbar in den Ausgangsdaten enthalten sind.
+Für die Pilotstudie sollte ein solcher Profiltext deshalb nur verwendet
+werden, wenn seine konkrete Funktion für die Adaptation spezifiziert,
+seine Erzeugungsregel fixiert und sein zusätzlicher Nutzen gegenüber den
+strukturierten Ausgangsdaten begründet ist. Andernfalls erhöht er sowohl
+die Interpretationsunsicherheit als auch den Umfang personenbezogener
+Profilinformationen.
+
+Die zweite Speicherebene enthält strukturierte Informationen aus
+einzelnen Sitzungen. Für die sitzungsübergreifende Gesprächsführung sind
+insbesondere ein selbst formulierter nächster Handlungsschritt und eine
+knappe Zusammenfassung relevanter Gesprächsinhalte funktional
+begründbar. Weitere Felder wie Stimmung, Reibungspunkte oder ein
+automatisch ausgewähltes stärkstes Zitat dürfen nicht allein deshalb
+dauerhaft gespeichert werden, weil sie technisch verfügbar sind. Nach
+dem Grundsatz der Datenminimierung müssen gespeicherte personenbezogene
+Daten für den jeweiligen Zweck angemessen, erheblich und auf das
+notwendige Maß beschränkt sein (Europäische Union, 2016).
+
+Wörtliche Nutzeräußerungen können für spätere Rückbezüge nützlich sein,
+erhöhen aber zugleich die Menge potenziell sensibler Freitextdaten. Für
+Widerspruchsfragen oder Rückblicke ist daher zu prüfen, ob ein
+vollständiges Zitat erforderlich ist oder eine kürzere, sachlich
+begrenzte Repräsentation denselben Zweck erfüllt. Ein Feld wie
+strongest_quote ist keine psychometrische Variable und besitzt ohne
+definierte Auswahlkriterien keine eigenständige wissenschaftliche
+Bedeutung. Wird es verwendet, muss dokumentiert werden, nach welchen
+Regeln eine Äußerung ausgewählt und für welche Funktion sie später
+erneut eingebracht wird.
+
+Die dritte Speicherebene ermöglicht eine semantische Suche über frühere
+Gesprächsinhalte. Technisch kann eine vektorbasierte Repräsentation
+relevante frühere Passagen für eine neue Anfrage auffindbar machen. Für
+die Forschungsfrage ist jedoch nicht die verwendete Datenbanktechnologie
+entscheidend, sondern die Retrievalregel. Dokumentiert werden müssen
+insbesondere welche Inhalte indexiert werden, wie viele frühere
+Fragmente abgerufen werden und unter welchen Bedingungen sie in den
+Modellkontext gelangen. Die technische Implementierung mit einer
+konkreten Datenbankerweiterung gehört in die Systemdokumentation und ist
+keine eigenständige theoretische Designanforderung.
+
+Die Personalisierung muss für Nutzende kontrollierbar bleiben.
+Gespeicherte oder inferierte Angaben können unvollständig oder falsch
+sein. Deshalb sollen relevante Profilinformationen und wiederverwendete
+Erinnerungen einsehbar und, soweit technisch vorgesehen, korrigierbar
+oder löschbar sein. Diese Anforderung folgt zugleich aus der
+epistemischen Unsicherheit automatischer Profilbildung und aus
+datenschutzrechtlichen Grundsätzen wie Transparenz, Richtigkeit,
+Datenminimierung und Speicherbegrenzung (Europäische Union, 2016).
+Pseudonymisierte Gedächtnisdaten bleiben personenbezogene Daten, solange
+eine Zuordnung mit zusätzlichen Informationen möglich ist.
+
+Der bisher vorgesehene Lernfaden wird daher als nutzerseitige
+Darstellung ausgewählter, für die Lernbegleitung relevanter Erinnerungen
+verstanden und nicht als möglichst vollständige Chronik. Ein Export oder
+eine Löschung kann Betroffenenrechte technisch unterstützen. Ob daraus
+im konkreten Fall unmittelbar ein Anspruch nach einem bestimmten Artikel
+der Datenschutz Grundverordnung folgt, wird in Abschnitt 3.6 anhand der
+jeweiligen Verarbeitung und Voraussetzungen eingeordnet.
+
+Auch offene Fragen am Sitzungsende werden nicht mit einem behaupteten
+Zeigarnik Effekt begründet. Der klassische Effekt beschreibt eine
+Gedächtnistendenz für unterbrochene oder unvollständige Aufgaben. Daraus
+folgt nicht, dass eine absichtlich ungelöste Frage in einem Lernagenten
+Motivation, Wiederkehr oder Lernerfolg zuverlässig steigert. Eine offene
+Abschlussfrage kann als Gesprächs und Übergangsentscheidung des
+Prototyps eingesetzt werden, benötigt für ihre technische Funktion aber
+keine psychologische Wirkungsbehauptung.
+
+Die produktive Pilotversion nutzte ausschließlich das qualitative
+Lernendenprofil und kumulative Session Summaries als Gedächtniskontext.
+Eine Datenbankstruktur für semantisches Retrieval mit pgvector war zwar
+angelegt, wurde jedoch nicht in die Chatlogik eingebunden. Embeddings
+wurden nicht geschrieben und ein semantischer Abruf fand während der
+Pilotstudie nicht statt.
+
+Das Gedächtnis ist damit kein eigenständiger Wirkmechanismus, sondern
+Infrastruktur für Kontinuität und begrenzte Personalisierung. Seine
+wissenschaftliche Bewertung muss drei Fragen trennen. Erstens ist zu
+prüfen, ob relevante Informationen technisch korrekt gespeichert und
+wiedergefunden werden. Zweitens ist zu prüfen, ob die wiederverwendeten
+Informationen die vorgesehene Gesprächsfunktion unterstützen. Drittens
+ist zu prüfen, ob Umfang und Dauer der Speicherung gegenüber
+Forschungszweck und Datenschutzanforderungen gerechtfertigt sind. Eine
+technische Funktionsprüfung des Gedächtnisses belegt weder einen
+Lerneffekt noch eine valide psychologische Profilbildung.
+
+## 3.6 Compliance Design
+
+Abschnitt 2.6 grenzt die für den Prototyp relevanten rechtlichen
+Anforderungen ein. Die Konzeption übersetzt diese Anforderungen in
+technische und organisatorische Maßnahmen. Dabei wird zwischen
+gesetzlichen Pflichten, möglichen technischen Umsetzungen und
+freiwilligen Schutzmaßnahmen unterschieden. Eine implementierte Funktion
+wird nicht allein deshalb als rechtskonform bezeichnet. Die rechtliche
+Bewertung hängt vom konkreten Verarbeitungsvorgang, den Rollen der
+Beteiligten und der tatsächlichen Systemkonfiguration ab.
+
+Datenschutz durch Technikgestaltung wird im Prototyp durch begrenzte
+Datenspeicherung, Pseudonymisierung, Zugriffsbeschränkungen und
+getrennte Verarbeitungskontexte umgesetzt. Artikel 25 der Datenschutz
+Grundverordnung verlangt geeignete technische und organisatorische
+Maßnahmen sowie datenschutzfreundliche Voreinstellungen (Europäische
+Union, 2016). Der Betrieb der eigenen Anwendungs und
+Datenbankkomponenten innerhalb der Europäischen Union reduziert
+bestimmte Transferfragen. Er schließt Drittlandverarbeitung jedoch nicht
+aus, wenn Gesprächsinhalte an einen externen Sprachmodellanbieter
+außerhalb des Europäischen Wirtschaftsraums übermittelt werden.
+
+Für externe Sprachmodelldienste müssen deshalb die
+datenschutzrechtlichen Rollen und tatsächlichen Datenflüsse dokumentiert
+werden. Liegt eine Auftragsverarbeitung vor, richtet sich die
+vertragliche Absicherung nach Artikel 28 der Datenschutz
+Grundverordnung. Erfolgt eine Übermittlung personenbezogener Daten in
+ein Drittland, sind zusätzlich die Voraussetzungen des fünften Kapitels
+zu prüfen. Standarddatenschutzklauseln können nach Artikel 46 eine
+geeignete Garantie darstellen. Ihre bloße Existenz belegt jedoch nicht
+automatisch die Zulässigkeit jeder konkreten Übermittlung. Für die
+Thesis werden daher Anbieter, Verarbeitungsort, Vertragsgrundlage und
+Übermittlungsmechanismus der tatsächlich eingesetzten
+Studienkonfiguration dokumentiert.
+
+Die Transparenz gegenüber den Teilnehmenden wird auf zwei Ebenen
+umgesetzt. Erstens informiert das Onboarding vor Beginn der Interaktion
+darüber, dass die Lernbegleitung durch ein KI System erfolgt. Diese
+Maßnahme setzt die Transparenzanforderung aus Artikel 50 Absatz 1 des EU
+AI Acts für unmittelbar mit natürlichen Personen interagierende KI
+Systeme um. Diese Vorschrift ist seit dem 2. August 2026 anwendbar und
+wurde durch die Verordnung (EU) 2026/1744 nicht auf einen späteren
+Zeitpunkt verschoben (Europäische Union, 2024; Europäische Union, 2026).
+Zweitens werden die Teilnehmenden über Zweck, Kategorien und Empfänger
+der personenbezogenen Daten sowie über Speicherdauer und
+Betroffenenrechte informiert. Diese datenschutzrechtlichen Informationen
+sind von der KI Kennzeichnung zu unterscheiden.
+
+Artikel 22 der Datenschutz Grundverordnung wird nicht als allgemeine
+Grundlage des Transparenz Layers verwendet. Die Vorschrift betrifft
+ausschließlich auf automatisierter Verarbeitung beruhende Entscheidungen
+mit rechtlicher oder ähnlich erheblicher Wirkung. Der Prototyp trifft
+nach seinem vorgesehenen Verwendungszweck keine solchen Entscheidungen.
+Die Anzeige eines aktiven Gesprächsmodus oder die Möglichkeit, eine
+Systeminterpretation zu korrigieren, sind daher Designmaßnahmen für
+Nachvollziehbarkeit und Nutzerkontrolle. Sie stellen nicht die Umsetzung
+einer aus Artikel 22 folgenden Anfechtungspflicht dar.
+
+Die Einwilligung der Teilnehmenden wird ebenfalls von der technischen
+Oberfläche getrennt betrachtet. Eine anklickbare Zustimmung macht eine
+Einwilligung nicht automatisch wirksam. Soweit die Datenverarbeitung in
+der Pilotstudie auf Artikel 6 Absatz 1 Buchstabe a gestützt wird, müssen
+die Bedingungen der Einwilligung erfüllt sein. Für besondere Kategorien
+personenbezogener Daten ist zusätzlich Artikel 9 zu berücksichtigen. Der
+vorgesehene Einwilligungsprozess muss deshalb Zweck, Datenarten,
+Empfänger, mögliche Drittlandverarbeitung, Widerrufsmöglichkeiten und
+Folgen eines Widerrufs verständlich abbilden. Die konkrete
+Studieninformation und Einwilligungserklärung werden im Anhang
+dokumentiert.
+
+Die Anwendung unterstützt die Ausübung von Betroffenenrechten durch
+Funktionen zur Einsicht, Korrektur und Löschung gespeicherter
+Informationen. Ein Datenexport kann die praktische Wahrnehmung des
+Rechts auf Datenübertragbarkeit unterstützen. Aus der Existenz einer
+Export oder Löschfunktion folgt jedoch nicht, dass damit sämtliche
+gesetzlichen Voraussetzungen und Verfahrenspflichten der Artikel 15 bis
+21 vollständig umgesetzt sind. Für wissenschaftliche Forschungsdaten
+können zudem besondere rechtliche Voraussetzungen und Einschränkungen
+relevant sein. Deshalb werden technische Funktionen und rechtliche
+Ansprüche in der Arbeit nicht gleichgesetzt.
+
+Die Erkennung von Krisensprache wird als freiwillige Schutzmaßnahme des
+Forschungsprototyps behandelt. Sie ist keine aus den hier geprüften
+Vorschriften unmittelbar abgeleitete Pflicht für einen Lernagenten. Bei
+einem definierten Krisenmuster soll die normale Lerninteraktion
+unterbrochen und ein standardisierter Hinweis auf geeignete
+Hilfsangebote ausgegeben werden. Der Agent soll in dieser Situation
+keine therapeutische Beratung übernehmen. Die technische Evaluation
+prüft, ob definierte Testfälle die vorgesehene Schutzreaktion auslösen.
+Ein bestandener Test belegt die korrekte Umsetzung der spezifizierten
+Regel und nicht die zuverlässige Erkennung sämtlicher realer
+Krisensituationen.
+
+Das Compliance Design ist damit kein eigenständiger Nachweis
+vollständiger Rechtskonformität. Es dokumentiert, wie identifizierte
+rechtliche und ethische Anforderungen in die Architektur des
+Forschungsprototyps übersetzt werden. Für die wissenschaftliche
+Evaluation sind insbesondere die dokumentierte KI Kennzeichnung, die
+Nachvollziehbarkeit der Datenflüsse, die Zugriffsbeschränkung, die Lösch
+und Korrekturmöglichkeiten sowie die definierte Reaktion auf
+Krisentestfälle prüfbar. Rechtliche Bewertung und technische
+Funktionsprüfung bleiben dabei getrennte Ebenen.
+
+Kapitel 3 spezifiziert damit das Forschungsartefakt auf drei Ebenen. Die
+Designanforderungen definieren die aus Kapitel 2 abgeleiteten
+Zielkriterien. Architektur, Adaptionslogik und Gedächtnis übersetzen
+diese Kriterien in prüfbare Systemfunktionen. Das Compliance Design
+begrenzt ihre technische Umsetzung durch rechtliche und ethische
+Anforderungen. Die beschriebenen Komponenten sind Designentscheidungen
+und keine vorweggenommenen Wirkungsnachweise. Kapitel 4
+operationalisiert deshalb getrennt die technische Funktionsprüfung, die
+Evaluation des Sprachmodellverhaltens und die explorative Untersuchung
+der Nutzungs und Outcome Daten.

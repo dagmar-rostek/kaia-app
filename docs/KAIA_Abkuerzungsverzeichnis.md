@@ -1,38 +1,70 @@
 # Abkürzungsverzeichnis
 
-*Alphabetisch geordnet. Abkürzungen, die nur einmalig verwendet werden und im Text erläutert sind, werden hier nicht gesondert aufgeführt.*
+  -----------------------------------------------------------------------
+  Abkürzung                           Bedeutung
+  ----------------------------------- -----------------------------------
+  AI                                  Artificial Intelligence
 
----
+  AI Act                              Verordnung (EU) 2024/1689 des
+                                      Europäischen Parlaments und des
+                                      Rates vom 13. Juni 2024 zur
+                                      Festlegung harmonisierter
+                                      Vorschriften für künstliche
+                                      Intelligenz und zur Änderung
+                                      weiterer Rechtsakte der Union
+                                      (Verordnung über künstliche
+                                      Intelligenz), in Kraft seit 1.
+                                      August 2024, ABl. L 2024/1689 vom
+                                      12.7.2024
 
-| Abkürzung | Ausgeschriebene Form |
-|-----------|----------------------|
-| ADR | Architectural Decision Record |
-| API | Application Programming Interface |
-| CI | Continuous Integration |
-| DSGVO | Datenschutz-Grundverordnung (Verordnung (EU) 2016/679) |
-| DPA | Data Processing Agreement (Datenverarbeitungsvertrag) |
-| DSFA | Datenschutz-Folgenabschätzung |
-| DSR | Design Science Research |
-| EMA | Ecological Momentary Assessment |
-| EU AI Act | Verordnung (EU) 2024/1689 des Europäischen Parlaments und des Rates zur Festlegung harmonisierter Vorschriften für Künstliche Intelligenz |
-| FF | Forschungsfrage |
-| GSE | Allgemeine Selbstwirksamkeitserwartung (General Self-Efficacy Scale) |
-| ITS | Intelligent Tutoring System |
-| JWT | JSON Web Token |
-| KAIA | Kinetic AI Agent |
-| KDG | Knowing-Doing Gap |
-| KI | Künstliche Intelligenz |
-| LLM | Large Language Model (Großes Sprachmodell) |
-| MSLQ | Motivated Strategies for Learning Questionnaire |
-| MVP | Minimum Viable Product |
-| ORM | Object-Relational Mapper |
-| pgvector | PostgreSQL-Erweiterung für Vektordaten und semantische Suche |
-| RAG | Retrieval-Augmented Generation |
-| RLS | Row-Level Security (Zeilensicherheit in PostgreSQL) |
-| SSE | Server-Sent Events |
-| UI | User Interface (Benutzeroberfläche) |
-| UX | User Experience (Nutzererfahrung) |
+  API                                 Application Programming Interface
 
----
+  DPA                                 Data Processing Addendum
 
-> **Hinweis zur Fertigstellung:** Das Abkürzungsverzeichnis wird bei Fertigstellung aller Kapitel nochmals auf Vollständigkeit geprüft. Abkürzungen aus Kap. 5 (Ergebnisse) werden nach Studienabschluss ergänzt.
+  DSGVO                               Verordnung (EU) 2016/679 des
+                                      Europäischen Parlaments und des
+                                      Rates vom 27. April 2016 zum Schutz
+                                      natürlicher Personen bei der
+                                      Verarbeitung personenbezogener
+                                      Daten, zum freien Datenverkehr und
+                                      zur Aufhebung der Richtlinie
+                                      95/46/EG (Datenschutz
+                                      Grundverordnung), in Kraft seit 24.
+                                      Mai 2016, ABl. L 119 vom 4.5.2016,
+                                      S. 1 bis 88
+
+  DSR                                 Design Science Research
+
+  EMA                                 Ecological Momentary Assessment
+
+  EU                                  Europäische Union
+
+  EWR                                 Europäischer Wirtschaftsraum
+
+  GPAI                                General Purpose Artificial
+                                      Intelligence
+
+  GSE                                 General Self Efficacy Scale
+
+  KI                                  Künstliche Intelligenz
+
+  LLM                                 Large Language Model
+
+  MSLQ                                Motivated Strategies for Learning
+                                      Questionnaire
+
+  QA                                  Quality Assurance
+
+  SCC                                 Standard Contractual Clauses
+
+  SRL                                 Self Regulated Learning
+
+  UX                                  User Experience
+
+  Digital Omnibus on AI               Verordnung (EU) 2026/1744 zur
+                                      Änderung des EU AI Acts und
+                                      weiterer Rechtsakte hinsichtlich
+                                      der Vereinfachung der Umsetzung
+                                      harmonisierter Vorschriften für
+                                      künstliche Intelligenz
+  -----------------------------------------------------------------------

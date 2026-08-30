@@ -1,254 +1,442 @@
-# Kapitel 2 — Theoretische Grundlagen
-
-> **Stand:** 19. August 2026 · **Version:** 3.0  
-> **Reviewer:** Psychologe (2.3, 2.7, 2.8) ✓ · Didaktiker (2.1, 2.2, 2.4–2.6, 2.9, 2.13) · AI Engineer (2.11) · Architect (2.14)  
-> **Nächste Revision:** bei inhaltlicher Erweiterung oder neuen Quellenfunden  
->
-> *v3.0 (19. August 2026): Kürzung auf ~4.500 Wörter. Überblick komprimiert. 2.12.3 (Beispielthemen als Kompetenz-Schichten) in Kap3 verschoben. 2.12.5 (Knowing-Doing Gap) gestrichen, da in 2.12.2 abgedeckt. 2.13.3 (Berliner Modell) gestrichen. 2.4.2/2.4.3 gestrafft. Oliveira/Hamari durchgehend auf 2024 korrigiert.*
-
----
-
-## Überblick
-
-Das vorliegende Kapitel entwickelt das theoretische Fundament, auf dem KAIA als sokratischer KI-Lernbegleiter konzipiert ist. Die Forschungsfrage berührt fünf Theoriefelder: lerntheoretische und didaktische Grundlagen, kognitionspsychologische Erkenntnisse zu Belastung und Expertise, motivationspsychologische Konstrukte (Selbstbestimmung, Flow, Stressbewältigung), die Psychometrie der eingesetzten Messinstrumente sowie aktuelle Ansätze der KI-gestützten Bildungstechnologie. Abschnitt 2.15 führt alle Stränge zu einem synthetischen Rahmenwerk zusammen, aus dem die Forschungshypothesen unmittelbar abgeleitet werden.
-
----
-
-## 2.1 Lerntheoretische Grundlagen: Konstruktivismus, Zone der nächsten Entwicklung und exemplarisches Lernen
-
-Das lerntheoretische Fundament von KAIA ist konstruktivistisch. Konstruktivistische Lerntheorien — geprägt durch Piaget (1952) und Vygotsky (1978) — gehen davon aus, dass Wissen nicht passiv rezipiert, sondern aktiv konstruiert wird. Lernen ist kein Transferprozess, sondern ein Prozess der Bedeutungskonstruktion: Lernende verbinden neue Informationen mit bestehenden kognitiven Schemata, prüfen Widersprüche, restrukturieren Konzepte und bilden dadurch neues, anwendbares Wissen.
-
-Vygotskys Konzept der Zone der nächsten Entwicklung (ZPD; Vygotsky, 1978) präzisiert, unter welchen Bedingungen dieser Konstruktionsprozess gelingt. Die ZPD bezeichnet den Abstand zwischen dem, was eine Person eigenständig leisten kann, und dem, was sie unter kompetenter Unterstützung zu leisten vermag. Lernförderliche Unterstützung — ob durch Peers, Lehrkräfte oder technische Systeme — sollte genau in dieser Zone ansetzen: weder zu einfach noch zu schwierig. Entscheidend ist, dass die Unterstützung schrittweise zurückgezogen wird, sobald die Lernperson die neuen Fähigkeiten internalisiert hat (Scaffolding; Wood, Bruner & Ross, 1976). KAIA übersetzt dieses Prinzip in eine technische Architektur: Die drei Gesprächscharaktere (Abschnitt 2.9) repräsentieren unterschiedliche Intensitäten sokratischer Unterstützung, die je nach wahrgenommenem kognitivem Zustand der lernenden Person aktiviert werden.
-
-Klafki (1958, 1985) hat das Prinzip des exemplarischen Lernens herausgearbeitet: Nicht der vollständige Kanon eines Wissensgebietes soll gelehrt werden, sondern exemplarische Inhalte, an denen allgemeine Prinzipien erfahrbar werden. Die freie Themenwahl in KAIA setzt dieses Prinzip um: Lernende bringen eigene, persönlich relevante Kompetenzthemen ein, an denen das übergreifende Metaziel — Selbststeuerungskompetenz — erfahrbar wird (vgl. Abschnitt 2.12).
-
----
-
-## 2.2 Kognitive Psychologie des Lernens: Kognitive Belastungstheorie und Expertise Reversal Effect
-
-Dass gute Erklärungen Lernen fördern, gilt in der Alltagspädagogik als Selbstverständlichkeit. Die Cognitive Load Theory (Sweller, 1988; Sweller, van Merriënboer & Paas, 1998) differenziert diesen Befund erheblich. Das Modell unterscheidet drei Formen kognitiver Belastung: intrinsischen Load, der durch die inhärente Komplexität des Lernstoffs entsteht; extrinsischen Load, der durch ungünstige Aufbereitung des Materials erzeugt wird; sowie lernrelevanten Load (germane load), der die kognitiven Ressourcen bezeichnet, die für den Aufbau von Schemata tatsächlich verfügbar sind. Lernförderliches Design reduziert extrinsische Belastung und maximiert lernrelevante Verarbeitungskapazität. (*Anmerkung:* Sweller hat das germane-Load-Konstrukt als eigenständige Komponente später aufgegeben und ein Zwei-Komponenten-Modell vorgelegt, in dem Schema-Aufbau als Teil des intrinsischen Load konzeptualisiert wird; Sweller, 2010. Da die Designimplikationen für KAIA in beiden Modellversionen identisch sind, wird die klassische Dreiteilung hier als heuristisch klärende Darstellung beibehalten.)
-
-Kalyuga et al. (2003) zeigen, dass Instruktionsformate, die für Novizen hocheffektiv sind — ausführliche Erklärungen, vollständige Beispiele, schrittweise Anleitungen —, für fortgeschrittene Lernende ihre Wirkung verlieren oder umkehren. Dieses Phänomen, der Expertise Reversal Effect, erklärt sich dadurch, dass Experten stabile mentale Schemata besitzen. Ausführliche Instruktionen erzeugen bei ihnen redundante Informationsverarbeitung, die kognitive Ressourcen bindet statt freizusetzen (Kalyuga, 2007). Die Konsequenz ist zwingend: Lernunterstützung muss nicht nur auf den Lernstoff, sondern auf den Wissensstand der lernenden Person zugeschnitten sein — und mit steigendem Expertise-Niveau instruktional zurücktreten.
-
-Für KAIA ergibt sich eine direkte Designkonsequenz: Ein System, das auf jede Nutzerfrage eine vollständige Antwort liefert, optimiert für Novizen und hemmt bei fortgeschrittenen Lernenden die Entwicklung metakognitiver Kompetenz (Kalyuga, 2007). KAIAs Entscheidung, ausschließlich Fragen zu stellen, ist theoretisch fundierte Reaktion auf den Expertise Reversal Effect — nicht pädagogische Prinzipienreiterei.
-
-Der Befund gegen minimal geleitete Instruktionsformen ist dabei ernst zu nehmen. Kirschner, Sweller und Clark (2006) argumentieren in einer einflussreichen Synthese, dass entdeckungsbasiertes Lernen, problembasierte Instruktion und sokratische Methodik für Novizen bei der Erstaneignung neuen Wissens systematisch weniger effektiv sind als direkte Instruktion: Ohne stützende kognitive Schemata fehlen die Grundlagen für produktive Eigenexploration. Diese Kritik trifft eine wichtige Grenze des sokratischen Prinzips.
-
-Für KAIAs Zielgruppe gilt diese Einschränkung nur eingeschränkt. KAIAs primäre Nutzendengruppe sind Erwachsene mit bestehendem Fachwissen, die nicht primär neues Wissen erwerben, sondern vorhandenes Wissen in handlungsleitendes Denken überführen sollen (vgl. Abschnitt 2.5, 2.12). Für diese Gruppe belegt der Expertise Reversal Effect (Kalyuga et al., 2003; Kalyuga, 2007) seinerseits, dass instruktionale Direktheit an Wirksamkeit verliert oder kontraproduktiv wirkt. Sokratische Begleitung ist für KAIA keine universell überlegene Methode — sie ist eine zielgruppen- und zielbegründete Methodenwahl, die sich aus dem Profil der Lernenden und den angestrebten metakognitiven und transferorientierten Wirkungen ergibt.
-
----
-
-## 2.3 Motivationspsychologie: Selbstbestimmung, Flow und Stressbewältigung
-
-### 2.3.1 Selbstbestimmungstheorie: Intrinsische Motivation und die Grenzen extrinsischer Verstärkung
-
-Die Selbstbestimmungstheorie (Self-Determination Theory, SDT; Deci & Ryan, 1985, 2000) postuliert drei basale psychologische Grundbedürfnisse, deren Erfüllung intrinsische Motivation aufrechthält: das Bedürfnis nach Autonomie (selbstbestimmtes Handeln), nach Kompetenzerleben (Wirksamkeitserfahrung) und nach sozialer Eingebundenheit (relatedness). Werden diese Bedürfnisse unterlaufen — durch externe Kontrolle, salienten Druck oder Fremdbeurteilung — verschiebt sich die Motivationsregulation in Richtung externer Kontrolliertheit.
-
-Der sogenannte Korrumpierungseffekt (Deci, 1971; Lepper, Greene & Nisbett, 1973) belegt empirisch, dass externe Belohnungen — auch verbales Lob — die intrinsische Motivation für intrinsisch interessante Aktivitäten schwächen, wenn sie als kontrollierend wahrgenommen werden. Für KAIAs Gesprächsdesign folgt daraus eine spezifische Gestaltungsanforderung: KAIA soll nicht bestätigen, sondern attribuieren — konkret benennen, welche Eigenleistung zum Erkenntnisfortschritt geführt hat (vgl. Weiner, 1985). Dies wahrt die Autonomiedimension der SDT und verhindert, dass Selbstwirksamkeitsstärkung durch Fremdvalidierung unterlaufen wird.
-
-### 2.3.2 Flow und optimale Aktivierung
-
-Yerkes und Dodson (1908) haben gezeigt, dass zwischen dem Grad physiologischer Erregung und der Leistungsgüte ein umgekehrt U-förmiger Zusammenhang besteht. Optimale Leistung liegt im mittleren Aktivierungsbereich, wobei das Optimum je nach Aufgabenkomplexität variiert. Teigen (1994) hat dieses Modell einer kritischen Revision unterzogen und argumentiert, dass das Entscheidende nicht ein universelles Aktivierungsniveau ist, sondern die individuelle Passung zwischen Anforderungsniveau und aktuellem Zustand einer Person — eine Relativierung, die für adaptive Lernsysteme bedeutsam ist.
-
-Csikszentmihalyi (1990) hat mit dem Flow-Konzept eine phänomenologisch reichhaltigere Perspektive eingeführt: Flow entsteht, wenn Anforderungsniveau und wahrgenommene Kompetenz im Gleichgewicht sind und beide auf hinreichend hohem Niveau liegen. Oliveira und Hamari (2025) haben den Forschungsstand zu Flow in digitalen Lernumgebungen systematisch analysiert. Ihre Befunde zeigen, dass Flow durch klar definierte Ziele, unmittelbares Feedback und dynamische Anpassung des Schwierigkeitsgrades gefördert wird. Zugleich betonen die Autoren, dass Flow in Lernsystemen nicht algorithmisch erzeugt, sondern allenfalls begünstigt werden kann. KAIAs neuroadaptiver Modus operationalisiert diese Erkenntnis: Das System schafft Rahmenbedingungen für Flow, ohne ihn mechanistisch beanspruchen zu können (vgl. Abschnitt 2.10).
-
-### 2.3.3 Transaktionales Stressmodell nach Lazarus und Folkman
-
-Das transaktionale Stressmodell von Lazarus und Folkman (1984) bricht mit der alltagspsychologischen Sichtweise, Stress sei eine objektive Eigenschaft einer Situation. Stress entsteht im Bewertungsprozess einer Person im Verhältnis zu dieser Situation. Das Modell postuliert zwei Bewertungsprozesse: In der primären Bewertung schätzt eine Person ein, ob ein Ereignis stressbezogen ist — differenziert in Schaden/Verlust, Bedrohung und Herausforderung. In der sekundären Bewertung schätzt sie ihre verfügbaren Bewältigungsressourcen ein. Das Zusammenspiel beider Bewertungen — wahrgenommene Anforderung und wahrgenommene Ressource — bestimmt das Ausmaß des erlebten Stresses (Lazarus, 1993).
-
-Für das Design von KAIA ergibt sich eine spezifische Konsequenz. Ein instruktional vorgehender KI-Tutor, der fertige Antworten liefert, reduziert kurzfristig die wahrgenommene Anforderung, stärkt jedoch nicht die wahrgenommene Ressource. Sokratische Begleitung hingegen zielt direkt auf die sekundäre Bewertung: durch eigenständiges Erarbeiten von Lösungswegen wird die Überzeugung gestärkt, über ausreichende kognitive Ressourcen zu verfügen. KAIAs Haltung ist damit eine theoretisch begründete Intervention in den Bewertungsprozess — sie verschiebt die Einschätzung von „Bedrohung" in Richtung „bewältigbare Herausforderung".
-
----
-
-## 2.4 Didaktische Grundlagen: Lernziele, Sequenzierung und Instruktionsdesign
-
-### 2.4.1 Lernzielklassifikation nach Bloom und Anderson/Krathwohl
-
-Bloom und Kollegen (1956) haben mit ihrer Taxonomie der Lernziele im kognitiven Bereich ein Klassifikationssystem vorgelegt, das die Frage „Welche Art von Lernen wird angestrebt?" operationalisierbar macht. Die revidierte Fassung (Anderson & Krathwohl, 2001) unterscheidet sechs hierarchisch geordnete Verarbeitungsniveaus: Erinnern, Verstehen, Anwenden, Analysieren, Evaluieren, Erschaffen.
-
-KAIA operiert primär auf den Niveaus Verstehen (2), Anwenden (3) und Analysieren (4). Durch sokratisches Fragen wird das bloße Erinnern (1) aktiv verhindert; Verstehen wird durch Reformulierung und Verknüpfung gefördert, Anwenden durch die Verarbeitung am eigenen Lernprojekt, Analysieren durch das Hinterfragen von Annahmen im konfrontierenden Charakter. Die Sessionarchitektur V3 (Abschnitt 2.13) staffelt diese Niveaus explizit über die Studiendauer: Die Erkundungsphase (Sessions 1–2) adressiert vorrangig Verstehen; die Transfer- und Analysephase (Sessions 3–8) Anwenden und Analysieren; die Abschlussphase (Sessions 9–10) Evaluieren und Erschaffen.
-
-### 2.4.2 Bedingungen des Lernens nach Gagné
-
-Gagné (1965, 1977) hat eine Systematik des Instruktionsdesigns entwickelt, die neun aufeinander aufbauende Unterrichtsereignisse beschreibt — von der Aufmerksamkeitsgewinnung über Vorwissensaktivierung und Lernhilfe bis zu Transfer und Retention. KAIAs sokratische Fragen übernehmen dabei mehrere dieser Ereignisse gleichzeitig: Vorwissensaktivierung, implizite Lernhilfe und Hervorrufen von Eigenleistung. Der Halbzeitspiegel in Session 5 und die Triple-Task-Abschlussgestaltung in Session 10 (Abschnitt 2.13) entsprechen Gagnés Forderung nach Retention und Transfersicherung. Das kumulative Gedächtnis (session_summary, historical_quotes) realisiert Vorwissensaktivierung über Sessiongrenzen hinweg — ein Mechanismus, der direkt aus Gagnés Lerntheorie ableitbar ist, für den er selbst keine technische Umsetzung vorschlagen konnte.
-
-### 2.4.3 First Principles of Instruction nach Merrill
-
-Merrill (2002) destilliert aus der empirischen Instruktionsforschung fünf Kernprinzipien effektiven Lernens: (1) Lernen findet statt, wenn Lernende reale Probleme lösen (Problem-Zentrierung); (2) Lernen wird gefördert, wenn an vorhandenem Wissen angeknüpft wird (Aktivierung); (3) Lernen verbessert sich, wenn neue Wissensaspekte demonstriert werden (Demonstration); (4) Lernen erfordert die Anwendung neuer Wissensaspekte durch die Lernenden selbst (Anwendung); (5) Lernen ist nachhaltiger, wenn das Erlernte in die Alltagswelt der Lernenden integriert wird (Integration).
-
-KAIAs Design erfüllt alle fünf Prinzipien: Freie Themenwahl adressiert reale, persönlich bedeutsame Probleme (1); das kumulative Gedächtnis ermöglicht Anknüpfung an Vorerfahrungen (2); sokratische Fragen provozieren die eigene Demonstration durch die Lernperson statt externer Vorführung (3, in sokratischer Umkehrung); Eigenleistung ist das Primärprinzip des gesamten Designs (4); die Autonomisierungsfrage in Session 10 expliziert den Alltagstransfer (5).
-
-### 2.4.4 Distributed Practice und die temporale Sequenzierung von Lerneinheiten
-
-Eine der robustesten Befundlagen der Kognitionspsychologie ist der Spacing-Effekt: Verteiltes Lernen über mehrere Zeitpunkte ist massed practice — dem konzentrierten Lernen in einer einzigen Sitzung — in Bezug auf langfristigen Behaltenserfolg und Transfer substanziell überlegen. Cepeda et al. (2006) haben in einer quantitativen Synthese von 254 Studien mit 317 Experimenten belegt, dass die optimale intersessionale Zeitspanne vom beabsichtigten Behaltensintervall abhängt, aber in praktisch allen untersuchten Bedingungen mindestens 24 Stunden betragen sollte. Dunlosky et al. (2013) bewerten distributed practice als die Lerntechnik mit dem stärksten empirischen Wirkungsnachweis insgesamt.
-
-Die Beschränkung auf maximal eine KAIA-Session pro Tag ist damit nicht nur eine pragmatische Nutzungsregel, sondern eine direkte Implementierung des Distributed-Practice-Prinzips. Zehn Sessions über mindestens zehn Tage — in der Praxis über drei Wochen — erzeugt die intersessionalen Abstände, die nach Cepeda et al. (2006) für nachhaltiges Behalten notwendig sind. Gleichzeitig stellt die Mindestteilnahmevorgabe (drei Sessions über drei Wochen) die Untergrenze des Spacing-Effekts sicher. Das kumulative Gedächtnis (Abschnitt 2.13) ist dabei nicht nur technisch notwendig, sondern kognitiv notwendig: Es aktiviert bei jeder Session das in Vorabsitzungen erworbene Wissen und schafft die semantischen Anker, über die Spacing seinen Effekt entfaltet (Ausubel, 1968).
-
----
-
-## 2.5 Andragogik: Besonderheiten erwachsener Lernender
-
-Die Zielgruppe der KAIA-Pilotstudie sind Erwachsene in Hochschule und beruflicher Weiterbildung. Knowles (1980, 1984) hat mit seiner Andragogik sechs Merkmale erwachsener Lernender identifiziert, die KAIAs Design direkt begründen.
-
-Erstens neigen Erwachsene zu einem selbstkonzeptbezogenen Lernbild: Je mehr Erfahrung, desto stärker die Ablehnung von Fremdsteuerung und Bevormundung. KAIAs sokratischer Ansatz — keine Antworten, keine Instruktionen — ist für diese Zielgruppe didaktisch angemessener als direktive Wissensvermittlung. Zweitens ist Erfahrung für Erwachsene eine Lernressource: Vorerfahrungen bilden die Basis neuer Konzeptverknüpfungen; das kumulative Gedächtnis adressiert dies architektonisch. Drittens orientieren sich Erwachsene an konkreten Lernbereitschaften — sie lernen, was sie für relevante Lebensaufgaben brauchen; die freie Themenwahl in KAIA entspricht diesem Prinzip direkt. Viertens bevorzugen Erwachsene problemzentriertes statt stoffzentriertes Lernen — ein Grundprinzip des sokratischen Dialogs. Fünftens prägt intrinsische Motivation das Lernverhalten stärker als externe Anreize (Knowles, 1984), was KAIAs Design ohne externe Belohnungsstrukturen begründet (vgl. Deci & Ryan, 1985; Abschnitt 2.3.1). Sechstens besteht bei Erwachsenen ein ausgeprägtes Bedürfnis zu verstehen, warum ein Lerninhalt relevant ist (need to know; Knowles, 1984): KAIAs Eingangsfrage nach dem persönlichen Lernziel adressiert dieses Grundbedürfnis direkt.
-
-Die Andragogik ist damit kein additives Theoriekonzept, sondern ein Konsistenzkriterium: Sie fordert, dass KAIAs Design die Lernenden als selbstbestimmte Erwachsene behandelt — was Fragen statt Antworten, freie Themenwahl und nutzerseitige Lernroadmap-Kontrolle unmittelbar begründet.
-
----
-
-## 2.6 Feedback-Theorie und formatives Assessment
-
-### 2.6.1 Wirkungsebenen von Feedback nach Hattie und Timperley
-
-Feedback ist eine der wirkungsstärksten Einflussgrößen auf Lernen. Hattie (2009) identifiziert Feedback in seiner Meta-Analyse mit einer durchschnittlichen Effektgröße von d = 0.73 als einen der stärksten Einflussfaktoren auf Lernerfolg. Hattie und Timperley (2007) differenzieren vier Feedback-Ebenen: die Aufgabenebene (Korrektheit, Vollständigkeit), die Prozessebene (Strategien, Verarbeitung), die Selbstregulationsebene (Selbstüberwachung, Zielsetzung) und die Selbstebene (persönliche Bewertungen wie „Gut gemacht!"). Letztere ist die schwächste und lernpsychologisch unzuverlässigste Form — pauschales persönliches Lob hat keinen messbaren Lerneffekt.
-
-Für KAIA ist diese Differenzierung designentscheidend. Sokratische Fragen sind eine Form impliziten Feedbacks — sie signalisieren, welche kognitiven Prozesse als unvollständig oder vertiefenswert angesehen werden. Der KAIA-Charakter „warm/Begleitend" greift primär auf Prozess- und Selbstregulationsebene; Feedback auf Selbstebene ist durch das Prompt-Design zu vermeiden. Dwecks (1999) Befunde zur Growth-vs.-Fixed-Mindset-Theorie ergänzen dies: Feedback, das Erfolg auf Anstrengung und Strategie attribuiert, stärkt Explorationsbereitschaft und Resilienz. KAIAs bestärkender Gesprächsstil muss — im Sinne von Weiner (1985), Dweck (1999) und Hattie und Timperley (2007) — auf interne, kontrollierbare Faktoren attribuieren, nicht auf pauschale Kompetenz.
-
-### 2.6.2 Ecological Momentary Assessment als Grundlage des EMA-Feedbacksystems
-
-Ecological Momentary Assessment (EMA; Shiffman, Stone & Hufford, 2008) bezeichnet die Erfassung psychologischer Zustände in Echtzeit und im natürlichen Kontext — im Gegensatz zu retrospektiven Befragungen, die Erinnerungsverzerrungen unterliegen. EMA-Methoden gelten als validere Erfassung aktueller Erlebenszustände, weil sie zeitnah zur tatsächlichen Erfahrung erhoben werden.
-
-KAIAs Feedback-System adaptiert dieses Prinzip als In-Session-Signalsystem: Lernende können während des Gesprächs vier Markierungen setzen — transfer_marker (eine Einsicht, die über die Session hinaus relevant ist), wow (eine Frage hat etwas ausgelöst), stuck (die aktuelle Frage führt nicht weiter), unclear (die Frage ist unverständlich). Diese Signale sind episodisch-momentan, nicht retrospektiv, und entsprechen damit der EMA-Logik. Sie übernehmen im Kontext von KAIAs adaptiver Gesprächsführung drei Funktionen: Sie geben der Lernperson aktive Steuerungskontrolle (Autonomiebedürfnis nach SDT), sie liefern dem System Rückmeldung zur Kalibrierung des Gesprächsstils (formatives Assessment im Sinne von Black & Wiliam, 1998), und sie erzeugen eine longitudinal auswertbare Spur von Engagement- und Verständniszuständen. Die transfer_marker-Daten fließen in die Auswertung des Evaluationsberichts (Kapitel 5) ein; die wow- und stuck-Signale steuern die unmittelbare Adaptionslogik von KAIA.
-
----
-
-## 2.7 Selbstwirksamkeitserwartung als lernpsychologisches Konstrukt
-
-Die Selbstwirksamkeitserwartung (self-efficacy; Bandura, 1977) bezeichnet die subjektive Überzeugung einer Person, in der Lage zu sein, eine bestimmte Handlung erfolgreich auszuführen und damit ein angestrebtes Ziel zu erreichen. Das Konstrukt ist von verwandten Begriffen abzugrenzen: Das Selbstkonzept beschreibt eine globalere Selbstwahrnehmung eigener Eigenschaften, Selbstvertrauen ist ein affektiv gefärbtes, wenig situationsspezifisches Zutrauen. Selbstwirksamkeitserwartung ist dagegen explizit aufgabenspezifisch, zukunftsorientiert und handlungsbezogen: Sie beantwortet nicht „Was kann ich?", sondern „Werde ich in der Lage sein, diese konkrete Anforderung zu bewältigen?" (Bandura, 1997).
-
-Bandura (1977, 1997) beschreibt vier Quellen: Handlungsergebniserfahrungen (mastery experiences) als stärkste Quelle; stellvertretende Erfahrungen (vicarious experiences); verbale Überzeugungen (verbal persuasion); sowie physiologische und affektive Zustände. Für Lernprozesse hat Selbstwirksamkeit empirisch gut belegte Konsequenzen: Höhere Selbstwirksamkeit geht einher mit der Wahl anspruchsvollerer Aufgaben, größerer Ausdauer und besseren Leistungsergebnissen (Bandura, 1997; Pajares, 1996). Meta-analytische Befunde bestätigen moderate bis starke Prädiktionskraft für akademische Leistung (Multon et al., 1991).
-
-Für die vorliegende Studie wird die Allgemeine Selbstwirksamkeitserwartung nach Schwarzer und Jerusalem (1995) eingesetzt. Die deutschsprachige Skala (10 Items, 4-stufiges Likert-Format) erfasst eine generalisierte Überzeugung, Schwierigkeiten aus eigener Kraft bewältigen zu können. Psychometrisch weist die Skala gute Kennwerte auf (Cronbachs Alpha .80–.90; Jerusalem & Schwarzer, 1992). Der normative Mittelwert für deutsche Erwachsenenstichproben liegt bei M = 2.97 (SD = 0.52; Schwarzer & Jerusalem, 1995), was als Referenzpunkt für die Interpretation von Prä-Post-Veränderungen dient. Kritisch ist anzumerken, dass die Skala generalisierte Überzeugungen misst und damit aufgabenspezifische Veränderungen nur indirekt abbildet. Für den Kontext sokratischer Lernbegleitung ist es jedoch plausibel, dass wiederholte eigenständige Erkenntniserlebnisse — Handlungsergebniserfahrungen im Sinne Banduras — langfristig globale Überzeugungen verschieben.
-
----
-
-## 2.8 MSLQ als Messinstrument für Lernmotivation und Lernstrategien
-
-Das Motivated Strategies for Learning Questionnaire (MSLQ; Pintrich, Smith, Garcia & McKeachie, 1991) ist ein standardisiertes Selbstberichtsinstrument zur Erfassung motivationaler Orientierungen und kognitiver Lernstrategien im Hochschulkontext. Das vollständige Instrument umfasst 81 Items in 15 Subskalen, verteilt auf einen Motivations- (31 Items, 6 Subskalen) und einen Lernstrategieteil (50 Items, 9 Subskalen). Alle Items werden auf einer 7-stufigen Likert-Skala (1 = trifft überhaupt nicht zu bis 7 = trifft vollständig zu) beantwortet.
-
-Die psychometrischen Eigenschaften des MSLQ wurden durch Pintrich et al. (1993) an einer Stichprobe von 380 Studierenden validiert. Die Autoren berichten interne Konsistenzwerte zwischen Cronbachs Alpha = .62 und .93 für die einzelnen Subskalen; die Skalen zur Selbstwirksamkeit (α = .93) und zu kognitiven Strategien (elaboration: α = .76) zeigen besonders gute Reliabilität. Prädiktive Validität ist durch signifikante Zusammenhänge mit Studienleistungen belegt (Pintrich et al., 1993).
-
-KAIA setzt eine adaptierte Version mit 30 Items aus vier validierten MSLQ-Subskalen ein: (1) Intrinsische Zielorientierung — das Ausmaß, in dem Lernende inhaltlich motiviert sind; (2) Aufgabenwert — die wahrgenommene Relevanz und Wichtigkeit des Lerngegenstandes; (3) Selbstwirksamkeit für Lernen und Leistung — lernspezifische Kompetenzerwartung; (4) Elaborationsstrategien — das Verknüpfen neuer Inhalte mit bestehendem Wissen. Diese vier Subskalen wurden ausgewählt, weil sie konzeptuell auf die Wirkungslogik KAIAs abgestimmt sind: Sokratische Begleitung sollte intrinsische Orientierung und Aufgabenwert stabilisieren, Selbstwirksamkeit für Lernen erhöhen und Elaborationsstrategien aktivieren.
-
-Die Einbeziehung des MSLQ neben der GSE ist methodisch begründet: Während die GSE eine generalisierte motivationale Überzeugung misst (globaler Outcome), erfasst das MSLQ domänennahe Konstrukte, die als proximale Mediatoren des Lernprozesses gelten. Der Prä-Post-Vergleich beider Instrumente ermöglicht eine differenziertere Analyse: Verändert sich die allgemeine Selbstwirksamkeit, während domänenspezifische Lernmotivation stabil bleibt — oder verlaufen beide Veränderungen parallel? Diese Frage ist für die Interpretation kausaler Mechanismen bedeutsam (vgl. Abschnitt 2.15).
-
----
-
-## 2.9 Sokratische Methode und die Drei-Charaktere-Architektur
-
-Die sokratische Methode operationalisiert das konstruktivistische Lernprinzip auf didaktischer Ebene: Anstatt Wissen zu übermitteln, aktiviert der Lehrende durch gezielte Fragen latentes Wissen und eigene Erkenntniskapazitäten der lernenden Person — Mäeutik als Hebammenkunst des Geistes. In der modernen Didaktik findet dies Niederschlag in Guided Discovery Learning (Bruner, 1961) und dialogischem Unterricht (Alexander, 2008).
-
-Für KAIA bedeutet dies eine klare Systemlogik: KAIA gibt keine Antworten, sondern stellt Fragen — nicht als Stilpräferenz, sondern als lerntheoretisches Design, das den konstruktivistischen Lernprozess schützt und Raum für die Mastery-Erfahrungen schafft, die Selbstwirksamkeit erst stärken können.
-
-Die Drei-Charaktere-Architektur (warm/Begleitend, challenging/Konfrontierend, wild/Perspektivwechselnd) ist theoretisch im Konzept der Cognitive Apprenticeship (Collins, Brown & Newman, 1989) verankert. Collins et al. (1989) unterscheiden sechs didaktische Methoden des „kognitiven Meisters": Modeling (Denk- und Handlungsprozesse sichtbar machen), Coaching (Begleitung und Rückmeldung im Prozess), Scaffolding (gestufte Unterstützung), Fading (schrittweiser Rückzug der Unterstützung), Articulation (explizite Verbalisierung eigener Denkprozesse durch die Lernenden) und Reflection (vergleichende Bewertung eigener Problemlösestrategien). Die drei KAIA-Charaktere repräsentieren drei spezifische Interventionsstile, die auf unterschiedliche Methoden dieser Architektur abbilden:
-
-**warm/Begleitend** entspricht der Coaching-Phase der Cognitive Apprenticeship: ruhige, aufbauende Fragen, die den Lernprozess emotional sichern und kognitive Orientierung bieten. Dieser Charakter ist didaktisch angemessen für Einstiegsphasen (Sessions 1–2), bei erkennbarer Desorientierung oder nach stuck-Signalen.
-
-**challenging/Konfrontierend** entspricht primär den Methoden Articulation und Reflection der Cognitive Apprenticeship: Der Charakter veranlasst Lernende explizit, eigene Denkprozesse zu verbalisieren und Annahmen kritisch zu hinterfragen. Piagets kognitiver Konflikt (Piaget, 1985) — das Erzeugen von Inkongruenz zwischen bestehenden Schemata und neuen Informationen — ist die theoretische Grundlage dieses Charakters. Direkte Hinterfragung von Annahmen, Widersprüche aufzeigen, zum Widerspruch einladen: Diese Intervention adressiert Bloom-Niveau 4 (Analysieren) und zielt auf den Aufbau selbstreflexiver Denkbewegungen. Didaktisch angemessen für die Transferphase (Sessions 3–8), bei stabiler Gesprächsbasis.
-
-**wild/Perspektivwechselnd** entspricht dem, was Perkins und Salomon (1989) „high-road transfer" nennen — die bewusste Aktivierung abstrakter Prinzipien aus einem fremden Kontext, um Durchbruchseinsichten zu ermöglichen. Unerwartete Verbindungen zwischen disparaten Konzepten herzustellen, stimuliert die Übertragung von Lernprinzipien auf neue Domänen. Dieser Charakter ist didaktisch angemessen für die Abschlussphase (Sessions 9–10) und bei wow-Signalen, die tiefere Elaboration ankündigen.
-
-Der adaptive Wechsel zwischen den Charakteren operationalisiert die graduelle Fading-Logik der Cognitive Apprenticeship: von stützend zu herausfordernd zu transferanregend, entsprechend dem Kompetenzaufbau der Lernenden.
-
----
-
-## 2.10 Adaptive Lernsysteme: Neuroadaptivität und Personalisierung
-
-Neuroadaptive Systeme sind technische Systeme, die physiologische oder verhaltensbasierte Signale in Echtzeit messen und darauf aufbauend Systemparameter anpassen (Fairclough, 2009). In klinischen und militärischen Kontexten werden dafür EEG, Herzratenvariabilität und Hautleitwert genutzt — für kommerzielle Bildungstechnologie aus ethischen und praktischen Gründen nicht realisierbar.
-
-KAIA operationalisiert Neuroadaptivität auf textueller Ebene: Gesprächsindikatoren wie Antwortlänge, Fragemuster, erkennbare Stagnation oder EMA-Signale werden als Proxys für kognitive und emotionale Zustände genutzt. Die epistemischen Grenzen dieses Ansatzes sind explizit zu benennen: Textbasierte Zustandsinferenz ist fehleranfällig, kulturell und individuell variabel, und der Zusammenhang zwischen Gesprächsindikatoren und tatsächlichem kognitivem Zustand empirisch noch wenig belegt. KAIA macht daher keinen Anspruch auf reliable Zustandsdiagnose; der neuroadaptive Modus ist als Annäherung, nicht als Messung zu verstehen.
-
-In der Tradition der deutschen Allgemeinen Didaktik (Klafki, 1985; Heimann, Otto & Schulz, 1965) bezeichnet **Individualisierung** die lernerseitige Selbststeuerung, **Personalisierung** die systemseitige Adaptation. KAIA ist primär ein personalisierendes System: Es adaptiert basierend auf inferiertem Kontext. Die Forschungsleistung besteht nicht darin, Personalisierung zu betreiben — das leisten viele Systeme —, sondern darin, Personalisierung so zu gestalten, dass das Grundbedürfnis nach Autonomie (Deci & Ryan, 2000) nicht verletzt, sondern gestärkt wird. Dies erfordert drei Designbedingungen: (1) systemseitige Adaptionen sind für die Lernenden sichtbar (*Transparenz*), (2) die Lernenden können sie überschreiben (*Kontrollierbarkeit*), und (3) die sokratische Gesprächsführung stellt sicher, dass Anpassung niemals Eigenleistung ersetzt (*Sokratisches Schutzprinzip*).
-
----
-
-## 2.11 Künstliche Intelligenz in der Bildung und Computational Empathy
-
-Mit dem Durchbruch großer Sprachmodelle (Large Language Models, LLMs) seit 2020 hat sich das Potenzial KI-gestützter Bildungssysteme grundlegend verändert. LLMs ermöglichen offene, kontextsensitive Gespräche, die frühere regelbasierte Systeme nicht leisten konnten; empirische Studien zeigen messbare positive Effekte auf Lernleistung und Engagement (Kasneci et al., 2023). Gleichzeitig bestehen substanzielle Risiken: Halluzinationen, Automation Bias — die unkritische Übernahme von KI-Antworten — und potenzielle Abhängigkeit von externer Unterstützung (Kalyuga, 2007).
-
-Das Konzept der Computational Empathy, in der Tradition des Affective Computing (Picard, 1997) und affektiver Neurowissenschaft (Decety & Jackson, 2004), bezeichnet in der technischen Übertragung die Fähigkeit eines Systems, aus Spracheingaben affektive und motivationale Zustände zu inferieren und den Gesprächsstil anzupassen. Es ist wichtig, diese technische Verwendung von echtem menschlichem Einfühlungsvermögen zu unterscheiden: Computational Empathy basiert auf statistischen Mustern in Trainingsdaten, nicht auf phänomenalem Erleben oder moralischem Verständnis. Diese Differenzierung ist für KAIA ethisch verpflichtend — sie muss gegenüber Nutzenden transparent kommuniziert werden (KI-Disclosure) und begrenzt die Anwendungsfelder: KAIA ist kein therapeutisches Werkzeug.
-
-Die Auswahl der Sprachmodelle — Claude (Anthropic), GPT-4o (OpenAI) und Mistral AI — folgt wissenschaftlichen wie datenschutzrechtlichen Kriterien. Der Evaluationsbericht (Kapitel 4) untersucht systematisch, welches Modell für sokratische Gesprächsführung, empathische Responsivität, Konsistenz über Sitzungen und DSGVO-Konformität am besten geeignet ist.
-
----
-
-## 2.12 Selbstreguliertes Lernen, Metakognition und die „Lernen lernen"-Hypothese
-
-### 2.12.1 Metakognition als Fundament — Selbstwirksamkeit als Motor
-
-Selbstwirksamkeit (Bandura, 1997) und metakognitive Regulation (Flavell, 1979) sind verwandte, aber verschiedene Konstrukte. Selbstwirksamkeit erklärt, *ob* jemand bereit ist, eine schwierige Aufgabe anzugehen — sie ist der **motivationale Motor**. Metakognitive Regulation erklärt, *wie gut* jemand das eigene Denken überwachen, steuern und auf neue Kontexte übertragen kann — sie ist der **kognitive Boden**.
-
-Flavell (1979) unterscheidet metakognitives Wissen (Wissen über eigene Denk- und Lernprozesse) und metakognitive Überwachung (das aktive Beobachten und Steuern dieser Prozesse). Zimmerman (2000) zeigt, dass metakognitive Steuerungskapazität ein zentraler Prädiktor für domänenübergreifenden Lerntransfer ist. Für KAIAs Designlogik bedeutet das: Der sokratische Ansatz zielt nicht primär auf Selbstwirksamkeit (obwohl diese als Nebeneffekt gestärkt wird), sondern auf **metakognitive Aktivierung** — das Bewusstwerden eigener Denkprozesse und blinder Flecken. Selbstwirksamkeit ist der messbare Proxy-Indikator in der GSE-Skala; die eigentlich angestrebte Tiefenwirkung ist metakognitive Regulation.
-
-### 2.12.2 Die theoretische Kette
-
-Die Verbindung zwischen KAIAs sokratischem Ansatz und domänenübergreifender Kompetenz lässt sich als Kette beschreiben:
-
-**Glied 1 — stark und verteidigbar:** Sokratische Begleitung erzeugt eigenständig erarbeitete Lösungen (Mastery Experiences). Diese sind nach Bandura (1997) die stärkste Quelle von Selbstwirksamkeitserwartungen. Ein System, das niemals Antworten liefert, maximiert die Wahrscheinlichkeit, dass die lernende Person die Lösung sich selbst attribuiert — und damit ihre allgemeine Handlungskompetenzerwartung stärkt (GSE; Schwarzer & Jerusalem, 1995).
-
-**Glied 2 — theoretisch plausibel, empirisch voraussetzungsreich:** Ein erhöhter GSE-Wert korreliert empirisch mit tieferen Lernstrategien, größerer Ausdauer und flexiblerem Problemlöseverhalten (Zimmerman, 2000; Pajares, 1996). Selbstreguliertes Lernen — das zielorientierte Planen, Überwachen und Anpassen eigener Lernprozesse (Pintrich, 2004; Zimmerman, 2000) — ist nach aktuellem Forschungsstand einer der stärksten Prädiktoren für domänenübergreifende Lernkompetenz. Ein erhöhter GSE-Wert macht den Einstieg in selbstregulierte Lernprozesse wahrscheinlicher.
-
-**Das schwache Glied — Transfer:** Dass aus GSE-Stärkung und reflektiver Kompetenz automatisch domänenübergreifende Problemlösekompetenz entsteht, ist nicht belegt. Perkins und Salomon (1989) zeigen, dass Lerntransfer nicht automatisch geschieht — er benötigt explizites „Bridging": die bewusste Verbindung zwischen dem Gelernten und neuen Kontexten.
-
-Pfeffer und Sutton (2000) benennen dieses Phänomen auf Organisationsebene als **Knowing-Doing Gap**: Das Wissen darüber, was getan werden sollte, führt nicht automatisch zur entsprechenden Handlung. Sheerans (2002) konzeptuelle und quantitative Übersicht zeigt, dass Verhaltensintentionen im Mittel nur 28% der Verhaltensvarianz erklären — die verbleibenden 72% gehen auf Implementierungshemmnisse zurück. Für KAIA bedeutet dies: Ein erheblicher Teil der Zielgruppe scheitert nicht an Wissensdefiziten, sondern am Intention-Behavior Gap. Der Erster-Schritt-Loop (Abschnitt 2.13) und Implementation Intentions (Gollwitzer, 1999) sind KAIAs operative Antwort auf diesen Gap.
-
-Ein sokratischer Begleiter kann diese Brücke anregen, aber nicht garantieren.
-
-### 2.12.3 Was „Lernen lernen" durch KAIA realistisch bedeutet
-
-Die vertretbare Behauptung lautet: KAIA kann durch sokratische Begleitung episodische Mastery-Erlebnisse erzeugen, die kurzfristig allgemeine Selbstwirksamkeitserwartungen stabilisieren und metakognitive Aufmerksamkeit für eigene Lernprozesse aktivieren. Ob sich daraus domänenübergreifende Problemlösekompetenz entwickelt, ist eine mittelfristige Hypothese, die die vorliegende Pilotstudie (N ≈ 20, 3 Wochen) nicht prüfen kann und nicht beansprucht zu prüfen.
-
-„Lernen lernen" ist damit kein Outcome dieser Studie — es ist die theoretische Vision, die KAIAs Designprinzipien motiviert, und eine Forschungsperspektive für Folgestudien mit längerem Zeithorizont.
-
----
-
-## 2.13 Sessionarchitektur V3 und kumulatives Gedächtnis: Theoretische Fundierung
-
-### 2.13.1 Dreigliedrige Sequenzierung nach Bloom
-
-Die Sessionarchitektur V3 gliedert den Lernprozess in drei didaktisch distinkte Phasen, die der taxonomischen Logik Blooms (Anderson & Krathwohl, 2001) folgen:
-
-**Phase 1 — Erkunden (Sessions 1–2):** Adressiert Bloom-Niveaus 1–2 (Erinnern, Verstehen). Lernende erkunden das selbstgewählte Thema, artikulieren Vorkenntnisse und Zielsetzungen. KAIA arbeitet primär im „warm/Begleitend"-Charakter: aufbauende Fragen, die semantische Anker setzen und das kumulative Gedächtnis für Folgesessions aufbauen. Didaktisch entspricht dies der Aktivierungsphase nach Merrill (2002) und den Unterrichtsereignissen „Vorwissen aktivieren" und „Leistung hervorrufen" nach Gagné (1977).
-
-**Phase 2 — Transfer und Analyse (Sessions 3–8):** Adressiert Bloom-Niveaus 3–4 (Anwenden, Analysieren). Die Kernarbeit des Lernprozesses findet hier statt: Konzepte werden auf persönliche Situationen angewendet, Annahmen werden hinterfragt, Verbindungen zwischen Konzepten werden hergestellt. KAIA wechselt zwischen „warm/Begleitend" und „challenging/Konfrontierend". Session 5 ist als obligatorischer Halbzeitspiegel konzipiert: KAIA leitet eine strukturierte Reflexion ein, in der Lernende ihre Entwicklung seit Session 1 einschätzen. Dies entspricht Schöns (1983) Konzept der „reflection-on-action" — der bewussten Analyse vergangener Erfahrungen, die metakognitive Regulation schult; Zimmerman (2000) belegt, dass diese Form der mid-process-Überwachung ein zentraler Selbstregulationsmechanismus ist. In der EMA-Logik (Abschnitt 2.6.2) verankert Session 5 damit einen evaluativen Momentaufnahmepunkt.
-
-**Phase 3 — Abschluss: Evaluieren und Erschaffen (Sessions 9–10):** Adressiert Bloom-Niveaus 5–6 (Evaluieren, Erschaffen). Session 10 operationalisiert drei simultane Aufgaben: (a) Gegenüberstellung von Session 1 und der aktuellen Position (longitudinale Reflexion), (b) Autonomisierungsfrage — explizite Reflexion darüber, welche Erkenntnisse die lernende Person eigenständig weiterentwickeln kann und wird (Zimmerman, 2000; Knowles, 1984), (c) keine GSE-Priming-Instruktion vor der Messung, um Reaktivitätseffekte (demand characteristics) zu minimieren. Diese Abschlussgestaltung entspricht Gagnés neuntem Unterrichtsereignis (Behalten und Transfer sichern) und Merrills Integrationsprinzip (2002).
-
-### 2.13.2 Kumulatives Gedächtnis: Longitudinales Scaffolding
-
-Das kumulative Gedächtnis (session_summary, strongest_quote, historical_quotes) ist nicht nur eine technische Infrastruktur, sondern eine didaktische Notwendigkeit. Ausubel (1968) hat gezeigt, dass sinnvolles Lernen — meaningful learning — nur stattfindet, wenn neue Informationen an bestehende kognitive Strukturen geknüpft werden können. Ohne explizite Aktivierung des Vorlernens am Anfang jeder Session würde jede Sitzung isoliert bleiben und der Spacing-Effekt (Cepeda et al., 2006) ließe sich nicht entfalten.
-
-Die session_summary und historical_quotes ermöglichen es KAIA, zu Beginn jeder Session semantisch präzise anzuknüpfen — nicht durch wörtliche Wiederholung, sondern durch fragenbasierte Reaktivierung. Der strongest_quote fungiert als Mastery-Marker im Sinne Banduras (1977): die verdichtete Formulierung eines eigenständig erarbeiteten Erkenntnismoments, der als Referenzpunkt für zukünftige Fragen dienen kann. Diese Architektur realisiert longitudinales Scaffolding: die Unterstützung ist nicht in einer Session vollständig, sondern baut sich über die Studiendauer kumulativ auf und faded entsprechend dem Kompetenzfortschritt der lernenden Person.
-
----
-
-## 2.14 Design Science Research als wissenschaftliche Methodologie
-
-Die vorliegende Arbeit ist im Paradigma des Design Science Research (DSR; Hevner et al., 2004) verankert — eine wissenschaftliche Methodik der Wirtschaftsinformatik, die die Entwicklung und Evaluation von IT-Artefakten als legitimen Erkenntnisbeitrag konzipiert. Im Gegensatz zu verhaltenswissenschaftlichen Paradigmen, die gegebene Realitäten erklären und vorhersagen wollen, zielt DSR auf die Gestaltung neuer Realitäten. Hevner et al. (2004) formulieren sieben Richtlinien für DSR-konformes Forschen, darunter Nützlichkeit des Artefakts, rigorose Entwicklung und Evaluation, wissenschaftlicher Beitrag über die Systemimplementierung hinaus sowie iterative Vorgehensweise.
-
-Für die vorliegende Studie ergibt sich eine zweistufige Forschungslogik: KAIA wird als Artefakt entwickelt (Kapitel 3 und 4), dann in einer explorativen Pilotstudie evaluiert (Kapitel 5 und 6), wobei technische Eigenschaften (LLM-Evaluation) und nutzerseitige Wirkungen (GSE-, MSLQ-Veränderung) untersucht werden. Forschungsethisch ist der Interessenkonflikt transparent zu machen: Die Forscherin ist gleichzeitig Entwicklerin und potenzielle Kommerzialisiererin des Systems. Dies beeinflusst sowohl die Designentscheidungen als auch die Bewertung von Evaluationsergebnissen und wird im Methodenkapitel durch ein Positionality Statement adressiert.
-
----
-
-## 2.15 Synthetisches Rahmenwerk: Theoretische Begründung von KAIA
-
-Die in den vorangegangenen Abschnitten dargestellten Theorien sind nicht additiv, sondern bilden ein kohärentes theoretisches Rahmenwerk, aus dem sich KAIAs Designentscheidungen unmittelbar ableiten lassen.
-
-**Die Grundlogik:** Lernen ist ein konstruktiver Prozess (Vygotsky, 1978; Piaget, 1952), der von der wahrgenommenen Handlungsfähigkeit der Lernperson abhängt (Bandura, 1977) und nur unter subjektiv als bewältigbar bewerteten Anforderungen gelingt (Lazarus & Folkman, 1984). Optimales Lernen findet in einem Zustand mittlerer Aktivierung statt, der als Flow erlebt wird (Csikszentmihalyi, 1990; Teigen, 1994). Instruktionale Direktheit gefährdet diesen Prozess, weil sie die Entwicklung eigenständiger Problemlösekapazität hemmt (Kalyuga et al., 2003) und intrinsische Motivation korrumpiert (Deci & Ryan, 1985). Erwachsene Lernende erwarten Selbststeuerung (Knowles, 1984) und profitieren von verteilt strukturierten Lernsequenzen (Cepeda et al., 2006). Feedback wirkt dann lernförderlich, wenn es auf Prozess- und Selbstregulationsebene operiert (Hattie & Timperley, 2007).
-
-**Die Ableitung:** KAIA ist als sokratischer Begleiter mit Drei-Charaktere-Architektur konzipiert, weil diese Gestaltung gleichzeitig sieben theoretische Forderungen erfüllt: (1) Sie schützt den konstruktivistischen Lernprozess (keine Antworten); (2) sie stärkt die Selbstwirksamkeit durch Mastery-Erfahrungen (Bandura, 1977); (3) sie verhindert den Expertise Reversal Effect durch instruktionale Zurückhaltung (Kalyuga, 2007); (4) sie respektiert das Autonomiebedürfnis erwachsener Lernender (Knowles, 1984; Deci & Ryan, 2000); (5) sie nutzt den Spacing-Effekt durch die temporale Sessionstruktur (Cepeda et al., 2006); (6) sie differenziert Scaffolding-Intensitäten nach kognitivem Zustand der Lernperson (Collins et al., 1989); (7) sie überbrückt den Knowing-Doing Gap durch situative Handlungsverankerung und Implementation Intentions (Gollwitzer, 1999; Pfeffer & Sutton, 2000). Der neuroadaptive Modus versucht, den Flow-Kanal zu erhalten, indem der Gesprächscharakter auf Gesprächsindikatoren und EMA-Signale reagiert.
-
-**Die Messung:** Die GSE (Schwarzer & Jerusalem, 1995) misst den globalen motivationalen Outcome (allgemeine Selbstwirksamkeit). Das MSLQ (Pintrich et al., 1991, 1993) misst proximate Mediatoren (Lernmotivation, Elaborationsstrategien). Gemeinsam ermöglichen beide Instrumente eine Analyse, ob sich durch KAIA-Nutzung nicht nur die globale Überzeugung verschiebt, sondern auch die lernstrategischen Mechanismen, über die dieser Effekt vermutlich vermittelt wird.
-
-**Die Hypothesen** der Studie lauten:
-
-- **H1:** Die allgemeine Selbstwirksamkeitserwartung (GSE; Schwarzer & Jerusalem, 1995) ist nach drei Wochen KAIA-Nutzung signifikant höher als vor der Nutzung (gerichtet, Wilcoxon-Vorzeichenrangtest, α = .05).
-- **H2:** Es besteht ein positiver Zusammenhang zwischen Nutzungshäufigkeit und Veränderung der Selbstwirksamkeitserwartung (ungerichtet, Spearman-Rho).
-- **H3:** Der MSLQ-Gesamtwert zu T1 korreliert positiv mit der GSE-Veränderung von T1 zu T2 (deskriptiv-direktional, Spearman-Rang-Korrelation; N ≈ 20 ist für moderierte Regression nicht ausreichend).
-- **H4:** Die durch LLM-Analyse aus Gesprächstranskripten abgeleiteten Indikatoren für Handlungskontrolle und Problemlösezuversicht konvergieren über die Studienlaufzeit mit den GSE-Selbstaussagen (explorativ).
-
-**Methodische Einschränkung:** Die Pilotstudie ist explorativ konzipiert (N ≈ 20, Power ca. 69% für d = 0.5 bei einseitigem α = .05; für realistischere d = 0.30–0.40 ergibt sich eine Power von 41–55%). Konfirmatorische Schlüsse sind nicht intendiert. H1 wird als gerichtete Hypothese getestet; H2 bis H4 dienen der Generierung präziserer Hypothesen für Folgestudien.
-
----
-
-*Literaturangaben dieses Kapitels sind im konsolidierten Literaturverzeichnis am Ende der Thesis aufgeführt.*
+# 2 Theoretische Grundlagen
+
+## 2.1 Persönlichkeit und Lernen unter Stress
+
+Lernen findet nicht im Vakuum statt. Es vollzieht sich in einem
+affektiven und motivationalen Zustand, der unter anderem davon abhängt,
+wie eine Person eine Anforderungssituation bewertet. Das transaktionale
+Stressmodell von Lazarus und Folkman (1984) bricht mit der Vorstellung,
+Stress sei allein eine objektive Eigenschaft einer Situation. Stress
+entsteht vielmehr aus der Beziehung zwischen Person und Umwelt und deren
+Bewertung. In der primären Bewertung schätzt eine Person ein, welche
+Bedeutung ein Ereignis für das eigene Wohlergehen besitzt und ob es etwa
+als Schaden, Bedrohung oder Herausforderung bewertet wird. Die sekundäre
+Bewertung betrifft die verfügbaren Möglichkeiten und Ressourcen zur
+Bewältigung der Situation. Das Stresserleben ergibt sich aus dem
+Zusammenspiel dieser Bewertungsprozesse (Lazarus, 1993).
+
+Für das Design adaptiver Lernsysteme folgt daraus zunächst, dass nicht
+allein die objektive Schwierigkeit einer Lernanforderung relevant ist,
+sondern auch deren subjektive Bewertung und die wahrgenommenen
+Bewältigungsmöglichkeiten. Für den in dieser Arbeit entwickelten Agenten
+wird daraus die Designannahme abgeleitet, Lernende nicht grundsätzlich
+durch die Vorgabe fertiger Lösungen zu entlasten, sondern ihre
+eigenständige Auseinandersetzung mit einer Anforderung zu unterstützen.
+Sokratische Gesprächsführung wird dabei als ein möglicher Mechanismus
+verstanden, der die Aufmerksamkeit auf eigene Lösungswege und verfügbare
+Ressourcen lenkt. Ob eine solche Begleitung tatsächlich die
+Ressourcenwahrnehmung oder die Bewertung einer Anforderung verändert,
+folgt jedoch nicht unmittelbar aus dem transaktionalen Stressmodell und
+wird in der vorliegenden Pilotstudie nicht als eigenständiger
+Wirkmechanismus untersucht.
+
+Ein häufig im Zusammenhang mit Aktivierung und Leistung herangezogener
+historischer Befund stammt von Yerkes und Dodson (1908). Seine
+verbreitete Interpretation als allgemeines Gesetz eines umgekehrt U
+förmigen Zusammenhangs zwischen Aktivierung und Leistung ist jedoch nur
+eingeschränkt auf den ursprünglichen Befund zurückzuführen. Dieser bezog
+sich auf den Zusammenhang zwischen Reizstärke und Habitbildung bei
+Diskriminationsaufgaben unterschiedlicher Schwierigkeit. Teigen (1994)
+zeigt, dass der Befund später auf Konstrukte wie Motivation,
+Aktivierung, Angst oder Stress sowie auf unterschiedliche
+Leistungsbereiche übertragen wurde, obwohl diese Erweiterungen im
+ursprünglichen Experiment nicht untersucht wurden. Für die vorliegende
+Arbeit wird daraus daher kein universelles optimales Aktivierungsniveau
+abgeleitet. Relevant ist vielmehr die allgemeinere Konsequenz,
+Lernanforderungen und Unterstützungsintensität nicht unabhängig von
+Aufgabe und Lernperson zu betrachten.
+
+Eine unmittelbarere Grundlage für diese Designanforderung bietet die
+Cognitive Load Theory (Sweller, 1988; Sweller et al., 1998). Sie geht
+davon aus, dass die Verarbeitung neuer Informationen durch die begrenzte
+Kapazität des Arbeitsgedächtnisses beschränkt wird. In der klassischen
+Konzeption wurden intrinsische, extrinsische und lernrelevante kognitive
+Belastung unterschieden. Neuere Weiterentwicklungen der Cognitive Load
+Theory behandeln lernrelevante Belastung jedoch nicht mehr als
+eigenständige Belastungskategorie, sondern als die Allokation von
+Arbeitsgedächtnisressourcen auf lernrelevante Verarbeitung. Für die
+Gestaltung von Lernunterstützung folgt daraus insbesondere, vermeidbare
+extrinsische Belastung zu reduzieren und verfügbare kognitive Ressourcen
+auf die Verarbeitung der lernrelevanten Inhalte zu richten (Sweller et
+al., 2019).
+
+Welche Form der Unterstützung dabei angemessen ist, hängt wesentlich vom
+vorhandenen Vorwissen ab. Der Expertise Reversal Effect beschreibt, dass
+instruktionale Verfahren, die Lernende mit geringem Vorwissen
+unterstützen, mit zunehmender Expertise an Wirksamkeit verlieren oder
+sogar nachteilig werden können (Kalyuga, 2007; Kalyuga et al., 2003).
+Informationen und Hilfestellungen, die für Novizen erforderlich sind,
+können für erfahrenere Lernende redundant werden und zusätzliche
+kognitive Belastung erzeugen. Daraus folgt jedoch keine generelle
+Überlegenheit sokratischer gegenüber instruktionaler Gesprächsführung.
+Die zentrale Designimplikation besteht vielmehr darin, Art und
+Intensität der Unterstützung an den aktuellen Wissensstand und
+Unterstützungsbedarf der Lernperson anzupassen. Sokratische Fragen
+können dabei insbesondere dann eine geeignete Form der Unterstützung
+darstellen, wenn ausreichendes Vorwissen für eine eigenständige
+Bearbeitung vorhanden ist. Bei geringerem Vorwissen kann dagegen
+stärkeres Scaffolding erforderlich sein.
+
+## 2.2 Diagnostik und Metakognition
+
+Selbstwirksamkeit und Metakognition sind für die Arbeit relevant, weil
+sie unterschiedliche Ebenen selbstregulierten Handelns beschreiben.
+Selbstwirksamkeit bezeichnet die Überzeugung, Anforderungen durch
+eigenes Handeln bewältigen zu können. Sie beeinflusst unter anderem
+Anstrengung und Ausdauer. Bandura unterscheidet als Quellen eigener
+Wirksamkeitsüberzeugungen erfolgreiche Handlungserfahrungen,
+stellvertretende Erfahrungen, verbale Überzeugung sowie physiologische
+und affektive Zustände (Bandura, 1977; Bandura, 1997). Für akademische
+Kontexte zeigen Forschungsübersichten positive Zusammenhänge zwischen
+Selbstwirksamkeit, Leistung und Persistenz, wobei aufgabenspezifische
+Maße für konkrete Leistungsprognosen geeigneter sind als globale Maße
+(Multon et al., 1991; Pajares, 1996).
+
+Die Pilotstudie verwendet die Allgemeine Selbstwirksamkeitserwartung
+nach Schwarzer und Jerusalem (1995) als primäres quantitatives Outcome.
+Die Skala umfasst zehn Items mit vier Antwortstufen und erfasst eine
+generalisierte Überzeugung, schwierige Anforderungen aus eigener Kraft
+bewältigen zu können. Damit misst sie nicht die Bewältigung einer
+einzelnen Lernaufgabe, sondern eine breitere
+Selbstwirksamkeitserwartung. Diese Abgrenzung ist für die Interpretation
+zentral, da Veränderungen innerhalb einer kurzen Pilotstudie nur
+vorsichtig als Hinweis auf eine Veränderung generalisierter
+Selbstwirksamkeit interpretiert werden können.
+
+Metakognition umfasst Wissen über eigene kognitive Prozesse sowie deren
+Beobachtung und Regulation (Flavell, 1979). Im Modell selbstregulierten
+Lernens ist sie mit motivationalen und behavioralen Prozessen verbunden
+und bildet damit einen relevanten theoretischen Bezugspunkt für eine
+Lernbegleitung, die Reflexion und eigenständige Steuerung anregen soll
+(Zimmerman, 2000). Die vorliegende Studie erhebt metakognitive
+Regulation jedoch nicht als primäres Outcome. Sie ist daher als
+theoretischer Designbezug und nicht als nachgewiesene Wirkung des
+Agenten zu behandeln.
+
+Zur Beschreibung der motivationalen und lernstrategischen Ausgangslage
+wird ergänzend eine gekürzte Auswahl aus dem Motivated Strategies for
+Learning Questionnaire eingesetzt. Das Originalinstrument erfasst
+motivationale Orientierungen sowie kognitive, metakognitive und
+ressourcenbezogene Lernstrategien im Hochschulkontext (Pintrich et al.,
+1991; Pintrich et al., 1993). In der Studie werden 34 Items einmalig vor
+der Nutzungsphase erhoben. Da die verwendete Auswahl keine eigenständig
+validierte Fassung des Originalinstruments darstellt, dienen die Werte
+ausschließlich der deskriptiven Stichprobencharakterisierung und
+explorativen Einordnung. Eine Veränderung durch die Intervention wird
+damit nicht geprüft.
+
+Die vier während der Sitzungen erfassbaren Rückmeldesignale liefern
+zusätzliche prozessnahe Beobachtungen zu subjektiv bedeutsamen Momenten,
+Verständnisproblemen und stockenden Gesprächsverläufen. Sie sind eigens
+für das System entwickelte Feedbackmarker und keine validierten
+psychometrischen Instrumente. Entsprechend werden sie ausschließlich
+explorativ und deskriptiv ausgewertet. Eine Einordnung als Ecological
+Momentary Assessment wäre nur eingeschränkt gerechtfertigt, da EMA ein
+breiteres methodisches Verfahren zur wiederholten Erfassung aktueller
+Zustände und Verhaltensweisen im natürlichen Kontext bezeichnet
+(Shiffman et al., 2008).
+
+## 2.3 Adaptives Lernen und Selbstreguliertes Lernen
+
+Adaptives Lernen und Selbstreguliertes Lernen beschreiben zwei
+komplementäre Ebenen der Lernunterstützung. Adaptive Systeme passen
+Inhalte oder Unterstützung auf Grundlage eines Modells der Lernperson an
+(Brusilovsky & Millán, 2007). Selbstreguliertes Lernen bezeichnet
+dagegen Prozesse, mit denen Lernende Ziele setzen, ihren Lernprozess
+beobachten, ihr Vorgehen steuern und Ergebnisse reflektieren (Pintrich,
+2004; Zimmerman, 2000). Für den entwickelten Agenten folgt daraus eine
+zentrale Designanforderung. Das System soll Unterstützung an den
+Gesprächsverlauf anpassen, ohne die Steuerung des Lernprozesses
+dauerhaft zu übernehmen.
+
+Eine geeignete Form solcher Unterstützung ist Scaffolding. Wood, Bruner
+und Ross (1976) beschreiben damit tutorielle Unterstützung, durch die
+Lernende Aufgaben bewältigen können, die ihre aktuellen selbstständigen
+Möglichkeiten zunächst übersteigen. Entscheidend ist nicht möglichst
+viel Hilfe, sondern eine Unterstützung, die nur die noch nicht
+eigenständig bewältigbaren Anteile übernimmt. Dieses Prinzip begründet
+für den Agenten ein variables Unterstützungsniveau. Sokratische Fragen
+können bei ausreichendem Vorwissen Eigenaktivität fördern. Bei
+erkennbarer Überforderung kann stärker strukturierende Unterstützung
+erforderlich sein.
+
+Selbstregulation betrifft nicht nur den Erwerb von Wissen, sondern auch
+dessen Umsetzung in zielgerichtetes Handeln. Implementation Intentions
+konkretisieren Handlungsabsichten, indem eine erwartete Situation mit
+einer vorgesehenen Reaktion verknüpft wird (Gollwitzer, 1999). Eine
+spätere Metaanalyse zeigt einen positiven Effekt solcher Pläne auf die
+Zielerreichung (Gollwitzer & Sheeran, 2006). Für den Agenten begründet
+dies Fragen, die eine gewonnene Einsicht in einen konkreten nächsten
+Handlungsschritt und einen passenden Ausführungskontext überführen.
+Daraus folgt jedoch nicht, dass der Agent selbst eine nachhaltige
+Verhaltensänderung erzeugt. Diese wird in der Pilotstudie nicht als
+eigenständiger Outcome geprüft.
+
+Der Begriff Neuroadaptivität wird in dieser Arbeit bewusst eingeschränkt
+verwendet. Physiological Computing bezeichnet Systeme, die
+psychophysiologische Signale in Echtzeit erfassen, daraus auf Zustände
+schließen und Systemreaktionen anpassen (Fairclough, 2009). Der
+entwickelte Agent erfasst keine physiologischen Daten. Er nutzt
+ausschließlich sprachliche und verhaltensnahe Gesprächssignale als
+unsichere Hinweise für die Anpassung des Dialogs. Damit handelt es sich
+nicht um eine physiologische Zustandsmessung. Der Begriff bezeichnet
+hier eine textbasierte Annäherung an zustandsabhängige Adaptation. Die
+daraus abgeleiteten Zustände dürfen nicht als reliable psychologische
+Diagnosen interpretiert werden.
+
+Die Verteilung der Nutzung über mehrere Sitzungen ist zusätzlich
+lernpsychologisch begründbar. Verteilte Lerngelegenheiten unterstützen
+langfristiges Behalten im Vergleich zu unmittelbar aufeinanderfolgenden
+Wiederholungen (Cepeda et al., 2006). Distributed Practice wird auch in
+einer breiten Bewertung von Lerntechniken als gut gestützte Strategie
+eingeordnet (Dunlosky et al., 2013). Diese Evidenz begründet die
+Verteilung des Lernprozesses über mehrere Zeitpunkte. Sie begründet
+jedoch weder exakt zehn Sitzungen noch einen festen Abstand von einem
+Tag. Diese konkreten Festlegungen sind Designentscheidungen des
+Prototyps und werden daher in Kapitel 3 dokumentiert.
+
+## 2.4 Empathische KI und konversationelle Adaptation
+
+Empathie ist ein mehrdimensionales menschliches Konstrukt, das affektive
+Resonanz mit dem Erkennen und Verstehen des Zustands einer anderen
+Person verbindet (Decety & Jackson, 2004). Für KI Systeme ist diese
+Definition nur eingeschränkt übertragbar. Sprachmodelle verfügen nicht
+über eine empirisch nachgewiesene subjektive emotionale Erfahrung. In
+dieser Arbeit bezeichnet empathische KI daher ausschließlich die
+Fähigkeit des Systems, sprachliche Hinweise auf einen möglichen Zustand
+der lernenden Person zu verarbeiten und darauf mit kontextangemessener
+Gesprächsführung zu reagieren. Der Begriff beschreibt beobachtbares
+Systemverhalten und keine menschliche Empathiefähigkeit.
+
+Diese Abgrenzung steht in der Tradition des Affective Computing. Picard
+(1997) beschreibt technische Ansätze, mit denen Computersysteme
+affektbezogene Signale erkennen und in ihrer Interaktion berücksichtigen
+können. Im vorliegenden System erfolgt diese Anpassung ausschließlich
+auf Grundlage textueller Gesprächsinformationen. Aussagen über Emotionen
+oder Belastungszustände sind deshalb als probabilistische Inferenz zu
+verstehen. Sie dürfen weder als psychologische Diagnose noch als
+Nachweis eines tatsächlich vorliegenden inneren Zustands interpretiert
+werden.
+
+Für den Bildungskontext ist empathische Gesprächsgestaltung als
+Designmerkmal relevant, nicht als eigenständiger Wirkungsnachweis. Eine
+systematische Literaturübersicht zu empathischen pädagogischen
+Gesprächsagenten zeigt, dass emotionale Informationen, personalisiertes
+Feedback und empathische Reaktionen in unterschiedlichen
+Bildungsanwendungen eingesetzt werden. Die untersuchte Evidenzbasis ist
+jedoch klein und heterogen, weshalb daraus keine generelle Überlegenheit
+empathischer Agenten abgeleitet werden kann (Ortega-Ochoa et al., 2024).
+Für diese Arbeit begründet die Literatur daher die Berücksichtigung
+empathischer Responsivität im Interaktionsdesign. Ob diese Gestaltung
+Selbstwirksamkeit oder Handlungskontrolle verbessert, bleibt eine
+empirische Frage.
+
+Große Sprachmodelle erweitern die Möglichkeiten solcher Systeme durch
+offene und kontextsensitive Dialoge, bringen jedoch zugleich Risiken für
+den Bildungseinsatz mit sich. Kasneci et al. (2023) diskutieren unter
+anderem fehlerhafte Ausgaben, Verzerrungen, mangelnde Transparenz und
+die Gefahr einer unkritischen Nutzung. Die Quelle liefert damit einen
+Rahmen für Chancen und Risiken, jedoch keinen empirischen Nachweis
+positiver Effekte des konkreten Agentendesigns. Die Auswahl und
+Evaluation des verwendeten Sprachmodells wird deshalb getrennt von der
+theoretischen Begriffsdefinition in Kapitel 4 behandelt.
+
+## 2.5 Flow Theorie und Selbstwirksamkeit
+
+Für das Gesprächsdesign ist neben der kognitiven Anpassung entscheidend,
+dass Unterstützung die Eigensteuerung der lernenden Person nicht
+unterläuft. Die Selbstbestimmungstheorie beschreibt Autonomie,
+Kompetenzerleben und soziale Eingebundenheit als grundlegende
+psychologische Bedürfnisse. Soziale Bedingungen, die diese Bedürfnisse
+unterstützen, begünstigen selbstbestimmte Motivation und
+Selbstregulation. Kontrollierende Bedingungen können diese Prozesse
+dagegen beeinträchtigen (Ryan & Deci, 2000). Für den Agenten folgt
+daraus keine Pflicht, Motivation zu erzeugen. Die relevante
+Designanforderung besteht darin, Wahlmöglichkeiten und Eigenleistung zu
+erhalten und Unterstützung nicht als externe Kontrolle zu gestalten.
+
+Flow bezeichnet einen Zustand intensiver Aufgabenvertiefung, der unter
+anderem mit einer wahrgenommenen Passung zwischen Anforderung und
+Fähigkeit verbunden ist. Als zentrale Bedingungen werden außerdem klare
+Ziele und eindeutige Rückmeldung beschrieben (Csikszentmihalyi, 1990;
+Nakamura & Csikszentmihalyi, 2002). Für den Agenten ist Flow deshalb
+kein erzeugbarer Systemzustand, sondern ein Orientierungsrahmen für die
+Kalibrierung von Unterstützung. Fragen sollen weder dauerhaft
+unterfordern noch erkennbare Überforderung verstärken. Da Flow in der
+Pilotstudie nicht mit einem validierten Instrument erhoben wird, kann
+die Untersuchung weder das Auftreten von Flow noch eine Wirkung des
+Agenten auf Flow nachweisen.
+
+Selbstwirksamkeit wurde in Abschnitt 2.2 als zentrales Outcome der
+Pilotstudie definiert. Für das Gesprächsdesign ist insbesondere Banduras
+Annahme relevant, dass eigene erfolgreiche Handlungserfahrungen eine
+besonders einflussreiche Quelle von Selbstwirksamkeitsüberzeugungen
+darstellen (Bandura, 1997). Der sokratische Ansatz soll deshalb den
+eigenen kognitiven Anteil an der Lösungsentwicklung erhalten, anstatt
+Lösungen grundsätzlich vorzugeben. Daraus folgt jedoch nicht, dass jede
+selbst entwickelte Antwort eine erfolgreiche Handlungserfahrung
+darstellt oder dass sokratische Gesprächsführung automatisch die
+allgemeine Selbstwirksamkeit erhöht. Ob sich die allgemeine
+Selbstwirksamkeit während der Nutzung verändert, wird in der Pilotstudie
+empirisch geprüft. Ein Transfer auf domänenübergreifende
+Problemlösekompetenz wird nicht als nachgewiesene Wirkung beansprucht.
+
+## 2.6 EU AI Act und DSGVO im Bildungskontext
+
+Der rechtliche Rahmen des Prototyps wird durch den EU AI Act in seiner
+zum Zeitpunkt der Arbeit geltenden Fassung und die Datenschutz
+Grundverordnung bestimmt. Für die Einordnung nach dem EU AI Act ist der
+konkrete Verwendungszweck entscheidend. KI Systeme im Bildungsbereich
+gelten nicht allein wegen ihres Einsatzfeldes als hochriskant. Anhang
+III erfasst insbesondere Systeme, die über Zugang zu Bildung
+entscheiden, Lernergebnisse bewerten, Bildungsniveaus bestimmen oder
+verbotenes Verhalten bei Prüfungen überwachen. Der entwickelte Agent
+erfüllt nach der vorgesehenen Nutzung keine dieser Funktionen. Er
+begleitet informelles Lernen, vergibt keine Bewertungen und trifft keine
+Zugangsentscheidungen. Die Arbeit behandelt ihn daher nicht als
+Hochrisiko System nach Anhang III. Die Verordnung (EU) 2026/1744 hat die
+Anwendungsfristen für bestimmte Hochrisikopflichten des Kapitels III
+geändert, verändert jedoch nicht die hier vorgenommene Einordnung des
+dokumentierten Verwendungszwecks (Europäische Union, 2024; Europäische
+Union, 2026).
+
+Die bisherige Bezeichnung des Agenten als General Purpose AI ist davon
+zu trennen. Der Prototyp integriert externe Sprachmodelle in ein für
+Lernbegleitung entwickeltes Anwendungssystem. Die Pflichten für Anbieter
+von General Purpose AI Modellen betreffen dagegen insbesondere die
+Anbieter der zugrunde liegenden Modelle. Für den Prototyp ist vor allem
+Artikel 50 Absatz 1 relevant. Danach müssen natürliche Personen
+grundsätzlich darüber informiert werden, dass sie mit einem KI System
+interagieren, sofern dies nicht bereits offensichtlich ist. Die
+allgemeine Anwendung des EU AI Acts begann am 2. August 2026. Die
+Verordnung (EU) 2026/1744 verschob insbesondere bestimmte Pflichten für
+Hochrisikosysteme, änderte Artikel 50 Absatz 1 jedoch nicht. Der im
+Onboarding vorgesehene Hinweis setzt diese Transparenzanforderung
+technisch um (Europäische Union, 2024; Europäische Union, 2026).
+
+Sobald Gesprächsdaten einer identifizierten oder identifizierbaren
+Person verarbeitet werden, ist zusätzlich die Datenschutz
+Grundverordnung relevant. Artikel 25 verlangt Datenschutz durch
+Technikgestaltung und datenschutzfreundliche Voreinstellungen. Für den
+Prototyp begründet dies insbesondere Datenminimierung, begrenzte
+Zugriffsrechte und eine möglichst frühzeitige Pseudonymisierung.
+Pseudonymisierung hebt den Personenbezug jedoch nicht automatisch auf.
+Die Daten bleiben personenbezogen, solange eine Zuordnung zu einer
+Person mit zusätzlichen Informationen möglich ist (Europäische Union,
+2016).
+
+Freie Texteingaben können Angaben enthalten, die besonderen Kategorien
+personenbezogener Daten nach Artikel 9 zuzuordnen sind. Dazu gehören
+unter anderem Gesundheitsdaten sowie Angaben zu politischen oder
+religiösen Überzeugungen. Werden solche Daten verarbeitet, genügt eine
+allgemeine Rechtsgrundlage nach Artikel 6 nicht allein. Für die
+Pilotstudie wird deshalb eine ausdrückliche Einwilligung für
+entsprechende Datenverarbeitungen vorgesehen. Artikel 9 Absatz 2
+Buchstabe a erlaubt die Verarbeitung besonderer Kategorien auf Grundlage
+einer ausdrücklichen Einwilligung für festgelegte Zwecke. Ob diese
+Rechtsgrundlage im Einzelfall sämtliche Verarbeitungsschritte trägt,
+hängt von der konkreten Datenverarbeitung und den Bedingungen wirksamer
+Einwilligung ab (Europäische Union, 2016).
+
+Werden externe Dienste im Auftrag für die Verarbeitung personenbezogener
+Daten eingesetzt, sind die Rollen der Beteiligten datenschutzrechtlich
+zu bestimmen. Liegt eine Auftragsverarbeitung vor, verlangt Artikel 28
+geeignete Garantien des Auftragsverarbeiters und eine entsprechende
+vertragliche Regelung. Werden personenbezogene Daten in ein Drittland
+übermittelt, gelten zusätzlich die Anforderungen des fünften Kapitels
+der Datenschutz Grundverordnung. Eine Übermittlung kann unter anderem
+auf einem Angemessenheitsbeschluss oder auf geeigneten Garantien
+beruhen. Deshalb lässt sich die Zulässigkeit eines konkreten
+Sprachmodellanbieters nicht allein aus dessen Unternehmenssitz ableiten.
+Sie muss anhand der tatsächlichen Verarbeitung, der Vertragsbeziehungen,
+des Verarbeitungsorts und des jeweils eingesetzten
+Übermittlungsmechanismus bewertet werden (Europäische Union, 2016).
+
+Artikel 22 der Datenschutz Grundverordnung ist für den vorgesehenen
+Prototyp dagegen nicht als allgemeine Transparenznorm heranzuziehen. Die
+Vorschrift betrifft Entscheidungen, die ausschließlich auf
+automatisierter Verarbeitung beruhen und rechtliche oder ähnlich
+erhebliche Auswirkungen auf eine Person haben. Der Agent trifft nach dem
+vorgesehenen Verwendungszweck keine solchen Entscheidungen. Transparenz
+über die KI Interaktion wird daher primär über Artikel 50 des EU AI Acts
+und die allgemeinen datenschutzrechtlichen Informationspflichten
+begründet (Europäische Union, 2016; Europäische Union, 2024).
+
+Die im System vorgesehene Erkennung von Krisensprache ist von diesen
+gesetzlichen Pflichten zu unterscheiden. Aus den hier herangezogenen
+Vorschriften folgt keine spezifische Pflicht, einen solchen Filter in
+einen Lernagenten einzubauen. Die Funktion ist vielmehr eine freiwillige
+Schutzmaßnahme des Forschungsprototyps. Sie soll bei erkennbaren
+Krisenhinweisen eine standardisierte Weiterleitung an geeignete
+Hilfsangebote auslösen und verhindern, dass das System eine
+therapeutische Rolle übernimmt. Die konkrete technische Umsetzung und
+Prüfung dieser Schutzmaßnahme werden in den Kapiteln 3 und 4
+beschrieben.
+
+## 2.7 Synthetisches Rahmenwerk und Forschungsannahmen
+
+Die theoretischen Grundlagen erfüllen drei unterschiedliche Funktionen
+für die weitere Arbeit. Erstens begründen sie die Gestaltung der
+Lernbegleitung. Das transaktionale Stressmodell, die Cognitive Load
+Theory, der Expertise Reversal Effect, Scaffolding und selbstreguliertes
+Lernen sprechen dafür, Unterstützung an die wahrgenommene
+Bewältigungssituation und das vorhandene Vorwissen anzupassen, ohne die
+Eigenaktivität dauerhaft zu ersetzen. Selbstbestimmungstheorie und Flow
+ergänzen diese Perspektive um Autonomie und die Passung zwischen
+Anforderung und wahrgenommener Fähigkeit. Diese Ansätze begründen
+Designentscheidungen. Sie belegen noch keine Wirkung des entwickelten
+Agenten.
+
+Zweitens begründet die Theorie die Zielrichtung des Gesprächs. Eigene
+erfolgreiche Handlungserfahrungen können Selbstwirksamkeitsüberzeugungen
+stärken (Bandura, 1997). Implementation Intentions unterstützen die
+Umsetzung von Zielabsichten in konkretes Handeln und zeigen in einer
+Metaanalyse positive Effekte auf die Zielerreichung (Gollwitzer &
+Sheeran, 2006). Der Agent soll deshalb Eigenleistung erhalten und
+Reflexion in konkrete nächste Handlungsschritte überführen. Ob diese
+Gestaltung im vorliegenden Nutzungskontext mit einer Veränderung der
+allgemeinen Selbstwirksamkeit einhergeht, wird in der Pilotstudie
+explorativ untersucht.
+
+Drittens begrenzen die theoretischen und rechtlichen Grundlagen die
+Interpretation des Systems. Textbasierte Hinweise erlauben keine
+reliable psychologische Zustandsdiagnose. Empathische Responsivität
+bezeichnet beobachtbares Systemverhalten und keine menschliche
+Empathiefähigkeit. Flow und Metakognition werden nicht als Outcomes
+gemessen. Der EU AI Act und die Datenschutz Grundverordnung definieren
+zudem Anforderungen an Transparenz und Datenverarbeitung. Diese Grenzen
+verhindern, dass aus Designmerkmalen unbelegte psychologische oder
+rechtliche Eigenschaften des Prototyps abgeleitet werden.
+
+Aus diesem Rahmen ergibt sich für die Pilotstudie eine primäre
+gerichtete Forschungsannahme. Die allgemeine Selbstwirksamkeitserwartung
+ist nach der Nutzungsphase höher als vor der Nutzung. Die Annahme wird
+über die Allgemeine Selbstwirksamkeitserwartung nach Schwarzer und
+Jerusalem (1995) als Messinstrument operationalisiert. Aufgrund des
+einarmigen Prä Post Designs kann ein beobachteter Unterschied nicht
+kausal dem Agenten zugeschrieben werden. Die Annahme bezieht sich daher
+auf eine Veränderung innerhalb der Stichprobe und nicht auf einen
+Wirksamkeitsnachweis gegenüber einer Kontrollbedingung.
+
+Die ursprüngliche Studienplanung sah zusätzlich eine zweite
+Forschungsannahme zur Konvergenz zwischen sitzungsspezifischen
+Selbsteinschätzungen und aus Gesprächstranskripten abgeleiteten
+Handlungskontrollindikatoren vor. Diese Annahme wird in der finalen
+Studie nicht geprüft, da die hierfür vorgesehene sitzungsspezifische
+Selbsteinschätzung nicht in das endgültige Erhebungsdesign übernommen
+wurde. Eine nachträgliche Ersetzung durch Nutzungsdaten, MSLQ Werte oder
+Metriken der technischen Sprachmodellevaluation würde eine andere
+Fragestellung operationalisieren und erfolgt daher nicht.
+Systemgenerierte Hinweise aus Transkripten können weiterhin explorativ
+beschrieben werden, besitzen jedoch keinen Hypothesenstatus und stellen
+kein validiertes psychometrisches Maß dar.
+
+Damit führt Kapitel 2 nicht zu einem allgemeinen Wirkmodell des Agenten,
+sondern zu einem begrenzten theoretischen Rahmen für seine Gestaltung
+und Evaluation. Die zentralen Designprinzipien sind adaptive
+Unterstützung, Schutz der Eigenleistung, Überführung von Reflexion in
+konkrete Handlungsschritte und transparente Begrenzung textbasierter
+Zustandsinferenz. Kapitel 3 überführt diese Prinzipien in die technische
+und dialogische Konzeption. Kapitel 4 prüft anschließend getrennt die
+technische Funktionsfähigkeit des Artefakts und die explorativen
+empirischen Befunde der Pilotstudie.
