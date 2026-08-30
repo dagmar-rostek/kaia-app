@@ -1,42 +1,79 @@
-# Kapitel 7 — Fazit und Ausblick
+# 7 Fazit und Ausblick
 
-**Version:** 0.1-PLACEHOLDER  
-**Stand:** 20. Juli 2026  
-**Status:** Wird nach Fertigstellung der Diskussion (September 2026) geschrieben.  
-**Geplanter Umfang:** ca. 4–5 Seiten (~1.000–1.250 Wörter)
-
-> **Hinweis:** Das Fazit ist das letzte inhaltliche Kapitel der Arbeit und kann erst nach Abschluss der Diskussion (Kap. 6) geschrieben werden. Es fasst die Erkenntnisse zusammen, ohne neue Argumente einzuführen.
+**Stand:** Skeleton — wird nach Fertigstellung von Kap6 verfasst (ca. 4–5 Seiten)
+**Hinweis:** Das Fazit fasst zusammen — keine neuen Argumente, keine neuen Quellen.
 
 ---
 
-## 7.1 Zusammenfassung der zentralen Erkenntnisse
+## 7.1 Beitrag der Arbeit
 
-*Ausstehend — wird nach Studienabschluss verfasst.*
+Diese Arbeit hatte das Ziel, einen LLM-basierten Agenten für adaptive und
+sokratische Lernbegleitung theoretisch zu begründen, technisch zu entwickeln
+und in einer explorativen Pilotstudie zu erproben. Sie folgte dabei der Logik von
+Design Science Research (Hevner et al., 2004), die Artefaktentwicklung und
+Artefaktevaluation als aufeinander bezogene Schritte versteht.
 
-Geplante Inhalte:
-- Rückblick auf die drei Forschungsfragen: Was konnte beantwortet werden, was nicht?
-- Wesentliche Ergebnisse der LLM-Evaluation (Kap. 4.2.1): welches Modell hat sich durchgesetzt?
-- Wesentliche Ergebnisse der Pilotstudie (Kap. 5): Tendenz der GSE-Veränderung, qualitative Hauptthemen
-- DSR-Artefakt-Bewertung: Ist KAIA ein nützliches Design-Artefakt im Sinne von Hevner et al. (2004)?
-- Kurze Einschätzung: Hat der Knowing-Doing-Gap-Ansatz sich in der Praxis bewährt?
+**FF1** (Übersetzung theoretischer Anforderungen) wurde durch Kapitel 3
+beantwortet: Sieben Designanforderungen aus den Bereichen Selbstregulation,
+Scaffolding, Adaptivität und empathisches Systemverhalten wurden in eine
+dokumentierte Architekturentscheidung und eine operationalisierte Gesprächslogik
+überführt. [KONKRETE BILANZ nach Diskussion einfügen]
+
+**FF2** (technische Evaluation) wurde durch die LLM-Judge-Evaluation beantwortet.
+Das System erfüllt die Kriterien [BEFUND zusammengefasst]. M4 (Question Depth)
+erwies sich als stärkste Dimension; M1 (Socratic Purity) und M2 (Mission
+Adherence) zeigen Optimierungspotenzial. Die Krisenerkennungslogik wurde durch
+den Eval-Prozess verbessert — ein Beleg für den praktischen Wert des
+systematischen Eval-Ansatzes.
+
+**FF3** (GSE-Veränderung) wurde explorativ beantwortet. [BEFUND: z.B. "Innerhalb
+der Pilotstichprobe (N = [WERT]) wurde eine [schwache / mittlere / keine
+messbare] Veränderung der allgemeinen Selbstwirksamkeitserwartung beobachtet
+(W = [WERT], p = [WERT], r = [WERT])."] Diese Beobachtung erlaubt keine
+kausale Zuschreibung und ist als explorativer Hinweis zu verstehen.
 
 ---
 
-## 7.2 Ausblick: Weg zur Hauptstudie
+## 7.2 Wissenschaftlicher Beitrag
 
-*Ausstehend — wird nach Studienabschluss verfasst.*
+Der Beitrag dieser Arbeit liegt auf drei Ebenen:
 
-Geplante Inhalte:
-- Voraussetzungen für eine Hauptstudie: benötigte Stichprobengröße (Power-Analyse), Kontrollgruppe, Randomisierung
-- Notwendige Systemverbesserungen vor einer Hauptstudie
-- Offene Forschungsfragen, die die Pilotstudie aufgeworfen hat
-- Potenzial für kommerzielle Anwendung — und ethische Reflexion dazu (Conflict-of-Interest-Deklaration)
-- Breitere Implikationen für KI-gestützte Lernbegleitung im deutschsprachigen Hochschulraum
+**Designwissen:** Die dokumentierte Artefaktlogik — sokratischer Modus,
+textbasierte Adaptation auf Basis des Lazarus-Frameworks, persistentes
+Sessiongedächtnis — stellt übertragbares Designwissen für ähnliche Systeme
+bereit.
+
+**Evaluationsmethodik:** Das LLM-as-Judge-System mit sieben validierten
+Metriken, synthetischen Crash-Personas und Goldset-Kalibrierung demonstriert
+einen reproduzierbaren Ansatz zur Verhaltensprüfung sokratischer LLM-Agenten
+vor Echtstudien-Einsatz.
+
+**Empirische Evidenz:** Die Pilotstudie liefert erste Hinweise auf Nutzbarkeit
+und GSE-Verlauf in einer realen, wenn auch kleinen Stichprobe.
 
 ---
 
-## Literaturverzeichnis (Kapitel 7)
+## 7.3 Grenzen und Ausblick
 
-Hevner, A. R., March, S. T., Park, J., & Ram, S. (2004). Design science in information systems research. *MIS Quarterly*, *28*(1), 75–105. https://doi.org/10.2307/25148625
+Die zentralen Grenzen der Arbeit sind das einarmige Pilotdesign, die begrenzte
+Stichprobengröße und der Interessenkonflikt durch die Doppelrolle der Forscherin
+als Entwicklerin und Studienleiterin (vgl. Abschnitt 6.3).
 
-Pfeffer, J., & Sutton, R. I. (2000). *The knowing-doing gap: How smart companies turn knowledge into action*. Harvard Business School Press.
+Für eine Hauptstudie wären folgende Bedingungen erforderlich:
+- Kontrollgruppe (z.B. Warteliste oder konventionelles Lernangebot)
+- Randomisierte Zuweisung
+- Größere Stichprobe (G*Power-Analyse auf Basis der Pilot-Effektgröße:
+  N ≈ [WERT] für Power = 0,80, α = .05, r = [WERT])
+- Unabhängige Beurteilung der Goldset-Scores (ohne Interessenkonflikt)
+- Längerer Erhebungszeitraum für Transferwirkungen
+
+Technisch besteht das größte Optimierungspotenzial in der sokratischen Reinheit
+(M1) und der Missionstreue (M2). Hier könnte ein differenzierteres Prompt-Design
+mit expliziten Guardrails und session-spezifischen Verbotslisten eine Verbesserung
+bewirken. Langfristig wäre die Aktivierung der semantischen Gedächtnisschicht
+(pgvector) ein Schritt hin zu echter sitzungsübergreifender Personalisierung.
+
+---
+
+*Literaturangaben sind im konsolidierten Literaturverzeichnis am Ende der
+Thesis aufgeführt.*
