@@ -645,6 +645,7 @@ interface Props {
 }
 
 export function SurveyForm({ measurementType, redirectTo }: Props) {
+  const router = useRouter()
   const [step, setStep] = useState<"intro" | "mslq" | "gse" | "done">("intro")
   const [mslqAnswers, setMslqAnswers] = useState<Record<string, number>>({})
   const [gseAnswers, setGseAnswers] = useState<Record<number, number>>({})
@@ -719,12 +720,8 @@ export function SurveyForm({ measurementType, redirectTo }: Props) {
 
   if (step === "done" && mslqResult && gseResult) {
     if (measurementType === "post") {
-      return (
-        <PostCompletionPanel
-          postMslqResult={mslqResult}
-          postGseResult={gseResult}
-        />
-      )
+      router.replace(redirectTo)
+      return null
     }
     return <PreCompletionPanel redirectTo={redirectTo} />
   }
