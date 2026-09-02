@@ -13,10 +13,12 @@ from .admin import router as admin_router
 from .bugreport import router as bugreport_router
 from .export import router as export_router
 from .health import router as health_router
+from .waitlist import router as waitlist_router
 
 v1_router = APIRouter(prefix="/api/v1")
 v1_router.include_router(health_router)
 v1_router.include_router(bugreport_router)
+v1_router.include_router(waitlist_router)
 v1_router.include_router(auth_router)
 v1_router.include_router(users_router)
 v1_router.include_router(admin_router)
