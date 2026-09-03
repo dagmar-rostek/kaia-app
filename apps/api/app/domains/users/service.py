@@ -3,7 +3,7 @@ from datetime import UTC, datetime, timedelta
 
 import structlog
 
-from app.core.config import settings
+from app.core.config import StudyMode, settings
 from app.core.security import (
     create_access_token,
     create_refresh_token,
@@ -54,6 +54,10 @@ class AuthService:
         self._resets = reset_repo
 
     async def register(self, data: RegisterRequest, ip: str | None = None) -> User:
+        if settings.study_mode == StudyMode.LOCKED:
+            raise AuthError(
+                "Die Pilotstudie ist beendet. Neue Registrierungen sind geschlossen.", 403
+            )
         if await self._users.get_by_email(data.email):
             raise AuthError("E-Mail bereits vergeben.", 409)
         if await self._users.get_by_username(data.username):
@@ -93,6 +97,10 @@ class AuthService:
         ip: str | None = None,
     ) -> tuple[str, str]:
         """Returns (access_token, raw_refresh_token)."""
+        if settings.study_mode == StudyMode.LOCKED:
+            raise AuthError(
+                "Die Pilotstudie ist beendet. Anmeldungen sind nicht mehr möglich.", 403
+            )
         user = await self._users.get_by_email(email)
         if not user:
             raise AuthError("Ungültige Anmeldedaten.", 401)
