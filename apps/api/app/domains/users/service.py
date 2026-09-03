@@ -97,10 +97,6 @@ class AuthService:
         ip: str | None = None,
     ) -> tuple[str, str]:
         """Returns (access_token, raw_refresh_token)."""
-        if settings.study_mode == StudyMode.LOCKED:
-            raise AuthError(
-                "Die Pilotstudie ist beendet. Anmeldungen sind nicht mehr möglich.", 403
-            )
         user = await self._users.get_by_email(email)
         if not user:
             raise AuthError("Ungültige Anmeldedaten.", 401)
@@ -117,6 +113,13 @@ class AuthService:
                 log.warning("account_locked", user_id=user.id)
             await self._users.save(user)
             raise AuthError("Ungültige Anmeldedaten.", 401)
+
+        # After password check: study participants cannot log in when study is locked.
+        # Non-participants (admin) are not affected.
+        if settings.study_mode == StudyMode.LOCKED and user.study_participant:
+            raise AuthError(
+                "Die Pilotstudie ist beendet. Anmeldungen sind nicht mehr möglich.", 403
+            )
 
         if user.status == UserStatus.PENDING:
             raise AuthError("Konto wartet auf Admin-Freigabe.", 403)

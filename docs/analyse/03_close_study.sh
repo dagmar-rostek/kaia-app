@@ -28,9 +28,9 @@ echo "=== Schritt 2: Alle Teilnehmenden suspendieren ==="
 docker compose -f infra/docker-compose.prod.yml exec -T db psql -U kaia -d kaia <<SQL
 UPDATE users
    SET status = 'suspended'
- WHERE role != 'admin'
+ WHERE study_participant = true
    AND status = 'active';
-SELECT username, email, status FROM users ORDER BY role, username;
+SELECT username, email, study_participant, status FROM users ORDER BY study_participant DESC, username;
 SQL
 
 echo "  ✓ Teilnehmende suspendiert"

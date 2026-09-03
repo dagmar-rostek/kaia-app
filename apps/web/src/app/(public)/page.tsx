@@ -38,8 +38,8 @@ export default function Home() {
             },
             {
               icon: FlaskConical,
-              title: "Echte Studie. Echte Daten.",
-              desc: "KAIA wird in einer wissenschaftlichen Pilotstudie untersucht. Du bist dabei — wenn du willst.",
+              title: "Pilotstudie abgeschlossen.",
+              desc: "Die wissenschaftliche Pilotstudie ist beendet. Danke an alle Teilnehmenden. Was als nächstes kommt, erfährst du hier.",
             },
           ].map(({ icon: Icon, title, desc }) => (
             <div key={title} className="rounded-xl border border-border bg-muted/20 p-4 space-y-2">
@@ -55,26 +55,15 @@ export default function Home() {
         {/* CTAs */}
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
           <Link
-            href="/vorregistrierung"
+            href="/pilotstudie-abschluss"
             className="inline-flex items-center justify-center gap-2 rounded-lg bg-foreground text-background px-6 py-3 text-sm font-medium hover:opacity-90 transition-opacity"
           >
-            Jetzt vorregistrieren <ArrowRight className="h-4 w-4" />
-          </Link>
-          <Link
-            href="/mitmachen"
-            className="inline-flex items-center justify-center gap-2 rounded-lg border border-border px-6 py-3 text-sm text-muted-foreground hover:text-foreground hover:border-foreground/40 transition-colors"
-          >
-            Wie läuft das ab?
+            Was kommt als nächstes? <ArrowRight className="h-4 w-4" />
           </Link>
         </div>
 
         <p className="text-xs text-muted-foreground">
-          Studienstart: <strong className="text-foreground">8. August 2026</strong>
-          {" · "}
-          bereits eingeloggt?{" "}
-          <Link href="/login" className="underline hover:text-foreground transition-colors">
-            Anmelden
-          </Link>
+          Pilotstudie abgeschlossen · September 2026
         </p>
 
       </main>
