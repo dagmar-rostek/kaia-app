@@ -93,11 +93,12 @@ async def _get_completed_users(db: AsyncSession) -> list[User]:
 
     Completed = has both post_gse AND post_mslq records AND study_participant=True.
     Sorted by created_at ascending so P01 is the first registrant.
+    Includes suspended users so data remains accessible after study close.
     """
     result = await db.execute(
         select(User)
         .where(
-            User.status == UserStatus.ACTIVE,
+            User.status.in_([UserStatus.ACTIVE, UserStatus.SUSPENDED]),
             User.is_simulation.is_(False),
             User.study_participant.is_(True),
             User.id.in_(
@@ -327,11 +328,11 @@ async def get_participants_summary(
 
 
 async def _get_active_study_users(db: AsyncSession) -> list[User]:
-    """All active study participants regardless of completion status."""
+    """All study participants regardless of completion or suspension status."""
     result = await db.execute(
         select(User)
         .where(
-            User.status == UserStatus.ACTIVE,
+            User.status.in_([UserStatus.ACTIVE, UserStatus.SUSPENDED]),
             User.is_simulation.is_(False),
             User.study_participant.is_(True),
         )

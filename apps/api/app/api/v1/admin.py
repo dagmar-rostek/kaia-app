@@ -548,7 +548,7 @@ async def get_participants_progress(
     users_result = await db.execute(
         select(User)
         .where(
-            User.status == UserStatus.ACTIVE,
+            User.status.in_([UserStatus.ACTIVE, UserStatus.SUSPENDED]),
             User.is_simulation.is_(False),
             User.study_participant.is_(True),
         )
