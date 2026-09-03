@@ -146,9 +146,8 @@ export default function PilotstudieAbschlussClient() {
         </div>
 
         {/* Statistiken */}
-        <div className="grid grid-cols-3 gap-6 rounded-xl border border-border bg-muted/20 p-6">
+        <div className="grid grid-cols-2 gap-6 rounded-xl border border-border bg-muted/20 p-6">
           <StatBubble number="~20" label="Teilnehmende" />
-          <StatBubble number="3–10" label="Sessions pro Person" />
           <StatBubble number="1" label="KI, die fragt statt antwortet" />
         </div>
       </section>

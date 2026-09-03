@@ -1,16 +1,15 @@
 import Link from "next/link"
 import {
   MessageSquare, Brain, ClipboardList, Video,
-  Clock, Shield, CheckCircle2, ArrowRight,
+  Clock, Shield, CheckCircle2,
   Star, Users, Calendar, BookOpen, AlertTriangle,
   Target, Sparkles, Map,
 } from "lucide-react"
-import { StudyCountdown } from "@/components/StudyCountdown"
 
 export const metadata = {
-  title: "Mitmachen — KAIA Pilotstudie",
+  title: "So lief es ab — KAIA Pilotstudie",
   description:
-    "Werde Teil der KAIA-Pilotstudie: Ein KI-Begleiter für das Wissen, das du schon hast — aber noch nicht wirklich lebst. Vom Verstehen ins Tun. Start: 8. August 2026.",
+    "Die KAIA-Pilotstudie ist abgeschlossen. Hier erfährst du wie die Teilnahme ablief — von der Registrierung bis zum Abschlussgespräch.",
 }
 
 // ── Helpers ────────────────────────────────────────────────────────────────────
@@ -79,51 +78,23 @@ export default function MitmachenPage() {
   return (
     <main className="max-w-2xl mx-auto px-6 py-16 space-y-20">
 
-      {/* ── COUNTDOWN BANNER ── */}
-      <section className="rounded-xl border border-border bg-muted/20 p-6 text-center space-y-4">
-        <p className="text-sm font-medium">
-          Registrierung öffnet am <strong>8. August 2026</strong>
-        </p>
-        <StudyCountdown label="Noch" />
-        <p className="text-xs text-muted-foreground">
-          Lies schon mal weiter — du weißt dann genau worauf du dich einlässt.
-        </p>
-      </section>
-
       {/* ── HERO ── */}
       <section className="space-y-6 text-center">
         <div className="flex justify-center gap-2 flex-wrap">
           <Badge>Masterthesis · SRH Fernhochschule</Badge>
-          <Badge>Start: 8. August 2026</Badge>
-          <Badge>~20 Teilnehmende gesucht</Badge>
+          <Badge>August–September 2026</Badge>
+          <Badge>~20 Teilnehmende</Badge>
         </div>
 
         <h1 className="text-4xl font-bold tracking-tight leading-tight">
-          Du weißt es bereits.{" "}
-          <span className="italic">Jetzt lebst du es auch.</span>
+          So lief die Pilotstudie ab.
         </h1>
 
         <p className="text-lg text-muted-foreground leading-relaxed max-w-xl mx-auto">
-          KAIA ist nicht für Einsteiger. KAIA ist für Menschen, die Methoden
-          kennen, Workshops hinter sich haben, Bücher gelesen haben —
-          aber im Alltag trotzdem nicht umsetzen, was sie wissen.
-          Diesen Gap schließt KAIA: vom Verstehen ins Tun.
+          KAIA begleitete rund 20 Menschen über drei Wochen —
+          mit Fragen statt Antworten, sokratisch und konsequent.
+          Diese Seite zeigt wie die Teilnahme aufgebaut war.
         </p>
-
-        <div className="flex flex-col sm:flex-row gap-3 justify-center pt-2">
-          <Link
-            href="/vorregistrierung"
-            className="inline-flex items-center justify-center gap-2 rounded-lg bg-foreground text-background px-6 py-3 text-sm font-medium hover:opacity-90 transition-opacity"
-          >
-            Jetzt vorregistrieren <ArrowRight className="h-4 w-4" />
-          </Link>
-          <a
-            href="#ablauf"
-            className="inline-flex items-center justify-center gap-2 rounded-lg border border-border px-6 py-3 text-sm text-muted-foreground hover:text-foreground hover:border-foreground/40 transition-colors"
-          >
-            Wie läuft es ab?
-          </a>
-        </div>
       </section>
 
       {/* ── WHAT IS KAIA ── */}
@@ -499,39 +470,6 @@ export default function MitmachenPage() {
           </Link>
           .
         </p>
-      </section>
-
-      {/* ── CTA ── */}
-      <section className="rounded-xl border border-foreground/20 bg-foreground/3 p-8 text-center space-y-6">
-        <div className="space-y-2">
-          <h2 className="text-2xl font-bold tracking-tight">Dabei sein.</h2>
-          <p className="text-muted-foreground text-sm max-w-md mx-auto">
-            Die Studie startet am <strong className="text-foreground">8. August 2026</strong> —
-            jetzt schon vorregistrieren und einen Platz sichern.
-          </p>
-        </div>
-        <StudyCountdown label="Noch" />
-        <Link
-          href="/vorregistrierung"
-          className="inline-flex items-center gap-2 rounded-lg bg-foreground text-background px-8 py-3.5 text-sm font-medium hover:opacity-90 transition-opacity"
-        >
-          Jetzt vorregistrieren <ArrowRight className="h-4 w-4" />
-        </Link>
-        <div className="space-y-1 pt-1">
-          <p className="text-xs text-muted-foreground">
-            Noch Fragen?
-          </p>
-          <p className="text-xs text-muted-foreground">
-            <a href="mailto:Dagmar.Rostek@stud.mobile-university.de" className="underline hover:text-foreground transition-colors">
-              Dagmar.Rostek@stud.mobile-university.de
-            </a>
-            {" "}·{" "}
-            <a href="tel:+4917661159403" className="underline hover:text-foreground transition-colors">
-              0176 611 59 403
-            </a>
-            {" "}(SMS, WhatsApp, Telefon)
-          </p>
-        </div>
       </section>
 
       {/* ── FOOTER NOTE ── */}
