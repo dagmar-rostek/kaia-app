@@ -223,7 +223,7 @@ export default function PilotstudieAbschlussClient() {
             icon={Brain}
             tag="KI · Leadership"
             title="AI First Transformation — for Leaders"
-            description="KI-Tools nutzen kann inzwischen jeder. Aber wie verändert KI wirklich die Art, wie du denkst, entscheidest und führst — und wie bereitest du dein Unternehmen auf eine Welt vor, in der sich das monatlich weiterentwickelt? KAIA begleitet dich durch den echten Mindset-Shift. Nicht mit Feature-Listen, nicht mit Buzzword-Bingo. Mit Gesprächen, Materialien und sokratischen Fragen, die dich zum Handeln bringen. Und wenn die Transformation bei dir im Unternehmen irgendwo stockt — da ist KAIA auch."
+            description="KI-Tools nutzen kann inzwischen jeder. Aber wie verändert KI wirklich die Art, wie du denkst, entscheidest und führst — und wie bereitest du dein Unternehmen auf eine Welt vor, in der sich das monatlich weiterentwickelt? KAIA begleitet dich durch den echten Mindset-Shift. Nicht mit Feature-Listen, nicht mit Buzzword-Bingo. Mit Gesprächen, Materialien und sokratischen Fragen, die dich zum Handeln bringen. Und wenn es dann doch mal persönlich mit einem Experten besprochen werden muss — der ist da."
             teaser="Für Leader, die verstanden haben, dass es kein Technology-Problem ist."
           />
 
@@ -232,7 +232,7 @@ export default function PilotstudieAbschlussClient() {
             icon={Zap}
             tag="KI · Praxis"
             title="AI First Transformation — for Builders"
-            description="KI verändert sich wöchentlich. Dein Feed ist voll. Du weißt nicht mehr, was du noch lesen musst und was Lärm ist. KAIA hilft dir, im Rauschen des Neuen das Wesentliche zu erkennen — personalisiert auf deinen Stack, deine Rolle, deine echten Fragen. Nicht aktuell bleiben um des Aktuell-Bleibens willen. Wirksam arbeiten, während andere noch den Newsletter lesen. Mit sokratischer Begleitung beim Umsetzen und direktem Expertenzugang wenn du nicht weiterkommst."
+            description="KI verändert sich wöchentlich. Dein Feed ist voll. Du weißt nicht mehr, was du noch lesen musst und was Lärm ist. KAIA hilft dir, im Rauschen des Neuen das Wesentliche zu erkennen — personalisiert auf deinen Stack, deine Rolle, deine echten Fragen. Nicht aktuell bleiben um des Aktuell-Bleibens willen. Wirksam arbeiten, während andere noch den Newsletter lesen. Mit sokratischer Begleitung beim Umsetzen. Und wenn es dann doch mal persönlich mit einem Experten besprochen werden muss — der ist da."
             teaser="Für alle, die mit KI arbeiten und aufgehört haben, alles zu lesen."
           />
 
