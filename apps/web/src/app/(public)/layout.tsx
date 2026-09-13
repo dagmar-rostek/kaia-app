@@ -3,6 +3,7 @@ import { ThemeToggle } from "@/components/ThemeToggle"
 import { LegalFooter } from "@/components/LegalFooter"
 
 const NAV = [
+  { href: "/clara",         label: "CLARA" },
   { href: "/pilotstudie-abschluss", label: "So lief es ab" },
   { href: "/kontakt",       label: "Kontakt" },
   { href: "/tagebuch",      label: "Tagebuch" },
