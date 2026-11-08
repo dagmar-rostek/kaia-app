@@ -1,0 +1,670 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Playbook Leadership-Resilienz</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;1,9..144,300;1,9..144,400&family=Instrument+Sans:wght@400;500;600&family=Caveat:wght@500&display=swap">
+<style>
+/* Layout: one screen per phase, narrow reading column; depth lives in nested "+" layers; print view renders everything opened */
+:root{
+  --bg:#F4F6F1; --surface:#FFFFFF; --ink:#1C221E; --muted:#56635A; --line:#DCE0DA;
+  --accent:#3E6B4F; --accent-soft:#E3ECE4; --accent-ink:#FFFFFF; --danger:#A3412F; --note:#FFF6C9; --note-ink:#3B3418;
+  --display:"Fraunces", Georgia, "Times New Roman", serif;
+  --body:"Instrument Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --hand:"Caveat", "Segoe Print", "Bradley Hand", cursive;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#111513; --surface:#1A1F1C; --ink:#E7ECE7; --muted:#A3AEA6; --line:#2E3631;
+    --accent:#8FC2A0; --accent-soft:#1F2D25; --accent-ink:#101411; --danger:#E8907E; --note:#3A3520; --note-ink:#F4E9B8; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#111513; --surface:#1A1F1C; --ink:#E7ECE7; --muted:#A3AEA6; --line:#2E3631;
+  --accent:#8FC2A0; --accent-soft:#1F2D25; --accent-ink:#101411; --danger:#E8907E; --note:#3A3520; --note-ink:#F4E9B8; color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.6}
+img{max-width:100%;display:block}
+[hidden]{display:none!important}
+button{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:6px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+#print{display:none}
+
+/* top */
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);background:var(--bg);z-index:10}
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);border-bottom:1px solid var(--line);
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:12px 8px}
+.top-in{max-width:680px;margin:0 auto;display:flex;flex-direction:column;gap:8px}
+.top-row{display:flex;justify-content:space-between;align-items:baseline;gap:12px}
+.brand{font-family:var(--display);font-size:17px;font-weight:500}
+.saved{font-size:13px;color:var(--muted);transition:opacity .4s}
+.progress{display:grid;gap:4px}
+.seg{height:20px;border:0;padding:0;background:none;cursor:pointer;display:flex;align-items:center}
+.seg span{display:block;width:100%;height:4px;border-radius:2px;background:var(--line);transition:background .25s}
+.seg.done span{background:var(--accent);opacity:.45}
+.seg.now span{background:var(--accent);height:6px}
+
+main{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:32px 40px}
+.screen{max-width:680px;margin:0 auto;display:flex;flex-direction:column;gap:26px;animation:fade .35s ease both}
+@keyframes fade{from{opacity:.4;transform:translateY(6px)}to{opacity:1;transform:none}}
+.kicker{margin:0;font-size:13px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:var(--accent)}
+h1{margin:-16px 0 0;font-family:var(--display);font-weight:300;font-size:clamp(34px,8vw,50px);line-height:1.06;letter-spacing:-.01em;text-wrap:balance}
+.lead{margin:0;color:var(--muted);max-width:62ch;text-wrap:pretty}
+.impulse{margin:0;font-family:var(--display);font-style:italic;font-weight:400;font-size:clamp(23px,5.4vw,30px);line-height:1.28;color:var(--accent);text-wrap:balance}
+.label{margin:0 0 10px;font-size:13px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:var(--muted)}
+.task p{margin:0}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.chip{font-size:14px;padding:5px 13px;border-radius:999px;background:var(--accent-soft);color:var(--ink)}
+.ways{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px}
+.ways li{display:flex;gap:12px;align-items:flex-start}
+.ways svg{flex:none;margin-top:3px}
+.ico{stroke:var(--accent);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+
+/* rich text blocks */
+.rt{display:flex;flex-direction:column;gap:14px}
+.rt p,.rt ul,.rt ol{margin:0}
+.rt ul,.rt ol{padding-left:22px;display:flex;flex-direction:column;gap:6px}
+.rt h4{margin:6px 0 0;font-family:var(--display);font-weight:500;font-size:20px;line-height:1.25}
+.rt strong{font-weight:600}
+.rt blockquote{margin:0;padding:4px 0 4px 18px;border-left:2px solid var(--accent);font-family:var(--display);font-style:italic;font-size:19px;line-height:1.4}
+.rt blockquote p{margin:0}
+.rt cite{display:block;margin-top:6px;font-family:var(--body);font-style:normal;font-size:14px;color:var(--muted)}
+.ex{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px 18px;display:flex;flex-direction:column;gap:6px}
+.ex-l{font-size:12px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:var(--accent)}
+.ex p{margin:0}
+.refl{margin:0;padding:14px 18px;border-radius:14px;background:var(--accent-soft);font-weight:500}
+.refl::before{content:"Zum Nachdenken";display:block;font-size:12px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:var(--accent);margin-bottom:4px}
+.lit{list-style:none;padding:0!important;font-size:15px;color:var(--muted)}
+.lit li{padding-left:18px;position:relative}
+.lit li::before{content:"";position:absolute;left:0;top:.7em;width:8px;height:1px;background:var(--muted)}
+.tbl{overflow-x:auto}
+.tbl table{border-collapse:collapse;width:100%;font-size:15px}
+.tbl th,.tbl td{text-align:left;vertical-align:top;padding:9px 10px;border-bottom:1px solid var(--line)}
+.tbl th{font-size:12px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);font-weight:600}
+
+/* figures */
+.fig{margin:0;display:flex;flex-direction:column;gap:8px;align-items:center;padding:18px 12px 14px;background:var(--surface);border:1px solid var(--line);border-radius:18px}
+.fig svg{width:100%;max-width:440px;height:auto;overflow:visible}
+.fig figcaption{font-size:14px;color:var(--muted);text-align:center;max-width:52ch}
+.g-line{fill:none;stroke:var(--accent);stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.g-thin{fill:none;stroke:var(--muted);stroke-width:1;stroke-dasharray:3 4}
+.g-axis{fill:none;stroke:var(--muted);stroke-width:1.2}
+.g-f1{fill:var(--accent);fill-opacity:.1;stroke:var(--accent);stroke-width:1.5}
+.g-f2{fill:var(--accent);fill-opacity:.24;stroke:var(--accent);stroke-width:1.5}
+.g-f3{fill:var(--accent);fill-opacity:.45;stroke:var(--accent);stroke-width:1.5}
+.g-solid{fill:var(--accent)}
+.g-paper{fill:var(--surface);stroke:var(--line);stroke-width:1.2}
+.g-t{fill:var(--ink);font-family:var(--body);font-size:13px;font-weight:600}
+.g-s{fill:var(--muted);font-family:var(--body);font-size:11px}
+.g-e{fill:var(--accent);font-family:var(--display);font-style:italic;font-size:14px}
+.g-h{fill:var(--accent);font-family:var(--hand);font-size:19px}
+
+/* layers */
+details.more,details.layer,details.model{border-top:1px solid var(--line)}
+details.more:last-of-type{border-bottom:1px solid var(--line)}
+details.more>summary,details.layer>summary,details.model>summary{list-style:none;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:14px;padding:14px 0}
+details>summary::-webkit-details-marker{display:none}
+details.more>summary::after,details.layer>summary::after,details.model>summary::after{content:"+";flex:none;font-size:24px;line-height:1;color:var(--accent);transition:transform .2s}
+details[open].more>summary::after,details[open].layer>summary::after,details[open].model>summary::after{transform:rotate(45deg)}
+details.more>summary{font-weight:600}
+.more-body{padding-bottom:18px;display:flex;flex-direction:column;gap:16px}
+details.layer{margin-left:0}
+details.layer>summary{font-weight:500;font-size:16px;padding:12px 0}
+details.layer>summary .depth{font-size:12px;color:var(--muted);font-weight:400;margin-left:auto;margin-right:10px;white-space:nowrap}
+.layer-body{padding:2px 0 18px 14px;border-left:2px solid var(--accent-soft);display:flex;flex-direction:column;gap:14px}
+.layers{display:flex;flex-direction:column;border-bottom:1px solid var(--line)}
+
+/* theory library */
+.lib{display:flex;flex-direction:column}
+details.model>summary{padding:18px 0;align-items:flex-start}
+.m-head{display:flex;gap:14px;align-items:flex-start;min-width:0}
+.m-n{flex:none;width:34px;height:34px;border-radius:50%;background:var(--accent-soft);color:var(--accent);display:flex;align-items:center;justify-content:center;font-family:var(--display);font-size:17px}
+.m-t{display:flex;flex-direction:column;gap:2px;min-width:0}
+.m-t b{font-family:var(--display);font-weight:400;font-size:22px;line-height:1.2}
+.m-t small{font-size:15px;color:var(--muted)}
+.model-body{padding:0 0 22px;display:flex;flex-direction:column;gap:16px}
+.lib-end{border-top:1px solid var(--line)}
+.to-theory{align-self:flex-start}
+
+/* spark */
+.spark{position:relative;background:var(--note);color:var(--note-ink);border-radius:4px 18px 4px 18px;padding:20px 22px 18px;transform:rotate(-.6deg);box-shadow:0 1px 0 rgba(0,0,0,.05)}
+.spark span{display:block;font-size:12px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;opacity:.75;margin-bottom:4px}
+.spark p{margin:0;font-family:var(--hand);font-size:27px;line-height:1.15}
+
+/* pause */
+.pause{background:var(--accent-soft);border-radius:20px;padding:22px 24px;display:flex;gap:16px;align-items:center}
+.pause p{margin:0;font-family:var(--display);font-size:22px;line-height:1.25}
+.pause small{display:block;font-family:var(--body);font-size:14px;color:var(--muted);margin-top:4px}
+
+/* capture */
+.capture{display:flex;flex-direction:column;gap:22px;padding-top:4px}
+.field{display:flex;flex-direction:column;gap:8px}
+.field>label,.flabel{font-weight:500}
+textarea,input[type=text]{width:100%;font:inherit;font-size:17px;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px 14px;resize:vertical}
+textarea{min-height:110px;line-height:1.5}
+textarea:focus,input[type=text]:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+.mini{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:6px 14px;font-size:14px;cursor:pointer;display:inline-flex;align-items:center;gap:6px}
+.mini.on{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.thumbs{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px}
+.thumbs:empty{display:none}
+.thumb{position:relative;border-radius:12px;overflow:hidden;background:var(--line);aspect-ratio:4/3;max-width:100%}
+.thumb img{width:100%;height:100%;object-fit:cover}
+.thumb button{position:absolute;top:6px;right:6px;border:0;border-radius:999px;background:rgba(0,0,0,.6);color:#fff;font-size:13px;padding:3px 10px;cursor:pointer}
+.photo-btn{display:flex;align-items:center;justify-content:center;gap:10px;border:1.5px dashed var(--line);border-radius:14px;padding:18px;cursor:pointer;color:var(--muted);background:var(--surface);font-size:15px}
+.photo-btn:hover{border-color:var(--accent);color:var(--ink)}
+.hint{font-size:14px;color:var(--muted);margin:0}
+
+.steps3{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.steps3 li{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:4px}
+.steps3 b{font-family:var(--display);font-weight:400;font-size:20px}
+.steps3 span{font-size:14px;color:var(--muted);line-height:1.4}
+@media (max-width:460px){.steps3{grid-template-columns:minmax(0,1fr)}}
+
+/* cards */
+.cards{display:flex;flex-direction:column;gap:12px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:22px;padding:28px 24px;min-height:180px;display:flex;flex-direction:column;justify-content:space-between;gap:18px}
+.card .type{font-size:13px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:var(--accent)}
+.card .q{font-family:var(--display);font-size:clamp(22px,5.4vw,27px);line-height:1.28;margin:0}
+.card-nav{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.card-nav span{font-size:14px;color:var(--muted);font-variant-numeric:tabular-nums}
+
+/* summary */
+.sum{display:flex;flex-direction:column;gap:24px}
+.sum-block{display:flex;flex-direction:column;gap:10px;padding-top:18px;border-top:1px solid var(--line)}
+.sum-block h2{margin:0;font-family:var(--display);font-weight:400;font-size:23px}
+.sum-item h3{margin:0 0 2px;font-size:14px;font-weight:600;color:var(--muted)}
+.sum-item p{margin:0;white-space:pre-wrap}
+.empty{color:var(--muted);font-style:italic;margin:0}
+.actions{display:flex;flex-direction:column;gap:12px}
+.primary{border:0;border-radius:999px;background:var(--accent);color:var(--accent-ink);font-weight:600;padding:15px 22px;cursor:pointer;font-size:17px}
+.ghost{border:1px solid var(--line);border-radius:999px;background:transparent;padding:12px 20px;cursor:pointer;color:var(--muted)}
+.confirm{display:flex;flex-wrap:wrap;gap:10px;align-items:center;padding:14px 16px;border-radius:14px;background:var(--surface);border:1px solid var(--line)}
+.confirm p{margin:0;flex:1 1 200px}
+.danger{border:0;border-radius:999px;background:var(--danger);color:var(--surface);padding:10px 18px;cursor:pointer;font-weight:600}
+.howto{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px 18px;font-size:15px;display:flex;flex-direction:column;gap:6px}
+.howto p{margin:0}
+
+.nav{position:sticky;bottom:0;z-index:5;background:var(--bg);border-top:1px solid var(--line);
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:12px calc(12px + env(safe-area-inset-bottom,0px))}
+.nav-in{max-width:680px;margin:0 auto;display:flex;justify-content:space-between;gap:12px}
+.nav button{min-height:46px;border-radius:999px;padding:0 22px;cursor:pointer;font-weight:500}
+#prev{border:1px solid var(--line);background:transparent}
+#next{border:0;background:var(--accent);color:var(--accent-ink);font-weight:600;margin-left:auto}
+
+.sig{font-size:13px;color:var(--muted);line-height:1.6}
+.sig b{color:var(--ink);font-weight:600}
+footer{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 28px}
+footer .sig{max-width:680px;margin:0 auto}
+
+@media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important}}
+
+/* ---------- print ---------- */
+@page{size:A4;margin:16mm 15mm 16mm}
+@media print{
+  body{background:#fff;color:#1C221E;font-size:10.5pt;line-height:1.5}
+  body::before,.top,main,.nav,footer{display:none!important}
+  #print{display:block}
+  :root{--bg:#fff;--surface:#fff;--ink:#1C221E;--muted:#55605A;--line:#D5DAD4;--accent:#3E6B4F;--accent-soft:#E3ECE4;--note:#FFF6C9;--note-ink:#3B3418}
+  .p-cover{min-height:255mm;display:flex;flex-direction:column;justify-content:space-between;break-after:page}
+  .p-cover h1{margin:0;font-size:44pt;line-height:1.02}
+  .p-cover .impulse{font-size:18pt;margin-top:10pt}
+  .p-name{font-size:14pt;font-weight:600;margin:0}
+  .p-sec{break-before:page}
+  .p-sec>h2{font-family:var(--display);font-weight:300;font-size:28pt;line-height:1.05;margin:0 0 4pt}
+  .p-kicker{font-size:8.5pt;font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:var(--accent);margin:0 0 4pt}
+  .p-sec .impulse{font-size:15pt;margin:6pt 0 10pt}
+  .p-sec .lead{margin:0 0 10pt}
+  .p-block{margin:0 0 12pt}
+  .rt{gap:8pt}
+  .fig,.ex,.refl,.spark,.p-entry,.card,.pause{break-inside:avoid}
+  .fig{padding:10pt;border-radius:10pt}
+  .fig svg{max-width:300pt}
+  details>summary::after{display:none!important}
+  details>summary{cursor:default}
+  details.model>summary{padding:10pt 0 6pt}
+  .layer-body{padding-bottom:8pt}
+  .spark{transform:none}
+  .spark p{font-size:19pt}
+  .p-entries{display:flex;flex-direction:column;gap:10pt;margin-top:12pt;padding:12pt 14pt;border:1.2pt solid var(--accent);border-radius:10pt}
+  .p-entries>h3{margin:0;font-size:8.5pt;letter-spacing:.09em;text-transform:uppercase;color:var(--accent)}
+  .p-entry h4{margin:0 0 2pt;font-size:9.5pt;color:var(--muted)}
+  .p-entry p{margin:0;white-space:pre-wrap}
+  .p-blank{height:46pt;border-bottom:1pt solid var(--line);background:repeating-linear-gradient(transparent 0 22pt,var(--line) 22pt 23pt)}
+  .p-photos{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8pt}
+  .p-photos img{width:100%;border-radius:6pt;break-inside:avoid}
+  .p-sig{border-top:1pt solid var(--line);padding-top:8pt;font-size:9pt;color:var(--muted);line-height:1.55}
+  .p-sig b{color:var(--ink)}
+  .p-end{break-before:page;min-height:240mm;display:flex;flex-direction:column;justify-content:center;gap:18pt}
+  .p-end p.big{font-family:var(--display);font-weight:300;font-size:30pt;line-height:1.1;margin:0}
+  .chip{border:1pt solid var(--line)}
+  .tbl{overflow:visible}
+  a{color:inherit;text-decoration:none}
+}
+
+/* ── PASSWORD GATE ── */
+#pb-gate{position:fixed;inset:0;z-index:999;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:36px;padding:32px;text-align:center;font-family:var(--body)}
+#pb-gate .g-eye{margin:0 0 8px;font-size:12px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--accent)}
+#pb-gate .g-title{font-family:var(--display);font-weight:300;font-size:clamp(24px,6vw,38px);margin:0;line-height:1.1;letter-spacing:-.01em}
+#pb-gate form{display:flex;flex-direction:column;align-items:center;gap:10px;width:100%;max-width:280px}
+#pb-gate input[type=password]{width:100%;font:inherit;font-size:18px;letter-spacing:.15em;text-align:center;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px 16px}
+#pb-gate input[type=password]:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+#pb-gate .g-btn{width:100%;border:0;border-radius:999px;background:var(--accent);color:var(--accent-ink);font:inherit;font-weight:600;font-size:16px;padding:13px;cursor:pointer}
+#pb-gate .g-err{font-size:14px;color:var(--danger);min-height:20px;margin:0}
+#pb-gate .g-back{font-size:13px;color:var(--muted);text-decoration:none;background:none;border:0;cursor:pointer;padding:0;display:block}
+#pb-gate .g-hint{font-size:13px;color:var(--muted);margin:0}
+</style>
+</head>
+<body>
+
+<div id="pb-gate">
+  <div>
+    <p class="g-eye">Workshop-Materialien</p>
+    <h1 class="g-title">Leadership-Resilienz</h1>
+  </div>
+  <form id="pb-form">
+    <input type="password" id="pb-pw" placeholder="Passwort" autocomplete="current-password" aria-label="Passwort">
+    <p class="g-err" id="pb-err" role="alert"></p>
+    <button class="g-btn" type="submit">Zugang &#x2192;</button>
+    <a class="g-back" href="/playbooks">&#x2190; Zur Übersicht</a>
+    <p class="g-hint">Nur für Kursteilnehmende.</p>
+  </form>
+</div>
+
+<div id="pb-app" hidden>
+
+<header class="top">
+  <div class="top-in">
+    <div class="top-row"><span class="brand" id="brand"></span><span class="saved" id="saved" aria-live="polite"></span></div>
+    <nav class="progress" id="progress" aria-label="Abschnitte"></nav>
+  </div>
+</header>
+<main id="main"></main>
+<footer><p class="sig" id="sig-foot"></p></footer>
+<div class="nav"><div class="nav-in"><button id="prev" type="button">Zurück</button><button id="next" type="button">Weiter</button></div></div>
+<div id="print" aria-hidden="true"></div>
+
+<script>
+(function(){
+  var PW_KEY='rostek-pb-auth-v1';
+  var CORRECT='PLAYBOOK_4Y';
+  var gEl=document.getElementById('pb-gate');
+  var aEl=document.getElementById('pb-app');
+  function unlock(){gEl.hidden=true;aEl.hidden=false;}
+  try{if(sessionStorage.getItem(PW_KEY)==='1')unlock();}catch(e){}
+  document.getElementById('pb-form').addEventListener('submit',function(e){
+    e.preventDefault();
+    var v=document.getElementById('pb-pw').value;
+    if(v===CORRECT){try{sessionStorage.setItem(PW_KEY,'1');}catch(err){}document.getElementById('pb-err').textContent='';unlock();}
+    else{document.getElementById('pb-err').textContent='Falsches Passwort.';document.getElementById('pb-pw').value='';document.getElementById('pb-pw').focus();}
+  });
+})();
+</script>
+
+<script>
+window.PB={
+key:`resilienz`, brand:`Leadership-Resilienz`, title:`Leadership-Resilienz`, tagline:`Was hält mich, auch wenn es stürmt?`,
+coverFig:`venn`,
+startSpark:`Auch ein Fels braucht mal einen Tag frei.`,
+theoryLead:`Sechs Modelle rund um Gesundheit, Stress und Kraft. Jedes hat einen kurzen Kern. Mit jedem + wird es tiefer: Hintergrund, Beispiele aus dem Stationsalltag, Reflexionsfragen und Literatur. Lies, so viel du magst. Überspringen ist ausdrücklich erlaubt.`,
+theorySpark:`Ein leerer Akku leuchtet nicht heller, nur weil man ihn anschreit.`,
+kernSpark:`Bambus biegt sich im Sturm und hat noch nie eine Fortbildung dazu besucht.`,
+endLine:`Stark ist nicht, wer nie wankt. Stark ist, wer weiß, was ihn hält.`,
+endSpark:`Pausen sind keine Unterbrechung der Arbeit. Sie sind der Teil, in dem du wieder Mensch wirst.`,
+questions:[`Was hält dich in deinem Modell, wenn es stürmt?`,`Woran merkt dein Team, dass deine Kraft nachlässt, bevor du es selbst merkst?`,`Welcher Teil deiner Landschaft bekommt zu wenig Aufmerksamkeit?`],
+
+figs:{
+venn:`<svg viewBox="0 0 300 220" role="img" aria-label="Drei sich überlappende Kreise: Verstehbarkeit, Handhabbarkeit, Sinnhaftigkeit, in der Mitte das Kohärenzgefühl"><circle class="g-f1" cx="112" cy="82" r="64"/><circle class="g-f1" cx="188" cy="82" r="64"/><circle class="g-f1" cx="150" cy="146" r="64"/><text class="g-t" x="86" y="70" text-anchor="middle">Verstehen</text><text class="g-t" x="214" y="70" text-anchor="middle">Handhaben</text><text class="g-t" x="150" y="184" text-anchor="middle">Sinn</text><text class="g-e" x="150" y="112" text-anchor="middle">Kohärenz</text></svg>`,
+kontinuum:`<svg viewBox="0 0 440 130" role="img" aria-label="Kontinuum zwischen gesund und krank mit einem Menschen, der sich darauf bewegt"><defs><linearGradient id="kg" x1="0" x2="1"><stop offset="0" stop-color="currentColor" stop-opacity=".05"/><stop offset="1" stop-color="currentColor" stop-opacity=".35"/></linearGradient></defs><rect class="g-f1" x="20" y="54" width="400" height="22" rx="11"/><circle class="g-solid" cx="150" cy="65" r="9"/><path class="g-line" d="M150 40v-14M138 32l12-8 12 8"/><path class="g-line" d="M170 100c20 6 40 6 60 0"/><path class="g-line" d="M224 94l6 6-8 3"/><text class="g-t" x="20" y="44">gesund</text><text class="g-t" x="420" y="44" text-anchor="end">krank</text><text class="g-h" x="250" y="122" text-anchor="middle">Was bewegt mich in diese Richtung?</text></svg>`,
+ampel:`<svg viewBox="0 0 440 230" role="img" aria-label="Stressampel nach Kaluza mit drei Ebenen: Stressoren, persönliche Stressverstärker, Stressreaktion"><rect class="g-paper" x="40" y="10" width="90" height="210" rx="28"/><circle class="g-f1" cx="85" cy="50" r="26"/><circle class="g-f2" cx="85" cy="115" r="26"/><circle class="g-f3" cx="85" cy="180" r="26"/><text class="g-t" x="160" y="44">Stressoren</text><text class="g-s" x="160" y="62">Was fordert mich von außen?</text><text class="g-t" x="160" y="109">Persönliche Stressverstärker</text><text class="g-s" x="160" y="127">Was mache ich innerlich daraus?</text><text class="g-t" x="160" y="174">Stressreaktion</text><text class="g-s" x="160" y="192">Was passiert in Körper und Verhalten?</text><path class="g-thin" d="M113 50h40M113 115h40M113 180h40"/></svg>`,
+saeulen:`<svg viewBox="0 0 440 210" role="img" aria-label="Drei Säulen der Stresskompetenz: instrumentell, mental, regenerativ"><path class="g-line" d="M40 40h360"/><path class="g-line" d="M30 190h380"/><rect class="g-f1" x="60" y="40" width="80" height="150"/><rect class="g-f2" x="180" y="40" width="80" height="150"/><rect class="g-f3" x="300" y="40" width="80" height="150"/><text class="g-t" x="100" y="120" text-anchor="middle">Instrumentell</text><text class="g-t" x="220" y="120" text-anchor="middle">Mental</text><text class="g-t" x="340" y="120" text-anchor="middle">Regenerativ</text><text class="g-s" x="100" y="138" text-anchor="middle">Stressoren ändern</text><text class="g-s" x="220" y="138" text-anchor="middle">Haltung ändern</text><text class="g-s" x="340" y="138" text-anchor="middle">Erholung stärken</text><text class="g-e" x="220" y="28" text-anchor="middle">Stresskompetenz</text></svg>`,
+rad:`<svg viewBox="0 0 440 300" role="img" aria-label="Rad der sieben Resilienzfaktoren"><circle class="g-f1" cx="220" cy="150" r="112"/><circle class="g-f3" cx="220" cy="150" r="38"/><text class="g-t" x="220" y="155" text-anchor="middle" style="fill:var(--surface)">Ich</text><g class="g-thin"><path d="M220 112V38M253 131l64-37M257 162l72 20M240 183l43 60M200 183l-43 60M183 162l-72 20M187 131l-64-37"/></g><text class="g-t" x="220" y="28" text-anchor="middle">Akzeptanz</text><text class="g-t" x="322" y="86">Optimismus</text><text class="g-t" x="336" y="192">Selbstwirksamkeit</text><text class="g-t" x="290" y="262">Verantwortung</text><text class="g-t" x="150" y="262" text-anchor="end">Netzwerk</text><text class="g-t" x="104" y="192" text-anchor="end">Lösungsorientierung</text><text class="g-t" x="118" y="86" text-anchor="end">Zukunftsplanung</text></svg>`,
+kurve:`<svg viewBox="0 0 440 240" role="img" aria-label="Umgekehrte U-Kurve: Leistung steigt mit Anspannung bis zu einem Optimum und fällt dann ab"><path class="g-axis" d="M50 200h360M50 200V20"/><path class="g-line" d="M60 190C140 180 170 50 230 50s110 120 170 140" style="stroke-width:2.4"/><circle class="g-solid" cx="230" cy="50" r="6"/><text class="g-s" x="230" y="222" text-anchor="middle">Anspannung</text><text class="g-s" x="30" y="110" text-anchor="middle" transform="rotate(-90 30 110)">Leistung</text><text class="g-t" x="100" y="160" text-anchor="middle">unterfordert</text><text class="g-t" x="230" y="36" text-anchor="middle">gute Spannung</text><text class="g-t" x="370" y="160" text-anchor="middle">überlastet</text><text class="g-h" x="330" y="96">Hier wird es leise gefährlich.</text></svg>`,
+akku:`<svg viewBox="0 0 440 170" role="img" aria-label="Vier Akkus für die vier Erholungserfahrungen: Abschalten, Entspannen, Neues meistern, Selbst bestimmen"><g><rect class="g-paper" x="20" y="40" width="80" height="44" rx="8"/><rect class="g-f3" x="24" y="44" width="56" height="36" rx="5"/><rect class="g-paper" x="100" y="54" width="6" height="16" rx="2"/></g><g><rect class="g-paper" x="125" y="40" width="80" height="44" rx="8"/><rect class="g-f2" x="129" y="44" width="40" height="36" rx="5"/><rect class="g-paper" x="205" y="54" width="6" height="16" rx="2"/></g><g><rect class="g-paper" x="230" y="40" width="80" height="44" rx="8"/><rect class="g-f2" x="234" y="44" width="30" height="36" rx="5"/><rect class="g-paper" x="310" y="54" width="6" height="16" rx="2"/></g><g><rect class="g-paper" x="335" y="40" width="80" height="44" rx="8"/><rect class="g-f1" x="339" y="44" width="18" height="36" rx="5"/><rect class="g-paper" x="415" y="54" width="6" height="16" rx="2"/></g><text class="g-t" x="60" y="110" text-anchor="middle">Abschalten</text><text class="g-t" x="165" y="110" text-anchor="middle">Entspannen</text><text class="g-t" x="270" y="110" text-anchor="middle">Neues meistern</text><text class="g-t" x="375" y="110" text-anchor="middle">Selbst bestimmen</text><text class="g-h" x="220" y="152" text-anchor="middle">Welcher Akku ist bei dir am leersten?</text></svg>`,
+selfcare:`<svg viewBox="0 0 440 210" role="img" aria-label="Gesundheitsorientierte Führung: SelfCare als innerer Kreis, StaffCare als äußerer Kreis"><circle class="g-f1" cx="220" cy="105" r="95"/><circle class="g-f3" cx="220" cy="105" r="42"/><text class="g-t" x="220" y="102" text-anchor="middle" style="fill:var(--surface)">SelfCare</text><text class="g-s" x="220" y="118" text-anchor="middle" style="fill:var(--surface)">für mich</text><text class="g-t" x="220" y="36" text-anchor="middle">StaffCare</text><text class="g-s" x="220" y="52" text-anchor="middle">für mein Team</text><circle class="g-paper" cx="140" cy="140" r="9"/><circle class="g-paper" cx="300" cy="140" r="9"/><circle class="g-paper" cx="160" cy="70" r="9"/><circle class="g-paper" cx="282" cy="72" r="9"/><circle class="g-paper" cx="220" cy="180" r="9"/><text class="g-h" x="410" y="200" text-anchor="end">Erst die eigene Maske.</text></svg>`,
+landschaft:`<svg viewBox="0 0 440 200" role="img" aria-label="Skizze einer Energielandschaft: große Steine für Belastungen, Zweige für Kraftquellen, eine Figur in der Mitte"><path class="g-f1" d="M20 160c60-30 140-40 200-30s140 20 200-10v60H20z"/><ellipse class="g-f3" cx="130" cy="138" rx="34" ry="20"/><ellipse class="g-f2" cx="175" cy="150" rx="18" ry="11"/><ellipse class="g-f2" cx="300" cy="148" rx="14" ry="9"/><path class="g-line" d="M330 140c0-20 6-36 14-46M344 120l12-8M338 128l-12-6M380 146c0-14 4-26 10-32M390 126l9-6"/><circle class="g-solid" cx="240" cy="118" r="7"/><path class="g-line" d="M240 126v14"/><text class="g-s" x="130" y="182" text-anchor="middle">kostet Kraft</text><text class="g-s" x="360" y="182" text-anchor="middle">nährt</text><text class="g-h" x="240" y="94" text-anchor="middle">ich</text></svg>`,
+barometer:`<svg viewBox="0 0 440 210" role="img" aria-label="Barometer mit Frühwarnzeichen von ruhig über wechselhaft bis Sturm"><path class="g-f1" d="M80 170a140 140 0 0 1 280 0z"/><path class="g-thin" d="M220 170L120 80M220 170V30M220 170l100-90"/><path class="g-line" d="M220 170l70-90" style="stroke-width:3"/><circle class="g-solid" cx="220" cy="170" r="8"/><text class="g-t" x="96" y="192">ruhig</text><text class="g-t" x="220" y="22" text-anchor="middle">wechselhaft</text><text class="g-t" x="344" y="192" text-anchor="end">Sturm</text><text class="g-h" x="300" y="70">schlechter Schlaf?</text><text class="g-h" x="80" y="70">Lachen geht noch</text></svg>`,
+anker:`<svg viewBox="0 0 440 210" role="img" aria-label="Anker mit fünf möglichen Formen: Mensch, Ritual, Ort, Satz, Körper"><circle class="g-line" cx="220" cy="40" r="14"/><path class="g-line" d="M220 54v120M180 90h80M150 140c10 40 50 50 70 34 20 16 60 6 70-34" style="stroke-width:2.2"/><path class="g-line" d="M140 150l10-12 12 10M300 150l-10-12-12 10"/><text class="g-t" x="60" y="40">Mensch</text><text class="g-t" x="60" y="100">Ritual</text><text class="g-t" x="60" y="160">Ort</text><text class="g-t" x="380" y="70" text-anchor="end">Satz</text><text class="g-t" x="380" y="130" text-anchor="end">Körper</text></svg>`
+},
+
+theory:[
+{title:`Salutogenese`,sub:`Was hält Menschen gesund? Aaron Antonovsky`,fig:`venn`,cap:`Das Kohärenzgefühl besteht aus drei Teilen.`,
+ core:[[`p`,`Die Medizin fragt traditionell: Was macht krank? Der israelisch-amerikanische Medizinsoziologe Aaron Antonovsky drehte die Frage um. Er wollte wissen, warum manche Menschen trotz großer Belastungen gesund bleiben. Seine Antwort nannte er <strong>Kohärenzgefühl</strong>: ein grundlegendes Vertrauen darin, dass das Leben verstehbar, handhabbar und sinnvoll ist.`],
+  [`table`,[`Teil`,`Kernsatz`,`Im Stationsalltag`],[[`Verstehbarkeit`,`Ich verstehe, was passiert.`,`Ich weiß, warum der Dienstplan so aussieht und was die Umstrukturierung bedeutet.`],[`Handhabbarkeit`,`Ich habe, was ich brauche.`,`Ich habe Kolleginnen, Wissen und Zeit, um mit der Lage umzugehen.`],[`Sinnhaftigkeit`,`Es lohnt sich.`,`Ich weiß, wofür ich das mache, auch an schweren Tagen.`]]]],
+ layers:[
+  {t:`Gesund und krank sind keine Schubladen`,d:`Hintergrund`,b:[[`fig`,`kontinuum`,`Wir bewegen uns ständig zwischen den Polen.`],[`p`,`Antonovsky sah Gesundheit nicht als Zustand, sondern als Bewegung auf einem Kontinuum. Niemand ist ganz gesund oder ganz krank. Die spannende Frage lautet deshalb: Was bewegt mich heute ein Stück in Richtung gesund?`],[`p`,`Ausgangspunkt seiner Forschung war eine Studie an Frauen in Israel, darunter Überlebende von Konzentrationslagern. Ein Teil von ihnen war trotz unvorstellbarer Erfahrungen körperlich und seelisch erstaunlich stabil. Antonovsky wollte verstehen, was diese Frauen unterschied.`]]},
+  {t:`Sinnhaftigkeit ist der Motor`,d:`Vertiefung`,b:[[`p`,`Von den drei Teilen hielt Antonovsky die Sinnhaftigkeit für den wichtigsten. Wer einen Sinn sieht, sucht aktiv nach Verständnis und Ressourcen. Wer keinen Sinn sieht, gibt auch bei guten Bedingungen schneller auf.`],[`ex`,`Aus der Pflege`,`Eine Kollegin sagt nach einem harten Nachtdienst: „Aber Frau K. konnte heute zum ersten Mal wieder lachen.“ Das ist Sinnhaftigkeit in einem Satz.`],[`q`,`Wann hast du zuletzt bei der Arbeit gespürt, dass sich dein Einsatz lohnt?`]]},
+  {t:`Was das für Führung heißt`,d:`Praxis`,b:[[`p`,`Als Leitung kannst du das Kohärenzgefühl deines Teams direkt stärken:`],[`ul`,[`<strong>Verstehbarkeit:</strong> Entscheidungen erklären, früh informieren, Gerüchten zuvorkommen.`,`<strong>Handhabbarkeit:</strong> Prioritäten setzen, Ressourcen einfordern, Überlastung offen ansprechen.`,`<strong>Sinnhaftigkeit:</strong> Erfolge sichtbar machen, Dank aussprechen, das Warum der Arbeit wachhalten.`]],[`spark`,`Ein Team, das versteht, warum es stürmt, rudert anders.`]]},
+  {t:`Grenzen des Modells`,d:`kritisch`,b:[[`p`,`Das Kohärenzgefühl ist kein Persönlichkeitsmerkmal, das man hat oder nicht hat. Es entwickelt sich, vor allem in jungen Jahren, und bleibt beeinflussbar. Wichtig: Salutogenese ersetzt keine guten Arbeitsbedingungen. Wer dauerhaft unterbesetzt arbeitet, braucht mehr Personal, nicht mehr Kohärenz.`]]},
+  {t:`Zum Weiterlesen`,b:[[`lit`,[`Antonovsky, A. (1997): Salutogenese. Zur Entmystifizierung der Gesundheit. Tübingen: dgvt-Verlag.`,`Bengel, J., Strittmatter, R., Willmann, H. (2001): Was erhält Menschen gesund? Köln: BZgA.`]]]}
+ ]},
+{title:`Die Stressampel`,sub:`Drei Ebenen von Stress nach Gert Kaluza`,fig:`ampel`,cap:`Stress entsteht auf drei Ebenen, und auf jeder lässt sich ansetzen.`,
+ core:[[`p`,`Der Psychologe Gert Kaluza unterscheidet drei Ebenen. <strong>Stressoren</strong> sind die äußeren Anforderungen: Personalausfall, Zeitdruck, Konflikte. <strong>Persönliche Stressverstärker</strong> sind die inneren Einstellungen, mit denen wir diese Anforderungen bewerten. Die <strong>Stressreaktion</strong> ist das, was dann in Körper, Gedanken und Verhalten passiert.`],[`p`,`Die gute Nachricht: Wer nicht an den Stressoren drehen kann, kann oft an den Verstärkern oder an der Erholung drehen.`]],
+ layers:[
+  {t:`Die fünf Stressverstärker`,d:`Vertiefung`,b:[[`p`,`Kaluza beschreibt fünf typische innere Antreiber. Jeder hat eine gute Seite und eine Übertreibung. Zu jedem gibt es einen Erlaubersatz, der entlastet.`],[`table`,[`Antreiber`,`Typischer Gedanke`,`Erlaubersatz`],[[`Sei perfekt!`,`Es muss alles hundertprozentig sein.`,`Gut genug ist manchmal genau richtig.`],[`Sei beliebt!`,`Ich darf niemanden enttäuschen.`,`Ich darf Nein sagen und bleibe trotzdem wertvoll.`],[`Sei stark!`,`Ich schaffe das allein.`,`Hilfe annehmen ist eine Stärke.`],[`Sei vorsichtig!`,`Hoffentlich geht nichts schief.`,`Ich darf Fehler machen und daraus lernen.`],[`Ich kann nicht!`,`Das ist zu viel für mich.`,`Ich kann mehr, als ich gerade denke.`]]],[`q`,`Welcher Antreiber sitzt bei dir am häufigsten mit im Dienstzimmer?`],[`spark`,`„Sei stark!“ ist ein toller Satz für einen Kleiderschrank. Für Menschen ist er manchmal zu schwer.`]]},
+  {t:`Drei Wege zur Stresskompetenz`,d:`Praxis`,b:[[`fig`,`saeulen`,``],[`ul`,[`<strong>Instrumentell:</strong> an den Stressoren arbeiten, also planen, delegieren, Abläufe verbessern, Grenzen setzen.`,`<strong>Mental:</strong> an den Verstärkern arbeiten, also Bewertungen prüfen, Ansprüche anpassen, Perspektive wechseln.`,`<strong>Regenerativ:</strong> an der Reaktion arbeiten, also Pausen, Bewegung, Schlaf, Genuss und Beziehungen pflegen.`]],[`ex`,`Aus der Pflege`,`Eine Stationsleitung merkt, dass sie jede Dienstplanlücke selbst füllt. Instrumentell: Ausfallkonzept mit dem Team entwickeln. Mental: „Sei stark!“ entlarven. Regenerativ: den freien Tag wirklich frei lassen.`]]},
+  {t:`Stress ist nicht nur schlecht`,d:`Hintergrund`,b:[[`p`,`Der Begriff Stress geht auf den Mediziner Hans Selye zurück. Er unterschied Eustress, der aktiviert und beflügelt, von Distress, der auf Dauer schadet. Entscheidend ist nicht, ob Stress da ist, sondern ob auf Anspannung wieder Entspannung folgt.`]]},
+  {t:`Zum Weiterlesen`,b:[[`lit`,[`Kaluza, G. (2018): Gelassen und sicher im Stress. Das Stresskompetenz-Buch. Berlin: Springer.`,`Kaluza, G. (2023): Stressbewältigung. Trainingsmanual zur psychologischen Gesundheitsförderung. Berlin: Springer.`]]]}
+ ]},
+{title:`Die sieben Resilienzfaktoren`,sub:`Was innere Widerstandskraft ausmacht`,fig:`rad`,cap:`Sieben Faktoren, die in der Beratungspraxis häufig beschrieben werden.`,
+ core:[[`p`,`Resilienz bedeutet ursprünglich die Fähigkeit eines Materials, nach Verformung in seine Form zurückzukehren. Bei Menschen meint sie die Fähigkeit, Krisen zu bewältigen und daran zu wachsen. Resilienz ist trainierbar. In der deutschsprachigen Praxis werden häufig sieben Faktoren beschrieben.`],
+  [`table`,[`Faktor`,`Leitfrage`],[[`Akzeptanz`,`Was ist gerade so, wie es ist?`],[`Optimismus`,`Was kann gut werden?`],[`Selbstwirksamkeit`,`Was kann ich selbst bewirken?`],[`Verantwortung`,`Wofür bin ich zuständig und wofür nicht?`],[`Netzwerk`,`Wer hilft mir?`],[`Lösungsorientierung`,`Was ist der nächste Schritt?`],[`Zukunftsplanung`,`Wohin will ich?`]]]],
+ layers:[
+  {t:`Woher die Resilienzforschung kommt`,d:`Hintergrund`,b:[[`p`,`Die Psychologin Emmy Werner begleitete alle Kinder, die 1955 auf der hawaiianischen Insel Kauai geboren wurden, über Jahrzehnte. Etwa ein Drittel der Kinder, die unter sehr schwierigen Bedingungen aufwuchsen, entwickelte sich trotzdem gut. Ein entscheidender Schutzfaktor: mindestens eine verlässliche Bezugsperson.`],[`spark`,`Ein einziger Mensch, der an dich glaubt, ist statistisch gesehen eine Superkraft.`]]},
+  {t:`Selbstcheck`,d:`zum Ausprobieren`,b:[[`p`,`Schätze dich für jeden Faktor auf einer Skala von 1 bis 10 ein. Wo bist du stark? Wo liegt Potenzial?`],[`fig`,`scale`,``],[`q`,`Welcher Faktor hat dich in diesem Ausbildungsjahr am meisten getragen?`]]},
+  {t:`Akzeptanz ist nicht Resignation`,d:`Vertiefung`,b:[[`p`,`Akzeptanz heißt, die Realität anzuerkennen, bevor man sie verändert. Wer sich lange über das Unveränderliche ärgert, hat weniger Kraft für das Veränderbare.`],[`quote`,`Gib mir die Gelassenheit, Dinge hinzunehmen, die ich nicht ändern kann, den Mut, Dinge zu ändern, die ich ändern kann, und die Weisheit, das eine vom anderen zu unterscheiden.`,`Gelassenheitsgebet, Reinhold Niebuhr zugeschrieben`]]},
+  {t:`Netzwerk in der Leitungsrolle`,d:`Praxis`,b:[[`p`,`Mit der Leitungsrolle verändern sich Beziehungen. Aus Kolleginnen werden Mitarbeitende. Umso wichtiger ist ein Netzwerk auf Augenhöhe: andere Leitungen, Peergroups wie diese Ausbildungsgruppe, Supervision.`],[`q`,`Wen rufst du an, wenn es auf Station brennt und du selbst nicht mehr weiterweißt?`]]},
+  {t:`Zum Weiterlesen`,b:[[`lit`,[`Werner, E., Smith, R. (1992): Overcoming the Odds. Ithaca: Cornell University Press.`,`Heller, J. (2013): Resilienz. 7 Schlüssel für mehr innere Stärke. München: Gräfe und Unzer.`]]]}
+ ]},
+{title:`Die gute Spannung`,sub:`Leistung und Belastung`,fig:`kurve`,cap:`Leistung steigt mit Anspannung, aber nur bis zu einem Punkt.`,
+ core:[[`p`,`Ohne Anspannung keine Leistung, mit zu viel Anspannung auch nicht. Diese Beobachtung geht auf die Psychologen Yerkes und Dodson zurück und wird oft als umgekehrte U-Kurve dargestellt. Im Optimum fühlen wir uns gefordert und lebendig. Rechts davon kippt es: Fehler häufen sich, der Tunnelblick setzt ein, die Erholung reicht nicht mehr.`],[`p`,`Das Tückische: Auf der rechten Seite der Kurve merken wir es oft als Letzte. Andere sehen es früher.`]],
+ layers:[
+  {t:`Wo stehe ich auf der Kurve?`,d:`Reflexion`,b:[[`ul`,[`Woran merke ich, dass ich im Optimum bin?`,`Woran merke ich, dass ich über den Gipfel hinaus bin?`,`Wer merkt es bei mir zuerst?`]],[`spark`,`Wer immer stark ist, wird irgendwann zum Möbelstück.`]]},
+  {t:`Die Kurve im Team`,d:`Praxis`,b:[[`p`,`Jedes Teammitglied hat seine eigene Kurve. Was die eine beflügelt, überfordert den anderen. Gute Führung schaut hin und verteilt Anforderungen so, dass möglichst viele im Optimum arbeiten.`],[`ex`,`Aus der Pflege`,`Die Kollegin, die sonst gern Praxisanleitung macht, reagiert gereizt auf eine neue Schülerin. Ein Blick auf die Kurve: Sie hat diese Woche drei Doppeldienste gemacht.`]]}
+ ]},
+{title:`Erholung, die wirkt`,sub:`Vier Erholungserfahrungen nach Sabine Sonnentag`,fig:`akku`,cap:`Erholung hat vier Gesichter.`,
+ core:[[`p`,`Die Arbeitspsychologin Sabine Sonnentag hat untersucht, was Erholung wirklich ausmacht. Nicht die Dauer der Freizeit ist entscheidend, sondern was in ihr passiert. Sie beschreibt vier Erholungserfahrungen.`],
+  [`table`,[`Erfahrung`,`Was heißt das?`,`Beispiel`],[[`Abschalten`,`Gedanklich wirklich weg von der Arbeit`,`Diensthandy aus, Station bleibt auf Station`],[`Entspannen`,`Körper und Geist kommen zur Ruhe`,`Spaziergang, Musik, Badewanne`],[`Neues meistern`,`Herausforderungen außerhalb der Arbeit`,`Sprache lernen, Klettern, Chor`],[`Selbst bestimmen`,`Ich entscheide, was ich tue`,`Der freie Tag ohne Pflichtprogramm`]]]],
+ layers:[
+  {t:`Warum Abschalten so schwer ist`,d:`Vertiefung`,b:[[`p`,`Wer abends noch Dienstpläne im Kopf sortiert, ist körperlich zu Hause und gedanklich auf Station. Studien zeigen: Genau dieses gedankliche Abschalten hängt besonders eng mit Wohlbefinden zusammen.`],[`ex`,`Ritual`,`Beim Umziehen am Dienstende bewusst sagen: „Jetzt ist Schluss.“ Klingt albern. Wirkt.`],[`spark`,`Der Dienstplan hat noch nie jemanden umarmt.`]]},
+  {t:`Mikropausen im Dienst`,d:`Praxis`,b:[[`ul`,[`Drei bewusste Atemzüge bei jeder Händedesinfektion.`,`Einmal am Tag ans Fenster gehen und in die Ferne schauen.`,`Ein Glas Wasser trinken, ohne nebenbei etwas anderes zu tun.`]],[`q`,`Welche Mikropause könntest du ab Montag einbauen, die niemand merkt außer dir?`]]},
+  {t:`Zum Weiterlesen`,b:[[`lit`,[`Sonnentag, S., Fritz, C. (2007): The Recovery Experience Questionnaire. Journal of Occupational Health Psychology, 12(3), 204–221.`]]]}
+ ]},
+{title:`Gesund führen`,sub:`SelfCare und StaffCare`,fig:`selfcare`,cap:`Wer für andere sorgen will, beginnt bei sich.`,
+ core:[[`p`,`Das Modell der gesundheitsorientierten Führung von Jörg Felfe und Franziska Franke unterscheidet zwei Seiten. <strong>SelfCare</strong> meint den Umgang der Führungskraft mit der eigenen Gesundheit. <strong>StaffCare</strong> meint, wie sie die Gesundheit ihres Teams im Blick hat und fördert.`],[`p`,`Beide hängen zusammen: Führungskräfte, die gut auf sich achten, achten meist auch besser auf ihr Team. Und sie sind Vorbild, ob sie wollen oder nicht.`]],
+ layers:[
+  {t:`Drei Bausteine auf beiden Seiten`,d:`Vertiefung`,b:[[`table`,[`Baustein`,`SelfCare`,`StaffCare`],[[`Achtsamkeit`,`Ich merke, wie es mir geht.`,`Ich merke, wie es meinem Team geht.`],[`Wichtigkeit`,`Meine Gesundheit ist mir wichtig.`,`Die Gesundheit meines Teams ist mir wichtig.`],[`Verhalten`,`Ich tue etwas dafür.`,`Ich tue etwas dafür, zum Beispiel Pausen schützen.`]]]]},
+  {t:`Die Vorbildfalle`,d:`Praxis`,b:[[`p`,`Eine Leitung, die selbst nie Pause macht, kann ihrem Team noch so oft sagen, es solle Pause machen. Das Team glaubt dem Verhalten, nicht den Worten.`],[`spark`,`Wenn die Leitung um 21 Uhr noch Mails schreibt, lernt das Team: Feierabend ist ein Gerücht.`],[`q`,`Was lebst du deinem Team gerade vor, ohne es zu wollen?`]]},
+  {t:`Zum Weiterlesen`,b:[[`lit`,[`Franke, F., Felfe, J., Pundt, A. (2014): The impact of health-oriented leadership on follower health. German Journal of Human Resource Management, 28(1–2), 139–161.`]]]}
+ ]}
+],
+
+phases:[
+{short:`Impuls`,kicker:`Phase 1 · Impuls`,title:`Was hält gesund?`,
+ lead:`Der Medizinsoziologe Aaron Antonovsky fragte nicht, was krank macht, sondern was Menschen auch unter Belastung gesund hält. Seine Antwort war das Kohärenzgefühl mit drei Teilen.`,
+ fig:`venn`,cap:`Verstehbarkeit, Handhabbarkeit, Sinnhaftigkeit`,
+ blocks:[[`ul`,[`<strong>Verstehbarkeit:</strong> Ich verstehe, was gerade passiert.`,`<strong>Handhabbarkeit:</strong> Ich habe, was ich brauche, um damit umzugehen.`,`<strong>Sinnhaftigkeit:</strong> Es lohnt sich, mich dafür einzusetzen.`]],[`p`,`In der Theoriebibliothek findest du fünf weitere Modelle: die Stressampel, die sieben Resilienzfaktoren, die Leistungskurve, Erholung und gesunde Führung.`]],
+ toTheory:true,spark:`Gesundheit ist kein Zustand. Sie ist ein Verb.`,
+ more:[{t:`Drei schnelle Fragen zum Einstieg`,b:[[`ol`,[`Was verstehe ich gerade nicht, obwohl es mich betrifft?`,`Was fehlt mir gerade, um gut handeln zu können?`,`Wofür lohnt sich mein Einsatz, auch an schweren Tagen?`]]]}],
+ fields:[{id:`koh`,type:`text`,label:`Welcher der drei Teile ist bei mir gerade stark? Welcher wackelt?`}]},
+{short:`Erkunden`,kicker:`Phase 2 · Erkunden`,title:`Meine Energielandschaft`,
+ impulse:`Was gibt mir Kraft und was nimmt sie mir?`,
+ task:`Leg ein Tuch als Untergrund. Steine stehen für das, was dich Kraft kostet. Naturmaterial oder LEGO für das, was dich nährt. Nähe und Abstand dürfen etwas bedeuten, auch Größe und Gewicht.`,
+ materials:[`Tuch`,`Steine`,`Naturmaterial`,`LEGO`],ways:true,build:true,
+ spark:`Ein Akku, der sagt „Ich lade später“, ist kein Akku, sondern ein Optimist.`,
+ more:[
+  {t:`Ein Beispiel`,b:[[`fig`,`landschaft`,`So könnte eine Energielandschaft aussehen.`],[`p`,`Eine Stationsleitung legt einen großen Stein für den Dienstplan in die Mitte, direkt neben sich. Am Rand liegen drei grüne Zweige: das Frühstück mit dem Team, das Fahrrad, die Kollegin von der Nachbarstation. Beim Erzählen merkt sie: Die Kraftquellen liegen alle am Rand.`]]},
+  {t:`Fragen beim Anschauen`,b:[[`ul`,[`Was liegt in der Mitte, was am Rand?`,`Wo ist viel Abstand, wo viel Nähe?`,`Was ist schwer, was leicht?`,`Was überrascht dich?`,`Was fehlt?`]]]},
+  {t:`Hintergrund: die Energiebilanz`,d:`Theorie`,b:[[`p`,`Auf Dauer bleiben wir gesund, wenn die Bilanz stimmt: Was wir an Kraft abgeben, müssen wir auch wieder auffüllen. Die Erholungsforschung zeigt, dass es dabei nicht nur um Menge geht, sondern um die Art der Erholung.`],[`fig`,`akku`,``]]},
+  {t:`Für Mutige`,d:`noch tiefer`,b:[[`p`,`Leg einen Stein für etwas, das dich Kraft kostet und über das du bisher mit niemandem gesprochen hast. Du musst es nicht erzählen. Leg ihn einfach hin und schau, wo er landet.`]]}
+ ],
+ fields:[{id:`land_foto`,type:`photo`,label:`Foto meiner Landschaft`},{id:`land_text`,type:`text`,label:`Was fällt mir auf?`}]},
+{short:`Sturm`,kicker:`Phase 3 · Vertiefen`,title:`Wenn es stürmt`,
+ impulse:`Was gerät ins Wanken und was hält?`,
+ task:`Bring einen typischen Sturm aus deinem Leitungsalltag in deine Landschaft. Was verschiebt sich? Was bleibt stehen? Woran merkst du früh, dass es losgeht?`,
+ materials:[`Seile`,`LEGO`,`Schleich-Tiere`],ways:true,build:true,
+ spark:`Bäume mit tiefen Wurzeln sind meistens ziemlich unspektakulär. Bis zum ersten Sturm.`,
+ more:[
+  {t:`Frühwarnzeichen erkennen`,b:[[`fig`,`barometer`,`Dein persönliches Wetter: Was zeigt dein Barometer an?`],[`table`,[`Ebene`,`Mögliche Zeichen`],[[`Körper`,`schlechter Schlaf, Verspannung, Kopfschmerz, häufige Infekte`],[`Gedanken`,`Grübeln, „Ich muss noch …“, alles wirkt dringend`],[`Gefühle`,`Gereiztheit, Leere, Tränen bei Kleinigkeiten`],[`Verhalten`,`Rückzug, Pausen fallen weg, mehr Kaffee, weniger Lachen`]]]]},
+  {t:`Welches Tier bist du im Sturm?`,d:`spielerisch`,b:[[`p`,`Such dir ein Schleich-Tier, das zeigt, wie du dich im Sturm verhältst. Dann ein zweites: Welches Tier wärst du gern?`],[`ex`,`Beispiele aus früheren Workshops`,`Der Igel, der sich einrollt. Das Pferd, das losgaloppiert. Die Eule, die erst mal alles beobachtet. Der Bär, der alles allein tragen will.`]]},
+  {t:`Die Verschlimmerungsfrage`,d:`paradox`,b:[[`p`,`Was müsstest du tun, damit dich der nächste Sturm garantiert umwirft? Sammle mindestens fünf Ideen. Dann schau: Was davon tust du schon ein bisschen?`],[`spark`,`Rezept für den sicheren Zusammenbruch: Nie Nein sagen, nie Pause machen, alles allein wissen.`]]},
+  {t:`Hintergrund: Stressreaktion`,d:`Theorie`,b:[[`p`,`In akuter Belastung schaltet der Körper auf Kampf oder Flucht: Puls und Blutdruck steigen, der Blick wird eng. Kurzfristig ist das hilfreich. Problematisch wird es, wenn die Erholung ausbleibt und der Alarm zum Dauerzustand wird. Mehr dazu in der Theoriebibliothek unter „Die Stressampel“.`]]}
+ ],
+ fields:[{id:`sturm_foto`,type:`photo`,label:`Foto vom Sturm in meiner Landschaft`},{id:`sturm_text`,type:`text`,label:`Meine Frühwarnzeichen`}]},
+{short:`Anker`,kicker:`Phase 4 · Vertiefen`,title:`Mein Anker`,
+ impulse:`Was hält mich, wenn es stürmt?`,
+ task:`Forme deinen Anker aus Knete. Er darf ganz abstrakt sein. Er trocknet in der Mittagspause und geht mit dir nach Hause.`,
+ materials:[`Knete`],ways:false,build:`Jetzt Handy weg und formen.`,
+ spark:`Ein Anker ist das einzige Ding auf dem Schiff, das seine Aufgabe erfüllt, indem es sinkt.`,
+ more:[
+  {t:`Fünf Arten von Ankern`,b:[[`fig`,`anker`,``],[`ul`,[`<strong>Mensch:</strong> jemand, der dich kennt und hält.`,`<strong>Ritual:</strong> der Kaffee vor dem Dienst, das Lied auf der Heimfahrt.`,`<strong>Ort:</strong> der Wald, die Bank am Fluss, die eigene Küche.`,`<strong>Satz:</strong> „Ich habe schon Schlimmeres geschafft.“`,`<strong>Körper:</strong> Atem, Bewegung, Füße auf dem Boden.`]]]},
+  {t:`Fragen zu deinem Anker`,b:[[`ul`,[`Wann hat dich dieser Anker schon einmal gehalten?`,`Wer weiß davon?`,`Wie erinnerst du dich im Alltag an ihn?`,`Wo legst du dein Knete-Objekt zu Hause hin?`]]]},
+  {t:`Anker im Dienst`,d:`Praxis`,b:[[`p`,`Ein guter Anker funktioniert auch in 30 Sekunden zwischen zwei Patientenzimmern. Überlege: Was davon kannst du mit auf Station nehmen?`],[`ex`,`Idee`,`Ein Foto deines Knete-Ankers als Sperrbildschirm.`]]}
+ ],
+ fields:[{id:`anker_foto`,type:`photo`,label:`Foto meines Ankers`},{id:`anker_text`,type:`text`,label:`Mein Anker steht für …`}]},
+{short:`Team`,kicker:`Phase 5 · Gemeinsam`,title:`Und mein Team?`,
+ impulse:`Wie stärke ich als Leitung die Resilienz meines Teams?`,
+ task:`Baut zu dritt ein gemeinsames Modell. Jede Person bringt einen Baustein aus ihrer Praxis ein. Dann verbindet ihr die Bausteine zu einem Ganzen und erzählt euch, was entstanden ist.`,
+ materials:[`LEGO`,`Seile`,`Schleich-Tiere`],ways:false,build:true,
+ spark:`Ein resilientes Team ist keines, in dem nie etwas schiefgeht. Es ist eines, in dem man darüber reden kann.`,
+ more:[
+  {t:`Das Kohärenzgefühl fürs Team`,b:[[`table`,[`Teil`,`Was ich als Leitung tun kann`],[[`Verstehbarkeit`,`transparent informieren, Entscheidungen erklären, Gerüchten zuvorkommen`],[`Handhabbarkeit`,`Prioritäten setzen, Ressourcen sichern, Überlastung ansprechen und nach oben tragen`],[`Sinnhaftigkeit`,`Wertschätzung zeigen, Erfolge feiern, das Warum der Arbeit sichtbar machen`]]]]},
+  {t:`StaffCare im Alltag`,d:`Praxis`,b:[[`fig`,`selfcare`,``],[`ul`,[`Pausen schützen, auch wenn es voll ist.`,`Nach belastenden Situationen kurz nachfragen: „Wie geht es dir damit?“`,`Gelungenes benennen, nicht nur Fehler.`,`Eigene Grenzen vorleben.`]]]},
+  {t:`Teamrituale, die stärken`,d:`Ideen`,b:[[`ul`,[`Ein Satz in der Übergabe: „Was lief heute gut?“`,`Eine Dankeswand im Dienstzimmer.`,`Nach schweren Diensten: fünf Minuten zusammen, bevor alle gehen.`]],[`spark`,`Kuchen löst keine Personalprobleme. Aber er hat noch nie eines verschlimmert.`]]}
+ ],
+ fields:[{id:`team_foto`,type:`photo`,label:`Foto unseres Modells`},{id:`team_text`,type:`text`,label:`Das nehme ich für mein Team mit`}]}
+]
+};
+
+</script>
+<script>
+(function(){
+"use strict";
+var PB=window.PB;
+var SIG='<b>Dagmar Rostek</b> · dagmar@ecoaching-rostek.de · 0176 611 59 403 · rostek-dagmar.de<br>rostek unternehmensKOMMUNIKATION · superVision · coaching<br>KI-Strategie &amp; Organisationsentwicklung';
+
+/* ---------- shared figures ---------- */
+var FIG=Object.assign({
+ interview:'<svg viewBox="0 0 440 150" role="img" aria-label="Ablauf des Tandem-Interviews in vier Schritten">'+
+   '<g><rect class="g-f1" x="6" y="40" width="96" height="62" rx="12"/><text class="g-t" x="54" y="68" text-anchor="middle">Tandem</text><text class="g-s" x="54" y="86" text-anchor="middle">anderes Thema</text></g>'+
+   '<g><rect class="g-f2" x="118" y="40" width="96" height="62" rx="12"/><text class="g-t" x="166" y="68" text-anchor="middle">A fragt B</text><text class="g-s" x="166" y="86" text-anchor="middle">10 Minuten</text></g>'+
+   '<g><rect class="g-f2" x="230" y="40" width="96" height="62" rx="12"/><text class="g-t" x="278" y="68" text-anchor="middle">B fragt A</text><text class="g-s" x="278" y="86" text-anchor="middle">10 Minuten</text></g>'+
+   '<g><rect class="g-f3" x="342" y="40" width="92" height="62" rx="12"/><text class="g-t" x="388" y="68" text-anchor="middle">Festhalten</text><text class="g-s" x="388" y="86" text-anchor="middle">5 Minuten</text></g>'+
+   '<path class="g-line" d="M104 71h10M216 71h10M328 71h10"/><text class="g-h" x="220" y="132" text-anchor="middle">Neugier schlägt Expertise.</text></svg>',
+ compass:'<svg viewBox="0 0 440 300" role="img" aria-label="Fragekompass mit acht Arten systemischer Fragen rund um das Modell">'+
+   '<circle class="g-f1" cx="220" cy="150" r="118"/><circle class="g-f2" cx="220" cy="150" r="44"/><text class="g-e" x="220" y="146" text-anchor="middle">dein</text><text class="g-e" x="220" y="163" text-anchor="middle">Modell</text>'+
+   '<path class="g-thin" d="M220 32v74M220 194v74M102 150h74M264 150h74M137 67l52 52M251 181l52 52M303 67l-52 52M189 181l-52 52"/>'+
+   '<text class="g-t" x="220" y="22" text-anchor="middle">Bedeutung</text><text class="g-t" x="335" y="62">Zirkulär</text><text class="g-t" x="350" y="154">Skala</text><text class="g-t" x="322" y="248">Unterschied</text>'+
+   '<text class="g-t" x="220" y="290" text-anchor="middle">Ausnahme</text><text class="g-t" x="118" y="248" text-anchor="end">Ressource</text><text class="g-t" x="90" y="154" text-anchor="end">Hypothetisch</text><text class="g-t" x="105" y="62" text-anchor="end">Paradox</text></svg>',
+ scale:'<svg viewBox="0 0 440 120" role="img" aria-label="Skala von 1 bis 10 mit der Frage nach dem nächsten Schritt">'+
+   '<path class="g-axis" d="M30 60h380"/>'+[1,2,3,4,5,6,7,8,9,10].map(function(n,i){var x=30+i*42.2;return '<circle class="'+(n===6?'g-f3':'g-paper')+'" cx="'+x+'" cy="60" r="'+(n===6?13:10)+'"/><text class="g-s" x="'+x+'" y="64" text-anchor="middle">'+n+'</text>';}).join('')+
+   '<path class="g-line" d="M241 34c14-16 30-16 42 0"/><path class="g-line" d="M279 28l5 7-8 2"/><text class="g-h" x="262" y="22" text-anchor="middle">Was bräuchte es für die 7?</text>'+
+   '<text class="g-s" x="30" y="98">gar nicht</text><text class="g-s" x="410" y="98" text-anchor="end">vollständig</text></svg>',
+ kompass2:'<svg viewBox="0 0 440 200" role="img" aria-label="Roter Faden durch den Tag: vier Modelle verbunden zu einem Kern">'+
+   '<path class="g-line" d="M20 150c60-80 110 30 170-40s110 50 170-20 50-60 60-70"/>'+
+   '<circle class="g-f2" cx="78" cy="118" r="16"/><circle class="g-f2" cx="190" cy="110" r="16"/><circle class="g-f2" cx="300" cy="98" r="16"/><circle class="g-solid" cx="410" cy="38" r="20"/>'+
+   '<text class="g-s" x="78" y="152" text-anchor="middle">Erkunden</text><text class="g-s" x="190" y="144" text-anchor="middle">Vertiefen</text><text class="g-s" x="300" y="132" text-anchor="middle">Gemeinsam</text><text class="g-h" x="370" y="88" text-anchor="middle">mein Kern</text></svg>'
+},PB.figs||{});
+
+var ICON={
+ self:'<svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><circle class="ico" cx="12" cy="8" r="3.5"/><path class="ico" d="M5 20c1-4 4-6 7-6s6 2 7 6"/></svg>',
+ trio:'<svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><circle class="ico" cx="12" cy="7" r="2.6"/><circle class="ico" cx="5.5" cy="10" r="2.2"/><circle class="ico" cx="18.5" cy="10" r="2.2"/><path class="ico" d="M7.5 20c.6-3 2.4-5 4.5-5s3.9 2 4.5 5M2 19c.4-2 1.6-3.5 3.5-3.5M22 19c-.4-2-1.6-3.5-3.5-3.5"/></svg>',
+ walk:'<svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><circle class="ico" cx="13" cy="4.5" r="2"/><path class="ico" d="M10 21l2-6 3 3v3M12 15l-1-5 3-2 2 3 3 1M11 10l-3 2-1 3"/></svg>',
+ hands:'<svg width="40" height="40" viewBox="0 0 24 24" aria-hidden="true"><rect class="ico" x="3" y="13" width="8" height="6" rx="1"/><rect class="ico" x="13" y="13" width="8" height="6" rx="1"/><rect class="ico" x="8" y="7" width="8" height="6" rx="1"/><path class="ico" d="M5 13v-1.5M9 13v-1.5M15 13v-1.5M19 13v-1.5M10 7V5.5M14 7V5.5"/></svg>',
+ cam:'<svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path class="ico" d="M4 8h3l2-2.5h6L17 8h3v11H4z"/><circle class="ico" cx="12" cy="13" r="3.5"/></svg>'
+};
+var WAYS=[[ICON.self,'Allein bauen, dann in der Triade erzählen.'],[ICON.trio,'Erst zu dritt ins Gespräch kommen, gern bei einem Kaffee.'],[ICON.walk,'Walk & Talk, wenn das Wetter mitspielt.']];
+
+/* ---------- shared question library ---------- */
+var QTYPES=[
+ {t:'Bedeutungsfragen',s:'am Modell bleiben',b:[['p','Sie richten sich an das Modell, nicht an die Person. Das entlastet: Man spricht über Steine, Tiere und Abstände und kommt trotzdem zum Kern.'],['ul',['Was bedeutet dieses Teil?','Warum steht diese Figur genau hier und nicht dort?','Was ist das wichtigste Element in deinem Modell?','Was ist das Erste, das dir auffällt, wenn du jetzt draufschaust?']],['ex','Tipp','Zeig auf das Teil, nach dem du fragst. Das hält das Gespräch beim Modell.']]},
+ {t:'Zirkuläre Fragen',s:'durch fremde Augen schauen',b:[['p','Sie holen die Perspektive anderer ins Gespräch, ohne dass diese anwesend sind. Das öffnet oft mehr als jede direkte Frage.'],['ul',['Was würde dein Team sagen, wenn es dein Modell sähe?','Wer wäre am meisten überrascht, wenn du das umsetzt?','Woran würde deine beste Kollegin merken, dass sich etwas verändert hat?','Wie würde die Pflegedirektion dieses Modell beschreiben?']]]},
+ {t:'Skalierungsfragen',s:'Unterschiede messbar machen',b:[['fig','scale','Skalen machen kleine Schritte sichtbar.'],['ul',['Wo stehst du gerade, von 1 bis 10?','Was macht den Unterschied zwischen der 5 und der 6?','Wo warst du vor einem Jahr?','Welche Zahl wäre gut genug?']],['ex','Tipp','Frag nie, warum es keine 10 ist. Frag, warum es schon eine 4 ist.']]},
+ {t:'Unterschiedsfragen',s:'Was ist anders, wenn …?',b:[['p','Sie lenken den Blick auf Veränderung und Bewegung statt auf Zustände.'],['ul',['Was wäre anders, wenn dieses Teil fehlen würde?','Wann ist es besser, wann schlechter?','Was unterscheidet einen guten Dienst von einem schweren?']]]},
+ {t:'Ausnahmefragen',s:'wann das Problem kleiner war',b:[['p','Kein Problem ist immer gleich groß. Ausnahmen zeigen, was schon funktioniert.'],['ul',['Wann war es schon einmal leichter?','Was hast du da anders gemacht?','Wer war damals dabei?']]]},
+ {t:'Ressourcenfragen',s:'Stärken sichtbar machen',b:[['ul',['Was hat dir in einer ähnlichen Lage schon einmal geholfen?','Wer steht hinter dir?','Welche Stärke zeigt sich in deinem Modell?','Worauf bist du in diesem Jahr stolz?']]]},
+ {t:'Hypothetische Fragen',s:'die Wunderfrage und ihre Geschwister',b:[['quote','Angenommen, heute Nacht geschieht ein Wunder und das Problem ist gelöst. Woran merkst du es morgen früh als Erstes?','nach Steve de Shazer und Insoo Kim Berg'],['ul',['Angenommen, es ist in einem Jahr gelungen: Was hast du dann getan?','Was würdest du tun, wenn du keine Angst hättest?']]]},
+ {t:'Paradoxe Fragen',s:'mit einem Augenzwinkern',b:[['p','Sie fragen nach dem Gegenteil des Gewünschten. Das lockert, bringt zum Lachen und zeigt Muster überraschend deutlich.'],['ul',['Was müsstest du tun, damit es garantiert schlimmer wird?','Wie könntest du dein eigenes Modell am besten sabotieren?','Was solltest du auf keinen Fall ändern, damit alles so bleibt, wie es ist?']],['ex','Tipp','Danach immer zurückfragen: Und was davon tust du schon ein bisschen?']]},
+ {t:'Zukunftsfragen',s:'den ersten Schritt finden',b:[['ul',['Was wirst du in drei Monaten über diesen Tag erzählen?','Was ist der kleinste Schritt, den du am Montag gehen kannst?','Woran wirst du merken, dass es wirkt?']]]}
+];
+var HALTUNG=[['p','Systemisch fragen heißt: neugierig bleiben, nicht schon wissen. Die Antwort gehört der anderen Person.'],
+ ['ul',['<strong>Nicht-Wissen:</strong> Du bist Gast im Modell der anderen, nicht Expertin.','<strong>Warum vermeiden:</strong> „Warum“ klingt schnell nach Rechtfertigung. Besser: Was, Wie, Wozu, Woran.','<strong>Pausen aushalten:</strong> Die zweite Antwort nach einer Stille ist oft die wichtigere.','<strong>Zusammenfassen:</strong> „Habe ich richtig verstanden, dass …?“ zeigt, dass du zuhörst.','<strong>Keine Ratschläge:</strong> Auch gute Ideen bleiben heute in deiner Tasche.']],
+ ['spark','Die beste Frage ist die, auf die du die Antwort wirklich nicht kennst.']];
+var QCARDS=[];
+QTYPES.forEach(function(q){var arr=[];q.b.forEach(function(b){if(b[0]==='ul')arr=arr.concat(b[1]);});arr.slice(0,2).forEach(function(x){QCARDS.push([q.t,x]);});});
+(PB.questions||[]).forEach(function(x){QCARDS.push(['Dein Thema',x]);});
+
+/* ---------- screens ---------- */
+var SCREENS=[{type:'start',short:'Start'},{type:'theory',short:'Theorie'}]
+ .concat(PB.phases.map(function(p){return {type:'phase',short:p.short,p:p};}))
+ .concat([{type:'kern',short:'Kern'},{type:'interview',short:'Gespräch'},{type:'end',short:'Abschluss'}]);
+var F_START=[{id:'name',type:'line',label:'Dein Name'},{id:'frage',type:'text',label:'Was möchte ich heute für mich klären?'}];
+var F_THEORY=[{id:'theorie',type:'text',label:'Was nehme ich aus der Theorie mit? Was hat mich überrascht?'}];
+var F_KERN=[{id:'kern',type:'text',label:'In einem Satz'},{id:'symbol_foto',type:'photo',label:'Mein Symbol für heute (optional)'},{id:'schritt',type:'text',label:'Mein erster Schritt ab Montag'},{id:'unterstuetzung',type:'text',label:'Wer unterstützt mich?'},{id:'merken',type:'text',label:'Woran merke ich, dass es wirkt?'}];
+var F_INT=[{id:'erzaehlen',type:'text',label:'Das möchte ich erzählen'},{id:'lieblingsfrage',type:'text',label:'Meine Lieblingsfrage für das Interview'},{id:'neu',type:'text',label:'Das ist im Interview neu aufgetaucht'}];
+function fieldsOf(s){ if(s.type==='start')return F_START; if(s.type==='theory')return F_THEORY; if(s.type==='kern')return F_KERN; if(s.type==='interview')return F_INT; if(s.type==='phase')return s.p.fields||[]; return []; }
+var ALL_PHOTO_IDS=[]; SCREENS.forEach(function(s){fieldsOf(s).forEach(function(f){if(f.type==='photo')ALL_PHOTO_IDS.push(f.id);});});
+
+/* ---------- storage ---------- */
+var KEY='pb-'+PB.key+'-v2', state={step:0,fields:{}};
+try{var raw=localStorage.getItem(KEY); if(raw){var s=JSON.parse(raw); if(s&&s.fields)state=s;}}catch(e){}
+if(typeof state.step!=='number'||state.step<0||state.step>=SCREENS.length)state.step=0;
+var savedEl=document.getElementById('saved'),savedT,writeT;
+function persist(){clearTimeout(writeT);writeT=setTimeout(function(){try{localStorage.setItem(KEY,JSON.stringify(state));flash('Gespeichert');}catch(e){flash('Speichern nicht möglich');}},300);}
+function flash(t){savedEl.textContent=t;savedEl.style.opacity=1;clearTimeout(savedT);savedT=setTimeout(function(){savedEl.style.opacity=0;},1600);}
+var DB=(function(){var p=null;function open(){if(!p){p=new Promise(function(res,rej){try{var r=indexedDB.open('pb-'+PB.key,1);r.onupgradeneeded=function(){r.result.createObjectStore('photos');};r.onsuccess=function(){res(r.result);};r.onerror=function(){rej(r.error);};}catch(e){rej(e);}});}return p;}
+ function tx(m,fn){return open().then(function(db){return new Promise(function(res,rej){var rq=fn(db.transaction('photos',m).objectStore('photos'));rq.onsuccess=function(){res(rq.result);};rq.onerror=function(){rej(rq.error);};});});}
+ return{get:function(k){return tx('readonly',function(s){return s.get(k);}).then(function(v){return v||[];}).catch(function(){return[];});},set:function(k,v){return tx('readwrite',function(s){return s.put(v,k);});},clear:function(){return tx('readwrite',function(s){return s.clear();}).catch(function(){});}};})();
+var PHOTOS={};
+Promise.all(ALL_PHOTO_IDS.map(function(id){return DB.get(id).then(function(l){PHOTOS[id]=l;});}));
+
+/* ---------- helpers ---------- */
+function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
+var SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+var main=document.getElementById('main');
+function compress(file){return new Promise(function(res,rej){var fr=new FileReader();fr.onload=function(){var img=new Image();img.onload=function(){var k=Math.min(1,1400/Math.max(img.naturalWidth,img.naturalHeight)),c=document.createElement('canvas');c.width=Math.round(img.naturalWidth*k);c.height=Math.round(img.naturalHeight*k);c.getContext('2d').drawImage(img,0,0,c.width,c.height);res({src:c.toDataURL('image/jpeg',0.82),w:c.width,h:c.height});};img.onerror=rej;img.src=fr.result;};fr.onerror=rej;fr.readAsDataURL(file);});}
+
+/* ---------- rich content ---------- */
+function fig(name,cap){var svg=FIG[name];if(!svg)return'';return'<figure class="fig">'+svg+(cap?'<figcaption>'+cap+'</figcaption>':'')+'</figure>';}
+function spark(t){return'<div class="spark"><span>Gedankensprung</span><p>'+t+'</p></div>';}
+function blocks(arr,open){return'<div class="rt">'+(arr||[]).map(function(b){
+  switch(b[0]){
+   case 'p':return'<p>'+b[1]+'</p>';
+   case 'h':return'<h4>'+b[1]+'</h4>';
+   case 'ul':return'<ul>'+b[1].map(function(x){return'<li>'+x+'</li>';}).join('')+'</ul>';
+   case 'ol':return'<ol>'+b[1].map(function(x){return'<li>'+x+'</li>';}).join('')+'</ol>';
+   case 'quote':return'<blockquote><p>'+b[1]+'</p>'+(b[2]?'<cite>'+b[2]+'</cite>':'')+'</blockquote>';
+   case 'ex':return'<div class="ex"><span class="ex-l">'+b[1]+'</span><p>'+b[2]+'</p></div>';
+   case 'q':return'<p class="refl">'+b[1]+'</p>';
+   case 'fig':return fig(b[1],b[2]);
+   case 'spark':return spark(b[1]);
+   case 'lit':return'<ul class="lit">'+b[1].map(function(x){return'<li>'+x+'</li>';}).join('')+'</ul>';
+   case 'table':return'<div class="tbl"><table><thead><tr>'+b[1].map(function(h){return'<th>'+h+'</th>';}).join('')+'</tr></thead><tbody>'+b[2].map(function(r){return'<tr>'+r.map(function(c){return'<td>'+c+'</td>';}).join('')+'</tr>';}).join('')+'</tbody></table></div>';
+   case 'layers':return layers(b[1],open);
+  }return'';}).join('')+'</div>';}
+function layers(arr,open){return'<div class="layers">'+(arr||[]).map(function(l){return'<details class="layer"'+(open?' open':'')+'><summary><span>'+l.t+'</span>'+(l.d?'<span class="depth">'+l.d+'</span>':'')+'</summary><div class="layer-body">'+blocks(l.b,open)+'</div></details>';}).join('')+'</div>';}
+function modelCard(m,i,open){return'<details class="model"'+(open?' open':'')+'><summary><span class="m-head"><span class="m-n">'+(i+1)+'</span><span class="m-t"><b>'+m.title+'</b><small>'+m.sub+'</small></span></span></summary><div class="model-body">'+(m.fig?fig(m.fig,m.cap):'')+blocks(m.core,open)+layers(m.layers,open)+'</div></details>';}
+function theoryLib(open){return'<div class="lib">'+PB.theory.map(function(m,i){return modelCard(m,i,open);}).join('')+'<div class="lib-end"></div></div>';}
+function qLib(open){return'<div class="lib">'+QTYPES.map(function(q,i){return'<details class="model"'+(open?' open':'')+'><summary><span class="m-head"><span class="m-n">'+(i+1)+'</span><span class="m-t"><b>'+q.t+'</b><small>'+q.s+'</small></span></span></summary><div class="model-body">'+blocks(q.b,open)+'</div></details>';}).join('')+
+ '<details class="model"'+(open?' open':'')+'><summary><span class="m-head"><span class="m-n">+</span><span class="m-t"><b>Haltung beim Fragen</b><small>wie gutes Fragen gelingt</small></span></span></summary><div class="model-body">'+blocks(HALTUNG,open)+'</div></details><div class="lib-end"></div></div>';}
+
+/* ---------- fields ---------- */
+function fieldHTML(f){var v=state.fields[f.id]||'';
+ if(f.type==='line')return'<div class="field"><label for="f-'+f.id+'">'+esc(f.label)+'</label><input type="text" id="f-'+f.id+'" data-key="'+f.id+'" value="'+esc(v)+'" autocomplete="name"></div>';
+ if(f.type==='photo')return'<div class="field"><span class="flabel">'+esc(f.label)+'</span><div class="thumbs" id="t-'+f.id+'"></div><input class="sr" type="file" accept="image/*" multiple id="p-'+f.id+'" data-photo="'+f.id+'"><label class="photo-btn" for="p-'+f.id+'">'+ICON.cam+'<span>Foto aufnehmen oder auswählen</span></label></div>';
+ return'<div class="field"><label for="f-'+f.id+'">'+esc(f.label)+'</label><textarea id="f-'+f.id+'" data-key="'+f.id+'" rows="4">'+esc(v)+'</textarea>'+(SR?'<div><button class="mini" type="button" data-dictate="f-'+f.id+'">Diktieren</button></div>':'')+'</div>';}
+function capture(fs,label){return fs.length?'<section class="capture">'+(label?'<h2 class="label">'+label+'</h2>':'')+fs.map(fieldHTML).join('')+'</section>':'';}
+
+var cardIdx=0;
+function cardsHTML(){var q=QCARDS[cardIdx];return'<section class="cards" aria-label="Fragenkarten"><h2 class="label">Fragenkarten</h2><div class="card"><span class="type">'+q[0]+'</span><p class="q">'+q[1]+'</p><div class="card-nav"><button class="mini" type="button" data-card="-1">Vorherige</button><span>'+(cardIdx+1)+' / '+QCARDS.length+'</span><button class="mini" type="button" data-card="1">Nächste</button></div></div></section>';}
+
+/* ---------- phase content (shared by screen and print) ---------- */
+function phaseBody(p,open){var h='';
+ if(p.lead)h+='<p class="lead">'+p.lead+'</p>';
+ if(p.fig)h+=fig(p.fig,p.cap);
+ if(p.blocks)h+=blocks(p.blocks,open);
+ if(p.impulse)h+='<p class="impulse">'+p.impulse+'</p>';
+ if(p.task){h+='<section class="task"><h2 class="label">Bauauftrag</h2><p>'+p.task+'</p>'+(p.materials&&p.materials.length?'<div class="chips">'+p.materials.map(function(m){return'<span class="chip">'+m+'</span>';}).join('')+'</div>':'')+'</section>';}
+ if(p.ways)h+='<section><h2 class="label">Wie ihr arbeiten könnt</h2><ul class="ways">'+WAYS.map(function(w){return'<li>'+w[0]+'<span>'+w[1]+'</span></li>';}).join('')+'</ul></section>';
+ if(p.spark)h+=spark(p.spark);
+ if(p.more&&p.more.length)h+='<details class="more"'+(open?' open':'')+'><summary>Mehr Impulse</summary><div class="more-body">'+layers(p.more,open)+'</div></details>';
+ return h;}
+
+/* ---------- render ---------- */
+function renderProgress(){var pr=document.getElementById('progress');pr.style.gridTemplateColumns='repeat('+SCREENS.length+',minmax(0,1fr))';
+ pr.innerHTML=SCREENS.map(function(s,i){return'<button class="seg '+(i===state.step?'now':(i<state.step?'done':''))+'" type="button" data-go="'+i+'" aria-label="'+esc(s.short)+'"'+(i===state.step?' aria-current="step"':'')+'><span></span></button>';}).join('');}
+function render(){stopDictate();var s=SCREENS[state.step],h='<article class="screen">';
+ if(s.type==='start'){
+  h+='<p class="kicker">Willkommen</p><h1>'+PB.title+'</h1><p class="impulse">'+PB.tagline+'</p>';
+  h+='<p class="lead">Dagmar führt durch die Phasen. Hier findest du Impulse, Theorie, Bauaufträge und Platz für deine Gedanken. Alles mit einem + lässt sich aufklappen. Je tiefer du klickst, desto tiefer wird es. Was du einträgst, bleibt auf diesem Gerät.</p>';
+  h+='<ol class="steps3"><li><b>Lesen</b><span>Impuls und Bauauftrag. Theorie, so viel du magst.</span></li><li><b>Bauen</b><span>Mit den Materialien im Raum, allein oder zu dritt.</span></li><li><b>Festhalten</b><span>Foto und ein paar Gedanken.</span></li></ol>';
+  h+='<p class="hint">Tipp: Statt zu tippen kannst du das Mikrofon auf deiner Handytastatur nutzen.</p>';
+  if(PB.startSpark)h+=spark(PB.startSpark);
+  h+=capture(F_START);
+ } else if(s.type==='theory'){
+  h+='<p class="kicker">Theoriebibliothek</p><h1>Zum Nachlesen</h1><p class="lead">'+PB.theoryLead+'</p>'+theoryLib(false);
+  if(PB.theorySpark)h+=spark(PB.theorySpark);
+  h+=capture(F_THEORY);
+ } else if(s.type==='phase'){
+  var p=s.p;h+='<p class="kicker">'+p.kicker+'</p><h1>'+p.title+'</h1>'+phaseBody(p,false);
+  if(p.toTheory)h+='<button class="mini to-theory" type="button" data-go="1">Zur Theoriebibliothek</button>';
+  if(p.build)h+='<div class="pause">'+ICON.hands+'<p>'+(typeof p.build==='string'?p.build:'Jetzt Handy weg und bauen.')+'<small>Danach hältst du hier fest, was entstanden ist.</small></p></div>';
+  h+=capture(p.fields||[],p.build?'Festhalten':'');
+ } else if(s.type==='kern'){
+  h+='<p class="kicker">Mein Kern</p><h1>Das nehme ich mit</h1><p class="lead">Blättere noch einmal durch deine Einträge. Was zieht sich durch deinen Tag wie ein roter Faden?</p>'+fig('kompass2','Aus vielen Modellen wird ein Satz.');
+  if(PB.kernSpark)h+=spark(PB.kernSpark);
+  h+=capture(F_KERN);
+ } else if(s.type==='interview'){
+  h+='<p class="kicker">Im Gespräch</p><h1>Lass dich fragen</h1><p class="lead">Ihr interviewt euch zu zweit, mit jemandem aus einem anderen Thema. Bereite vor, was du erzählen möchtest. Die Fragenkarten und die Fragenbibliothek helfen dir, wenn du fragst.</p>'+fig('interview','So läuft das Interview ab.')+cardsHTML();
+  h+='<section><h2 class="label">Fragenbibliothek</h2>'+fig('compass','Neun Richtungen, aus denen du auf ein Modell schauen kannst.')+qLib(false)+'</section>';
+  h+=capture(F_INT);
+ } else {
+  h+='<p class="kicker">Abschluss</p><h1>Dein Playbook</h1><p class="lead">Hier siehst du deine Einträge auf einen Blick. Speichere das Playbook als PDF, bevor du gehst. Das PDF enthält alle Inhalte vollständig aufgeklappt, mit allen Grafiken, deinen Texten und Fotos.</p>';
+  h+='<div class="actions"><button class="primary" type="button" id="pdf">PDF erstellen</button><div class="howto"><p><b>So geht es:</b> Im Druckfenster als Ziel „Als PDF speichern“ wählen.</p><p>Am iPhone: im Druckfenster auf Teilen tippen und „In Dateien sichern“ wählen.</p></div>'+
+   '<button class="ghost" type="button" id="reset">Alle Einträge löschen</button><div class="confirm" id="confirm" hidden><p>Alle Texte und Fotos auf diesem Gerät löschen?</p><button class="danger" type="button" id="reset-yes">Ja, löschen</button><button class="mini" type="button" id="reset-no">Abbrechen</button></div></div>';
+  h+='<p class="hint">Deine Einträge liegen nur in diesem Browser auf diesem Gerät. Niemand sonst kann sie sehen.</p><div class="sum" id="sum"></div>';
+ }
+ h+='</article>';main.innerHTML=h;renderProgress();
+ document.getElementById('prev').hidden=state.step===0;
+ var nx=document.getElementById('next');nx.hidden=state.step===SCREENS.length-1;nx.textContent=state.step===SCREENS.length-2?'Zum Abschluss':'Weiter';
+ fieldsOf(s).forEach(function(f){if(f.type==='photo')loadThumbs(f.id);});
+ if(s.type==='end')renderSummary();}
+function loadThumbs(id){DB.get(id).then(function(l){PHOTOS[id]=l;var el=document.getElementById('t-'+id);if(!el)return;el.innerHTML=l.map(function(ph,i){return'<div class="thumb"><img src="'+ph.src+'" alt="Foto '+(i+1)+'"><button type="button" data-del="'+id+'" data-i="'+i+'">Entfernen</button></div>';}).join('');});}
+function renderSummary(){var h='';SCREENS.forEach(function(s){var fs=fieldsOf(s);if(!fs.length)return;var inner='';fs.forEach(function(f){if(f.id==='name')return;if(f.type==='photo'){var l=PHOTOS[f.id]||[];if(l.length)inner+='<div class="sum-item"><h3>'+esc(f.label)+'</h3><div class="thumbs">'+l.map(function(ph){return'<div class="thumb"><img src="'+ph.src+'" alt=""></div>';}).join('')+'</div></div>';}else{var v=(state.fields[f.id]||'').trim();if(v)inner+='<div class="sum-item"><h3>'+esc(f.label)+'</h3><p>'+esc(v)+'</p></div>';}});
+ var title=s.type==='phase'?s.p.title:({start:'Ankommen',theory:'Theorie',kern:'Mein Kern',interview:'Im Gespräch'})[s.type];h+='<section class="sum-block"><h2>'+title+'</h2>'+(inner||'<p class="empty">Noch nichts eingetragen.</p>')+'</section>';});document.getElementById('sum').innerHTML=h;}
+
+/* ---------- print document ---------- */
+function pEntries(fs){if(!fs.length)return'';return'<div class="p-entries"><h3>Meine Notizen</h3>'+fs.map(function(f){if(f.id==='name')return'';if(f.type==='photo'){var l=PHOTOS[f.id]||[];return'<div class="p-entry"><h4>'+esc(f.label)+'</h4>'+(l.length?'<div class="p-photos">'+l.map(function(ph){return'<img src="'+ph.src+'" alt="">';}).join('')+'</div>':'<div class="p-blank"></div>')+'</div>';}var v=(state.fields[f.id]||'').trim();return'<div class="p-entry"><h4>'+esc(f.label)+'</h4>'+(v?'<p>'+esc(v)+'</p>':'<div class="p-blank"></div>')+'</div>';}).join('')+'</div>';}
+function buildPrint(){var name=(state.fields.name||'').trim(),date=new Date().toLocaleDateString('de-DE',{day:'2-digit',month:'long',year:'numeric'});
+ var h='<section class="p-cover"><div><p class="p-kicker">Mein Playbook · LEGO® Serious Play® Workshop</p><h1>'+PB.title+'</h1><p class="impulse">'+PB.tagline+'</p></div>'+fig(PB.coverFig||'kompass2','')+'<div>'+(name?'<p class="p-name">'+esc(name)+'</p>':'')+'<p class="lead">'+date+'</p></div><div class="p-sig">'+SIG+'</div></section>';
+ h+='<section class="p-sec"><p class="p-kicker">Ankommen</p><h2>Meine Frage für heute</h2>'+pEntries(F_START)+'</section>';
+ h+='<section class="p-sec"><p class="p-kicker">Theoriebibliothek</p><h2>Zum Nachlesen</h2><p class="lead">'+PB.theoryLead+'</p>'+theoryLib(true)+(PB.theorySpark?spark(PB.theorySpark):'')+pEntries(F_THEORY)+'</section>';
+ PB.phases.forEach(function(p){h+='<section class="p-sec"><p class="p-kicker">'+p.kicker+'</p><h2>'+p.title+'</h2>'+phaseBody(p,true)+pEntries(p.fields||[])+'</section>';});
+ h+='<section class="p-sec"><p class="p-kicker">Mein Kern</p><h2>Das nehme ich mit</h2>'+fig('kompass2','')+(PB.kernSpark?spark(PB.kernSpark):'')+pEntries(F_KERN)+'</section>';
+ h+='<section class="p-sec"><p class="p-kicker">Im Gespräch</p><h2>Lass dich fragen</h2>'+fig('interview','')+fig('compass','')+qLib(true)+((PB.questions&&PB.questions.length)?'<div class="ex"><span class="ex-l">Fragen zu deinem Thema</span><p>'+PB.questions.join('<br>')+'</p></div>':'')+pEntries(F_INT)+'</section>';
+ h+='<section class="p-end"><p class="big">'+(PB.endLine||'Danke für einen Tag mit den Händen im Denken.')+'</p>'+spark(PB.endSpark||'Wer etwas gebaut hat, kann es auch umbauen.')+'<div class="p-sig">'+SIG+'</div></section>';
+ document.getElementById('print').innerHTML=h;}
+window.addEventListener('beforeprint',buildPrint);
+
+/* ---------- dictation ---------- */
+var rec=null,recBtn=null;
+function stopDictate(){if(rec){try{rec.stop();}catch(e){}}}
+function toggleDictate(btn){if(rec){stopDictate();return;}var ta=document.getElementById(btn.getAttribute('data-dictate'));if(!ta)return;try{rec=new SR();}catch(e){return;}
+ recBtn=btn;rec.lang='de-DE';rec.continuous=true;rec.interimResults=false;
+ rec.onresult=function(e){for(var i=e.resultIndex;i<e.results.length;i++){if(e.results[i].isFinal){var t=e.results[i][0].transcript.trim();if(!t)continue;ta.value=ta.value?(ta.value.replace(/\s+$/,'')+' '+t):t;ta.dispatchEvent(new Event('input',{bubbles:true}));}}};
+ rec.onend=function(){if(recBtn){recBtn.classList.remove('on');recBtn.textContent='Diktieren';}rec=null;recBtn=null;};rec.onerror=function(){};
+ try{rec.start();btn.classList.add('on');btn.textContent='Stopp';}catch(e){rec=null;}}
+
+/* ---------- events ---------- */
+function go(i){if(i<0||i>=SCREENS.length)return;state.step=i;persist();render();window.scrollTo(0,0);}
+document.getElementById('prev').addEventListener('click',function(){go(state.step-1);});
+document.getElementById('next').addEventListener('click',function(){go(state.step+1);});
+document.addEventListener('click',function(e){var b=e.target.closest('[data-go]');if(b)go(+b.getAttribute('data-go'));});
+main.addEventListener('input',function(e){var k=e.target.getAttribute('data-key');if(!k)return;state.fields[k]=e.target.value;persist();});
+main.addEventListener('change',function(e){var id=e.target.getAttribute('data-photo');if(!id)return;var files=[].slice.call(e.target.files||[]);e.target.value='';if(!files.length)return;flash('Foto wird gespeichert …');
+ DB.get(id).then(function(l){return Promise.all(files.map(compress)).then(function(add){l=l.concat(add);return DB.set(id,l);});}).then(function(){flash('Gespeichert');loadThumbs(id);}).catch(function(){flash('Foto konnte nicht gespeichert werden');});});
+main.addEventListener('click',function(e){var t=e.target.closest('button');if(!t)return;
+ if(t.hasAttribute('data-dictate'))return toggleDictate(t);
+ if(t.hasAttribute('data-card')){cardIdx=(cardIdx+(+t.getAttribute('data-card'))+QCARDS.length)%QCARDS.length;var c=main.querySelector('.cards');if(c)c.outerHTML=cardsHTML();return;}
+ if(t.hasAttribute('data-del')){var id=t.getAttribute('data-del'),i=+t.getAttribute('data-i');DB.get(id).then(function(l){l.splice(i,1);return DB.set(id,l);}).then(function(){loadThumbs(id);flash('Foto entfernt');});return;}
+ if(t.id==='pdf'){Promise.all(ALL_PHOTO_IDS.map(function(id){return DB.get(id).then(function(l){PHOTOS[id]=l;});})).then(function(){buildPrint();setTimeout(function(){window.print();},150);});return;}
+ if(t.id==='reset'){document.getElementById('confirm').hidden=false;return;}
+ if(t.id==='reset-no'){document.getElementById('confirm').hidden=true;return;}
+ if(t.id==='reset-yes'){state={step:0,fields:{}};PHOTOS={};try{localStorage.removeItem(KEY);}catch(err){}DB.clear().then(function(){render();window.scrollTo(0,0);flash('Alles gelöscht');});}
+});
+
+document.getElementById('brand').textContent=PB.brand;
+document.getElementById('sig-foot').innerHTML=SIG;
+render();
+})();
+</script>
+</div>
+</body>
+</html>
