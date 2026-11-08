@@ -224,8 +224,7 @@ details.fold[open]>summary::after{transform:rotate(45deg)}
 #pb-gate .g-err{font-size:14px;color:#c2412d;min-height:20px;margin:0}
 #pb-gate .g-back{font-size:13px;color:var(--muted);text-decoration:underline;text-underline-offset:3px}
 #pb-gate .g-hint{font-size:13px;color:var(--muted);margin:0}
-#pb-app[hidden]{display:none!important}
-#pb-app:not([hidden]){display:contents}
+#pb-app{display:none}
 </style>
 </head>
 <body>
@@ -243,7 +242,7 @@ details.fold[open]>summary::after{transform:rotate(45deg)}
     <p class="g-hint">Nur f&#xFC;r Dozentinnen.</p>
   </form>
 </div>
-<div id="pb-app" hidden>
+<div id="pb-app">
 <header class="top">
   <div class="top-in">
     <span class="brand"><span class="bricks" aria-hidden="true"><i class="brick t-res"></i><i class="brick t-team"></i><i class="brick t-werte"></i><i class="brick t-konf"></i></span>Leadership-Werkstatt</span>
@@ -579,9 +578,11 @@ setInterval(function(){
   var CORRECT='PLAYBOOK_ADMIN_!';
   var gEl=document.getElementById('pb-gate');
   var aEl=document.getElementById('pb-app');
-  function unlock(){gEl.hidden=true;aEl.removeAttribute('hidden');}
-  try{if(sessionStorage.getItem(PW_KEY)==='1')unlock();}catch(e){}
-  document.getElementById('pb-form').addEventListener('submit',function(e){
+  function unlock(){gEl.style.display='none';aEl.style.display='block';}
+  try{if(sessionStorage.getItem(PW_KEY)==='1'){unlock();return;}}catch(e){}
+  var form=document.getElementById('pb-form');
+  if(!form)return;
+  form.addEventListener('submit',function(e){
     e.preventDefault();
     var v=document.getElementById('pb-pw').value;
     if(v===CORRECT){try{sessionStorage.setItem(PW_KEY,'1');}catch(err){}document.getElementById('pb-err').textContent='';unlock();}
