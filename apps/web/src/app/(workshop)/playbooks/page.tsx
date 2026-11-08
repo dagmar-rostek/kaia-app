@@ -127,7 +127,7 @@ export default function PlaybooksPage() {
             placeholder="Passwort"
             autoComplete="current-password"
             className="w-full text-center text-lg tracking-wider rounded-2xl border px-4 py-3 bg-background focus:outline-none focus:ring-2"
-            style={{ borderColor: "var(--border)", focusRingColor: "#3E6B4F" }}
+            style={{ borderColor: "var(--border)" }}
           />
           {error && (
             <p className="text-sm text-red-500 h-5">{error}</p>
