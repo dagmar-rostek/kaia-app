@@ -231,7 +231,7 @@ details.fold[open]>summary::after{transform:rotate(45deg)}
 .dm-fold[open]>summary::after{transform:rotate(45deg)}
 /* Enjah-Karte */
 .enjah-card{background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden;display:flex;flex-direction:column}
-.enjah-card img,.enjah-card video{width:100%;max-height:280px;object-fit:cover;display:block}
+.enjah-card img,.enjah-card video{width:100%;max-height:560px;object-fit:cover;display:block}
 .enjah-card-body{padding:12px 16px 14px;display:flex;flex-direction:column;gap:4px}
 .enjah-card-body b{font-size:14px;font-weight:600}
 .enjah-card-body p{margin:0;font-size:13px;color:var(--muted);line-height:1.4}
@@ -494,7 +494,7 @@ function renderBlock(){
  h+='<h1 id="bt">'+esc(b.t)+'</h1><p class="goal">'+b.goal+'</p>';
  if(b.k==='pause'){h+='<div class="pausebox"><div class="count" id="pause-count">'+String(mins(b.e)-mins(b.s)).padStart(2,'0')+':00</div></div>';}
  if(b.say)h+='<div class="say"><span class="say-l">So kannst du es sagen</span>'+b.say.map(function(s){return '<p>'+s+'</p>';}).join('')+'</div>';
- if(sel===0)h+='<div class="enjah-card"><img src="/playbooks/enjah.png" alt="Enjah" onerror="this.style.display=\'none\'"><div class="enjah-card-body"><b>Wo ist Enjah?</b><p>Enjah ist unser zweiter Hund — Miniatur Australian Shepherd, noch in Ausbildung, und offen gesagt gerade mitten in der Pubert\xe4t. Sie hat es heute schlicht nicht aus dem Bett geschafft. Ihr kennt das: in der Pubert\xe4t ist da manchmal nichts zu machen. Wir lassen sie schlafen.</p></div></div>';
+ if(sel===0)h+='<div class="enjah-card"><img src="/playbooks/enjah.png" alt="Enjah" onerror="this.style.display=\'none\'"><div class="enjah-card-body"><b>Wo ist Enjah?</b><p>Da, sie hat es heute nicht aus dem Bett geschafft, ihr kennt das … und ja in der Pubert\xe4t ist da leider nichts zu machen, wir lassen sie schlafen ….</p></div></div>';
  if(b.steps)h+='<div class="steps">'+b.steps.map(function(s){return '<div><span class="min">'+s[0]+'</span><b>'+s[1]+'</b><span>'+s[2]+'</span></div>';}).join('')+'</div>';
  if(b.k==='themen')h+='<div class="quad">'+THEMES.map(function(t,i){return themeCol(t,i,b);}).join('')+'</div>';
  if(b.do||b.folds){
