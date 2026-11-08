@@ -6,8 +6,9 @@ import { useState, useEffect, useRef } from "react"
 const CORRECT = "PLAYBOOK_4Y"
 // ─────────────────────────────────────────────────────────────────────────
 const PW_KEY = "rostek-pb-auth-v1"
+const LANG_KEY = "rostek-pb-lang-v1"
 
-const THEMES = [
+const THEMES_DE = [
   {
     num: 1,
     title: "Leadership-Resilienz",
@@ -54,10 +55,58 @@ const THEMES = [
   },
 ]
 
+const THEMES_EN = [
+  {
+    num: 1,
+    title: "Leadership Resilience",
+    sub: "What holds me, even in the storm?",
+    href: "/playbooks/resilience.html",
+    accent: "#3E6B4F",
+    accentSoft: "#E3ECE4",
+    accentDark: "#8FC2A0",
+    accentSoftDark: "#1F2D25",
+    live: true,
+  },
+  {
+    num: 2,
+    title: "Values Work",
+    sub: "What do I stand for as a leader?",
+    href: "/playbooks/values.html",
+    accent: "#86561C",
+    accentSoft: "#F2E7D6",
+    accentDark: "#E2B87C",
+    accentSoftDark: "#2D2417",
+    live: true,
+  },
+  {
+    num: 3,
+    title: "Team Vision & Direction",
+    sub: "Where do we want to go as a team?",
+    href: "/playbooks/team-vision.html",
+    accent: "#2F5F8A",
+    accentSoft: "#E1EAF3",
+    accentDark: "#8DB8E0",
+    accentSoftDark: "#1B2633",
+    live: true,
+  },
+  {
+    num: 4,
+    title: "Communication & Conflict",
+    sub: "What's really behind my difficult situation?",
+    href: "/playbooks/communication.html",
+    accent: "#7A4040",
+    accentSoft: "#F0DEDE",
+    accentDark: "#C28080",
+    accentSoftDark: "#2D1A1A",
+    live: true,
+  },
+]
+
 export default function PlaybooksPage() {
   const [phase, setPhase] = useState<"init" | "locked" | "unlocked">("init")
   const [pw, setPw] = useState("")
   const [error, setError] = useState("")
+  const [lang, setLang] = useState<"de" | "en">("de")
   const inputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
@@ -69,11 +118,19 @@ export default function PlaybooksPage() {
         // eslint-disable-next-line react-hooks/set-state-in-effect
         setPhase("locked")
       }
+      const saved = localStorage.getItem(LANG_KEY)
+      if (saved === "en") setLang("en")
     } catch {
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setPhase("locked")
     }
   }, [])
+
+  function toggleLang() {
+    const next = lang === "de" ? "en" : "de"
+    setLang(next)
+    try { localStorage.setItem(LANG_KEY, next) } catch {}
+  }
 
   useEffect(() => {
     if (phase === "locked") inputRef.current?.focus()
@@ -145,6 +202,33 @@ export default function PlaybooksPage() {
     )
   }
 
+  const THEMES = lang === "de" ? THEMES_DE : THEMES_EN
+  const copy = lang === "de"
+    ? {
+        label: "Deine Playbooks",
+        heading: "Wähle dein Thema",
+        body: "Jedes Playbook begleitet dich durch den Tag — mit Impulsen, Bauaufträgen und Platz für deine Gedanken. Deine Einträge werden nur für diese Sitzung gespeichert und gehen verloren, wenn du den Tab schließt. Erstelle daher regelmäßig ein PDF.",
+        badge: "Verfügbar",
+        soon: "Demnächst",
+        footer: "Deine Einträge bleiben nur auf diesem Gerät.",
+        logout: "Abmelden",
+        dozenLabel: "Für Dozentinnen",
+        dozenLink: "Moderationsguide →",
+        thema: "Thema",
+      }
+    : {
+        label: "Your Playbooks",
+        heading: "Choose your topic",
+        body: "Each playbook guides you through the day — with prompts, build tasks, and space for your thoughts. Your entries are only saved for this session and will be lost when you close the tab. Export a PDF regularly.",
+        badge: "Available",
+        soon: "Coming soon",
+        footer: "Your entries stay on this device only.",
+        logout: "Sign out",
+        dozenLabel: "For facilitators",
+        dozenLink: "Facilitation guide →",
+        thema: "Topic",
+      }
+
   return (
     <div
       style={{ background: "var(--background)", color: "var(--foreground)" }}
@@ -152,15 +236,24 @@ export default function PlaybooksPage() {
     >
       <div className="max-w-2xl mx-auto px-4 py-14 flex flex-col gap-12">
         <header className="flex flex-col gap-2">
-          <p className="text-xs font-semibold tracking-widest uppercase text-muted-foreground">
-            Deine Playbooks
-          </p>
+          <div className="flex items-center justify-between">
+            <p className="text-xs font-semibold tracking-widest uppercase text-muted-foreground">
+              {copy.label}
+            </p>
+            <button
+              onClick={toggleLang}
+              className="text-xs font-semibold tracking-widest border rounded-full px-3 py-1 transition-colors hover:text-foreground"
+              style={{ borderColor: "var(--border)", color: "var(--muted-foreground)" }}
+              aria-label={lang === "de" ? "Switch to English" : "Zu Deutsch wechseln"}
+            >
+              {lang === "de" ? "EN" : "DE"}
+            </button>
+          </div>
           <h1 className="text-4xl font-light tracking-tight leading-tight">
-            Wähle dein Thema
+            {copy.heading}
           </h1>
           <p className="text-muted-foreground max-w-prose">
-            Jedes Playbook begleitet dich durch den Tag — mit Impulsen, Bauaufträgen
-            und Platz für deine Gedanken. Deine Einträge werden nur für diese Sitzung gespeichert und gehen verloren, wenn du den Tab schließt. Erstelle daher regelmäßig ein PDF.
+            {copy.body}
           </p>
         </header>
 
@@ -200,7 +293,7 @@ export default function PlaybooksPage() {
                     className="text-xs font-semibold tracking-widest uppercase mb-2"
                     style={{ color: t.accent }}
                   >
-                    Thema {t.num}
+                    {copy.thema} {t.num}
                   </p>
                   <h2 className="text-xl font-normal leading-snug mb-2">{t.title}</h2>
                   <p className="text-sm text-muted-foreground leading-snug">{t.sub}</p>
@@ -219,7 +312,7 @@ export default function PlaybooksPage() {
                       style={{ background: t.accent }}
                     />
                   )}
-                  {t.live ? "Verfügbar" : "Demnächst"}
+                  {t.live ? copy.badge : copy.soon}
                 </span>
               </Card>
             )
@@ -228,14 +321,14 @@ export default function PlaybooksPage() {
 
         <div className="flex justify-between items-center">
           <p className="text-xs text-muted-foreground">
-            Deine Einträge bleiben nur auf diesem Gerät.
+            {copy.footer}
           </p>
           <button
             onClick={handleLogout}
             className="text-sm text-muted-foreground border rounded-full px-4 py-1.5 hover:text-foreground transition-colors"
             style={{ borderColor: "var(--border)" }}
           >
-            Abmelden
+            {copy.logout}
           </button>
         </div>
 
@@ -244,7 +337,7 @@ export default function PlaybooksPage() {
           style={{ borderColor: "var(--border)" }}
         >
           <p className="text-xs text-muted-foreground">
-            Für Dozentinnen
+            {copy.dozenLabel}
           </p>
           <a
             href="/playbooks/admin.html"
@@ -255,7 +348,7 @@ export default function PlaybooksPage() {
               textDecoration: "none",
             }}
           >
-            Moderationsguide →
+            {copy.dozenLink}
           </a>
         </div>
       </div>

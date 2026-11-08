@@ -1,0 +1,688 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Playbook Leadership Resilience</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;1,9..144,300;1,9..144,400&family=Instrument+Sans:wght@400;500;600&family=Caveat:wght@500&display=swap">
+<style>
+/* Layout: one screen per phase, narrow reading column; depth lives in nested "+" layers; print view renders everything opened */
+:root{
+  --bg:#F4F6F1; --surface:#FFFFFF; --ink:#1C221E; --muted:#56635A; --line:#DCE0DA;
+  --accent:#3E6B4F; --accent-soft:#E3ECE4; --accent-ink:#FFFFFF; --danger:#A3412F; --note:#FFF6C9; --note-ink:#3B3418;
+  --display:"Fraunces", Georgia, "Times New Roman", serif;
+  --body:"Instrument Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --hand:"Caveat", "Segoe Print", "Bradley Hand", cursive;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#111513; --surface:#1A1F1C; --ink:#E7ECE7; --muted:#A3AEA6; --line:#2E3631;
+    --accent:#8FC2A0; --accent-soft:#1F2D25; --accent-ink:#101411; --danger:#E8907E; --note:#3A3520; --note-ink:#F4E9B8; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#111513; --surface:#1A1F1C; --ink:#E7ECE7; --muted:#A3AEA6; --line:#2E3631;
+  --accent:#8FC2A0; --accent-soft:#1F2D25; --accent-ink:#101411; --danger:#E8907E; --note:#3A3520; --note-ink:#F4E9B8; color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.6}
+img{max-width:100%;display:block}
+[hidden]{display:none!important}
+button{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:6px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+#print{display:none}
+
+/* top */
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);background:var(--bg);z-index:10}
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);border-bottom:1px solid var(--line);
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:12px 8px}
+.top-in{max-width:680px;margin:0 auto;display:flex;flex-direction:column;gap:8px}
+.top-row{display:flex;justify-content:space-between;align-items:baseline;gap:12px}
+.brand{font-family:var(--display);font-size:17px;font-weight:500}
+.saved{font-size:13px;color:var(--muted);transition:opacity .4s}
+.progress{display:grid;gap:4px}
+.seg{height:20px;border:0;padding:0;background:none;cursor:pointer;display:flex;align-items:center}
+.seg span{display:block;width:100%;height:4px;border-radius:2px;background:var(--line);transition:background .25s}
+.seg.done span{background:var(--accent);opacity:.45}
+.seg.now span{background:var(--accent);height:6px}
+
+main{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:32px 40px}
+.screen{max-width:680px;margin:0 auto;display:flex;flex-direction:column;gap:26px;animation:fade .35s ease both}
+@keyframes fade{from{opacity:.4;transform:translateY(6px)}to{opacity:1;transform:none}}
+.kicker{margin:0;font-size:13px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:var(--accent)}
+h1{margin:-16px 0 0;font-family:var(--display);font-weight:300;font-size:clamp(34px,8vw,50px);line-height:1.06;letter-spacing:-.01em;text-wrap:balance}
+.lead{margin:0;color:var(--muted);max-width:62ch;text-wrap:pretty}
+.impulse{margin:0;font-family:var(--display);font-style:italic;font-weight:400;font-size:clamp(23px,5.4vw,30px);line-height:1.28;color:var(--accent);text-wrap:balance}
+.label{margin:0 0 10px;font-size:13px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:var(--muted)}
+.task p{margin:0}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.chip{font-size:14px;padding:5px 13px;border-radius:999px;background:var(--accent-soft);color:var(--ink)}
+.ways{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px}
+.ways li{display:flex;gap:12px;align-items:flex-start}
+.ways svg{flex:none;margin-top:3px}
+.ico{stroke:var(--accent);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+
+/* rich text blocks */
+.rt{display:flex;flex-direction:column;gap:14px}
+.rt p,.rt ul,.rt ol{margin:0}
+.rt ul,.rt ol{padding-left:22px;display:flex;flex-direction:column;gap:6px}
+.rt h4{margin:6px 0 0;font-family:var(--display);font-weight:500;font-size:20px;line-height:1.25}
+.rt strong{font-weight:600}
+.rt blockquote{margin:0;padding:4px 0 4px 18px;border-left:2px solid var(--accent);font-family:var(--display);font-style:italic;font-size:19px;line-height:1.4}
+.rt blockquote p{margin:0}
+.rt cite{display:block;margin-top:6px;font-family:var(--body);font-style:normal;font-size:14px;color:var(--muted)}
+.ex{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px 18px;display:flex;flex-direction:column;gap:6px}
+.ex-l{font-size:12px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:var(--accent)}
+.ex p{margin:0}
+.refl{margin:0;padding:14px 18px;border-radius:14px;background:var(--accent-soft);font-weight:500}
+.refl::before{content:"For Reflection";display:block;font-size:12px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:var(--accent);margin-bottom:4px}
+.lit{list-style:none;padding:0!important;font-size:15px;color:var(--muted)}
+.lit li{padding-left:18px;position:relative}
+.lit li::before{content:"";position:absolute;left:0;top:.7em;width:8px;height:1px;background:var(--muted)}
+.tbl{overflow-x:auto}
+.tbl table{border-collapse:collapse;width:100%;font-size:15px}
+.tbl th,.tbl td{text-align:left;vertical-align:top;padding:9px 10px;border-bottom:1px solid var(--line)}
+.tbl th{font-size:12px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);font-weight:600}
+
+/* figures */
+.fig{margin:0;display:flex;flex-direction:column;gap:8px;align-items:center;padding:18px 12px 14px;background:var(--surface);border:1px solid var(--line);border-radius:18px}
+.fig svg{width:100%;max-width:440px;height:auto;overflow:visible}
+.fig figcaption{font-size:14px;color:var(--muted);text-align:center;max-width:52ch}
+.g-line{fill:none;stroke:var(--accent);stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.g-thin{fill:none;stroke:var(--muted);stroke-width:1;stroke-dasharray:3 4}
+.g-axis{fill:none;stroke:var(--muted);stroke-width:1.2}
+.g-f1{fill:var(--accent);fill-opacity:.1;stroke:var(--accent);stroke-width:1.5}
+.g-f2{fill:var(--accent);fill-opacity:.24;stroke:var(--accent);stroke-width:1.5}
+.g-f3{fill:var(--accent);fill-opacity:.45;stroke:var(--accent);stroke-width:1.5}
+.g-solid{fill:var(--accent)}
+.g-paper{fill:var(--surface);stroke:var(--line);stroke-width:1.2}
+.g-t{fill:var(--ink);font-family:var(--body);font-size:13px;font-weight:600}
+.g-s{fill:var(--muted);font-family:var(--body);font-size:11px}
+.g-e{fill:var(--accent);font-family:var(--display);font-style:italic;font-size:14px}
+.g-h{fill:var(--accent);font-family:var(--hand);font-size:19px}
+
+/* layers */
+details.more,details.layer,details.model{border-top:1px solid var(--line)}
+details.more:last-of-type{border-bottom:1px solid var(--line)}
+details.more>summary,details.layer>summary,details.model>summary{list-style:none;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:14px;padding:14px 0}
+details>summary::-webkit-details-marker{display:none}
+details.more>summary::after,details.layer>summary::after,details.model>summary::after{content:"+";flex:none;font-size:24px;line-height:1;color:var(--accent);transition:transform .2s}
+details[open].more>summary::after,details[open].layer>summary::after,details[open].model>summary::after{transform:rotate(45deg)}
+details.more>summary{font-weight:600}
+.more-body{padding-bottom:18px;display:flex;flex-direction:column;gap:16px}
+details.layer{margin-left:0}
+details.layer>summary{font-weight:500;font-size:16px;padding:12px 0}
+details.layer>summary .depth{font-size:12px;color:var(--muted);font-weight:400;margin-left:auto;margin-right:10px;white-space:nowrap}
+.layer-body{padding:2px 0 18px 14px;border-left:2px solid var(--accent-soft);display:flex;flex-direction:column;gap:14px}
+.layers{display:flex;flex-direction:column;border-bottom:1px solid var(--line)}
+
+/* theory library */
+.lib{display:flex;flex-direction:column}
+details.model>summary{padding:18px 0;align-items:flex-start}
+.m-head{display:flex;gap:14px;align-items:flex-start;min-width:0}
+.m-n{flex:none;width:34px;height:34px;border-radius:50%;background:var(--accent-soft);color:var(--accent);display:flex;align-items:center;justify-content:center;font-family:var(--display);font-size:17px}
+.m-t{display:flex;flex-direction:column;gap:2px;min-width:0}
+.m-t b{font-family:var(--display);font-weight:400;font-size:22px;line-height:1.2}
+.m-t small{font-size:15px;color:var(--muted)}
+.model-body{padding:0 0 22px;display:flex;flex-direction:column;gap:16px}
+.lib-end{border-top:1px solid var(--line)}
+.to-theory{align-self:flex-start}
+
+/* spark */
+.spark{position:relative;background:var(--note);color:var(--note-ink);border-radius:4px 18px 4px 18px;padding:20px 22px 18px;transform:rotate(-.6deg);box-shadow:0 1px 0 rgba(0,0,0,.05)}
+.spark span{display:block;font-size:12px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;opacity:.75;margin-bottom:4px}
+.spark p{margin:0;font-family:var(--hand);font-size:27px;line-height:1.15}
+
+/* pause */
+.pause{background:var(--accent-soft);border-radius:20px;padding:22px 24px;display:flex;gap:16px;align-items:center}
+.pause p{margin:0;font-family:var(--display);font-size:22px;line-height:1.25}
+.pause small{display:block;font-family:var(--body);font-size:14px;color:var(--muted);margin-top:4px}
+
+/* capture */
+.capture{display:flex;flex-direction:column;gap:22px;padding-top:4px}
+.field{display:flex;flex-direction:column;gap:8px}
+.field>label,.flabel{font-weight:500}
+textarea,input[type=text]{width:100%;font:inherit;font-size:17px;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px 14px;resize:vertical}
+textarea{min-height:110px;line-height:1.5}
+textarea:focus,input[type=text]:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+.mini{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:6px 14px;font-size:14px;cursor:pointer;display:inline-flex;align-items:center;gap:6px}
+.mini.on{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.thumbs{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px}
+.thumbs:empty{display:none}
+.thumb{position:relative;border-radius:12px;overflow:hidden;background:var(--line);aspect-ratio:4/3;max-width:100%}
+.thumb img{width:100%;height:100%;object-fit:cover}
+.thumb button{position:absolute;top:6px;right:6px;border:0;border-radius:999px;background:rgba(0,0,0,.6);color:#fff;font-size:13px;padding:3px 10px;cursor:pointer}
+.photo-btn{display:flex;align-items:center;justify-content:center;gap:10px;border:1.5px dashed var(--line);border-radius:14px;padding:18px;cursor:pointer;color:var(--muted);background:var(--surface);font-size:15px}
+.photo-btn:hover{border-color:var(--accent);color:var(--ink)}
+.hint{font-size:14px;color:var(--muted);margin:0}
+
+.steps3{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.steps3 li{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:4px}
+.steps3 b{font-family:var(--display);font-weight:400;font-size:20px}
+.steps3 span{font-size:14px;color:var(--muted);line-height:1.4}
+@media (max-width:460px){.steps3{grid-template-columns:minmax(0,1fr)}}
+
+/* cards */
+.cards{display:flex;flex-direction:column;gap:12px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:22px;padding:28px 24px;min-height:180px;display:flex;flex-direction:column;justify-content:space-between;gap:18px}
+.card .type{font-size:13px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:var(--accent)}
+.card .q{font-family:var(--display);font-size:clamp(22px,5.4vw,27px);line-height:1.28;margin:0}
+.card-nav{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.card-nav span{font-size:14px;color:var(--muted);font-variant-numeric:tabular-nums}
+
+/* summary */
+.sum{display:flex;flex-direction:column;gap:24px}
+.sum-block{display:flex;flex-direction:column;gap:10px;padding-top:18px;border-top:1px solid var(--line)}
+.sum-block h2{margin:0;font-family:var(--display);font-weight:400;font-size:23px}
+.sum-item h3{margin:0 0 2px;font-size:14px;font-weight:600;color:var(--muted)}
+.sum-item p{margin:0;white-space:pre-wrap}
+.empty{color:var(--muted);font-style:italic;margin:0}
+.actions{display:flex;flex-direction:column;gap:12px}
+.primary{border:0;border-radius:999px;background:var(--accent);color:var(--accent-ink);font-weight:600;padding:15px 22px;cursor:pointer;font-size:17px}
+.ghost{border:1px solid var(--line);border-radius:999px;background:transparent;padding:12px 20px;cursor:pointer;color:var(--muted)}
+.confirm{display:flex;flex-wrap:wrap;gap:10px;align-items:center;padding:14px 16px;border-radius:14px;background:var(--surface);border:1px solid var(--line)}
+.confirm p{margin:0;flex:1 1 200px}
+.danger{border:0;border-radius:999px;background:var(--danger);color:var(--surface);padding:10px 18px;cursor:pointer;font-weight:600}
+.howto{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px 18px;font-size:15px;display:flex;flex-direction:column;gap:6px}
+.howto p{margin:0}
+
+.nav{position:sticky;bottom:0;z-index:5;background:var(--bg);border-top:1px solid var(--line);
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:12px calc(12px + env(safe-area-inset-bottom,0px))}
+.nav-in{max-width:680px;margin:0 auto;display:flex;justify-content:space-between;gap:12px}
+.nav button{min-height:46px;border-radius:999px;padding:0 22px;cursor:pointer;font-weight:500}
+#prev{border:1px solid var(--line);background:transparent}
+#next{border:0;background:var(--accent);color:var(--accent-ink);font-weight:600;margin-left:auto}
+
+.sig{font-size:13px;color:var(--muted);line-height:1.6}
+.sig b{color:var(--ink);font-weight:600}
+footer{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 28px}
+footer .sig{max-width:680px;margin:0 auto}
+
+@media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important}}
+
+/* ---------- print ---------- */
+@page{size:A4;margin:16mm 15mm 16mm}
+@media print{
+  body{background:#fff;color:#1C221E;font-size:10.5pt;line-height:1.5}
+  body::before,.top,main,.nav,footer{display:none!important}
+  #print{display:block}
+  :root{--bg:#fff;--surface:#fff;--ink:#1C221E;--muted:#55605A;--line:#D5DAD4;--accent:#3E6B4F;--accent-soft:#E3ECE4;--note:#FFF6C9;--note-ink:#3B3418}
+  .p-cover{min-height:255mm;display:flex;flex-direction:column;justify-content:space-between;break-after:page}
+  .p-cover h1{margin:0;font-size:44pt;line-height:1.02}
+  .p-cover .impulse{font-size:18pt;margin-top:10pt}
+  .p-name{font-size:14pt;font-weight:600;margin:0}
+  .p-sec{break-before:page}
+  .p-sec>h2{font-family:var(--display);font-weight:300;font-size:28pt;line-height:1.05;margin:0 0 4pt}
+  .p-kicker{font-size:8.5pt;font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:var(--accent);margin:0 0 4pt}
+  .p-sec .impulse{font-size:15pt;margin:6pt 0 10pt}
+  .p-sec .lead{margin:0 0 10pt}
+  .p-block{margin:0 0 12pt}
+  .rt{gap:8pt}
+  .fig,.ex,.refl,.spark,.p-entry,.card,.pause{break-inside:avoid}
+  .fig{padding:10pt;border-radius:10pt}
+  .fig svg{max-width:300pt}
+  details>summary::after{display:none!important}
+  details>summary{cursor:default}
+  details.model>summary{padding:10pt 0 6pt}
+  .layer-body{padding-bottom:8pt}
+  .spark{transform:none}
+  .spark p{font-size:19pt}
+  .p-entries{display:flex;flex-direction:column;gap:10pt;margin-top:12pt;padding:12pt 14pt;border:1.2pt solid var(--accent);border-radius:10pt}
+  .p-entries>h3{margin:0;font-size:8.5pt;letter-spacing:.09em;text-transform:uppercase;color:var(--accent)}
+  .p-entry h4{margin:0 0 2pt;font-size:9.5pt;color:var(--muted)}
+  .p-entry p{margin:0;white-space:pre-wrap}
+  .p-blank{height:46pt;border-bottom:1pt solid var(--line);background:repeating-linear-gradient(transparent 0 22pt,var(--line) 22pt 23pt)}
+  .p-photos{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8pt}
+  .p-photos img{width:100%;border-radius:6pt;break-inside:avoid}
+  .p-sig{border-top:1pt solid var(--line);padding-top:8pt;font-size:9pt;color:var(--muted);line-height:1.55}
+  .p-sig b{color:var(--ink)}
+  .p-end{break-before:page;min-height:240mm;display:flex;flex-direction:column;justify-content:center;gap:18pt}
+  .p-end p.big{font-family:var(--display);font-weight:300;font-size:30pt;line-height:1.1;margin:0}
+  .chip{border:1pt solid var(--line)}
+  .tbl{overflow:visible}
+  a{color:inherit;text-decoration:none}
+}
+
+/* ── PASSWORD GATE ── */
+#pb-gate{position:fixed;inset:0;z-index:999;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:36px;padding:32px;text-align:center;font-family:var(--body)}
+#pb-gate .g-eye{margin:0 0 8px;font-size:12px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--accent)}
+#pb-gate .g-title{font-family:var(--display);font-weight:300;font-size:clamp(24px,6vw,38px);margin:0;line-height:1.1;letter-spacing:-.01em}
+#pb-gate form{display:flex;flex-direction:column;align-items:center;gap:10px;width:100%;max-width:280px}
+#pb-gate input[type=password]{width:100%;font:inherit;font-size:18px;letter-spacing:.15em;text-align:center;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px 16px}
+#pb-gate input[type=password]:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+#pb-gate .g-btn{width:100%;border:0;border-radius:999px;background:var(--accent);color:var(--accent-ink);font:inherit;font-weight:600;font-size:16px;padding:13px;cursor:pointer}
+#pb-gate .g-err{font-size:14px;color:var(--danger);min-height:20px;margin:0}
+#pb-gate .g-back{font-size:13px;color:var(--muted);text-decoration:none;background:none;border:0;cursor:pointer;padding:0;display:block}
+#pb-gate .g-hint{font-size:13px;color:var(--muted);margin:0}
+
+/* ── NAVIGATION BAR + SESSION WARNING ── */
+.pb-minbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:10;background:var(--surface);border-bottom:1px solid var(--line);padding:0 max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;align-items:center;justify-content:space-between;gap:8px;height:42px}
+.pb-minbar .pb-back{font:inherit;font-size:13px;text-decoration:none;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:4px 12px;background:var(--bg);display:inline-flex;align-items:center;gap:4px;white-space:nowrap}
+.pb-minbar .pb-back:hover{color:var(--ink);border-color:var(--accent)}
+.pb-minbar .pb-pdf{font:inherit;font-size:13px;font-weight:600;border:0;border-radius:999px;padding:5px 14px;background:var(--accent);color:var(--accent-ink);cursor:pointer;white-space:nowrap}
+.top{top:calc(env(safe-area-inset-top,0px) + 42px)!important}
+.pb-session-warn{padding:9px max(16px,env(safe-area-inset-left,0px));font-size:13px;line-height:1.5;background:var(--accent-soft);color:var(--ink);border-bottom:1px solid var(--line)}
+@media print{.pb-minbar,.pb-session-warn{display:none!important}}
+</style>
+</head>
+<body>
+
+<div id="pb-gate">
+  <div>
+    <p class="g-eye">Workshop Materials</p>
+    <h1 class="g-title">Leadership Resilience</h1>
+  </div>
+  <form id="pb-form">
+    <input type="password" id="pb-pw" placeholder="Password" autocomplete="current-password" aria-label="Password">
+    <p class="g-err" id="pb-err" role="alert"></p>
+    <button class="g-btn" type="submit">Enter &#x2192;</button>
+    <a class="g-back" href="/playbooks">&#x2190; Overview</a>
+    <p class="g-hint">For workshop participants only.</p>
+  </form>
+</div>
+
+<div id="pb-app" hidden>
+
+<div class="pb-minbar" aria-label="Navigation">
+  <a href="/playbooks" class="pb-back">&#x2190; Overview</a>
+  <button class="pb-pdf" onclick="window.print()">Save as PDF</button>
+</div>
+<div class="pb-session-warn" role="note">
+  Your entries are stored for this browser session only and will be lost if you close or reload the page. Save a PDF in the meantime.
+</div>
+
+<header class="top">
+  <div class="top-in">
+    <div class="top-row"><span class="brand" id="brand"></span><span class="saved" id="saved" aria-live="polite"></span></div>
+    <nav class="progress" id="progress" aria-label="Sections"></nav>
+  </div>
+</header>
+<main id="main"></main>
+<footer><p class="sig" id="sig-foot"></p></footer>
+<div class="nav"><div class="nav-in"><button id="prev" type="button">&#x2190; Back</button><button id="next" type="button">Next &#x2192;</button></div></div>
+<div id="print" aria-hidden="true"></div>
+
+<script>
+(function(){
+  var PW_KEY='rostek-pb-auth-v1';
+  var CORRECT='PLAYBOOK_4Y';
+  var gEl=document.getElementById('pb-gate');
+  var aEl=document.getElementById('pb-app');
+  function unlock(){gEl.hidden=true;aEl.hidden=false;}
+  try{if(sessionStorage.getItem(PW_KEY)==='1')unlock();}catch(e){}
+  document.getElementById('pb-form').addEventListener('submit',function(e){
+    e.preventDefault();
+    var v=document.getElementById('pb-pw').value;
+    if(v===CORRECT){try{sessionStorage.setItem(PW_KEY,'1');}catch(err){}document.getElementById('pb-err').textContent='';unlock();}
+    else{document.getElementById('pb-err').textContent='Incorrect password.';document.getElementById('pb-pw').value='';document.getElementById('pb-pw').focus();}
+  });
+})();
+</script>
+
+<script>
+window.PB={
+key:`resilience`, brand:`Leadership Resilience`, title:`Leadership Resilience`, tagline:`What holds me steady, even when the storm hits?`,
+coverFig:`venn`,
+startSpark:`Even a rock needs a day off sometimes.`,
+theoryLead:`Six models on health, stress and strength. Each has a brief core. Each + takes you deeper: background, examples from ward life, reflection questions and references. Read as much as you like. Skipping is explicitly allowed.`,
+theorySpark:`A flat battery doesn't shine brighter just because you shout at it.`,
+kernSpark:`Bamboo bends in the storm and has never attended a training course on how to do it.`,
+endLine:`Strength is not about never wavering. It is knowing what holds you.`,
+endSpark:`Breaks are not an interruption to work. They are the part where you become human again.`,
+questions:[`What holds you in your model when the storm hits?`,`How does your team notice your energy is fading before you do?`,`Which part of your landscape gets too little attention?`],
+
+figs:{
+venn:`<svg viewBox="0 0 300 220" role="img" aria-label="Three overlapping circles: Comprehensibility, Manageability, Meaningfulness, with the sense of coherence at the centre"><circle class="g-f1" cx="112" cy="82" r="64"/><circle class="g-f1" cx="188" cy="82" r="64"/><circle class="g-f1" cx="150" cy="146" r="64"/><text class="g-t" x="86" y="70" text-anchor="middle">Comprehend</text><text class="g-t" x="214" y="70" text-anchor="middle">Manage</text><text class="g-t" x="150" y="184" text-anchor="middle">Meaning</text><text class="g-e" x="150" y="112" text-anchor="middle">Coherence</text></svg>`,
+kontinuum:`<svg viewBox="0 0 440 130" role="img" aria-label="Continuum between healthy and ill, with a person moving along it"><defs><linearGradient id="kg" x1="0" x2="1"><stop offset="0" stop-color="currentColor" stop-opacity=".05"/><stop offset="1" stop-color="currentColor" stop-opacity=".35"/></linearGradient></defs><rect class="g-f1" x="20" y="54" width="400" height="22" rx="11"/><circle class="g-solid" cx="150" cy="65" r="9"/><path class="g-line" d="M150 40v-14M138 32l12-8 12 8"/><path class="g-line" d="M170 100c20 6 40 6 60 0"/><path class="g-line" d="M224 94l6 6-8 3"/><text class="g-t" x="20" y="44">healthy</text><text class="g-t" x="420" y="44" text-anchor="end">ill</text><text class="g-h" x="250" y="122" text-anchor="middle">What moves me in this direction?</text></svg>`,
+ampel:`<svg viewBox="0 0 440 230" role="img" aria-label="Stress traffic light by Kaluza with three levels: stressors, personal stress amplifiers, stress response"><rect class="g-paper" x="40" y="10" width="90" height="210" rx="28"/><circle class="g-f1" cx="85" cy="50" r="26"/><circle class="g-f2" cx="85" cy="115" r="26"/><circle class="g-f3" cx="85" cy="180" r="26"/><text class="g-t" x="160" y="44">Stressors</text><text class="g-s" x="160" y="62">What demands me from outside?</text><text class="g-t" x="160" y="109">Personal stress amplifiers</text><text class="g-s" x="160" y="127">What do I make of it internally?</text><text class="g-t" x="160" y="174">Stress response</text><text class="g-s" x="160" y="192">What happens in body and behaviour?</text><path class="g-thin" d="M113 50h40M113 115h40M113 180h40"/></svg>`,
+saeulen:`<svg viewBox="0 0 440 210" role="img" aria-label="Three pillars of stress competence: instrumental, mental, regenerative"><path class="g-line" d="M40 40h360"/><path class="g-line" d="M30 190h380"/><rect class="g-f1" x="60" y="40" width="80" height="150"/><rect class="g-f2" x="180" y="40" width="80" height="150"/><rect class="g-f3" x="300" y="40" width="80" height="150"/><text class="g-t" x="100" y="120" text-anchor="middle">Instrumental</text><text class="g-t" x="220" y="120" text-anchor="middle">Mental</text><text class="g-t" x="340" y="120" text-anchor="middle">Regenerative</text><text class="g-s" x="100" y="138" text-anchor="middle">Reduce stressors</text><text class="g-s" x="220" y="138" text-anchor="middle">Shift mindset</text><text class="g-s" x="340" y="138" text-anchor="middle">Strengthen recovery</text><text class="g-e" x="220" y="28" text-anchor="middle">Stress Competence</text></svg>`,
+rad:`<svg viewBox="0 0 440 300" role="img" aria-label="Wheel of the seven resilience factors"><circle class="g-f1" cx="220" cy="150" r="112"/><circle class="g-f3" cx="220" cy="150" r="38"/><text class="g-t" x="220" y="155" text-anchor="middle" style="fill:var(--surface)">Me</text><g class="g-thin"><path d="M220 112V38M253 131l64-37M257 162l72 20M240 183l43 60M200 183l-43 60M183 162l-72 20M187 131l-64-37"/></g><text class="g-t" x="220" y="28" text-anchor="middle">Acceptance</text><text class="g-t" x="322" y="86">Optimism</text><text class="g-t" x="336" y="192">Self-efficacy</text><text class="g-t" x="290" y="262">Responsibility</text><text class="g-t" x="150" y="262" text-anchor="end">Network</text><text class="g-t" x="104" y="192" text-anchor="end">Solution focus</text><text class="g-t" x="118" y="86" text-anchor="end">Future planning</text></svg>`,
+kurve:`<svg viewBox="0 0 440 240" role="img" aria-label="Inverted U-curve: performance rises with tension up to an optimum and then falls"><path class="g-axis" d="M50 200h360M50 200V20"/><path class="g-line" d="M60 190C140 180 170 50 230 50s110 120 170 140" style="stroke-width:2.4"/><circle class="g-solid" cx="230" cy="50" r="6"/><text class="g-s" x="230" y="222" text-anchor="middle">Tension</text><text class="g-s" x="30" y="110" text-anchor="middle" transform="rotate(-90 30 110)">Performance</text><text class="g-t" x="100" y="160" text-anchor="middle">under-challenged</text><text class="g-t" x="230" y="36" text-anchor="middle">good tension</text><text class="g-t" x="370" y="160" text-anchor="middle">overloaded</text><text class="g-h" x="330" y="96">This is where it quietly gets dangerous.</text></svg>`,
+akku:`<svg viewBox="0 0 440 170" role="img" aria-label="Four batteries for the four recovery experiences: switch off, relax, master new things, self-determine"><g><rect class="g-paper" x="20" y="40" width="80" height="44" rx="8"/><rect class="g-f3" x="24" y="44" width="56" height="36" rx="5"/><rect class="g-paper" x="100" y="54" width="6" height="16" rx="2"/></g><g><rect class="g-paper" x="125" y="40" width="80" height="44" rx="8"/><rect class="g-f2" x="129" y="44" width="40" height="36" rx="5"/><rect class="g-paper" x="205" y="54" width="6" height="16" rx="2"/></g><g><rect class="g-paper" x="230" y="40" width="80" height="44" rx="8"/><rect class="g-f2" x="234" y="44" width="30" height="36" rx="5"/><rect class="g-paper" x="310" y="54" width="6" height="16" rx="2"/></g><g><rect class="g-paper" x="335" y="40" width="80" height="44" rx="8"/><rect class="g-f1" x="339" y="44" width="18" height="36" rx="5"/><rect class="g-paper" x="415" y="54" width="6" height="16" rx="2"/></g><text class="g-t" x="60" y="110" text-anchor="middle">Switch off</text><text class="g-t" x="165" y="110" text-anchor="middle">Relax</text><text class="g-t" x="270" y="110" text-anchor="middle">Master new things</text><text class="g-t" x="375" y="110" text-anchor="middle">Self-determine</text><text class="g-h" x="220" y="152" text-anchor="middle">Which battery is lowest for you?</text></svg>`,
+selfcare:`<svg viewBox="0 0 440 210" role="img" aria-label="Health-oriented leadership: SelfCare as inner circle, StaffCare as outer circle"><circle class="g-f1" cx="220" cy="105" r="95"/><circle class="g-f3" cx="220" cy="105" r="42"/><text class="g-t" x="220" y="102" text-anchor="middle" style="fill:var(--surface)">SelfCare</text><text class="g-s" x="220" y="118" text-anchor="middle" style="fill:var(--surface)">for me</text><text class="g-t" x="220" y="36" text-anchor="middle">StaffCare</text><text class="g-s" x="220" y="52" text-anchor="middle">for my team</text><circle class="g-paper" cx="140" cy="140" r="9"/><circle class="g-paper" cx="300" cy="140" r="9"/><circle class="g-paper" cx="160" cy="70" r="9"/><circle class="g-paper" cx="282" cy="72" r="9"/><circle class="g-paper" cx="220" cy="180" r="9"/><text class="g-h" x="410" y="200" text-anchor="end">Put on your own mask first.</text></svg>`,
+landschaft:`<svg viewBox="0 0 440 200" role="img" aria-label="Sketch of an energy landscape: large stones for pressures, branches for sources of strength, a figure in the centre"><path class="g-f1" d="M20 160c60-30 140-40 200-30s140 20 200-10v60H20z"/><ellipse class="g-f3" cx="130" cy="138" rx="34" ry="20"/><ellipse class="g-f2" cx="175" cy="150" rx="18" ry="11"/><ellipse class="g-f2" cx="300" cy="148" rx="14" ry="9"/><path class="g-line" d="M330 140c0-20 6-36 14-46M344 120l12-8M338 128l-12-6M380 146c0-14 4-26 10-32M390 126l9-6"/><circle class="g-solid" cx="240" cy="118" r="7"/><path class="g-line" d="M240 126v14"/><text class="g-s" x="130" y="182" text-anchor="middle">drains energy</text><text class="g-s" x="360" y="182" text-anchor="middle">nourishes</text><text class="g-h" x="240" y="94" text-anchor="middle">me</text></svg>`,
+barometer:`<svg viewBox="0 0 440 210" role="img" aria-label="Barometer with early warning signs from calm through changeable to storm"><path class="g-f1" d="M80 170a140 140 0 0 1 280 0z"/><path class="g-thin" d="M220 170L120 80M220 170V30M220 170l100-90"/><path class="g-line" d="M220 170l70-90" style="stroke-width:3"/><circle class="g-solid" cx="220" cy="170" r="8"/><text class="g-t" x="96" y="192">calm</text><text class="g-t" x="220" y="22" text-anchor="middle">changeable</text><text class="g-t" x="344" y="192" text-anchor="end">storm</text><text class="g-h" x="300" y="70">poor sleep?</text><text class="g-h" x="80" y="70">still laughing</text></svg>`,
+anker:`<svg viewBox="0 0 440 210" role="img" aria-label="Anchor with five possible forms: person, ritual, place, phrase, body"><circle class="g-line" cx="220" cy="40" r="14"/><path class="g-line" d="M220 54v120M180 90h80M150 140c10 40 50 50 70 34 20 16 60 6 70-34" style="stroke-width:2.2"/><path class="g-line" d="M140 150l10-12 12 10M300 150l-10-12-12 10"/><text class="g-t" x="60" y="40">Person</text><text class="g-t" x="60" y="100">Ritual</text><text class="g-t" x="60" y="160">Place</text><text class="g-t" x="380" y="70" text-anchor="end">Phrase</text><text class="g-t" x="380" y="130" text-anchor="end">Body</text></svg>`
+},
+
+theory:[
+{title:`Salutogenesis`,sub:`What keeps people healthy? Aaron Antonovsky`,fig:`venn`,cap:`The sense of coherence has three parts.`,
+ core:[[`p`,`Medicine traditionally asks: what makes people ill? The Israeli-American medical sociologist Aaron Antonovsky turned the question around. He wanted to know why some people stay healthy despite great burdens. His answer was the <strong>sense of coherence</strong>: a fundamental trust that life is comprehensible, manageable and meaningful.`],
+  [`table`,[`Component`,`Key phrase`,`On the ward`],[[`Comprehensibility`,`I understand what is happening.`,`I know why the rota looks the way it does and what the restructuring means.`],[`Manageability`,`I have what I need.`,`I have colleagues, knowledge and time to handle the situation.`],[`Meaningfulness`,`It is worth it.`,`I know what I am doing this for, even on difficult days.`]]]],
+ layers:[
+  {t:`Healthy and ill are not fixed states`,d:`Background`,b:[[`fig`,`kontinuum`,`We are constantly moving between the poles.`],[`p`,`Antonovsky saw health not as a state but as a movement along a continuum. No one is completely healthy or completely ill. The interesting question is therefore: what moves me a little towards healthy today?`],[`p`,`His research began with a study of women in Israel, including survivors of concentration camps. Some of them were remarkably physically and mentally stable despite unimaginable experiences. Antonovsky wanted to understand what distinguished these women.`]]},
+  {t:`Meaningfulness is the engine`,d:`Deep Dive`,b:[[`p`,`Of the three components, Antonovsky considered meaningfulness the most important. Those who see a meaning actively seek understanding and resources. Those who see no meaning give up more quickly even under good conditions.`],[`ex`,`From nursing`,`A colleague says after a difficult night shift: "But Mrs K. managed to laugh for the first time today." That is meaningfulness in a single sentence.`],[`q`,`When did you last feel at work that your effort was worthwhile?`]]},
+  {t:`What this means for leadership`,d:`Practice`,b:[[`p`,`As a leader you can directly strengthen your team's sense of coherence:`],[`ul`,[`<strong>Comprehensibility:</strong> explain decisions, inform early, get ahead of rumours.`,`<strong>Manageability:</strong> set priorities, secure resources, address overload openly.`,`<strong>Meaningfulness:</strong> make successes visible, express thanks, keep the why of the work alive.`]],[`spark`,`A team that understands why the storm is raging rows differently.`]]},
+  {t:`Limits of the model`,d:`Critical View`,b:[[`p`,`The sense of coherence is not a personality trait you either have or don't have. It develops, especially in early years, and remains open to influence. Important: salutogenesis does not replace good working conditions. Those who work chronically understaffed need more staff, not more coherence.`]]},
+  {t:`Further Reading`,b:[[`lit`,[`Antonovsky, A. (1997): Salutogenese. Zur Entmystifizierung der Gesundheit. Tübingen: dgvt-Verlag.`,`Bengel, J., Strittmatter, R., Willmann, H. (2001): Was erhält Menschen gesund? Köln: BZgA.`]]]}
+ ]},
+{title:`The Stress Traffic Light`,sub:`Three levels of stress, by Gert Kaluza`,fig:`ampel`,cap:`Stress occurs on three levels, and each can be addressed.`,
+ core:[[`p`,`The psychologist Gert Kaluza distinguishes three levels. <strong>Stressors</strong> are external demands: staff shortages, time pressure, conflicts. <strong>Personal stress amplifiers</strong> are the inner attitudes with which we evaluate these demands. The <strong>stress response</strong> is what then happens in body, thoughts and behaviour.`],[`p`,`The good news: those who cannot change the stressors can often change the amplifiers or work on recovery.`]],
+ layers:[
+  {t:`The five stress amplifiers`,d:`Deep Dive`,b:[[`p`,`Kaluza describes five typical inner drivers. Each has a positive side and an exaggerated version. For each there is a permission phrase that offers relief.`],[`table`,[`Driver`,`Typical thought`,`Permission phrase`],[[`Be perfect!`,`Everything has to be one hundred percent.`,`Good enough is sometimes exactly right.`],[`Be liked!`,`I must not disappoint anyone.`,`I am allowed to say no and I am still valuable.`],[`Be strong!`,`I can handle this alone.`,`Accepting help is a strength.`],[`Be careful!`,`I hope nothing goes wrong.`,`I am allowed to make mistakes and learn from them.`],[`I can't!`,`This is too much for me.`,`I am more capable than I think right now.`]]],[`q`,`Which driver most often sits with you in the staff room?`],[`spark`,`"Be strong!" is a great motto for a wardrobe. For people, it is sometimes too heavy.`]]},
+  {t:`Three pathways to stress competence`,d:`Practice`,b:[[`fig`,`saeulen`,``],[`ul`,[`<strong>Instrumental:</strong> working on stressors — planning, delegating, improving processes, setting limits.`,`<strong>Mental:</strong> working on amplifiers — examining appraisals, adjusting expectations, changing perspective.`,`<strong>Regenerative:</strong> working on the response — cultivating breaks, movement, sleep, pleasure and relationships.`]],[`ex`,`From nursing`,`A ward manager notices she fills every gap in the rota herself. Instrumental: develop an absence plan with the team. Mental: expose the "be strong!" driver. Regenerative: actually keep the day off free.`]]},
+  {t:`Stress is not all bad`,d:`Background`,b:[[`p`,`The word stress goes back to the physician Hans Selye. He distinguished eustress, which activates and energises, from distress, which causes lasting harm. What matters is not whether stress is present, but whether tension is followed by relaxation.`]]},
+  {t:`Further Reading`,b:[[`lit`,[`Kaluza, G. (2018): Gelassen und sicher im Stress. Das Stresskompetenz-Buch. Berlin: Springer.`,`Kaluza, G. (2023): Stressbewältigung. Trainingsmanual zur psychologischen Gesundheitsförderung. Berlin: Springer.`]]]}
+ ]},
+{title:`The Seven Resilience Factors`,sub:`What makes up inner strength`,fig:`rad`,cap:`Seven factors frequently described in coaching practice.`,
+ core:[[`p`,`Resilience originally describes the ability of a material to return to its shape after deformation. In people it means the ability to cope with crises and grow through them. Resilience is trainable. Seven factors are frequently described in German-language practice.`],
+  [`table`,[`Factor`,`Key question`],[[`Acceptance`,`What is as it is right now?`],[`Optimism`,`What can go well?`],[`Self-efficacy`,`What can I bring about myself?`],[`Responsibility`,`What is and is not my responsibility?`],[`Network`,`Who helps me?`],[`Solution focus`,`What is the next step?`],[`Future planning`,`Where do I want to go?`]]]],
+ layers:[
+  {t:`Where resilience research comes from`,d:`Background`,b:[[`p`,`The psychologist Emmy Werner followed all children born in 1955 on the Hawaiian island of Kauai over decades. About a third of the children who grew up under very difficult conditions nevertheless developed well. A decisive protective factor: at least one reliable attachment figure.`],[`spark`,`A single person who believes in you is, statistically speaking, a superpower.`]]},
+  {t:`Self-check`,d:`Try It`,b:[[`p`,`Rate yourself on each factor on a scale of 1 to 10. Where are you strong? Where is there potential?`],[`fig`,`scale`,``],[`q`,`Which factor has carried you most this year?`]]},
+  {t:`Acceptance is not resignation`,d:`Deep Dive`,b:[[`p`,`Acceptance means acknowledging reality before changing it. Those who spend a long time resenting the unchangeable have less energy for what can be changed.`],[`quote`,`Grant me the serenity to accept the things I cannot change, the courage to change the things I can, and the wisdom to know the difference.`,`Serenity Prayer, attributed to Reinhold Niebuhr`]]},
+  {t:`Network in the leadership role`,d:`Practice`,b:[[`p`,`With the leadership role, relationships change. Colleagues become staff. This makes a network of peers all the more important: other ward managers, peer groups like this training cohort, supervision.`],[`q`,`Who do you call when things are on fire at the ward and you no longer know what to do?`]]},
+  {t:`Further Reading`,b:[[`lit`,[`Werner, E., Smith, R. (1992): Overcoming the Odds. Ithaca: Cornell University Press.`,`Heller, J. (2013): Resilienz. 7 Schlüssel für mehr innere Stärke. München: Gräfe und Unzer.`]]]}
+ ]},
+{title:`The Right Tension`,sub:`Performance and pressure`,fig:`kurve`,cap:`Performance rises with tension, but only up to a point.`,
+ core:[[`p`,`No tension, no performance — but too much tension doesn't work either. This observation goes back to the psychologists Yerkes and Dodson and is often depicted as an inverted U-curve. At the optimum we feel challenged and alive. Beyond it things tip: errors accumulate, tunnel vision sets in, recovery is no longer enough.`],[`p`,`The tricky part: on the right side of the curve, we are often the last to notice. Others see it earlier.`]],
+ layers:[
+  {t:`Where am I on the curve?`,d:`Reflection`,b:[[`ul`,[`How do I know when I am at the optimum?`,`How do I know when I have passed the peak?`,`Who notices it in me first?`]],[`spark`,`Those who are always strong eventually become a piece of furniture.`]]},
+  {t:`The curve in the team`,d:`Practice`,b:[[`p`,`Every team member has their own curve. What energises one person overwhelms another. Good leadership pays attention and distributes demands so that as many people as possible work in the optimum.`],[`ex`,`From nursing`,`The colleague who usually enjoys mentoring students reacts irritably to a new trainee. Looking at the curve: she has done three double shifts this week.`]]}
+ ]},
+{title:`Recovery That Works`,sub:`Four recovery experiences, by Sabine Sonnentag`,fig:`akku`,cap:`Recovery has four faces.`,
+ core:[[`p`,`The occupational psychologist Sabine Sonnentag researched what recovery really consists of. It is not the duration of leisure time that matters, but what happens during it. She describes four recovery experiences.`],
+  [`table`,[`Experience`,`What does this mean?`,`Example`],[[`Switch off`,`Mentally truly away from work`,`Work phone off, ward stays at the ward`],[`Relax`,`Body and mind come to rest`,`A walk, music, a bath`],[`Master new things`,`Challenges outside of work`,`Learning a language, climbing, choir`],[`Self-determine`,`I decide what I do`,`A free day with no fixed programme`]]]],
+ layers:[
+  {t:`Why switching off is so hard`,d:`Deep Dive`,b:[[`p`,`Those who are still mentally sorting rotas in the evening are physically at home but mentally on the ward. Studies show: this mental switching off is particularly closely linked to wellbeing.`],[`ex`,`Ritual`,`When getting changed at the end of a shift, consciously say: "That's it now." Sounds silly. Works.`],[`spark`,`The rota has never hugged anyone.`]]},
+  {t:`Micro-breaks on duty`,d:`Practice`,b:[[`ul`,[`Three conscious breaths with every hand disinfection.`,`Once a day, go to the window and look into the distance.`,`Drink a glass of water without doing anything else at the same time.`]],[`q`,`Which micro-break could you build in from Monday that only you will notice?`]]},
+  {t:`Further Reading`,b:[[`lit`,[`Sonnentag, S., Fritz, C. (2007): The Recovery Experience Questionnaire. Journal of Occupational Health Psychology, 12(3), 204–221.`]]]}
+ ]},
+{title:`Healthy Leadership`,sub:`SelfCare and StaffCare`,fig:`selfcare`,cap:`Those who want to care for others begin with themselves.`,
+ core:[[`p`,`The model of health-oriented leadership by Jörg Felfe and Franziska Franke distinguishes two sides. <strong>SelfCare</strong> refers to how the leader manages their own health. <strong>StaffCare</strong> refers to how they keep an eye on and promote the health of their team.`],[`p`,`The two are connected: leaders who look after themselves also tend to look after their team better. And they are role models, whether they intend to be or not.`]],
+ layers:[
+  {t:`Three building blocks on both sides`,d:`Deep Dive`,b:[[`table`,[`Building block`,`SelfCare`,`StaffCare`],[[`Awareness`,`I notice how I am doing.`,`I notice how my team is doing.`],[`Priority`,`My health matters to me.`,`My team's health matters to me.`],[`Behaviour`,`I do something about it.`,`I do something about it — for example, protecting breaks.`]]]]},
+  {t:`The role-model trap`,d:`Practice`,b:[[`p`,`A leader who never takes a break can tell their team to take breaks as often as they like. The team believes the behaviour, not the words.`],[`spark`,`If the leader is still sending emails at 9 pm, the team learns: finishing time is a rumour.`],[`q`,`What are you modelling for your team right now without meaning to?`]]},
+  {t:`Further Reading`,b:[[`lit`,[`Franke, F., Felfe, J., Pundt, A. (2014): The impact of health-oriented leadership on follower health. German Journal of Human Resource Management, 28(1–2), 139–161.`]]]}
+ ]}
+],
+
+phases:[
+{short:`Impulse`,kicker:`Phase 1 · Impulse`,title:`What keeps us healthy?`,
+ lead:`The medical sociologist Aaron Antonovsky did not ask what makes people ill, but what keeps people healthy even under pressure. His answer was the sense of coherence, made up of three parts.`,
+ fig:`venn`,cap:`Comprehensibility, Manageability, Meaningfulness`,
+ blocks:[[`ul`,[`<strong>Comprehensibility:</strong> I understand what is happening right now.`,`<strong>Manageability:</strong> I have what I need to deal with this.`,`<strong>Meaningfulness:</strong> It is worth committing to.`]],[`p`,`In the Theory Library you will find five more models: the stress traffic light, the seven resilience factors, the performance curve, recovery and healthy leadership.`]],
+ toTheory:true,spark:`Health is not a state. It is a verb.`,
+ more:[{t:`Three quick questions to get started`,b:[[`ol`,[`What am I not currently understanding, even though it affects me?`,`What am I missing right now to act well?`,`What makes my effort worthwhile, even on difficult days?`]]]}],
+ fields:[{id:`koh`,type:`text`,label:`Which of the three parts is strong for me right now? Which is shaky?`}]},
+{short:`Explore`,kicker:`Phase 2 · Explore`,title:`My Energy Landscape`,
+ impulse:`What gives me energy and what takes it away?`,
+ task:`Lay a cloth as a base. Stones represent what costs you energy. Natural materials or LEGO for what nourishes you. Proximity and distance can mean something, as can size and weight.`,
+ materials:[`Cloth`,`Stones`,`Natural materials`,`LEGO`],ways:true,build:true,
+ spark:`A battery that says "I'll charge later" isn't a battery — it's an optimist.`,
+ more:[
+  {t:`An Example`,b:[[`fig`,`landschaft`,`This is what an energy landscape might look like.`],[`p`,`A ward manager places a large stone for the rota in the centre, right next to herself. At the edge lie three green twigs: breakfast with the team, her bicycle, the colleague from the adjacent ward. As she speaks, she notices: all the sources of energy are at the edge.`]]},
+  {t:`Questions while looking`,b:[[`ul`,[`What is in the centre, what is at the edge?`,`Where is there distance, where proximity?`,`What is heavy, what is light?`,`What surprises you?`,`What is missing?`]]]},
+  {t:`Background: the energy balance`,d:`Theory`,b:[[`p`,`In the long run, we stay healthy when the balance holds: what we give in energy, we must replenish. Recovery research shows it is not just about quantity, but the quality of recovery.`],[`fig`,`akku`,``]]},
+  {t:`For the Brave`,d:`Going deeper`,b:[[`p`,`Place a stone for something that costs you energy and that you haven't talked to anyone about yet. You don't have to share it. Just place it and see where it lands.`]]}
+ ],
+ fields:[{id:`land_foto`,type:`photo`,label:`Photo of my landscape`},{id:`land_text`,type:`text`,label:`What do I notice?`}]},
+{short:`Storm`,kicker:`Phase 3 · Deepen`,title:`When the Storm Hits`,
+ impulse:`What is shaken and what holds?`,
+ task:`Bring a typical storm from your day-to-day leadership into your landscape. What shifts? What holds? What gives you early warning that things are starting to escalate?`,
+ materials:[`Ropes`,`LEGO`,`Schleich animals`],ways:true,build:true,
+ spark:`Trees with deep roots are usually quite unremarkable. Until the first storm.`,
+ more:[
+  {t:`Recognising early warning signs`,b:[[`fig`,`barometer`,`Your personal weather: what does your barometer show?`],[`table`,[`Level`,`Possible signs`],[[`Body`,`poor sleep, tension, headaches, frequent infections`],[`Thoughts`,`ruminating, "I still have to …", everything feels urgent`],[`Feelings`,`irritability, emptiness, tears over small things`],[`Behaviour`,`withdrawal, breaks disappear, more coffee, less laughter`]]]]},
+  {t:`Which animal are you in the storm?`,d:`Playful`,b:[[`p`,`Find a Schleich animal that shows how you behave in a storm. Then a second one: which animal would you like to be?`],[`ex`,`Examples from previous workshops`,`The hedgehog that curls up. The horse that gallops off. The owl that observes everything first. The bear that wants to carry everything alone.`]]},
+  {t:`The worsening question`,d:`Paradox`,b:[[`p`,`What would you need to do to guarantee that the next storm knocks you over? Collect at least five ideas. Then look: which of these are you already doing a little?`],[`spark`,`Recipe for a certain breakdown: never say no, never take a break, always know everything alone.`]]},
+  {t:`Background: stress response`,d:`Theory`,b:[[`p`,`Under acute pressure the body switches to fight or flight: pulse and blood pressure rise, focus narrows. This is helpful in the short term. It becomes problematic when recovery is absent and the alarm becomes a permanent state. More in the Theory Library under "The Stress Traffic Light".`]]}
+ ],
+ fields:[{id:`sturm_foto`,type:`photo`,label:`Photo of the storm in my landscape`},{id:`sturm_text`,type:`text`,label:`My early warning signs`}]},
+{short:`Anchor`,kicker:`Phase 4 · Deepen`,title:`My Anchor`,
+ impulse:`What holds me when the storm comes?`,
+ task:`Shape your anchor from clay. It can be completely abstract. It will dry during the lunch break and go home with you.`,
+ materials:[`Clay`],ways:false,build:`Put your phone down and sculpt now.`,
+ spark:`An anchor is the only thing on the ship that fulfils its purpose by sinking.`,
+ more:[
+  {t:`Five types of anchors`,b:[[`fig`,`anker`,``],[`ul`,[`<strong>Person:</strong> someone who knows and holds you.`,`<strong>Ritual:</strong> the coffee before a shift, the song on the drive home.`,`<strong>Place:</strong> the forest, the bench by the river, your own kitchen.`,`<strong>Phrase:</strong> "I have been through worse than this."`,`<strong>Body:</strong> breath, movement, feet on the ground.`]]]},
+  {t:`Questions about your anchor`,b:[[`ul`,[`When has this anchor held you before?`,`Who knows about it?`,`How do you remember it in everyday life?`,`Where will you put your clay object at home?`]]]},
+  {t:`Anchor on duty`,d:`Practice`,b:[[`p`,`A good anchor also works in 30 seconds between two patient rooms. Consider: which of these can you take onto the ward with you?`],[`ex`,`Idea`,`A photo of your clay anchor as your lock screen.`]]}
+ ],
+ fields:[{id:`anker_foto`,type:`photo`,label:`Photo of my anchor`},{id:`anker_text`,type:`text`,label:`My anchor stands for …`}]},
+{short:`Team`,kicker:`Phase 5 · Together`,title:`And My Team?`,
+ impulse:`How do I strengthen my team's resilience as a leader?`,
+ task:`Build a shared model in a group of three. Each person contributes a building block from their practice. Then connect the blocks into a whole and tell each other what emerged.`,
+ materials:[`LEGO`,`Ropes`,`Schleich animals`],ways:false,build:true,
+ spark:`A resilient team is not one where nothing ever goes wrong. It's one where you can talk about it.`,
+ more:[
+  {t:`The sense of coherence for the team`,b:[[`table`,[`Component`,`What I can do as a leader`],[[`Comprehensibility`,`communicate transparently, explain decisions, get ahead of rumours`],[`Manageability`,`set priorities, secure resources, address overload and escalate upward`],[`Meaningfulness`,`show appreciation, celebrate successes, make the why of the work visible`]]]]},
+  {t:`StaffCare in daily practice`,d:`Practice`,b:[[`fig`,`selfcare`,``],[`ul`,[`Protect breaks, even when things are busy.`,`After difficult situations, ask briefly: "How are you doing with that?"`,`Name what went well, not just the mistakes.`,`Model your own limits.`]]]},
+  {t:`Team rituals that strengthen`,d:`Ideas`,b:[[`ul`,[`One sentence in the handover: "What went well today?"`,`A thank-you wall in the staff room.`,`After difficult shifts: five minutes together before everyone leaves.`]],[`spark`,`Cake doesn't solve staffing problems. But it has never made one worse.`]]}
+ ],
+ fields:[{id:`team_foto`,type:`photo`,label:`Photo of our model`},{id:`team_text`,type:`text`,label:`What I'm taking for my team`}]}
+]
+};
+
+</script>
+<script>
+(function(){
+"use strict";
+var PB=window.PB;
+var SIG='<b>Dagmar Rostek</b> · dagmar@ecoaching-rostek.de · 0176 611 59 403 · rostek-dagmar.de<br>rostek organisational communication · superVision · coaching<br>AI Strategy &amp; Organisational Development';
+
+/* ---------- shared figures ---------- */
+var FIG=Object.assign({
+ interview:'<svg viewBox="0 0 440 150" role="img" aria-label="Four-step tandem interview process">'+
+   '<g><rect class="g-f1" x="6" y="40" width="96" height="62" rx="12"/><text class="g-t" x="54" y="68" text-anchor="middle">Pair</text><text class="g-s" x="54" y="86" text-anchor="middle">different theme</text></g>'+
+   '<g><rect class="g-f2" x="118" y="40" width="96" height="62" rx="12"/><text class="g-t" x="166" y="68" text-anchor="middle">A asks B</text><text class="g-s" x="166" y="86" text-anchor="middle">10 minutes</text></g>'+
+   '<g><rect class="g-f2" x="230" y="40" width="96" height="62" rx="12"/><text class="g-t" x="278" y="68" text-anchor="middle">B asks A</text><text class="g-s" x="278" y="86" text-anchor="middle">10 minutes</text></g>'+
+   '<g><rect class="g-f3" x="342" y="40" width="92" height="62" rx="12"/><text class="g-t" x="388" y="68" text-anchor="middle">Capture</text><text class="g-s" x="388" y="86" text-anchor="middle">5 minutes</text></g>'+
+   '<path class="g-line" d="M104 71h10M216 71h10M328 71h10"/><text class="g-h" x="220" y="132" text-anchor="middle">Curiosity beats expertise.</text></svg>',
+ compass:'<svg viewBox="0 0 440 300" role="img" aria-label="Question compass with eight types of systemic questions around the model">'+
+   '<circle class="g-f1" cx="220" cy="150" r="118"/><circle class="g-f2" cx="220" cy="150" r="44"/><text class="g-e" x="220" y="146" text-anchor="middle">your</text><text class="g-e" x="220" y="163" text-anchor="middle">model</text>'+
+   '<path class="g-thin" d="M220 32v74M220 194v74M102 150h74M264 150h74M137 67l52 52M251 181l52 52M303 67l-52 52M189 181l-52 52"/>'+
+   '<text class="g-t" x="220" y="22" text-anchor="middle">Meaning</text><text class="g-t" x="335" y="62">Circular</text><text class="g-t" x="350" y="154">Scaling</text><text class="g-t" x="322" y="248">Difference</text>'+
+   '<text class="g-t" x="220" y="290" text-anchor="middle">Exception</text><text class="g-t" x="118" y="248" text-anchor="end">Resource</text><text class="g-t" x="90" y="154" text-anchor="end">Hypothetical</text><text class="g-t" x="105" y="62" text-anchor="end">Paradox</text></svg>',
+ scale:'<svg viewBox="0 0 440 120" role="img" aria-label="Scale from 1 to 10 with the question about the next step">'+
+   '<path class="g-axis" d="M30 60h380"/>'+[1,2,3,4,5,6,7,8,9,10].map(function(n,i){var x=30+i*42.2;return '<circle class="'+(n===6?'g-f3':'g-paper')+'" cx="'+x+'" cy="60" r="'+(n===6?13:10)+'"/><text class="g-s" x="'+x+'" y="64" text-anchor="middle">'+n+'</text>';}).join('')+
+   '<path class="g-line" d="M241 34c14-16 30-16 42 0"/><path class="g-line" d="M279 28l5 7-8 2"/><text class="g-h" x="262" y="22" text-anchor="middle">What would it take to reach 7?</text>'+
+   '<text class="g-s" x="30" y="98">not at all</text><text class="g-s" x="410" y="98" text-anchor="end">fully</text></svg>',
+ kompass2:'<svg viewBox="0 0 440 200" role="img" aria-label="A common thread through the day: four models connected to a core">'+
+   '<path class="g-line" d="M20 150c60-80 110 30 170-40s110 50 170-20 50-60 60-70"/>'+
+   '<circle class="g-f2" cx="78" cy="118" r="16"/><circle class="g-f2" cx="190" cy="110" r="16"/><circle class="g-f2" cx="300" cy="98" r="16"/><circle class="g-solid" cx="410" cy="38" r="20"/>'+
+   '<text class="g-s" x="78" y="152" text-anchor="middle">Explore</text><text class="g-s" x="190" y="144" text-anchor="middle">Deepen</text><text class="g-s" x="300" y="132" text-anchor="middle">Together</text><text class="g-h" x="370" y="88" text-anchor="middle">my core</text></svg>'
+},PB.figs||{});
+
+var ICON={
+ self:'<svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><circle class="ico" cx="12" cy="8" r="3.5"/><path class="ico" d="M5 20c1-4 4-6 7-6s6 2 7 6"/></svg>',
+ trio:'<svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><circle class="ico" cx="12" cy="7" r="2.6"/><circle class="ico" cx="5.5" cy="10" r="2.2"/><circle class="ico" cx="18.5" cy="10" r="2.2"/><path class="ico" d="M7.5 20c.6-3 2.4-5 4.5-5s3.9 2 4.5 5M2 19c.4-2 1.6-3.5 3.5-3.5M22 19c-.4-2-1.6-3.5-3.5-3.5"/></svg>',
+ walk:'<svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><circle class="ico" cx="13" cy="4.5" r="2"/><path class="ico" d="M10 21l2-6 3 3v3M12 15l-1-5 3-2 2 3 3 1M11 10l-3 2-1 3"/></svg>',
+ hands:'<svg width="40" height="40" viewBox="0 0 24 24" aria-hidden="true"><rect class="ico" x="3" y="13" width="8" height="6" rx="1"/><rect class="ico" x="13" y="13" width="8" height="6" rx="1"/><rect class="ico" x="8" y="7" width="8" height="6" rx="1"/><path class="ico" d="M5 13v-1.5M9 13v-1.5M15 13v-1.5M19 13v-1.5M10 7V5.5M14 7V5.5"/></svg>',
+ cam:'<svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path class="ico" d="M4 8h3l2-2.5h6L17 8h3v11H4z"/><circle class="ico" cx="12" cy="13" r="3.5"/></svg>'
+};
+var WAYS=[[ICON.self,'Build alone, then share in the trio.'],[ICON.trio,'Start with a conversation among three — over coffee if you like.'],[ICON.walk,'Walk & Talk, if the weather allows.']];
+
+/* ---------- shared question library ---------- */
+var QTYPES=[
+ {t:'Meaning Questions',s:'staying with the model',b:[['p','They are directed at the model, not the person. This takes the pressure off: you talk about stones, animals and distances and still reach the core.'],['ul',['What does this part mean?','Why does this figure stand exactly here and not there?','What is the most important element in your model?','What is the first thing you notice when you look at it now?']],['ex','Tip','Point to the part you are asking about. This keeps the conversation with the model.']]},
+ {t:'Circular Questions',s:'looking through others\' eyes',b:[['p','They bring other people\'s perspectives into the conversation without those people being present. This often opens more than any direct question.'],['ul',['What would your team say if they saw your model?','Who would be most surprised if you implemented this?','How would your best colleague notice that something has changed?','How would the nursing director describe this model?']]]},
+ {t:'Scaling Questions',s:'making differences measurable',b:[['fig','scale','Scales make small steps visible.'],['ul',['Where are you right now, from 1 to 10?','What makes the difference between a 5 and a 6?','Where were you a year ago?','Which number would be good enough?']],['ex','Tip','Never ask why it isn\'t a 10. Ask why it is already a 4.']]},
+ {t:'Difference Questions',s:'What is different when …?',b:[['p','They direct attention to change and movement rather than states.'],['ul',['What would be different if this part were missing?','When is it better, when worse?','What distinguishes a good shift from a difficult one?']]]},
+ {t:'Exception Questions',s:'when the problem was smaller',b:[['p','No problem is always the same size. Exceptions show what already works.'],['ul',['When was it easier before?','What did you do differently then?','Who was there at the time?']]]},
+ {t:'Resource Questions',s:'making strengths visible',b:[['ul',['What has helped you in a similar situation before?','Who is behind you?','Which strength shows up in your model?','What are you proud of this year?']]]},
+ {t:'Hypothetical Questions',s:'the miracle question and its cousins',b:[['quote','Suppose tonight a miracle happens and the problem is solved. What would you notice first tomorrow morning?','after Steve de Shazer and Insoo Kim Berg'],['ul',['Suppose it has worked out in a year\'s time: what will you have done?','What would you do if you were not afraid?']]]},
+ {t:'Paradoxical Questions',s:'with a wink',b:[['p','They ask for the opposite of what is desired. This loosens things up, brings laughter, and reveals patterns surprisingly clearly.'],['ul',['What would you need to do to guarantee things get worse?','How could you best sabotage your own model?','What should you on no account change so that everything stays as it is?']],['ex','Tip','Afterwards always ask: and which of these are you already doing a little?']]},
+ {t:'Future Questions',s:'finding the first step',b:[['ul',['What will you be saying about today in three months\' time?','What is the smallest step you can take on Monday?','How will you know it is working?']]]}
+];
+var HALTUNG=[['p','Asking systemically means: staying curious, not already knowing. The answer belongs to the other person.'],
+ ['ul',['<strong>Not-knowing:</strong> You are a guest in the other person\'s model, not an expert.','<strong>Avoid "why":</strong> "Why" can quickly sound like a demand for justification. Better: What, How, What for, What would show.','<strong>Hold pauses:</strong> The second answer after a silence is often the more important one.','<strong>Summarise:</strong> "Have I understood correctly that …?" shows that you are listening.','<strong>No advice:</strong> Even good ideas stay in your pocket today.']],
+ ['spark','The best question is the one you genuinely don\'t know the answer to.']];
+var QCARDS=[];
+QTYPES.forEach(function(q){var arr=[];q.b.forEach(function(b){if(b[0]==='ul')arr=arr.concat(b[1]);});arr.slice(0,2).forEach(function(x){QCARDS.push([q.t,x]);});});
+(PB.questions||[]).forEach(function(x){QCARDS.push(['Your Theme',x]);});
+
+/* ---------- screens ---------- */
+var SCREENS=[{type:'start',short:'Start'},{type:'theory',short:'Theory'}]
+ .concat(PB.phases.map(function(p){return {type:'phase',short:p.short,p:p};}))
+ .concat([{type:'kern',short:'Core'},{type:'interview',short:'Conversation'},{type:'end',short:'Closing'}]);
+var F_START=[{id:'name',type:'line',label:'Your Name'},{id:'frage',type:'text',label:'What would I like to clarify for myself today?'}];
+var F_THEORY=[{id:'theorie',type:'text',label:'What am I taking from the theory? What surprised me?'}];
+var F_KERN=[{id:'kern',type:'text',label:'In one sentence'},{id:'symbol_foto',type:'photo',label:'My symbol for today (optional)'},{id:'schritt',type:'text',label:'My first step from Monday'},{id:'unterstuetzung',type:'text',label:'Who supports me?'},{id:'merken',type:'text',label:'How will I know it\'s working?'}];
+var F_INT=[{id:'erzaehlen',type:'text',label:'What I\'d like to share'},{id:'lieblingsfrage',type:'text',label:'My favourite question for the interview'},{id:'neu',type:'text',label:'What came up new in the interview'}];
+function fieldsOf(s){ if(s.type==='start')return F_START; if(s.type==='theory')return F_THEORY; if(s.type==='kern')return F_KERN; if(s.type==='interview')return F_INT; if(s.type==='phase')return s.p.fields||[]; return []; }
+var ALL_PHOTO_IDS=[]; SCREENS.forEach(function(s){fieldsOf(s).forEach(function(f){if(f.type==='photo')ALL_PHOTO_IDS.push(f.id);});});
+
+/* ---------- storage ---------- */
+var KEY='pb-'+PB.key+'-v2', state={step:0,fields:{}};
+try{var raw=localStorage.getItem(KEY); if(raw){var s=JSON.parse(raw); if(s&&s.fields)state=s;}}catch(e){}
+if(typeof state.step!=='number'||state.step<0||state.step>=SCREENS.length)state.step=0;
+var savedEl=document.getElementById('saved'),savedT,writeT;
+function persist(){clearTimeout(writeT);writeT=setTimeout(function(){try{localStorage.setItem(KEY,JSON.stringify(state));flash('Saved');}catch(e){flash('Could not save');}},300);}
+function flash(t){savedEl.textContent=t;savedEl.style.opacity=1;clearTimeout(savedT);savedT=setTimeout(function(){savedEl.style.opacity=0;},1600);}
+var DB=(function(){var p=null;function open(){if(!p){p=new Promise(function(res,rej){try{var r=indexedDB.open('pb-resilience',1);r.onupgradeneeded=function(){r.result.createObjectStore('photos');};r.onsuccess=function(){res(r.result);};r.onerror=function(){rej(r.error);};}catch(e){rej(e);}});}return p;}
+ function tx(m,fn){return open().then(function(db){return new Promise(function(res,rej){var rq=fn(db.transaction('photos',m).objectStore('photos'));rq.onsuccess=function(){res(rq.result);};rq.onerror=function(){rej(rq.error);};});});}
+ return{get:function(k){return tx('readonly',function(s){return s.get(k);}).then(function(v){return v||[];}).catch(function(){return[];});},set:function(k,v){return tx('readwrite',function(s){return s.put(v,k);});},clear:function(){return tx('readwrite',function(s){return s.clear();}).catch(function(){});}};})();
+var PHOTOS={};
+Promise.all(ALL_PHOTO_IDS.map(function(id){return DB.get(id).then(function(l){PHOTOS[id]=l;});}));
+
+/* ---------- helpers ---------- */
+function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
+var SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+var main=document.getElementById('main');
+function compress(file){return new Promise(function(res,rej){var fr=new FileReader();fr.onload=function(){var img=new Image();img.onload=function(){var k=Math.min(1,1400/Math.max(img.naturalWidth,img.naturalHeight)),c=document.createElement('canvas');c.width=Math.round(img.naturalWidth*k);c.height=Math.round(img.naturalHeight*k);c.getContext('2d').drawImage(img,0,0,c.width,c.height);res({src:c.toDataURL('image/jpeg',0.82),w:c.width,h:c.height});};img.onerror=rej;img.src=fr.result;};fr.onerror=rej;fr.readAsDataURL(file);});}
+
+/* ---------- rich content ---------- */
+function fig(name,cap){var svg=FIG[name];if(!svg)return'';return'<figure class="fig">'+svg+(cap?'<figcaption>'+cap+'</figcaption>':'')+'</figure>';}
+function spark(t){return'<div class="spark"><span>Thought Leap</span><p>'+t+'</p></div>';}
+function blocks(arr,open){return'<div class="rt">'+(arr||[]).map(function(b){
+  switch(b[0]){
+   case 'p':return'<p>'+b[1]+'</p>';
+   case 'h':return'<h4>'+b[1]+'</h4>';
+   case 'ul':return'<ul>'+b[1].map(function(x){return'<li>'+x+'</li>';}).join('')+'</ul>';
+   case 'ol':return'<ol>'+b[1].map(function(x){return'<li>'+x+'</li>';}).join('')+'</ol>';
+   case 'quote':return'<blockquote><p>'+b[1]+'</p>'+(b[2]?'<cite>'+b[2]+'</cite>':'')+'</blockquote>';
+   case 'ex':return'<div class="ex"><span class="ex-l">'+b[1]+'</span><p>'+b[2]+'</p></div>';
+   case 'q':return'<p class="refl">'+b[1]+'</p>';
+   case 'fig':return fig(b[1],b[2]);
+   case 'spark':return spark(b[1]);
+   case 'lit':return'<ul class="lit">'+b[1].map(function(x){return'<li>'+x+'</li>';}).join('')+'</ul>';
+   case 'table':return'<div class="tbl"><table><thead><tr>'+b[1].map(function(h){return'<th>'+h+'</th>';}).join('')+'</tr></thead><tbody>'+b[2].map(function(r){return'<tr>'+r.map(function(c){return'<td>'+c+'</td>';}).join('')+'</tr>';}).join('')+'</tbody></table></div>';
+   case 'layers':return layers(b[1],open);
+  }return'';}).join('')+'</div>';}
+function layers(arr,open){return'<div class="layers">'+(arr||[]).map(function(l){return'<details class="layer"'+(open?' open':'')+'><summary><span>'+l.t+'</span>'+(l.d?'<span class="depth">'+l.d+'</span>':'')+'</summary><div class="layer-body">'+blocks(l.b,open)+'</div></details>';}).join('')+'</div>';}
+function modelCard(m,i,open){return'<details class="model"'+(open?' open':'')+'><summary><span class="m-head"><span class="m-n">'+(i+1)+'</span><span class="m-t"><b>'+m.title+'</b><small>'+m.sub+'</small></span></span></summary><div class="model-body">'+(m.fig?fig(m.fig,m.cap):'')+blocks(m.core,open)+layers(m.layers,open)+'</div></details>';}
+function theoryLib(open){return'<div class="lib">'+PB.theory.map(function(m,i){return modelCard(m,i,open);}).join('')+'<div class="lib-end"></div></div>';}
+function qLib(open){return'<div class="lib">'+QTYPES.map(function(q,i){return'<details class="model"'+(open?' open':'')+'><summary><span class="m-head"><span class="m-n">'+(i+1)+'</span><span class="m-t"><b>'+q.t+'</b><small>'+q.s+'</small></span></span></summary><div class="model-body">'+blocks(q.b,open)+'</div></details>';}).join('')+
+ '<details class="model"'+(open?' open':'')+'><summary><span class="m-head"><span class="m-n">+</span><span class="m-t"><b>The Art of Good Questions</b><small>how great questions work</small></span></span></summary><div class="model-body">'+blocks(HALTUNG,open)+'</div></details><div class="lib-end"></div></div>';}
+
+/* ---------- fields ---------- */
+function fieldHTML(f){var v=state.fields[f.id]||'';
+ if(f.type==='line')return'<div class="field"><label for="f-'+f.id+'">'+esc(f.label)+'</label><input type="text" id="f-'+f.id+'" data-key="'+f.id+'" value="'+esc(v)+'" autocomplete="name"></div>';
+ if(f.type==='photo')return'<div class="field"><span class="flabel">'+esc(f.label)+'</span><div class="thumbs" id="t-'+f.id+'"></div><input class="sr" type="file" accept="image/*" multiple id="p-'+f.id+'" data-photo="'+f.id+'"><label class="photo-btn" for="p-'+f.id+'">'+ICON.cam+'<span>Take or select a photo</span></label></div>';
+ return'<div class="field"><label for="f-'+f.id+'">'+esc(f.label)+'</label><textarea id="f-'+f.id+'" data-key="'+f.id+'" rows="4">'+esc(v)+'</textarea>'+(SR?'<div><button class="mini" type="button" data-dictate="f-'+f.id+'">Dictate</button></div>':'')+'</div>';}
+function capture(fs,label){return fs.length?'<section class="capture">'+(label?'<h2 class="label">'+label+'</h2>':'')+fs.map(fieldHTML).join('')+'</section>':'';}
+
+var cardIdx=0;
+function cardsHTML(){var q=QCARDS[cardIdx];return'<section class="cards" aria-label="Question Cards"><h2 class="label">Question Cards</h2><div class="card"><span class="type">'+q[0]+'</span><p class="q">'+q[1]+'</p><div class="card-nav"><button class="mini" type="button" data-card="-1">Previous</button><span>'+(cardIdx+1)+' / '+QCARDS.length+'</span><button class="mini" type="button" data-card="1">Next</button></div></div></section>';}
+
+/* ---------- phase content (shared by screen and print) ---------- */
+function phaseBody(p,open){var h='';
+ if(p.lead)h+='<p class="lead">'+p.lead+'</p>';
+ if(p.fig)h+=fig(p.fig,p.cap);
+ if(p.blocks)h+=blocks(p.blocks,open);
+ if(p.impulse)h+='<p class="impulse">'+p.impulse+'</p>';
+ if(p.task){h+='<section class="task"><h2 class="label">Build Task</h2><p>'+p.task+'</p><small style="display:block;margin:6px 0 2px;color:var(--muted);font-style:italic">Without a workshop: sketch or describe in words what you would have built — the core questions remain the same.</small>'+(p.materials&&p.materials.length?'<div class="chips" style="margin-top:8px">'+p.materials.map(function(m){return'<span class="chip">'+m+'</span>';}).join('')+'</div>':'')+'</section>';}
+ if(p.ways)h+='<section><h2 class="label">How you can work</h2><ul class="ways">'+WAYS.map(function(w){return'<li>'+w[0]+'<span>'+w[1]+'</span></li>';}).join('')+'</ul></section>';
+ if(p.spark)h+=spark(p.spark);
+ if(p.more&&p.more.length)h+='<details class="more"'+(open?' open':'')+'><summary>More Impulses</summary><div class="more-body">'+layers(p.more,open)+'</div></details>';
+ return h;}
+
+/* ---------- render ---------- */
+function renderProgress(){var pr=document.getElementById('progress');pr.style.gridTemplateColumns='repeat('+SCREENS.length+',minmax(0,1fr))';
+ pr.innerHTML=SCREENS.map(function(s,i){return'<button class="seg '+(i===state.step?'now':(i<state.step?'done':''))+'" type="button" data-go="'+i+'" aria-label="'+esc(s.short)+'"'+(i===state.step?' aria-current="step"':'')+'><span></span></button>';}).join('');}
+function render(){stopDictate();var s=SCREENS[state.step],h='<article class="screen">';
+ if(s.type==='start'){
+  h+='<p class="kicker">Welcome</p><h1>'+PB.title+'</h1><p class="impulse">'+PB.tagline+'</p>';
+  h+='<p class="lead">Dagmar guides you through the phases. Here you\'ll find impulses, theory, build tasks and space for your thoughts. Everything with a + can be expanded. The deeper you click, the deeper it goes. What you enter stays on this device.</p>';
+  h+='<ol class="steps3"><li><b>Read</b><span>Impulse and build task. Theory, as much as you like.</span></li><li><b>Build</b><span>With the materials in the room, alone or in a group of three.</span></li><li><b>Capture</b><span>A photo and a few thoughts.</span></li></ol>';
+  h+='<details class="more"><summary>Exploring without a workshop?</summary><div class="more-body"><div class="layer-body"><p>This playbook was created as a companion to a one-day in-person workshop — with LEGO®, clay, stones and other materials, facilitated by Dagmar Rostek. If you\'re exploring it on your own: building is optional. Read the impulses, ask yourself the questions, capture your thoughts in the fields. The theory library and all reflection questions work completely without materials — including the PDF at the end.</p><p>For the live workshop format with your group or your team: <a href="mailto:dagmar@ecoaching-rostek.de">dagmar@ecoaching-rostek.de</a></p></div></div></details>';
+  h+='<p class="hint">Tip: Instead of typing, you can use the microphone on your phone\'s keyboard.</p>';
+  if(PB.startSpark)h+=spark(PB.startSpark);
+  h+=capture(F_START);
+ } else if(s.type==='theory'){
+  h+='<p class="kicker">Theory Library</p><h1>For Further Reading</h1><p class="lead">'+PB.theoryLead+'</p>'+theoryLib(false);
+  if(PB.theorySpark)h+=spark(PB.theorySpark);
+  h+=capture(F_THEORY);
+ } else if(s.type==='phase'){
+  var p=s.p;h+='<p class="kicker">'+p.kicker+'</p><h1>'+p.title+'</h1>'+phaseBody(p,false);
+  if(p.toTheory)h+='<button class="mini to-theory" type="button" data-go="1">To Theory Library</button>';
+  if(p.build)h+='<div class="pause">'+ICON.hands+'<p>'+(typeof p.build==='string'?p.build:'Put your phone down and build now.')+'<small>Then document here what emerged.</small></p></div>';
+  h+=capture(p.fields||[],p.build?'Capture':'');
+ } else if(s.type==='kern'){
+  h+='<p class="kicker">My Core</p><h1>What I\'m taking with me</h1><p class="lead">Scroll back through your entries. What runs through your day like a common thread?</p>'+fig('kompass2','Many models become one sentence.');
+  if(PB.kernSpark)h+=spark(PB.kernSpark);
+  h+=capture(F_KERN);
+ } else if(s.type==='interview'){
+  h+='<p class="kicker">In Conversation</p><h1>Let yourself be asked</h1><p class="lead">Interview each other in pairs, with someone from a different theme. Prepare what you\'d like to share. The question cards and question library help you when you\'re asking.</p>'+fig('interview','How the interview works.')+cardsHTML();
+  h+='<section><h2 class="label">Question Library</h2>'+fig('compass','Nine directions from which to look at a model.')+qLib(false)+'</section>';
+  h+=capture(F_INT);
+ } else {
+  h+='<p class="kicker">Closing</p><h1>Your Playbook</h1><p class="lead">Here you can see all your entries at a glance. Save the playbook as PDF before you leave. The PDF contains all content fully expanded, with all diagrams, your texts and photos.</p>';
+  h+='<div class="actions"><button class="primary" type="button" id="pdf">Create PDF</button><div class="howto"><p><b>How to:</b> In the print dialog, select \'Save as PDF\' as destination.</p><p>On iPhone: in the print dialog, tap Share and select \'Save to Files\'.</p></div>'+
+   '<button class="ghost" type="button" id="reset">Delete all entries</button><div class="confirm" id="confirm" hidden><p>Delete all texts and photos on this device?</p><button class="danger" type="button" id="reset-yes">Yes, delete</button><button class="mini" type="button" id="reset-no">Cancel</button></div></div>';
+  h+='<p class="hint">Your entries are stored only in this browser on this device. No one else can see them.</p><div class="sum" id="sum"></div>';
+ }
+ h+='</article>';main.innerHTML=h;renderProgress();
+ document.getElementById('prev').hidden=state.step===0;
+ var nx=document.getElementById('next');nx.hidden=state.step===SCREENS.length-1;nx.textContent=state.step===SCREENS.length-2?'To Closing':'Next →';
+ fieldsOf(s).forEach(function(f){if(f.type==='photo')loadThumbs(f.id);});
+ if(s.type==='end')renderSummary();}
+function loadThumbs(id){DB.get(id).then(function(l){PHOTOS[id]=l;var el=document.getElementById('t-'+id);if(!el)return;el.innerHTML=l.map(function(ph,i){return'<div class="thumb"><img src="'+ph.src+'" alt="Photo '+(i+1)+'"><button type="button" data-del="'+id+'" data-i="'+i+'">Remove</button></div>';}).join('');});}
+function renderSummary(){var h='';SCREENS.forEach(function(s){var fs=fieldsOf(s);if(!fs.length)return;var inner='';fs.forEach(function(f){if(f.id==='name')return;if(f.type==='photo'){var l=PHOTOS[f.id]||[];if(l.length)inner+='<div class="sum-item"><h3>'+esc(f.label)+'</h3><div class="thumbs">'+l.map(function(ph){return'<div class="thumb"><img src="'+ph.src+'" alt=""></div>';}).join('')+'</div></div>';}else{var v=(state.fields[f.id]||'').trim();if(v)inner+='<div class="sum-item"><h3>'+esc(f.label)+'</h3><p>'+esc(v)+'</p></div>';}});
+ var title=s.type==='phase'?s.p.title:({start:'Arrival',theory:'Theory',kern:'My Core',interview:'In Conversation'})[s.type];h+='<section class="sum-block"><h2>'+title+'</h2>'+(inner||'<p class="empty">Nothing entered yet.</p>')+'</section>';});document.getElementById('sum').innerHTML=h;}
+
+/* ---------- print document ---------- */
+function pEntries(fs){if(!fs.length)return'';return'<div class="p-entries"><h3>My Notes</h3>'+fs.map(function(f){if(f.id==='name')return'';if(f.type==='photo'){var l=PHOTOS[f.id]||[];return'<div class="p-entry"><h4>'+esc(f.label)+'</h4>'+(l.length?'<div class="p-photos">'+l.map(function(ph){return'<img src="'+ph.src+'" alt="">';}).join('')+'</div>':'<div class="p-blank"></div>')+'</div>';}var v=(state.fields[f.id]||'').trim();return'<div class="p-entry"><h4>'+esc(f.label)+'</h4>'+(v?'<p>'+esc(v)+'</p>':'<div class="p-blank"></div>')+'</div>';}).join('')+'</div>';}
+function buildPrint(){var name=(state.fields.name||'').trim(),date=new Date().toLocaleDateString('en-GB',{day:'2-digit',month:'long',year:'numeric'});
+ var h='<section class="p-cover"><div><p class="p-kicker">My Playbook · LEGO® Serious Play® Workshop</p><h1>'+PB.title+'</h1><p class="impulse">'+PB.tagline+'</p></div>'+fig(PB.coverFig||'kompass2','')+'<div>'+(name?'<p class="p-name">'+esc(name)+'</p>':'')+'<p class="lead">'+date+'</p></div><div class="p-sig">'+SIG+'</div></section>';
+ h+='<section class="p-sec"><p class="p-kicker">Arrival</p><h2>My question for today</h2>'+pEntries(F_START)+'</section>';
+ h+='<section class="p-sec"><p class="p-kicker">Theory Library</p><h2>For Further Reading</h2><p class="lead">'+PB.theoryLead+'</p>'+theoryLib(true)+(PB.theorySpark?spark(PB.theorySpark):'')+pEntries(F_THEORY)+'</section>';
+ PB.phases.forEach(function(p){h+='<section class="p-sec"><p class="p-kicker">'+p.kicker+'</p><h2>'+p.title+'</h2>'+phaseBody(p,true)+pEntries(p.fields||[])+'</section>';});
+ h+='<section class="p-sec"><p class="p-kicker">My Core</p><h2>What I\'m taking with me</h2>'+fig('kompass2','')+(PB.kernSpark?spark(PB.kernSpark):'')+pEntries(F_KERN)+'</section>';
+ h+='<section class="p-sec"><p class="p-kicker">In Conversation</p><h2>Let yourself be asked</h2>'+fig('interview','')+fig('compass','')+qLib(true)+((PB.questions&&PB.questions.length)?'<div class="ex"><span class="ex-l">Questions for your theme</span><p>'+PB.questions.join('<br>')+'</p></div>':'')+pEntries(F_INT)+'</section>';
+ h+='<section class="p-end"><p class="big">'+(PB.endLine||'Thank you for a day with your hands in thinking.')+'</p>'+spark(PB.endSpark||'Those who have built something can also rebuild it.')+'<div class="p-sig">'+SIG+'</div></section>';
+ document.getElementById('print').innerHTML=h;}
+window.addEventListener('beforeprint',buildPrint);
+
+/* ---------- dictation ---------- */
+var rec=null,recBtn=null;
+function stopDictate(){if(rec){try{rec.stop();}catch(e){}}}
+function toggleDictate(btn){if(rec){stopDictate();return;}var ta=document.getElementById(btn.getAttribute('data-dictate'));if(!ta)return;try{rec=new SR();}catch(e){return;}
+ recBtn=btn;rec.lang='en-GB';rec.continuous=true;rec.interimResults=false;
+ rec.onresult=function(e){for(var i=e.resultIndex;i<e.results.length;i++){if(e.results[i].isFinal){var t=e.results[i][0].transcript.trim();if(!t)continue;ta.value=ta.value?(ta.value.replace(/\s+$/,'')+' '+t):t;ta.dispatchEvent(new Event('input',{bubbles:true}));}}};
+ rec.onend=function(){if(recBtn){recBtn.classList.remove('on');recBtn.textContent='Dictate';}rec=null;recBtn=null;};rec.onerror=function(){};
+ try{rec.start();btn.classList.add('on');btn.textContent='Stop';}catch(e){rec=null;}}
+
+/* ---------- events ---------- */
+function go(i){if(i<0||i>=SCREENS.length)return;state.step=i;persist();render();window.scrollTo(0,0);}
+document.getElementById('prev').addEventListener('click',function(){go(state.step-1);});
+document.getElementById('next').addEventListener('click',function(){go(state.step+1);});
+document.addEventListener('click',function(e){var b=e.target.closest('[data-go]');if(b)go(+b.getAttribute('data-go'));});
+main.addEventListener('input',function(e){var k=e.target.getAttribute('data-key');if(!k)return;state.fields[k]=e.target.value;persist();});
+main.addEventListener('change',function(e){var id=e.target.getAttribute('data-photo');if(!id)return;var files=[].slice.call(e.target.files||[]);e.target.value='';if(!files.length)return;flash('Saving photo…');
+ DB.get(id).then(function(l){return Promise.all(files.map(compress)).then(function(add){l=l.concat(add);return DB.set(id,l);});}).then(function(){flash('Saved');loadThumbs(id);}).catch(function(){flash('Could not save photo');});});
+main.addEventListener('click',function(e){var t=e.target.closest('button');if(!t)return;
+ if(t.hasAttribute('data-dictate'))return toggleDictate(t);
+ if(t.hasAttribute('data-card')){cardIdx=(cardIdx+(+t.getAttribute('data-card'))+QCARDS.length)%QCARDS.length;var c=main.querySelector('.cards');if(c)c.outerHTML=cardsHTML();return;}
+ if(t.hasAttribute('data-del')){var id=t.getAttribute('data-del'),i=+t.getAttribute('data-i');DB.get(id).then(function(l){l.splice(i,1);return DB.set(id,l);}).then(function(){loadThumbs(id);flash('Photo removed');});return;}
+ if(t.id==='pdf'){Promise.all(ALL_PHOTO_IDS.map(function(id){return DB.get(id).then(function(l){PHOTOS[id]=l;});})).then(function(){buildPrint();setTimeout(function(){window.print();},150);});return;}
+ if(t.id==='reset'){document.getElementById('confirm').hidden=false;return;}
+ if(t.id==='reset-no'){document.getElementById('confirm').hidden=true;return;}
+ if(t.id==='reset-yes'){state={step:0,fields:{}};PHOTOS={};try{localStorage.removeItem(KEY);}catch(err){}DB.clear().then(function(){render();window.scrollTo(0,0);flash('All entries deleted');});}
+});
+
+document.getElementById('brand').textContent=PB.brand;
+document.getElementById('sig-foot').innerHTML=SIG;
+render();
+})();
+</script>
+</div>
+</body>
+</html>

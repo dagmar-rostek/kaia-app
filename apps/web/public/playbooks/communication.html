@@ -1,0 +1,675 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Playbook Communication and Conflict</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;1,9..144,300;1,9..144,400&family=Instrument+Sans:wght@400;500;600&family=Caveat:wght@500&display=swap">
+<style>
+/* Layout: one screen per phase, narrow reading column; depth lives in nested "+" layers; print view renders everything opened */
+:root{
+  --bg:#F7F3F4; --surface:#FFFFFF; --ink:#1C221E; --muted:#56635A; --line:#DCE0DA;
+  --accent:#8A3B52; --accent-soft:#F2E2E7; --accent-ink:#FFFFFF; --danger:#A3412F; --note:#FFF6C9; --note-ink:#3B3418;
+  --display:"Fraunces", Georgia, "Times New Roman", serif;
+  --body:"Instrument Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --hand:"Caveat", "Segoe Print", "Bradley Hand", cursive;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#161113; --surface:#1A1F1C; --ink:#E7ECE7; --muted:#A3AEA6; --line:#2E3631;
+    --accent:#E59DB1; --accent-soft:#2D1B21; --accent-ink:#101411; --danger:#E8907E; --note:#3A3520; --note-ink:#F4E9B8; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#161113; --surface:#1A1F1C; --ink:#E7ECE7; --muted:#A3AEA6; --line:#2E3631;
+  --accent:#E59DB1; --accent-soft:#2D1B21; --accent-ink:#101411; --danger:#E8907E; --note:#3A3520; --note-ink:#F4E9B8; color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.6}
+img{max-width:100%;display:block}
+[hidden]{display:none!important}
+button{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:6px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+#print{display:none}
+
+/* top */
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);background:var(--bg);z-index:10}
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);border-bottom:1px solid var(--line);
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:12px 8px}
+.top-in{max-width:680px;margin:0 auto;display:flex;flex-direction:column;gap:8px}
+.top-row{display:flex;justify-content:space-between;align-items:baseline;gap:12px}
+.brand{font-family:var(--display);font-size:17px;font-weight:500}
+.saved{font-size:13px;color:var(--muted);transition:opacity .4s}
+.progress{display:grid;gap:4px}
+.seg{height:20px;border:0;padding:0;background:none;cursor:pointer;display:flex;align-items:center}
+.seg span{display:block;width:100%;height:4px;border-radius:2px;background:var(--line);transition:background .25s}
+.seg.done span{background:var(--accent);opacity:.45}
+.seg.now span{background:var(--accent);height:6px}
+
+main{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:32px 40px}
+.screen{max-width:680px;margin:0 auto;display:flex;flex-direction:column;gap:26px;animation:fade .35s ease both}
+@keyframes fade{from{opacity:.4;transform:translateY(6px)}to{opacity:1;transform:none}}
+.kicker{margin:0;font-size:13px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:var(--accent)}
+h1{margin:-16px 0 0;font-family:var(--display);font-weight:300;font-size:clamp(34px,8vw,50px);line-height:1.06;letter-spacing:-.01em;text-wrap:balance}
+.lead{margin:0;color:var(--muted);max-width:62ch;text-wrap:pretty}
+.impulse{margin:0;font-family:var(--display);font-style:italic;font-weight:400;font-size:clamp(23px,5.4vw,30px);line-height:1.28;color:var(--accent);text-wrap:balance}
+.label{margin:0 0 10px;font-size:13px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:var(--muted)}
+.task p{margin:0}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.chip{font-size:14px;padding:5px 13px;border-radius:999px;background:var(--accent-soft);color:var(--ink)}
+.ways{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px}
+.ways li{display:flex;gap:12px;align-items:flex-start}
+.ways svg{flex:none;margin-top:3px}
+.ico{stroke:var(--accent);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+
+/* rich text blocks */
+.rt{display:flex;flex-direction:column;gap:14px}
+.rt p,.rt ul,.rt ol{margin:0}
+.rt ul,.rt ol{padding-left:22px;display:flex;flex-direction:column;gap:6px}
+.rt h4{margin:6px 0 0;font-family:var(--display);font-weight:500;font-size:20px;line-height:1.25}
+.rt strong{font-weight:600}
+.rt blockquote{margin:0;padding:4px 0 4px 18px;border-left:2px solid var(--accent);font-family:var(--display);font-style:italic;font-size:19px;line-height:1.4}
+.rt blockquote p{margin:0}
+.rt cite{display:block;margin-top:6px;font-family:var(--body);font-style:normal;font-size:14px;color:var(--muted)}
+.ex{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px 18px;display:flex;flex-direction:column;gap:6px}
+.ex-l{font-size:12px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:var(--accent)}
+.ex p{margin:0}
+.refl{margin:0;padding:14px 18px;border-radius:14px;background:var(--accent-soft);font-weight:500}
+.refl::before{content:"For Reflection";display:block;font-size:12px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:var(--accent);margin-bottom:4px}
+.lit{list-style:none;padding:0!important;font-size:15px;color:var(--muted)}
+.lit li{padding-left:18px;position:relative}
+.lit li::before{content:"";position:absolute;left:0;top:.7em;width:8px;height:1px;background:var(--muted)}
+.tbl{overflow-x:auto}
+.tbl table{border-collapse:collapse;width:100%;font-size:15px}
+.tbl th,.tbl td{text-align:left;vertical-align:top;padding:9px 10px;border-bottom:1px solid var(--line)}
+.tbl th{font-size:12px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);font-weight:600}
+
+/* figures */
+.fig{margin:0;display:flex;flex-direction:column;gap:8px;align-items:center;padding:18px 12px 14px;background:var(--surface);border:1px solid var(--line);border-radius:18px}
+.fig svg{width:100%;max-width:440px;height:auto;overflow:visible}
+.fig figcaption{font-size:14px;color:var(--muted);text-align:center;max-width:52ch}
+.g-line{fill:none;stroke:var(--accent);stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.g-thin{fill:none;stroke:var(--muted);stroke-width:1;stroke-dasharray:3 4}
+.g-axis{fill:none;stroke:var(--muted);stroke-width:1.2}
+.g-f1{fill:var(--accent);fill-opacity:.1;stroke:var(--accent);stroke-width:1.5}
+.g-f2{fill:var(--accent);fill-opacity:.24;stroke:var(--accent);stroke-width:1.5}
+.g-f3{fill:var(--accent);fill-opacity:.45;stroke:var(--accent);stroke-width:1.5}
+.g-solid{fill:var(--accent)}
+.g-paper{fill:var(--surface);stroke:var(--line);stroke-width:1.2}
+.g-t{fill:var(--ink);font-family:var(--body);font-size:13px;font-weight:600}
+.g-s{fill:var(--muted);font-family:var(--body);font-size:11px}
+.g-e{fill:var(--accent);font-family:var(--display);font-style:italic;font-size:14px}
+.g-h{fill:var(--accent);font-family:var(--hand);font-size:19px}
+
+/* layers */
+details.more,details.layer,details.model{border-top:1px solid var(--line)}
+details.more:last-of-type{border-bottom:1px solid var(--line)}
+details.more>summary,details.layer>summary,details.model>summary{list-style:none;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:14px;padding:14px 0}
+details>summary::-webkit-details-marker{display:none}
+details.more>summary::after,details.layer>summary::after,details.model>summary::after{content:"+";flex:none;font-size:24px;line-height:1;color:var(--accent);transition:transform .2s}
+details[open].more>summary::after,details[open].layer>summary::after,details[open].model>summary::after{transform:rotate(45deg)}
+details.more>summary{font-weight:600}
+.more-body{padding-bottom:18px;display:flex;flex-direction:column;gap:16px}
+details.layer{margin-left:0}
+details.layer>summary{font-weight:500;font-size:16px;padding:12px 0}
+details.layer>summary .depth{font-size:12px;color:var(--muted);font-weight:400;margin-left:auto;margin-right:10px;white-space:nowrap}
+.layer-body{padding:2px 0 18px 14px;border-left:2px solid var(--accent-soft);display:flex;flex-direction:column;gap:14px}
+.layers{display:flex;flex-direction:column;border-bottom:1px solid var(--line)}
+
+/* theory library */
+.lib{display:flex;flex-direction:column}
+details.model>summary{padding:18px 0;align-items:flex-start}
+.m-head{display:flex;gap:14px;align-items:flex-start;min-width:0}
+.m-n{flex:none;width:34px;height:34px;border-radius:50%;background:var(--accent-soft);color:var(--accent);display:flex;align-items:center;justify-content:center;font-family:var(--display);font-size:17px}
+.m-t{display:flex;flex-direction:column;gap:2px;min-width:0}
+.m-t b{font-family:var(--display);font-weight:400;font-size:22px;line-height:1.2}
+.m-t small{font-size:15px;color:var(--muted)}
+.model-body{padding:0 0 22px;display:flex;flex-direction:column;gap:16px}
+.lib-end{border-top:1px solid var(--line)}
+.to-theory{align-self:flex-start}
+
+/* spark */
+.spark{position:relative;background:var(--note);color:var(--note-ink);border-radius:4px 18px 4px 18px;padding:20px 22px 18px;transform:rotate(-.6deg);box-shadow:0 1px 0 rgba(0,0,0,.05)}
+.spark span{display:block;font-size:12px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;opacity:.75;margin-bottom:4px}
+.spark p{margin:0;font-family:var(--hand);font-size:27px;line-height:1.15}
+
+/* pause */
+.pause{background:var(--accent-soft);border-radius:20px;padding:22px 24px;display:flex;gap:16px;align-items:center}
+.pause p{margin:0;font-family:var(--display);font-size:22px;line-height:1.25}
+.pause small{display:block;font-family:var(--body);font-size:14px;color:var(--muted);margin-top:4px}
+
+/* capture */
+.capture{display:flex;flex-direction:column;gap:22px;padding-top:4px}
+.field{display:flex;flex-direction:column;gap:8px}
+.field>label,.flabel{font-weight:500}
+textarea,input[type=text]{width:100%;font:inherit;font-size:17px;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px 14px;resize:vertical}
+textarea{min-height:110px;line-height:1.5}
+textarea:focus,input[type=text]:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+.mini{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:6px 14px;font-size:14px;cursor:pointer;display:inline-flex;align-items:center;gap:6px}
+.mini.on{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.thumbs{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px}
+.thumbs:empty{display:none}
+.thumb{position:relative;border-radius:12px;overflow:hidden;background:var(--line);aspect-ratio:4/3;max-width:100%}
+.thumb img{width:100%;height:100%;object-fit:cover}
+.thumb button{position:absolute;top:6px;right:6px;border:0;border-radius:999px;background:rgba(0,0,0,.6);color:#fff;font-size:13px;padding:3px 10px;cursor:pointer}
+.photo-btn{display:flex;align-items:center;justify-content:center;gap:10px;border:1.5px dashed var(--line);border-radius:14px;padding:18px;cursor:pointer;color:var(--muted);background:var(--surface);font-size:15px}
+.photo-btn:hover{border-color:var(--accent);color:var(--ink)}
+.hint{font-size:14px;color:var(--muted);margin:0}
+
+.steps3{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.steps3 li{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:4px}
+.steps3 b{font-family:var(--display);font-weight:400;font-size:20px}
+.steps3 span{font-size:14px;color:var(--muted);line-height:1.4}
+@media (max-width:460px){.steps3{grid-template-columns:minmax(0,1fr)}}
+
+/* cards */
+.cards{display:flex;flex-direction:column;gap:12px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:22px;padding:28px 24px;min-height:180px;display:flex;flex-direction:column;justify-content:space-between;gap:18px}
+.card .type{font-size:13px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:var(--accent)}
+.card .q{font-family:var(--display);font-size:clamp(22px,5.4vw,27px);line-height:1.28;margin:0}
+.card-nav{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.card-nav span{font-size:14px;color:var(--muted);font-variant-numeric:tabular-nums}
+
+/* summary */
+.sum{display:flex;flex-direction:column;gap:24px}
+.sum-block{display:flex;flex-direction:column;gap:10px;padding-top:18px;border-top:1px solid var(--line)}
+.sum-block h2{margin:0;font-family:var(--display);font-weight:400;font-size:23px}
+.sum-item h3{margin:0 0 2px;font-size:14px;font-weight:600;color:var(--muted)}
+.sum-item p{margin:0;white-space:pre-wrap}
+.empty{color:var(--muted);font-style:italic;margin:0}
+.actions{display:flex;flex-direction:column;gap:12px}
+.primary{border:0;border-radius:999px;background:var(--accent);color:var(--accent-ink);font-weight:600;padding:15px 22px;cursor:pointer;font-size:17px}
+.ghost{border:1px solid var(--line);border-radius:999px;background:transparent;padding:12px 20px;cursor:pointer;color:var(--muted)}
+.confirm{display:flex;flex-wrap:wrap;gap:10px;align-items:center;padding:14px 16px;border-radius:14px;background:var(--surface);border:1px solid var(--line)}
+.confirm p{margin:0;flex:1 1 200px}
+.danger{border:0;border-radius:999px;background:var(--danger);color:var(--surface);padding:10px 18px;cursor:pointer;font-weight:600}
+.howto{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px 18px;font-size:15px;display:flex;flex-direction:column;gap:6px}
+.howto p{margin:0}
+
+.nav{position:sticky;bottom:0;z-index:5;background:var(--bg);border-top:1px solid var(--line);
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:12px calc(12px + env(safe-area-inset-bottom,0px))}
+.nav-in{max-width:680px;margin:0 auto;display:flex;justify-content:space-between;gap:12px}
+.nav button{min-height:46px;border-radius:999px;padding:0 22px;cursor:pointer;font-weight:500}
+#prev{border:1px solid var(--line);background:transparent}
+#next{border:0;background:var(--accent);color:var(--accent-ink);font-weight:600;margin-left:auto}
+
+.sig{font-size:13px;color:var(--muted);line-height:1.6}
+.sig b{color:var(--ink);font-weight:600}
+footer{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 28px}
+footer .sig{max-width:680px;margin:0 auto}
+
+@media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important}}
+
+/* ---------- print ---------- */
+@page{size:A4;margin:16mm 15mm 16mm}
+@media print{
+  body{background:#fff;color:#1C221E;font-size:10.5pt;line-height:1.5}
+  body::before,.top,main,.nav,footer{display:none!important}
+  #print{display:block}
+  :root{--bg:#fff;--surface:#fff;--ink:#1C221E;--muted:#55605A;--line:#D5DAD4;--accent:#8A3B52;--accent-soft:#F2E2E7;--note:#FFF6C9;--note-ink:#3B3418}
+  .p-cover{min-height:255mm;display:flex;flex-direction:column;justify-content:space-between;break-after:page}
+  .p-cover h1{margin:0;font-size:44pt;line-height:1.02}
+  .p-cover .impulse{font-size:18pt;margin-top:10pt}
+  .p-name{font-size:14pt;font-weight:600;margin:0}
+  .p-sec{break-before:page}
+  .p-sec>h2{font-family:var(--display);font-weight:300;font-size:28pt;line-height:1.05;margin:0 0 4pt}
+  .p-kicker{font-size:8.5pt;font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:var(--accent);margin:0 0 4pt}
+  .p-sec .impulse{font-size:15pt;margin:6pt 0 10pt}
+  .p-sec .lead{margin:0 0 10pt}
+  .p-block{margin:0 0 12pt}
+  .rt{gap:8pt}
+  .fig,.ex,.refl,.spark,.p-entry,.card,.pause{break-inside:avoid}
+  .fig{padding:10pt;border-radius:10pt}
+  .fig svg{max-width:300pt}
+  details>summary::after{display:none!important}
+  details>summary{cursor:default}
+  details.model>summary{padding:10pt 0 6pt}
+  .layer-body{padding-bottom:8pt}
+  .spark{transform:none}
+  .spark p{font-size:19pt}
+  .p-entries{display:flex;flex-direction:column;gap:10pt;margin-top:12pt;padding:12pt 14pt;border:1.2pt solid var(--accent);border-radius:10pt}
+  .p-entries>h3{margin:0;font-size:8.5pt;letter-spacing:.09em;text-transform:uppercase;color:var(--accent)}
+  .p-entry h4{margin:0 0 2pt;font-size:9.5pt;color:var(--muted)}
+  .p-entry p{margin:0;white-space:pre-wrap}
+  .p-blank{height:46pt;border-bottom:1pt solid var(--line);background:repeating-linear-gradient(transparent 0 22pt,var(--line) 22pt 23pt)}
+  .p-photos{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8pt}
+  .p-photos img{width:100%;border-radius:6pt;break-inside:avoid}
+  .p-sig{border-top:1pt solid var(--line);padding-top:8pt;font-size:9pt;color:var(--muted);line-height:1.55}
+  .p-sig b{color:var(--ink)}
+  .p-end{break-before:page;min-height:240mm;display:flex;flex-direction:column;justify-content:center;gap:18pt}
+  .p-end p.big{font-family:var(--display);font-weight:300;font-size:30pt;line-height:1.1;margin:0}
+  .chip{border:1pt solid var(--line)}
+  .tbl{overflow:visible}
+  a{color:inherit;text-decoration:none}
+}
+
+/* ── PASSWORD GATE ── */
+#pb-gate{position:fixed;inset:0;z-index:999;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:36px;padding:32px;text-align:center;font-family:var(--body)}
+#pb-gate .g-eye{margin:0 0 8px;font-size:12px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--accent)}
+#pb-gate .g-title{font-family:var(--display);font-weight:300;font-size:clamp(24px,6vw,38px);margin:0;line-height:1.1;letter-spacing:-.01em}
+#pb-gate form{display:flex;flex-direction:column;align-items:center;gap:10px;width:100%;max-width:280px}
+#pb-gate input[type=password]{width:100%;font:inherit;font-size:18px;letter-spacing:.15em;text-align:center;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px 16px}
+#pb-gate input[type=password]:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+#pb-gate .g-btn{width:100%;border:0;border-radius:999px;background:var(--accent);color:var(--accent-ink);font:inherit;font-weight:600;font-size:16px;padding:13px;cursor:pointer}
+#pb-gate .g-err{font-size:14px;color:var(--danger);min-height:20px;margin:0}
+#pb-gate .g-back{font-size:13px;color:var(--muted);text-decoration:none;background:none;border:0;cursor:pointer;padding:0;display:block}
+#pb-gate .g-hint{font-size:13px;color:var(--muted);margin:0}
+
+/* ── NAVIGATION BAR + SESSION WARNING ── */
+.pb-minbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:10;background:var(--surface);border-bottom:1px solid var(--line);padding:0 max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;align-items:center;justify-content:space-between;gap:8px;height:42px}
+.pb-minbar .pb-back{font:inherit;font-size:13px;text-decoration:none;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:4px 12px;background:var(--bg);display:inline-flex;align-items:center;gap:4px;white-space:nowrap}
+.pb-minbar .pb-back:hover{color:var(--ink);border-color:var(--accent)}
+.pb-minbar .pb-pdf{font:inherit;font-size:13px;font-weight:600;border:0;border-radius:999px;padding:5px 14px;background:var(--accent);color:var(--accent-ink);cursor:pointer;white-space:nowrap}
+.top{top:calc(env(safe-area-inset-top,0px) + 42px)!important}
+.pb-session-warn{padding:9px max(16px,env(safe-area-inset-left,0px));font-size:13px;line-height:1.5;background:var(--accent-soft);color:var(--ink);border-bottom:1px solid var(--line)}
+@media print{.pb-minbar,.pb-session-warn{display:none!important}}
+</style>
+</head>
+<body>
+
+<div id="pb-gate">
+  <div>
+    <p class="g-eye">Workshop Materials</p>
+    <h1 class="g-title">Communication and Conflict</h1>
+  </div>
+  <form id="pb-form">
+    <input type="password" id="pb-pw" placeholder="Password" autocomplete="current-password" aria-label="Password">
+    <p class="g-err" id="pb-err" role="alert"></p>
+    <button class="g-btn" type="submit">Enter &#x2192;</button>
+    <a class="g-back" href="/playbooks">&#x2190; Overview</a>
+    <p class="g-hint">For participants only.</p>
+  </form>
+</div>
+
+<div id="pb-app" hidden>
+
+<div class="pb-minbar" aria-label="Navigation">
+  <a href="/playbooks" class="pb-back">&#x2190; Overview</a>
+  <button class="pb-pdf" onclick="window.print()">Save as PDF</button>
+</div>
+<div class="pb-session-warn" role="note">
+  Your entries are only saved for this browser session and will be lost if you close or reload the page. Please create a PDF in between.
+</div>
+
+<header class="top">
+  <div class="top-in">
+    <div class="top-row"><span class="brand" id="brand"></span><span class="saved" id="saved" aria-live="polite"></span></div>
+    <nav class="progress" id="progress" aria-label="Sections"></nav>
+  </div>
+</header>
+<main id="main"></main>
+<footer><p class="sig" id="sig-foot"></p></footer>
+<div class="nav"><div class="nav-in"><button id="prev" type="button">Back</button><button id="next" type="button">Next</button></div></div>
+<div id="print" aria-hidden="true"></div>
+
+<script>
+(function(){
+  var PW_KEY='rostek-pb-auth-v1';
+  var CORRECT='PLAYBOOK_4Y';
+  var gEl=document.getElementById('pb-gate');
+  var aEl=document.getElementById('pb-app');
+  function unlock(){gEl.hidden=true;aEl.hidden=false;}
+  try{if(sessionStorage.getItem(PW_KEY)==='1')unlock();}catch(e){}
+  document.getElementById('pb-form').addEventListener('submit',function(e){
+    e.preventDefault();
+    var v=document.getElementById('pb-pw').value;
+    if(v===CORRECT){try{sessionStorage.setItem(PW_KEY,'1');}catch(err){}document.getElementById('pb-err').textContent='';unlock();}
+    else{document.getElementById('pb-err').textContent='Incorrect password.';document.getElementById('pb-pw').value='';document.getElementById('pb-pw').focus();}
+  });
+})();
+</script>
+
+<script>
+window.PB={
+key:`communication`, brand:`Communication and Conflict`, title:`Communication and Conflict`, tagline:`What's really behind my difficult situation?`,
+coverFig:`glasl`,
+startSpark:`A conflict nobody talks about still listens to everything.`,
+theoryLead:`Six models around conflict and communication. Some of these will be familiar from the ward manager training — here we go deeper. Each model has a short core, and with each + you get background, examples from nursing, reflection questions, and literature.`,
+theorySpark:`Being right is a lovely place. You're just usually alone there.`,
+kernSpark:`The coffee room is the secret courtroom of every ward.`,
+endLine:`Conflicts don't disappear when you ignore them. But they do get smaller when you look at them.`,
+endSpark:`If you only look at stage 9 in a conflict, you miss the staircase leading back up.`,
+questions:[`If the other person saw your model, what would they rearrange first?`,`What is the smallest rope you could loosen?`,`What would you need to do to guarantee the conflict escalates?`],
+
+figs:{
+glasl:`<svg viewBox="0 0 300 220" role="img" aria-label="Staircase with nine steps descending in three sections: both win, one loses, all lose"><rect class="g-f1" x="10" y="20" width="30" height="170" style="fill-opacity:.08"/><rect class="g-f1" x="40" y="36" width="30" height="154" style="fill-opacity:.08"/><rect class="g-f1" x="70" y="52" width="30" height="138" style="fill-opacity:.08"/><rect class="g-f2" x="100" y="68" width="30" height="122"/><rect class="g-f2" x="130" y="84" width="30" height="106"/><rect class="g-f2" x="160" y="100" width="30" height="90"/><rect class="g-f3" x="190" y="116" width="30" height="74"/><rect class="g-f3" x="220" y="132" width="30" height="58"/><rect class="g-f3" x="250" y="148" width="30" height="42"/><text class="g-t" x="25" y="14" text-anchor="middle">1</text><text class="g-t" x="115" y="62" text-anchor="middle">4</text><text class="g-t" x="205" y="110" text-anchor="middle">7</text><text class="g-t" x="265" y="142" text-anchor="middle">9</text><text class="g-e" x="55" y="210" text-anchor="middle">both win</text><text class="g-e" x="145" y="210" text-anchor="middle">one loses</text><text class="g-e" x="235" y="210" text-anchor="middle">all lose</text></svg>`,
+arten:`<svg viewBox="0 0 440 240" role="img" aria-label="Six conflict types as tiles: Content, Relationship, Values, Distribution, Role, Structure"><g><rect class="g-f1" x="10" y="20" width="130" height="90" rx="14"/><text class="g-t" x="75" y="62" text-anchor="middle">Content</text><text class="g-s" x="75" y="80" text-anchor="middle">How do we do it?</text></g><g><rect class="g-f2" x="155" y="20" width="130" height="90" rx="14"/><text class="g-t" x="220" y="62" text-anchor="middle">Relationship</text><text class="g-s" x="220" y="80" text-anchor="middle">How do we relate?</text></g><g><rect class="g-f3" x="300" y="20" width="130" height="90" rx="14"/><text class="g-t" x="365" y="62" text-anchor="middle">Values</text><text class="g-s" x="365" y="80" text-anchor="middle">What matters to us?</text></g><g><rect class="g-f1" x="10" y="125" width="130" height="90" rx="14"/><text class="g-t" x="75" y="167" text-anchor="middle">Distribution</text><text class="g-s" x="75" y="185" text-anchor="middle">Who gets what?</text></g><g><rect class="g-f2" x="155" y="125" width="130" height="90" rx="14"/><text class="g-t" x="220" y="167" text-anchor="middle">Role</text><text class="g-s" x="220" y="185" text-anchor="middle">Who may do what?</text></g><g><rect class="g-f1" x="300" y="125" width="130" height="90" rx="14"/><text class="g-t" x="365" y="167" text-anchor="middle">Structure</text><text class="g-s" x="365" y="185" text-anchor="middle">What does the system dictate?</text></g></svg>`,
+gfk:`<svg viewBox="0 0 440 150" role="img" aria-label="Four steps of Nonviolent Communication: Observation, Feeling, Need, Request"><g><circle class="g-f1" cx="60" cy="60" r="40"/><text class="g-t" x="60" y="64" text-anchor="middle">Observation</text></g><g><circle class="g-f2" cx="166" cy="60" r="40"/><text class="g-t" x="166" y="64" text-anchor="middle">Feeling</text></g><g><circle class="g-f2" cx="272" cy="60" r="40" style="fill-opacity:.35"/><text class="g-t" x="272" y="64" text-anchor="middle">Need</text></g><g><circle class="g-f3" cx="378" cy="60" r="40"/><text class="g-t" x="378" y="64" text-anchor="middle">Request</text></g><path class="g-line" d="M101 60h22M207 60h22M313 60h22"/><text class="g-s" x="60" y="122" text-anchor="middle">I see …</text><text class="g-s" x="166" y="122" text-anchor="middle">I feel …</text><text class="g-s" x="272" y="122" text-anchor="middle">because … matters to me</text><text class="g-s" x="378" y="122" text-anchor="middle">Would you be willing …?</text></svg>`,
+stile:`<svg viewBox="0 0 440 280" role="img" aria-label="Five conflict styles according to Thomas and Kilmann on two axes: Assertiveness and Cooperation"><path class="g-axis" d="M60 240h360M60 240V20"/><text class="g-s" x="240" y="268" text-anchor="middle">Cooperation — interest in the other's concern</text><text class="g-s" x="34" y="130" text-anchor="middle" transform="rotate(-90 34 130)">Assertiveness</text><circle class="g-f2" cx="110" cy="60" r="34"/><text class="g-t" x="110" y="64" text-anchor="middle">Competing</text><circle class="g-f3" cx="370" cy="60" r="34"/><text class="g-t" x="370" y="64" text-anchor="middle">Collaborating</text><circle class="g-f1" cx="240" cy="130" r="34"/><text class="g-t" x="240" y="134" text-anchor="middle">Compromising</text><circle class="g-f1" cx="110" cy="200" r="34" style="fill-opacity:.04"/><text class="g-t" x="110" y="204" text-anchor="middle">Avoiding</text><circle class="g-f2" cx="370" cy="200" r="34" style="fill-opacity:.15"/><text class="g-t" x="370" y="204" text-anchor="middle">Accommodating</text></svg>`,
+vierseiten:`<svg viewBox="0 0 440 230" role="img" aria-label="Four-sides model by Schulz von Thun with four sides: Content, Self-disclosure, Relationship, Appeal"><path class="g-f1" d="M220 20l110 95-110 95-110-95z"/><text class="g-t" x="220" y="12" text-anchor="middle">Content</text><text class="g-s" x="220" y="40" text-anchor="middle" dy="0">What about?</text><text class="g-t" x="340" y="112">Self-disclosure</text><text class="g-s" x="340" y="128">What do I reveal about myself?</text><text class="g-t" x="100" y="112" text-anchor="end">Appeal</text><text class="g-s" x="100" y="128" text-anchor="end">What should happen?</text><text class="g-t" x="220" y="226" text-anchor="middle">Relationship</text><text class="g-s" x="220" y="196" text-anchor="middle">What do I think of you?</text><text class="g-h" x="220" y="122" text-anchor="middle">"The trolley is empty."</text></svg>`,
+harvard:`<svg viewBox="0 0 440 230" role="img" aria-label="Positions above water, interests below water, two icebergs touching at the bottom"><path class="g-f1" d="M0 90h440v140H0z" style="fill-opacity:.06"/><path class="g-line" d="M0 90c40-6 80 6 120 0s80-6 120 0 80 6 120 0 60-4 80 0"/><path class="g-f2" d="M90 90l30-50 30 50z"/><path class="g-f2" d="M290 90l30-50 30 50z"/><path class="g-f3" d="M70 90h100l40 120H40z" style="fill-opacity:.3"/><path class="g-f3" d="M270 90h100l30 120H230z" style="fill-opacity:.3"/><text class="g-t" x="120" y="30" text-anchor="middle">Position A</text><text class="g-t" x="320" y="30" text-anchor="middle">Position B</text><text class="g-t" x="120" y="150" text-anchor="middle">Interests</text><text class="g-t" x="320" y="150" text-anchor="middle">Interests</text><text class="g-h" x="220" y="214" text-anchor="middle">Down here, there's often more in common.</text></svg>`,
+perspektive:`<svg viewBox="0 0 440 200" role="img" aria-label="Three figures looking at the same situation from different directions"><circle class="g-f1" cx="220" cy="105" r="40"/><text class="g-e" x="220" y="110" text-anchor="middle">Situation</text><circle class="g-solid" cx="60" cy="105" r="12"/><circle class="g-f3" cx="380" cy="105" r="12"/><circle class="g-f2" cx="220" cy="20" r="12"/><path class="g-thin" d="M74 105h100M366 105H266M220 34v28"/><text class="g-h" x="60" y="140" text-anchor="middle">me</text><text class="g-h" x="380" y="140" text-anchor="middle">the other</text><text class="g-h" x="290" y="26">from outside</text></svg>`
+},
+
+theory:[
+{title:`The Nine Escalation Stages`,sub:`How conflicts escalate. Friedrich Glasl`,fig:`glasl`,cap:`With each stage, it becomes harder to find your way back up alone.`,
+ core:[[`p`,`The Austrian conflict researcher Friedrich Glasl describes nine stages on which conflicts escalate. He draws them as a staircase leading downward, because with each stage it becomes harder to climb back up. The stages are grouped into three sections.`],
+  [`table`,[`Stage`,`Name`,`Section`],[[`1`,`Hardening`,`both can win`],[`2`,`Debate and Polemic`,`both can win`],[`3`,`Actions over Words`,`both can win`],[`4`,`Images and Coalitions`,`one wins, one loses`],[`5`,`Loss of Face`,`one wins, one loses`],[`6`,`Threat Strategies`,`one wins, one loses`],[`7`,`Limited Destructive Blows`,`all lose`],[`8`,`Fragmentation`,`all lose`],[`9`,`Together into the Abyss`,`all lose`]]]],
+ layers:[
+  {t:`The Stages in Ward Life`,d:`Examples`,b:[[`table`,[`Stage`,`How it might sound`],[[`1`,`Tension around the topic of weekend shifts is palpable, but people still talk to each other.`],[`2`,`In the team meeting, arguments get sharp — everyone wants to be right.`],[`3`,`Someone just puts themselves down as off duty without asking.`],[`4`,`In the coffee room, people look for allies: "Do you see it that way too?"`],[`5`,`Someone is publicly humiliated in front of others.`],[`6`,`"If this keeps up, I'm going to the nursing director."`]]],[`p`,`Stages 7 to 9 are rare on wards, but not impossible — for example when colleagues actively harm each other, even at their own expense.`]]},
+  {t:`What Helps at Each Stage`,d:`Practice`,b:[[`table`,[`Stages`,`Helpful approach`],[[`1–3`,`Moderation, often by the manager themselves`],[`3–5`,`Process facilitation`],[`4–6`,`Socio-therapeutic support, e.g. supervision`],[`5–7`,`Mediation through neutral third parties`],[`6–8`,`Arbitration`],[`7–9`,`Power intervention`]]],[`q`,`Up to which stage can you, as a manager, moderate yourself — and from when do you need outside support?`]]},
+  {t:`The Escalation Mechanisms`,d:`Deep Dive`,b:[[`p`,`Glasl describes what drives conflicts: perception becomes selective — you only see what confirms your own view. The other person gets simplified. The problem expands to cover more and more topics. And the circle of those involved grows.`],[`spark`,`The longer a conflict lasts, the more people know what it's about. Only the people involved no longer do.`]]},
+  {t:`For Further Reading`,b:[[`lit`,[`Glasl, F. (2020): Konfliktmanagement. Ein Handbuch für Führung, Beratung und Mediation. 12. Aufl. Bern: Haupt / Stuttgart: Freies Geistesleben.`,`Glasl, F. (2017): Selbsthilfe in Konflikten. Stuttgart: Freies Geistesleben.`]]]}
+ ]},
+{title:`Types of Conflict`,sub:`What is it really about?`,fig:`arten`,cap:`Many conflicts are a mix, but one type usually sits on top.`,
+ core:[[`p`,`A conflict that starts as a factual question is often not one. Those arguing about whether the handover starts at 13:30 or 13:45 may really be arguing about recognition, fairness, or influence. Identifying the type of conflict helps find the right solution.`],[`ul`,[`<strong>Content conflict:</strong> different opinions on approaches and methods.`,`<strong>Relationship conflict:</strong> broken trust, hurt, antipathy.`,`<strong>Values conflict:</strong> different ideas about what is right and important.`,`<strong>Distribution conflict:</strong> scarce resources such as holiday, shifts, time.`,`<strong>Role conflict:</strong> unclear or contradictory expectations of a role.`,`<strong>Structural conflict:</strong> The system itself creates tension, e.g. through staffing ratios.`]]],
+ layers:[
+  {t:`The Role Conflict of a New Manager`,d:`Practice`,b:[[`p`,`Many who become managers from within the team know this: yesterday a colleague, today a superior. Old friendships and new responsibilities pull in different directions. This is not a personal failure, but a typical role conflict.`],[`q`,`Which role is hardest for you right now to reconcile with which other?`]]},
+  {t:`Don't Personalise Structural Conflicts`,d:`Stance`,b:[[`p`,`When two colleagues fight over the last free weekends, the problem is often not with them but with the rota. Treating a structural conflict as a relationship conflict will never resolve it.`],[`spark`,`Sometimes the problem is not the people, but the chairs they're sitting in.`]]}
+ ]},
+{title:`Nonviolent Communication`,sub:`Four steps. Marshall B. Rosenberg`,fig:`gfk`,cap:`From accusation to request.`,
+ core:[[`p`,`The psychologist Marshall B. Rosenberg developed a model that helps to stay connected even in difficult situations. It consists of four steps.`],[`table`,[`Step`,`What it means`,`Example`],[[`Observation`,`What I see or hear, without evaluation`,`"You arrived after the start of your shift three times this week."`],[`Feeling`,`How it makes me feel`,`"I am concerned …"`],[`Need`,`What matters to me in this`,`"… because reliability for the team matters to me."`],[`Request`,`What I specifically want`,`"Would you be willing to explore with me what might help you?"`]]]],
+ layers:[
+  {t:`Giraffe and Wolf`,d:`Background`,b:[[`p`,`Rosenberg used two animals as an image. The <strong>wolf language</strong> judges, evaluates, blames. The <strong>giraffe language</strong> speaks of feelings and needs. The giraffe was chosen because it has the largest heart of all land animals and, with its long neck, keeps perspective.`],[`spark`,`Giraffes have bad days too. They just talk a bit longer before they bite.`]]},
+  {t:`Observation or Evaluation?`,d:`Exercise`,b:[[`table`,[`Evaluation`,`Observation`],[[`"You're always late."`,`"You were there after six on Monday and Wednesday."`],[`"You don't care about the team."`,`"You weren't at the last two team meetings."`],[`"The handover was chaotic."`,`"During the handover, three people were talking at once."`]]],[`q`,`What's a sentence you've said recently that was more evaluation than observation?`]]},
+  {t:`Recognising Pseudo-feelings`,d:`Deep Dive`,b:[[`p`,`Phrases like "I feel overlooked" or "I feel attacked" sound like feelings but contain an evaluation of the other person. Real feelings include: sad, angry, anxious, exhausted, disappointed, relieved.`]]},
+  {t:`For Further Reading`,b:[[`lit`,[`Rosenberg, M. B. (2016): Gewaltfreie Kommunikation. Eine Sprache des Lebens. 12. Aufl. Paderborn: Junfermann.`]]]}
+ ]},
+{title:`The Four-Sides Model`,sub:`Four sides of a message. Friedemann Schulz von Thun`,fig:`vierseiten`,cap:`Every message has four sides, and we listen with four ears.`,
+ core:[[`p`,`Schulz von Thun describes that every message contains four simultaneous signals: a <strong>content</strong> message, a <strong>self-disclosure</strong>, a <strong>relationship</strong> cue, and an <strong>appeal</strong>. Misunderstandings arise when sender and receiver are operating on different levels.`],[`ex`,`From the Ward`,`"The dressing trolley is empty again." Content: The trolley is empty. Self-disclosure: I am frustrated. Relationship: You don't care. Appeal: Restock it.`]],
+ layers:[
+  {t:`The Four Ears`,d:`Deep Dive`,b:[[`p`,`People tend to have a preferred ear. Those who listen with the relationship ear feel attacked quickly. Those who only listen with the appeal ear jump straight into action. Managers do well to consciously use all four ears.`],[`q`,`Which ear do you tend to hear with most loudly when under stress?`],[`spark`,`"The coffee is all gone" is rarely a pure piece of content information on a ward.`]]},
+  {t:`For Further Reading`,b:[[`lit`,[`Schulz von Thun, F. (1981): Miteinander reden 1. Störungen und Klärungen. Reinbek: Rowohlt.`]]]}
+ ]},
+{title:`Conflict Styles`,sub:`Five ways of handling conflict. Thomas and Kilmann`,fig:`stile`,cap:`Every style has its situation.`,
+ core:[[`p`,`Kenneth Thomas and Ralph Kilmann map behaviour in conflicts on two axes: How much do I push for my own concern? And how much for the other's? This gives five styles.`],[`table`,[`Style`,`Works when …`,`Becomes difficult when …`],[[`Competing`,`a quick decision is needed, e.g. in an emergency`,`it becomes the default`],[`Collaborating`,`both concerns matter and time is available`,`time is short`],[`Compromising`,`a fair partial solution is enough`,`both end up dissatisfied`],[`Avoiding`,`the issue is unimportant or needs cooling off`,`the conflict grows in the background`],[`Accommodating`,`the relationship matters more than the issue`,`you habitually sideline your own needs`]]]],
+ layers:[
+  {t:`No Style Is Always Right`,d:`Stance`,b:[[`p`,`Good conflict competence doesn't mean always collaborating. It means choosing the right style for the situation. During a resuscitation, you don't collaborate — you give directions.`],[`q`,`Which style do you default to, and which would be more appropriate for your current situation?`]]},
+  {t:`For Further Reading`,b:[[`lit`,[`Thomas, K. W., Kilmann, R. H. (1974): Thomas-Kilmann Conflict Mode Instrument. Tuxedo: Xicom.`]]]}
+ ]},
+{title:`Interests over Positions`,sub:`The Harvard Concept. Fisher and Ury`,fig:`harvard`,cap:`Positions divide; interests often connect.`,
+ core:[[`p`,`Roger Fisher and William Ury of the Harvard Negotiation Project describe four principles for fair negotiation:`],[`ol`,[`Separate people from problems.`,`Focus on interests, not positions.`,`Develop options for mutual benefit.`,`Insist on objective criteria.`]],[`ex`,`The classic example`,`Two people argue over an orange. It is split in half. But one only wanted the juice, the other only the peel for a cake. Had they asked about interests, both could have had everything.`]],
+ layers:[
+  {t:`From the Ward`,d:`Practice`,b:[[`p`,`Position: "I don't want to work night shifts anymore." Possible interests: sleep, childcare, safety when alone on the ward. If you ask about the interest, you sometimes find solutions nobody saw before.`],[`q`,`What position is on the table in your conflict — and what interest might lie behind it?`],[`spark`,`Behind every "No" is a "Yes" to something else.`]]},
+  {t:`For Further Reading`,b:[[`lit`,[`Fisher, R., Ury, W., Patton, B. (2018): Das Harvard-Konzept. 26. Aufl. Frankfurt: Campus.`]]]}
+ ]}
+],
+
+phases:[
+{short:`Impulse`,kicker:`Phase 1 · Impulse`,title:`How Conflicts Escalate`,
+ lead:`Friedrich Glasl describes nine stages on which conflicts escalate. He draws them as a staircase leading downward: with each stage, it becomes harder to find your way back up alone. The sooner a conflict is addressed, the easier it is to resolve.`,
+ fig:`glasl`,cap:`Nine stages in three sections`,
+ blocks:[[`ul`,[`<strong>Stages 1–3:</strong> Both can win. These can often still be resolved on your own.`,`<strong>Stages 4–6:</strong> One wins, one loses. Outside support is often needed here.`,`<strong>Stages 7–9:</strong> Everyone loses.`]],[`p`,`The Theory Library also covers types of conflict, Nonviolent Communication, the Four-Sides Model, conflict styles, and the Harvard Concept.`]],
+ toTheory:true,spark:`Conflicts are like laundry. The longer they sit, the harder the stains are to remove.`,
+ more:[{t:`Three Quick Opening Questions`,b:[[`ol`,[`Which conflict occupies you most right now?`,`How long has it been going on?`,`Who already knows about it?`]]]}],
+ fields:[{id:`stufe`,type:`text`,label:`Roughly which stage does my current situation sit at?`}]},
+{short:`Situation`,kicker:`Phase 2 · Explore`,title:`My Situation`,
+ impulse:`What's really behind my difficult situation?`,
+ task:`Set up a current situation with all those involved. Each animal figurine represents a person. Ropes show tensions and connections. Include yourself in the arrangement.`,
+ materials:[`Animal figurines`,`Ropes`],ways:true,build:`Put your phone down and set it up now.`,
+ spark:`If a conflict were an animal, which one would it be? And what does it eat?`,
+ more:[
+  {t:`Stay Confidential`,b:[[`p`,`You decide how much you share. Nobody needs names. The model can speak for itself.`]]},
+  {t:`Questions while looking`,b:[[`ul`,[`Who faces whom?`,`Where is the greatest tension?`,`Who is still missing from the arrangement?`,`Who benefits from the conflict remaining?`,`How far away are you yourself?`]]]},
+  {t:`Background: Types of Conflict`,d:`Theory`,b:[[`fig`,`arten`,``],[`p`,`Which type of conflict is on top, which is beneath? More in the Theory Library.`]]},
+  {t:`For the Brave`,d:`going deeper`,b:[[`p`,`Place a rope for your own contribution to the conflict. Where does it lead?`]]}
+ ],
+ fields:[{id:`sit_foto`,type:`photo`,label:`Photo of my arrangement`},{id:`sit_text`,type:`text`,label:`What do I notice?`}]},
+{short:`Perspective`,kicker:`Phase 3 · Deepen`,title:`Perspective Shift`,
+ impulse:`What does it look like from the other side?`,
+ task:`Move to the position of another figure and look at the arrangement from there. What does this person see? What might matter to them? In the trio, someone can question you as you do this.`,
+ materials:[`Arrangement from Phase 2`],ways:true,build:`Put your phone down and change places now.`,
+ spark:`Everyone is the hero in their own story. Including the one who gets on your nerves.`,
+ more:[
+  {t:`Three Perspectives`,b:[[`fig`,`perspektive`,``],[`ol`,[`<strong>My perspective:</strong> What do I see, feel, need?`,`<strong>The other's perspective:</strong> What do they see, feel, need?`,`<strong>The view from outside:</strong> What would a neutral observer see?`]]]},
+  {t:`Through the NVC Lens`,d:`Theory`,b:[[`fig`,`gfk`,``],[`ul`,[`What feeling might the other person be having?`,`What need might be behind their behaviour?`,`What would they say about you?`]]]},
+  {t:`Background: Interests over Positions`,d:`Theory`,b:[[`fig`,`harvard`,``],[`p`,`What position does the other person hold — and what interest might lie beneath it?`]]}
+ ],
+ fields:[{id:`perspektive_text`,type:`text`,label:`From the other perspective, I see …`}]},
+{short:`Shift`,kicker:`Phase 4 · Deepen`,title:`Change One Element`,
+ impulse:`What shifts when I change something?`,
+ task:`Change one element in your arrangement: a figure, a distance, or a rope. Observe how the whole system shifts as a result.`,
+ materials:[`LEGO`,`Animal figurines`,`Ropes`],ways:false,build:`Put your phone down and make a change.`,
+ spark:`A mobile moves completely when you pull on just one thread. So do teams.`,
+ more:[
+  {t:`What Is in Your Hands?`,b:[[`p`,`Everything in the system is connected. Even a small change in your own behaviour can shift the whole dynamic.`],[`ul`,[`What is in your hands?`,`What would be the smallest step?`,`What happens if you shift yourself instead of the others?`]]]},
+  {t:`Background: Conflict Styles`,d:`Theory`,b:[[`fig`,`stile`,``],[`p`,`Which style have you used in this conflict so far? Which would be more fitting now?`]]},
+  {t:`The Worsening Question`,d:`Paradoxical`,b:[[`p`,`What would you need to do to guarantee the conflict escalates one stage further? And how much of that are you already doing a little bit?`],[`spark`,`Guaranteed escalation in three steps: treat assumptions as facts, seek allies, never talk directly.`]]}
+ ],
+ fields:[{id:`veraendert_foto`,type:`photo`,label:`Photo of the changed arrangement`},{id:`veraendert_text`,type:`text`,label:`What shifted`}]},
+{short:`Conversation`,kicker:`Phase 5 · Together`,title:`The Next Conversation`,
+ impulse:`How could my next conversation begin?`,
+ task:`In a group of three, briefly rehearse the opening of a conversation. One person speaks, one responds in the role of the other party, one observes. Then swap.`,
+ ways:false,build:`Put your phone down and give it a try.`,
+ spark:`The first sentence of a difficult conversation is like the first step onto ice. Slowly, but don't stop moving.`,
+ more:[
+  {t:`Sentence Starters from NVC`,b:[[`ul`,[`I have observed that …`,`How I feel about this …`,`What matters to me is …`,`Would you be willing to …?`]]]},
+  {t:`A Conversation Guide`,d:`Practice`,b:[[`ol`,[`State the reason, briefly and concretely.`,`Describe your own perception, as an observation.`,`Ask for the other's perspective and listen.`,`Look for shared interests.`,`Make a concrete agreement.`,`Set a time to follow up.`]]]},
+  {t:`Observation Sheet`,d:`for the observer`,b:[[`ul`,[`Was it observation or evaluation?`,`Was a feeling and a need mentioned?`,`Was there a concrete request?`,`How was the body language?`,`What worked particularly well?`]],[`fig`,`vierseiten`,``]]}
+ ],
+ fields:[{id:`gespraech_text`,type:`text`,label:`My opening line in the conversation`},{id:`feedback_text`,type:`text`,label:`Feedback from the observer`}]}
+]
+};
+
+</script>
+<script>
+(function(){
+"use strict";
+var PB=window.PB;
+var SIG='<b>Dagmar Rostek</b> · dagmar@ecoaching-rostek.de · 0176 611 59 403 · rostek-dagmar.de<br>rostek organisational communication · superVision · coaching<br>AI Strategy &amp; Organisational Development';
+
+/* ---------- shared figures ---------- */
+var FIG=Object.assign({
+ interview:'<svg viewBox="0 0 440 150" role="img" aria-label="Process of the tandem interview in four steps">'+
+   '<g><rect class="g-f1" x="6" y="40" width="96" height="62" rx="12"/><text class="g-t" x="54" y="68" text-anchor="middle">Tandem</text><text class="g-s" x="54" y="86" text-anchor="middle">different topic</text></g>'+
+   '<g><rect class="g-f2" x="118" y="40" width="96" height="62" rx="12"/><text class="g-t" x="166" y="68" text-anchor="middle">A asks B</text><text class="g-s" x="166" y="86" text-anchor="middle">10 minutes</text></g>'+
+   '<g><rect class="g-f2" x="230" y="40" width="96" height="62" rx="12"/><text class="g-t" x="278" y="68" text-anchor="middle">B asks A</text><text class="g-s" x="278" y="86" text-anchor="middle">10 minutes</text></g>'+
+   '<g><rect class="g-f3" x="342" y="40" width="92" height="62" rx="12"/><text class="g-t" x="388" y="68" text-anchor="middle">Capture</text><text class="g-s" x="388" y="86" text-anchor="middle">5 minutes</text></g>'+
+   '<path class="g-line" d="M104 71h10M216 71h10M328 71h10"/><text class="g-h" x="220" y="132" text-anchor="middle">Curiosity beats expertise.</text></svg>',
+ compass:'<svg viewBox="0 0 440 300" role="img" aria-label="Question compass with eight types of systemic questions around the model">'+
+   '<circle class="g-f1" cx="220" cy="150" r="118"/><circle class="g-f2" cx="220" cy="150" r="44"/><text class="g-e" x="220" y="146" text-anchor="middle">your</text><text class="g-e" x="220" y="163" text-anchor="middle">model</text>'+
+   '<path class="g-thin" d="M220 32v74M220 194v74M102 150h74M264 150h74M137 67l52 52M251 181l52 52M303 67l-52 52M189 181l-52 52"/>'+
+   '<text class="g-t" x="220" y="22" text-anchor="middle">Meaning</text><text class="g-t" x="335" y="62">Circular</text><text class="g-t" x="350" y="154">Scale</text><text class="g-t" x="322" y="248">Difference</text>'+
+   '<text class="g-t" x="220" y="290" text-anchor="middle">Exception</text><text class="g-t" x="118" y="248" text-anchor="end">Resource</text><text class="g-t" x="90" y="154" text-anchor="end">Hypothetical</text><text class="g-t" x="105" y="62" text-anchor="end">Paradoxical</text></svg>',
+ scale:'<svg viewBox="0 0 440 120" role="img" aria-label="Scale from 1 to 10 with a question about the next step">'+
+   '<path class="g-axis" d="M30 60h380"/>'+[1,2,3,4,5,6,7,8,9,10].map(function(n,i){var x=30+i*42.2;return '<circle class="'+(n===6?'g-f3':'g-paper')+'" cx="'+x+'" cy="60" r="'+(n===6?13:10)+'"/><text class="g-s" x="'+x+'" y="64" text-anchor="middle">'+n+'</text>';}).join('')+
+   '<path class="g-line" d="M241 34c14-16 30-16 42 0"/><path class="g-line" d="M279 28l5 7-8 2"/><text class="g-h" x="262" y="22" text-anchor="middle">What would it take to reach 7?</text>'+
+   '<text class="g-s" x="30" y="98">not at all</text><text class="g-s" x="410" y="98" text-anchor="end">completely</text></svg>',
+ kompass2:'<svg viewBox="0 0 440 200" role="img" aria-label="Thread through the day: four models connected to a core">'+
+   '<path class="g-line" d="M20 150c60-80 110 30 170-40s110 50 170-20 50-60 60-70"/>'+
+   '<circle class="g-f2" cx="78" cy="118" r="16"/><circle class="g-f2" cx="190" cy="110" r="16"/><circle class="g-f2" cx="300" cy="98" r="16"/><circle class="g-solid" cx="410" cy="38" r="20"/>'+
+   '<text class="g-s" x="78" y="152" text-anchor="middle">Explore</text><text class="g-s" x="190" y="144" text-anchor="middle">Deepen</text><text class="g-s" x="300" y="132" text-anchor="middle">Together</text><text class="g-h" x="370" y="88" text-anchor="middle">my core</text></svg>'
+},PB.figs||{});
+
+var ICON={
+ self:'<svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><circle class="ico" cx="12" cy="8" r="3.5"/><path class="ico" d="M5 20c1-4 4-6 7-6s6 2 7 6"/></svg>',
+ trio:'<svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><circle class="ico" cx="12" cy="7" r="2.6"/><circle class="ico" cx="5.5" cy="10" r="2.2"/><circle class="ico" cx="18.5" cy="10" r="2.2"/><path class="ico" d="M7.5 20c.6-3 2.4-5 4.5-5s3.9 2 4.5 5M2 19c.4-2 1.6-3.5 3.5-3.5M22 19c-.4-2-1.6-3.5-3.5-3.5"/></svg>',
+ walk:'<svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><circle class="ico" cx="13" cy="4.5" r="2"/><path class="ico" d="M10 21l2-6 3 3v3M12 15l-1-5 3-2 2 3 3 1M11 10l-3 2-1 3"/></svg>',
+ hands:'<svg width="40" height="40" viewBox="0 0 24 24" aria-hidden="true"><rect class="ico" x="3" y="13" width="8" height="6" rx="1"/><rect class="ico" x="13" y="13" width="8" height="6" rx="1"/><rect class="ico" x="8" y="7" width="8" height="6" rx="1"/><path class="ico" d="M5 13v-1.5M9 13v-1.5M15 13v-1.5M19 13v-1.5M10 7V5.5M14 7V5.5"/></svg>',
+ cam:'<svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path class="ico" d="M4 8h3l2-2.5h6L17 8h3v11H4z"/><circle class="ico" cx="12" cy="13" r="3.5"/></svg>'
+};
+var WAYS=[[ICON.self,'Build alone, then share in the trio.'],[ICON.trio,'Start with a conversation among three — over coffee if you like.'],[ICON.walk,'Walk & Talk, if the weather allows.']];
+
+/* ---------- shared question library ---------- */
+var QTYPES=[
+ {t:'Meaning Questions',s:'stay with the model',b:[['p','They address the model, not the person. This takes the pressure off: you talk about bricks, animals and distances and still get to the core.'],['ul',['What does this piece mean?','Why is this figure standing here and not there?','What is the most important element in your model?','What is the first thing you notice when you look at it now?']],['ex','Tip','Point to the piece you\'re asking about. That keeps the conversation with the model.']]},
+ {t:'Circular Questions',s:'seeing through another\'s eyes',b:[['p','They bring the perspective of others into the conversation without those people being present. This often opens more than any direct question.'],['ul',['What would your team say if they saw your model?','Who would be most surprised if you followed through on this?','How would your closest colleague notice that something had changed?','How would the nursing director describe this model?']]]},
+ {t:'Scaling Questions',s:'making differences measurable',b:[['fig','scale','Scales make small steps visible.'],['ul',['Where are you right now, on a scale of 1 to 10?','What makes the difference between a 5 and a 6?','Where were you a year ago?','What number would be good enough?']],['ex','Tip','Never ask why it isn\'t a 10. Ask why it\'s already a 4.']]},
+ {t:'Difference Questions',s:'What\'s different when …?',b:[['p','They direct attention to change and movement rather than states.'],['ul',['What would be different if this piece were missing?','When is it better, when worse?','What distinguishes a good shift from a difficult one?']]]},
+ {t:'Exception Questions',s:'when the problem was smaller',b:[['p','No problem is always the same size. Exceptions show what already works.'],['ul',['When has it already been easier?','What did you do differently then?','Who was there at the time?']]]},
+ {t:'Resource Questions',s:'making strengths visible',b:[['ul',['What has helped you in a similar situation before?','Who stands behind you?','What strength shows in your model?','What are you proud of this year?']]]},
+ {t:'Hypothetical Questions',s:'the miracle question and its cousins',b:[['quote','Suppose a miracle happens tonight and the problem is resolved. What is the first thing you notice tomorrow morning?','after Steve de Shazer and Insoo Kim Berg'],['ul',['Suppose it has worked out in a year: what will you have done?','What would you do if you weren\'t afraid?']]]},
+ {t:'Paradoxical Questions',s:'with a wink',b:[['p','They ask about the opposite of what is wanted. This loosens things up, brings laughter, and reveals patterns with surprising clarity.'],['ul',['What would you need to do to guarantee things get worse?','How could you best sabotage your own model?','What should you absolutely not change, to keep everything as it is?']],['ex','Tip','Always follow up: And how much of that are you already doing a little bit?']]},
+ {t:'Future Questions',s:'finding the first step',b:[['ul',['What will you be saying about this day in three months?','What is the smallest step you can take on Monday?','How will you know it\'s working?']]]}
+];
+var HALTUNG=[['p','Asking systemically means staying curious rather than already knowing. The answer belongs to the other person.'],
+ ['ul',['<strong>Not-knowing:</strong> You are a guest in the other person\'s model, not an expert.','<strong>Avoid "why":</strong> "Why" quickly sounds like a demand for justification. Better: What, How, What for, Whereabouts.','<strong>Hold the pause:</strong> The second answer after a silence is often the more important one.','<strong>Summarise:</strong> "Have I understood correctly that …?" shows you are listening.','<strong>No advice:</strong> Even good ideas stay in your pocket today.']],
+ ['spark','The best question is the one whose answer you genuinely don\'t know.']];
+var QCARDS=[];
+QTYPES.forEach(function(q){var arr=[];q.b.forEach(function(b){if(b[0]==='ul')arr=arr.concat(b[1]);});arr.slice(0,2).forEach(function(x){QCARDS.push([q.t,x]);});});
+(PB.questions||[]).forEach(function(x){QCARDS.push(['Your Topic',x]);});
+
+/* ---------- screens ---------- */
+var SCREENS=[{type:'start',short:'Start'},{type:'theory',short:'Theory'}]
+ .concat(PB.phases.map(function(p){return {type:'phase',short:p.short,p:p};}))
+ .concat([{type:'kern',short:'Core'},{type:'interview',short:'Conversation'},{type:'end',short:'Closing'}]);
+var F_START=[{id:'name',type:'line',label:'Your Name'},{id:'frage',type:'text',label:'What would I like to clarify for myself today?'}];
+var F_THEORY=[{id:'theorie',type:'text',label:'What am I taking from the theory? What surprised me?'}];
+var F_KERN=[{id:'kern',type:'text',label:'In one sentence'},{id:'symbol_foto',type:'photo',label:'My symbol for today (optional)'},{id:'schritt',type:'text',label:'My first step starting Monday'},{id:'unterstuetzung',type:'text',label:'Who supports me?'},{id:'merken',type:'text',label:'How will I know it\'s working?'}];
+var F_INT=[{id:'erzaehlen',type:'text',label:'What I want to share'},{id:'lieblingsfrage',type:'text',label:'My favourite question for the interview'},{id:'neu',type:'text',label:'What came up new in the interview'}];
+function fieldsOf(s){ if(s.type==='start')return F_START; if(s.type==='theory')return F_THEORY; if(s.type==='kern')return F_KERN; if(s.type==='interview')return F_INT; if(s.type==='phase')return s.p.fields||[]; return []; }
+var ALL_PHOTO_IDS=[]; SCREENS.forEach(function(s){fieldsOf(s).forEach(function(f){if(f.type==='photo')ALL_PHOTO_IDS.push(f.id);});});
+
+/* ---------- storage ---------- */
+var KEY='pb-'+PB.key+'-v2', state={step:0,fields:{}};
+try{var raw=localStorage.getItem(KEY); if(raw){var s=JSON.parse(raw); if(s&&s.fields)state=s;}}catch(e){}
+if(typeof state.step!=='number'||state.step<0||state.step>=SCREENS.length)state.step=0;
+var savedEl=document.getElementById('saved'),savedT,writeT;
+function persist(){clearTimeout(writeT);writeT=setTimeout(function(){try{localStorage.setItem(KEY,JSON.stringify(state));flash('Saved');}catch(e){flash('Unable to save');}},300);}
+function flash(t){savedEl.textContent=t;savedEl.style.opacity=1;clearTimeout(savedT);savedT=setTimeout(function(){savedEl.style.opacity=0;},1600);}
+var DB=(function(){var p=null;function open(){if(!p){p=new Promise(function(res,rej){try{var r=indexedDB.open('pb-'+PB.key,1);r.onupgradeneeded=function(){r.result.createObjectStore('photos');};r.onsuccess=function(){res(r.result);};r.onerror=function(){rej(r.error);};}catch(e){rej(e);}});}return p;}
+ function tx(m,fn){return open().then(function(db){return new Promise(function(res,rej){var rq=fn(db.transaction('photos',m).objectStore('photos'));rq.onsuccess=function(){res(rq.result);};rq.onerror=function(){rej(rq.error);};});});}
+ return{get:function(k){return tx('readonly',function(s){return s.get(k);}).then(function(v){return v||[];}).catch(function(){return[];});},set:function(k,v){return tx('readwrite',function(s){return s.put(v,k);});},clear:function(){return tx('readwrite',function(s){return s.clear();}).catch(function(){});}};})();
+var PHOTOS={};
+Promise.all(ALL_PHOTO_IDS.map(function(id){return DB.get(id).then(function(l){PHOTOS[id]=l;});}));
+
+/* ---------- helpers ---------- */
+function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
+var SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+var main=document.getElementById('main');
+function compress(file){return new Promise(function(res,rej){var fr=new FileReader();fr.onload=function(){var img=new Image();img.onload=function(){var k=Math.min(1,1400/Math.max(img.naturalWidth,img.naturalHeight)),c=document.createElement('canvas');c.width=Math.round(img.naturalWidth*k);c.height=Math.round(img.naturalHeight*k);c.getContext('2d').drawImage(img,0,0,c.width,c.height);res({src:c.toDataURL('image/jpeg',0.82),w:c.width,h:c.height});};img.onerror=rej;img.src=fr.result;};fr.onerror=rej;fr.readAsDataURL(file);});}
+
+/* ---------- rich content ---------- */
+function fig(name,cap){var svg=FIG[name];if(!svg)return'';return'<figure class="fig">'+svg+(cap?'<figcaption>'+cap+'</figcaption>':'')+'</figure>';}
+function spark(t){return'<div class="spark"><span>Thought Leap</span><p>'+t+'</p></div>';}
+function blocks(arr,open){return'<div class="rt">'+(arr||[]).map(function(b){
+  switch(b[0]){
+   case 'p':return'<p>'+b[1]+'</p>';
+   case 'h':return'<h4>'+b[1]+'</h4>';
+   case 'ul':return'<ul>'+b[1].map(function(x){return'<li>'+x+'</li>';}).join('')+'</ul>';
+   case 'ol':return'<ol>'+b[1].map(function(x){return'<li>'+x+'</li>';}).join('')+'</ol>';
+   case 'quote':return'<blockquote><p>'+b[1]+'</p>'+(b[2]?'<cite>'+b[2]+'</cite>':'')+'</blockquote>';
+   case 'ex':return'<div class="ex"><span class="ex-l">'+b[1]+'</span><p>'+b[2]+'</p></div>';
+   case 'q':return'<p class="refl">'+b[1]+'</p>';
+   case 'fig':return fig(b[1],b[2]);
+   case 'spark':return spark(b[1]);
+   case 'lit':return'<ul class="lit">'+b[1].map(function(x){return'<li>'+x+'</li>';}).join('')+'</ul>';
+   case 'table':return'<div class="tbl"><table><thead><tr>'+b[1].map(function(h){return'<th>'+h+'</th>';}).join('')+'</tr></thead><tbody>'+b[2].map(function(r){return'<tr>'+r.map(function(c){return'<td>'+c+'</td>';}).join('')+'</tr>';}).join('')+'</tbody></table></div>';
+   case 'layers':return layers(b[1],open);
+  }return'';}).join('')+'</div>';}
+function layers(arr,open){return'<div class="layers">'+(arr||[]).map(function(l){return'<details class="layer"'+(open?' open':'')+'><summary><span>'+l.t+'</span>'+(l.d?'<span class="depth">'+l.d+'</span>':'')+'</summary><div class="layer-body">'+blocks(l.b,open)+'</div></details>';}).join('')+'</div>';}
+function modelCard(m,i,open){return'<details class="model"'+(open?' open':'')+'><summary><span class="m-head"><span class="m-n">'+(i+1)+'</span><span class="m-t"><b>'+m.title+'</b><small>'+m.sub+'</small></span></span></summary><div class="model-body">'+(m.fig?fig(m.fig,m.cap):'')+blocks(m.core,open)+layers(m.layers,open)+'</div></details>';}
+function theoryLib(open){return'<div class="lib">'+PB.theory.map(function(m,i){return modelCard(m,i,open);}).join('')+'<div class="lib-end"></div></div>';}
+function qLib(open){return'<div class="lib">'+QTYPES.map(function(q,i){return'<details class="model"'+(open?' open':'')+'><summary><span class="m-head"><span class="m-n">'+(i+1)+'</span><span class="m-t"><b>'+q.t+'</b><small>'+q.s+'</small></span></span></summary><div class="model-body">'+blocks(q.b,open)+'</div></details>';}).join('')+
+ '<details class="model"'+(open?' open':'')+'><summary><span class="m-head"><span class="m-n">+</span><span class="m-t"><b>The Art of Good Questions</b><small>how good questioning works</small></span></span></summary><div class="model-body">'+blocks(HALTUNG,open)+'</div></details><div class="lib-end"></div></div>';}
+
+/* ---------- fields ---------- */
+function fieldHTML(f){var v=state.fields[f.id]||'';
+ if(f.type==='line')return'<div class="field"><label for="f-'+f.id+'">'+esc(f.label)+'</label><input type="text" id="f-'+f.id+'" data-key="'+f.id+'" value="'+esc(v)+'" autocomplete="name"></div>';
+ if(f.type==='photo')return'<div class="field"><span class="flabel">'+esc(f.label)+'</span><div class="thumbs" id="t-'+f.id+'"></div><input class="sr" type="file" accept="image/*" multiple id="p-'+f.id+'" data-photo="'+f.id+'"><label class="photo-btn" for="p-'+f.id+'">'+ICON.cam+'<span>Take or select a photo</span></label></div>';
+ return'<div class="field"><label for="f-'+f.id+'">'+esc(f.label)+'</label><textarea id="f-'+f.id+'" data-key="'+f.id+'" rows="4">'+esc(v)+'</textarea>'+(SR?'<div><button class="mini" type="button" data-dictate="f-'+f.id+'">Dictate</button></div>':'')+'</div>';}
+function capture(fs,label){return fs.length?'<section class="capture">'+(label?'<h2 class="label">'+label+'</h2>':'')+fs.map(fieldHTML).join('')+'</section>':'';}
+
+var cardIdx=0;
+function cardsHTML(){var q=QCARDS[cardIdx];return'<section class="cards" aria-label="Question Cards"><h2 class="label">Question Cards</h2><div class="card"><span class="type">'+q[0]+'</span><p class="q">'+q[1]+'</p><div class="card-nav"><button class="mini" type="button" data-card="-1">Previous</button><span>'+(cardIdx+1)+' / '+QCARDS.length+'</span><button class="mini" type="button" data-card="1">Next</button></div></div></section>';}
+
+/* ---------- phase content (shared by screen and print) ---------- */
+function phaseBody(p,open){var h='';
+ if(p.lead)h+='<p class="lead">'+p.lead+'</p>';
+ if(p.fig)h+=fig(p.fig,p.cap);
+ if(p.blocks)h+=blocks(p.blocks,open);
+ if(p.impulse)h+='<p class="impulse">'+p.impulse+'</p>';
+ if(p.task){h+='<section class="task"><h2 class="label">Build Task</h2><p>'+p.task+'</p><small style="display:block;margin:6px 0 2px;color:var(--muted);font-style:italic">Without a workshop: sketch or describe in words what you would have built — the core questions remain the same.</small>'+(p.materials&&p.materials.length?'<div class="chips" style="margin-top:8px">'+p.materials.map(function(m){return'<span class="chip">'+m+'</span>';}).join('')+'</div>':'')+'</section>';}
+ if(p.ways)h+='<section><h2 class="label">How you can work</h2><ul class="ways">'+WAYS.map(function(w){return'<li>'+w[0]+'<span>'+w[1]+'</span></li>';}).join('')+'</ul></section>';
+ if(p.spark)h+=spark(p.spark);
+ if(p.more&&p.more.length)h+='<details class="more"'+(open?' open':'')+'><summary>More Impulses</summary><div class="more-body">'+layers(p.more,open)+'</div></details>';
+ return h;}
+
+/* ---------- render ---------- */
+function renderProgress(){var pr=document.getElementById('progress');pr.style.gridTemplateColumns='repeat('+SCREENS.length+',minmax(0,1fr))';
+ pr.innerHTML=SCREENS.map(function(s,i){return'<button class="seg '+(i===state.step?'now':(i<state.step?'done':''))+'" type="button" data-go="'+i+'" aria-label="'+esc(s.short)+'"'+(i===state.step?' aria-current="step"':'')+'><span></span></button>';}).join('');}
+function render(){stopDictate();var s=SCREENS[state.step],h='<article class="screen">';
+ if(s.type==='start'){
+  h+='<p class="kicker">Welcome</p><h1>'+PB.title+'</h1><p class="impulse">'+PB.tagline+'</p>';
+  h+='<p class="lead">Dagmar guides you through the phases. Here you\'ll find impulses, theory, build tasks and space for your thoughts. Everything with a + can be expanded. The deeper you click, the deeper it goes. What you enter stays on this device.</p>';
+  h+='<ol class="steps3"><li><b>Read</b><span>Impulse and build task. As much theory as you like.</span></li><li><b>Build</b><span>With the materials in the room, alone or in a group of three.</span></li><li><b>Capture</b><span>A photo and a few thoughts.</span></li></ol>';
+  h+='<details class="more"><summary>Exploring without a workshop?</summary><div class="more-body"><div class="layer-body"><p>This playbook was created as a companion to a one-day in-person workshop — with LEGO®, clay, stones and other materials, facilitated by Dagmar Rostek. If you\'re exploring it on your own: building is optional. Read the impulses, ask yourself the questions, capture your thoughts in the fields. The theory library and all reflection questions work completely without materials — including the PDF at the end.</p><p>For the live workshop format with your group or team: <a href="mailto:dagmar@ecoaching-rostek.de">dagmar@ecoaching-rostek.de</a></p></div></div></details>';
+  h+='<p class="hint">Tip: Instead of typing, you can use the microphone on your phone keyboard.</p>';
+  if(PB.startSpark)h+=spark(PB.startSpark);
+  h+=capture(F_START);
+ } else if(s.type==='theory'){
+  h+='<p class="kicker">Theory Library</p><h1>For Further Reading</h1><p class="lead">'+PB.theoryLead+'</p>'+theoryLib(false);
+  if(PB.theorySpark)h+=spark(PB.theorySpark);
+  h+=capture(F_THEORY);
+ } else if(s.type==='phase'){
+  var p=s.p;h+='<p class="kicker">'+p.kicker+'</p><h1>'+p.title+'</h1>'+phaseBody(p,false);
+  if(p.toTheory)h+='<button class="mini to-theory" type="button" data-go="1">Go to Theory Library</button>';
+  if(p.build)h+='<div class="pause">'+ICON.hands+'<p>'+(typeof p.build==='string'?p.build:'Put your phone down and build now.')+'<small>Then document here what emerged.</small></p></div>';
+  h+=capture(p.fields||[],p.build?'Capture':'');
+ } else if(s.type==='kern'){
+  h+='<p class="kicker">My Core</p><h1>What I\'m taking with me</h1><p class="lead">Look back through your entries. What runs through your day like a red thread?</p>'+fig('kompass2','From many models comes one sentence.');
+  if(PB.kernSpark)h+=spark(PB.kernSpark);
+  h+=capture(F_KERN);
+ } else if(s.type==='interview'){
+  h+='<p class="kicker">In Conversation</p><h1>Let yourself be asked</h1><p class="lead">You interview each other in pairs, with someone from a different topic. Prepare what you want to share. The question cards and question library help you when you are asking.</p>'+fig('interview','How the interview works.')+cardsHTML();
+  h+='<section><h2 class="label">Question Library</h2>'+fig('compass','Nine directions from which you can look at a model.')+qLib(false)+'</section>';
+  h+=capture(F_INT);
+ } else {
+  h+='<p class="kicker">Closing</p><h1>Your Playbook</h1><p class="lead">Here you can see all your entries at a glance. Save the playbook as a PDF before you leave. The PDF contains all content fully expanded, with all diagrams, your texts and photos.</p>';
+  h+='<div class="actions"><button class="primary" type="button" id="pdf">Create PDF</button><div class="howto"><p><b>How it works:</b> In the print dialog, select "Save as PDF" as the destination.</p><p>On iPhone: in the print dialog, tap Share and select "Save to Files".</p></div>'+
+   '<button class="ghost" type="button" id="reset">Delete all entries</button><div class="confirm" id="confirm" hidden><p>Delete all texts and photos on this device?</p><button class="danger" type="button" id="reset-yes">Yes, delete</button><button class="mini" type="button" id="reset-no">Cancel</button></div></div>';
+  h+='<p class="hint">Your entries are only stored in this browser on this device. No one else can see them.</p><div class="sum" id="sum"></div>';
+ }
+ h+='</article>';main.innerHTML=h;renderProgress();
+ document.getElementById('prev').hidden=state.step===0;
+ var nx=document.getElementById('next');nx.hidden=state.step===SCREENS.length-1;nx.textContent=state.step===SCREENS.length-2?'Go to Closing':'Next';
+ fieldsOf(s).forEach(function(f){if(f.type==='photo')loadThumbs(f.id);});
+ if(s.type==='end')renderSummary();}
+function loadThumbs(id){DB.get(id).then(function(l){PHOTOS[id]=l;var el=document.getElementById('t-'+id);if(!el)return;el.innerHTML=l.map(function(ph,i){return'<div class="thumb"><img src="'+ph.src+'" alt="Photo '+(i+1)+'"><button type="button" data-del="'+id+'" data-i="'+i+'">Remove</button></div>';}).join('');});}
+function renderSummary(){var h='';SCREENS.forEach(function(s){var fs=fieldsOf(s);if(!fs.length)return;var inner='';fs.forEach(function(f){if(f.id==='name')return;if(f.type==='photo'){var l=PHOTOS[f.id]||[];if(l.length)inner+='<div class="sum-item"><h3>'+esc(f.label)+'</h3><div class="thumbs">'+l.map(function(ph){return'<div class="thumb"><img src="'+ph.src+'" alt=""></div>';}).join('')+'</div></div>';}else{var v=(state.fields[f.id]||'').trim();if(v)inner+='<div class="sum-item"><h3>'+esc(f.label)+'</h3><p>'+esc(v)+'</p></div>';}});
+ var title=s.type==='phase'?s.p.title:({start:'Arrival',theory:'Theory',kern:'My Core',interview:'In Conversation'})[s.type];h+='<section class="sum-block"><h2>'+title+'</h2>'+(inner||'<p class="empty">Nothing entered yet.</p>')+'</section>';});document.getElementById('sum').innerHTML=h;}
+
+/* ---------- print document ---------- */
+function pEntries(fs){if(!fs.length)return'';return'<div class="p-entries"><h3>My Notes</h3>'+fs.map(function(f){if(f.id==='name')return'';if(f.type==='photo'){var l=PHOTOS[f.id]||[];return'<div class="p-entry"><h4>'+esc(f.label)+'</h4>'+(l.length?'<div class="p-photos">'+l.map(function(ph){return'<img src="'+ph.src+'" alt="">';}).join('')+'</div>':'<div class="p-blank"></div>')+'</div>';}var v=(state.fields[f.id]||'').trim();return'<div class="p-entry"><h4>'+esc(f.label)+'</h4>'+(v?'<p>'+esc(v)+'</p>':'<div class="p-blank"></div>')+'</div>';}).join('')+'</div>';}
+function buildPrint(){var name=(state.fields.name||'').trim(),date=new Date().toLocaleDateString('en-GB',{day:'2-digit',month:'long',year:'numeric'});
+ var h='<section class="p-cover"><div><p class="p-kicker">My Playbook · LEGO® Serious Play® Workshop</p><h1>'+PB.title+'</h1><p class="impulse">'+PB.tagline+'</p></div>'+fig(PB.coverFig||'kompass2','')+'<div>'+(name?'<p class="p-name">'+esc(name)+'</p>':'')+'<p class="lead">'+date+'</p></div><div class="p-sig">'+SIG+'</div></section>';
+ h+='<section class="p-sec"><p class="p-kicker">Arrival</p><h2>My Question for Today</h2>'+pEntries(F_START)+'</section>';
+ h+='<section class="p-sec"><p class="p-kicker">Theory Library</p><h2>For Further Reading</h2><p class="lead">'+PB.theoryLead+'</p>'+theoryLib(true)+(PB.theorySpark?spark(PB.theorySpark):'')+pEntries(F_THEORY)+'</section>';
+ PB.phases.forEach(function(p){h+='<section class="p-sec"><p class="p-kicker">'+p.kicker+'</p><h2>'+p.title+'</h2>'+phaseBody(p,true)+pEntries(p.fields||[])+'</section>';});
+ h+='<section class="p-sec"><p class="p-kicker">My Core</p><h2>What I\'m taking with me</h2>'+fig('kompass2','')+(PB.kernSpark?spark(PB.kernSpark):'')+pEntries(F_KERN)+'</section>';
+ h+='<section class="p-sec"><p class="p-kicker">In Conversation</p><h2>Let yourself be asked</h2>'+fig('interview','')+fig('compass','')+qLib(true)+((PB.questions&&PB.questions.length)?'<div class="ex"><span class="ex-l">Questions for your topic</span><p>'+PB.questions.join('<br>')+'</p></div>':'')+pEntries(F_INT)+'</section>';
+ h+='<section class="p-end"><p class="big">'+(PB.endLine||'Thank you for a day with hands in thinking.')+'</p>'+spark(PB.endSpark||'Anyone who has built something can also rebuild it.')+'<div class="p-sig">'+SIG+'</div></section>';
+ document.getElementById('print').innerHTML=h;}
+window.addEventListener('beforeprint',buildPrint);
+
+/* ---------- dictation ---------- */
+var rec=null,recBtn=null;
+function stopDictate(){if(rec){try{rec.stop();}catch(e){}}}
+function toggleDictate(btn){if(rec){stopDictate();return;}var ta=document.getElementById(btn.getAttribute('data-dictate'));if(!ta)return;try{rec=new SR();}catch(e){return;}
+ recBtn=btn;rec.lang='en-GB';rec.continuous=true;rec.interimResults=false;
+ rec.onresult=function(e){for(var i=e.resultIndex;i<e.results.length;i++){if(e.results[i].isFinal){var t=e.results[i][0].transcript.trim();if(!t)continue;ta.value=ta.value?(ta.value.replace(/\s+$/,'')+' '+t):t;ta.dispatchEvent(new Event('input',{bubbles:true}));}}};
+ rec.onend=function(){if(recBtn){recBtn.classList.remove('on');recBtn.textContent='Dictate';}rec=null;recBtn=null;};rec.onerror=function(){};
+ try{rec.start();btn.classList.add('on');btn.textContent='Stop';}catch(e){rec=null;}}
+
+/* ---------- events ---------- */
+function go(i){if(i<0||i>=SCREENS.length)return;state.step=i;persist();render();window.scrollTo(0,0);}
+document.getElementById('prev').addEventListener('click',function(){go(state.step-1);});
+document.getElementById('next').addEventListener('click',function(){go(state.step+1);});
+document.addEventListener('click',function(e){var b=e.target.closest('[data-go]');if(b)go(+b.getAttribute('data-go'));});
+main.addEventListener('input',function(e){var k=e.target.getAttribute('data-key');if(!k)return;state.fields[k]=e.target.value;persist();});
+main.addEventListener('change',function(e){var id=e.target.getAttribute('data-photo');if(!id)return;var files=[].slice.call(e.target.files||[]);e.target.value='';if(!files.length)return;flash('Saving photo …');
+ DB.get(id).then(function(l){return Promise.all(files.map(compress)).then(function(add){l=l.concat(add);return DB.set(id,l);});}).then(function(){flash('Saved');loadThumbs(id);}).catch(function(){flash('Could not save photo');});});
+main.addEventListener('click',function(e){var t=e.target.closest('button');if(!t)return;
+ if(t.hasAttribute('data-dictate'))return toggleDictate(t);
+ if(t.hasAttribute('data-card')){cardIdx=(cardIdx+(+t.getAttribute('data-card'))+QCARDS.length)%QCARDS.length;var c=main.querySelector('.cards');if(c)c.outerHTML=cardsHTML();return;}
+ if(t.hasAttribute('data-del')){var id=t.getAttribute('data-del'),i=+t.getAttribute('data-i');DB.get(id).then(function(l){l.splice(i,1);return DB.set(id,l);}).then(function(){loadThumbs(id);flash('Photo removed');});return;}
+ if(t.id==='pdf'){Promise.all(ALL_PHOTO_IDS.map(function(id){return DB.get(id).then(function(l){PHOTOS[id]=l;});})).then(function(){buildPrint();setTimeout(function(){window.print();},150);});return;}
+ if(t.id==='reset'){document.getElementById('confirm').hidden=false;return;}
+ if(t.id==='reset-no'){document.getElementById('confirm').hidden=true;return;}
+ if(t.id==='reset-yes'){state={step:0,fields:{}};PHOTOS={};try{localStorage.removeItem(KEY);}catch(err){}DB.clear().then(function(){render();window.scrollTo(0,0);flash('Everything deleted');});}
+});
+
+document.getElementById('brand').textContent=PB.brand;
+document.getElementById('sig-foot').innerHTML=SIG;
+render();
+})();
+</script>
+</div>
+</body>
+</html>
