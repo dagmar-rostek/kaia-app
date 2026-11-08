@@ -371,8 +371,8 @@ var B=[
  folds:[['Wenn jemand wechseln m\xf6chte',['Wechseln ist bis zum Start erlaubt.','Bei ungerader Zahl lieber eine Dreiergruppe als eine Person allein.','Hat ein Thema nur eine Person: allein mit dir arbeiten oder ein zweites Thema w\xe4hlen.']]]},
 {s:'09:15',e:'09:30',t:'Aufw\xe4rmen und Start',k:'plenum',
  goal:'Die H\xe4nde sind warm, die Gruppen haben sich gefunden, die Playbooks sind offen.',
- say:['Bevor es losgeht, ein kurzer Bau zum Warmwerden. Baut in drei Minuten den h\xf6chsten Turm, der allein steht. Und dann: Was sagt dein Turm \xfcber dich?','Geht jetzt zu eurer Themeninsel, findet euch zu zweit oder zu dritt und \xf6ffnet euer Playbook \xfcber den Link. Die Eintr\xe4ge bleiben auf eurem Ger\xe4t, also bitte ein Ger\xe4t f\xfcr den ganzen Tag.'],
- do:['Turm bauen, 3 Minuten, kurz erz\xe4hlen','Gruppen an den Themeninseln bilden','Playbook-Links zeigen','Die Einladung zur freien Arbeitsform aussprechen'],
+ say:['Nehmt einen Pfeiffenputzer und formt ein pers\xf6nliches Symbol — drei Minuten. Was zeigt dein Symbol \xfcber dich?','Geht jetzt zu eurer Themeninsel, findet euch zu zweit oder zu dritt und \xf6ffnet euer Playbook \xfcber den Link. Die Eintr\xe4ge bleiben auf eurem Ger\xe4t, also bitte ein Ger\xe4t f\xfcr den ganzen Tag.'],
+ do:['Pfeiffenputzer-Symbol formen, 3 Minuten, kurz erz\xe4hlen','Gruppen an den Themeninseln bilden','Playbook-Links zeigen','Die Einladung zur freien Arbeitsform aussprechen'],
  folds:[['Die Einladung zur freien Arbeitsform',['„Ihr m\xfcsst heute nicht am Tisch sitzen bleiben. Geht in die Kaffeeecke, geht drau\xdfen eine Runde zu dritt, nehmt eure Modelle mit oder lasst sie stehen. Die Materialien liegen in der Mitte, nehmt euch, was ihr braucht. Einzige Verabredung: Wenn die Glocke dreimal klingt, kommen alle zur\xfcck in den Kreis.“']],['R\xfcckholsignal',['Glocke einmal leise: noch 5 Minuten.','Glocke dreimal: alle in den Kreis.','Die Uhrzeit des n\xe4chsten Treffens steht an der Tafel, f\xfcr alle, die drau\xdfen sind.']]]},
 {s:'09:30',e:'10:15',t:'Phase 1 und 2 · Impuls und Erkunden',k:'themen',ph:[0,1],
  goal:'Jede Gruppe kennt ihr Modell und hat ihr erstes Modell auf dem Tisch.',
@@ -493,7 +493,7 @@ function renderBlock(){
  h+='<p class="eyebrow"><span class="t">'+b.s+'–'+b.e+'</span><span class="kind">'+KIND[b.k]+'</span>'+(isNow?'<span class="nowtag">Jetzt</span>':'')+'</p>';
  h+='<h1 id="bt">'+esc(b.t)+'</h1><p class="goal">'+b.goal+'</p>';
  if(b.k==='pause'){h+='<div class="pausebox"><div class="count" id="pause-count">'+String(mins(b.e)-mins(b.s)).padStart(2,'0')+':00</div></div>';}
- if(b.say)h+='<div class="say"><span class="say-l">So kannst du es sagen</span>'+b.say.map(function(s){return '<p>'+s+'</p>';}).join('')+'</div>';
+ if(b.say)h+='<div class="say">'+b.say.map(function(s){return '<p>'+s+'</p>';}).join('')+'</div>';
  if(sel===0)h+='<div class="enjah-card"><img src="/playbooks/enjah.png" alt="Enjah" onerror="this.style.display=\'none\'"><div class="enjah-card-body"><b>Wo ist Enjah?</b><p>Da, sie hat es heute nicht aus dem Bett geschafft, ihr kennt das … und ja in der Pubert\xe4t ist da leider nichts zu machen, wir lassen sie schlafen ….</p></div></div>';
  if(b.steps)h+='<div class="steps">'+b.steps.map(function(s){return '<div><span class="min">'+s[0]+'</span><b>'+s[1]+'</b><span>'+s[2]+'</span></div>';}).join('')+'</div>';
  if(b.k==='themen')h+='<div class="quad">'+THEMES.map(function(t,i){return themeCol(t,i,b);}).join('')+'</div>';
