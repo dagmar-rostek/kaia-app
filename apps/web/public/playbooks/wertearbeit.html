@@ -260,6 +260,15 @@ footer .sig{max-width:680px;margin:0 auto}
 #pb-gate .g-err{font-size:14px;color:var(--danger);min-height:20px;margin:0}
 #pb-gate .g-back{font-size:13px;color:var(--muted);text-decoration:none;background:none;border:0;cursor:pointer;padding:0;display:block}
 #pb-gate .g-hint{font-size:13px;color:var(--muted);margin:0}
+
+/* ── NAVIGATION BAR + SESSION WARNING ── */
+.pb-minbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:10;background:var(--surface);border-bottom:1px solid var(--line);padding:0 max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;align-items:center;justify-content:space-between;gap:8px;height:42px}
+.pb-minbar .pb-back{font:inherit;font-size:13px;text-decoration:none;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:4px 12px;background:var(--bg);display:inline-flex;align-items:center;gap:4px;white-space:nowrap}
+.pb-minbar .pb-back:hover{color:var(--ink);border-color:var(--accent)}
+.pb-minbar .pb-pdf{font:inherit;font-size:13px;font-weight:600;border:0;border-radius:999px;padding:5px 14px;background:var(--accent);color:var(--accent-ink);cursor:pointer;white-space:nowrap}
+.top{top:calc(env(safe-area-inset-top,0px) + 42px)!important}
+.pb-session-warn{padding:9px max(16px,env(safe-area-inset-left,0px));font-size:13px;line-height:1.5;background:var(--accent-soft);color:var(--ink);border-bottom:1px solid var(--line)}
+@media print{.pb-minbar,.pb-session-warn{display:none!important}}
 </style>
 </head>
 <body>
@@ -279,6 +288,14 @@ footer .sig{max-width:680px;margin:0 auto}
 </div>
 
 <div id="pb-app" hidden>
+
+<div class="pb-minbar" aria-label="Navigation">
+  <a href="/playbooks" class="pb-back">&#x2190; Zur Übersicht</a>
+  <button class="pb-pdf" onclick="window.print()">Als PDF speichern</button>
+</div>
+<div class="pb-session-warn" role="note">
+  Deine Einträge werden nur für diese Browser-Sitzung gespeichert und gehen verloren, wenn du die Seite schließt oder neu lädst. Erstelle daher zwischendurch ein PDF.
+</div>
 
 <header class="top">
   <div class="top-in">

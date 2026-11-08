@@ -160,7 +160,7 @@ export default function PlaybooksPage() {
           </h1>
           <p className="text-muted-foreground max-w-prose">
             Jedes Playbook begleitet dich durch den Tag — mit Impulsen, Bauaufträgen
-            und Platz für deine Gedanken. Was du einträgst, bleibt auf diesem Gerät.
+            und Platz für deine Gedanken. Deine Einträge werden nur für diese Sitzung gespeichert und gehen verloren, wenn du den Tab schließt. Erstelle daher regelmäßig ein PDF.
           </p>
         </header>
 
@@ -237,6 +237,26 @@ export default function PlaybooksPage() {
           >
             Abmelden
           </button>
+        </div>
+
+        <div
+          className="border-t pt-6 flex items-center justify-between gap-4"
+          style={{ borderColor: "var(--border)" }}
+        >
+          <p className="text-xs text-muted-foreground">
+            Für Dozentinnen
+          </p>
+          <a
+            href="/playbooks/admin.html"
+            className="text-sm border rounded-full px-4 py-1.5 transition-colors"
+            style={{
+              borderColor: "var(--border)",
+              color: "var(--muted-foreground)",
+              textDecoration: "none",
+            }}
+          >
+            Moderationsguide →
+          </a>
         </div>
       </div>
     </div>

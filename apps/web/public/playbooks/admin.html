@@ -1,0 +1,593 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Moderation Leadership-Werkstatt</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="robots" content="noindex, nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;1,9..144,300;1,9..144,400&family=Instrument+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: facilitator console for a projector. */
+:root{
+  --paper:#F4F5F2; --card:#FFFFFF; --ink:#18201C; --muted:#56615A; --line:#D9DED8; --soft:#ECEFEA;
+  --now:#18201C; --now-ink:#F4F5F2;
+  --res:#3E6B4F; --res-soft:#E3ECE4;
+  --team:#2F5F8A; --team-soft:#E1EAF3;
+  --werte:#86561C; --werte-soft:#F2E7D6;
+  --konf:#8A3B52; --konf-soft:#F2E2E7;
+  --display:"Fraunces", Georgia, "Times New Roman", serif;
+  --body:"Instrument Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono:"IBM Plex Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#121614; --card:#1A1F1C; --ink:#E7ECE7; --muted:#A2ADA5; --line:#2C3530; --soft:#202723;
+    --now:#E7ECE7; --now-ink:#121614;
+    --res:#8FC2A0; --res-soft:#1F2D25; --team:#8DB8E0; --team-soft:#1B2633;
+    --werte:#E2B87C; --werte-soft:#2D2417; --konf:#E59DB1; --konf-soft:#2D1B21; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#121614; --card:#1A1F1C; --ink:#E7ECE7; --muted:#A2ADA5; --line:#2C3530; --soft:#202723;
+  --now:#E7ECE7; --now-ink:#121614;
+  --res:#8FC2A0; --res-soft:#1F2D25; --team:#8DB8E0; --team-soft:#1B2633;
+  --werte:#E2B87C; --werte-soft:#2D2417; --konf:#E59DB1; --konf-soft:#2D1B21; color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--body);font-size:18px;line-height:1.5}
+button{font:inherit;color:inherit}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--ink);outline-offset:3px;border-radius:6px}
+.t-res{--c:var(--res);--cs:var(--res-soft)}.t-team{--c:var(--team);--cs:var(--team-soft)}
+.t-werte{--c:var(--werte);--cs:var(--werte-soft)}.t-konf{--c:var(--konf);--cs:var(--konf-soft)}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);background:var(--paper);z-index:20}
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:10;background:var(--paper);border-bottom:1px solid var(--line);
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:10px}
+.top-in{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-size:20px;font-weight:500;white-space:nowrap}
+.bricks{display:inline-flex;gap:4px;align-items:flex-end}
+.brick{position:relative;width:16px;height:9px;border-radius:2px;background:var(--c)}
+.brick::before,.brick::after{content:"";position:absolute;top:-3px;width:4px;height:3px;border-radius:1px 1px 0 0;background:var(--c)}
+.brick::before{left:2px}.brick::after{right:2px}
+.tabs{display:flex;gap:6px}
+.tab{border:1px solid var(--line);background:var(--card);border-radius:999px;padding:6px 16px;cursor:pointer;font-size:15px}
+.tab[aria-current="page"]{background:var(--now);color:var(--now-ink);border-color:var(--now)}
+.tab-link{border:1px solid var(--line);background:var(--card);border-radius:999px;padding:6px 16px;cursor:pointer;font-size:15px;text-decoration:none;color:var(--muted);display:inline-flex;align-items:center}
+.tab-link:hover{color:var(--ink);border-color:var(--ink)}
+.status{margin-left:auto;display:flex;align-items:center;gap:14px;min-width:0}
+.status-text{font-size:15px;color:var(--muted);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.status-text b{color:var(--ink);font-weight:600}
+.clock{font-family:var(--mono);font-size:26px;font-weight:500;font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+.live{border:1px solid var(--line);background:var(--card);border-radius:999px;padding:6px 14px;cursor:pointer;font-size:14px;display:inline-flex;align-items:center;gap:8px}
+.live .dot{width:9px;height:9px;border-radius:50%;background:var(--muted)}
+.live.on{border-color:var(--ink)}
+.live.on .dot{background:#C2412D;animation:pulse 2s infinite}
+@keyframes pulse{50%{opacity:.35}}
+@media (max-width:760px){.status-text{display:none}.clock{font-size:20px}}
+.wrap{display:grid;grid-template-columns:minmax(0,300px) minmax(0,1fr);gap:0;min-height:calc(100% - 60px)}
+@media (max-width:980px){.wrap{grid-template-columns:minmax(0,1fr)}}
+.rail{border-right:1px solid var(--line);padding:18px 0 40px;padding-left:max(16px,env(safe-area-inset-left,0px))}
+@media (max-width:980px){.rail{border-right:0;border-bottom:1px solid var(--line);padding-right:max(16px,env(safe-area-inset-right,0px));max-height:260px;overflow-y:auto}}
+.rail h2{margin:0 16px 10px 0;font-size:12px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:var(--muted)}
+.agenda{list-style:none;margin:0;padding:0 12px 0 0;display:flex;flex-direction:column;gap:2px}
+.ag{width:100%;text-align:left;border:0;background:none;cursor:pointer;border-radius:10px;padding:7px 10px;display:grid;grid-template-columns:3.4em minmax(0,1fr);gap:8px;align-items:baseline;position:relative}
+.ag:hover{background:var(--soft)}
+.ag .tm{font-family:var(--mono);font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+.ag .nm{font-size:15px;line-height:1.3}
+.ag.k-pause .nm{color:var(--muted);font-style:italic}
+.ag.k-check .nm::before{content:"";display:inline-block;width:7px;height:7px;border-radius:50%;border:1.5px solid var(--ink);margin-right:7px;vertical-align:1px}
+.ag.k-themen .nm::after{content:"";display:inline-block;margin-left:8px;width:22px;height:6px;vertical-align:2px;border-radius:2px;background:linear-gradient(90deg,var(--res) 0 25%,var(--team) 25% 50%,var(--werte) 50% 75%,var(--konf) 75%)}
+.ag.past{opacity:.5}
+.ag.sel{background:var(--card);box-shadow:inset 0 0 0 1px var(--line)}
+.ag.now{background:var(--now);color:var(--now-ink)}
+.ag.now .tm,.ag.now .nm{color:var(--now-ink)}
+.ag.now .nm::before{border-color:var(--now-ink)}
+.ag .bar{position:absolute;left:10px;right:10px;bottom:3px;height:2px;border-radius:1px;background:var(--now-ink);opacity:.5;transform-origin:left;transform:scaleX(var(--p,0))}
+.ag .bar{display:none}.ag.now .bar{display:block}
+.rail-foot{margin:16px 12px 0 0;font-size:13px;color:var(--muted);line-height:1.45}
+.rail-foot kbd{font-family:var(--mono);font-size:12px;border:1px solid var(--line);border-radius:4px;padding:0 5px;background:var(--card)}
+.stage{padding:28px 0 60px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));min-width:0}
+@media (min-width:981px){.stage{padding-left:40px;padding-right:max(40px,env(safe-area-inset-right,0px))}}
+.view{max-width:1400px;margin:0 auto;display:flex;flex-direction:column;gap:26px;animation:fade .3s ease both}
+@keyframes fade{from{opacity:.4;transform:translateY(5px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+.eyebrow{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin:0;font-family:var(--mono);font-size:15px;color:var(--muted);font-variant-numeric:tabular-nums}
+.eyebrow .t{color:var(--ink);font-weight:500}
+.kind{font-family:var(--body);font-size:13px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;padding:3px 10px;border-radius:999px;border:1px solid var(--line);color:var(--muted)}
+.nowtag{font-family:var(--body);font-size:13px;font-weight:600;padding:3px 10px;border-radius:999px;background:var(--now);color:var(--now-ink)}
+h1{margin:-14px 0 0;font-family:var(--display);font-weight:300;font-size:clamp(38px,4.6vw,66px);line-height:1.02;letter-spacing:-.015em;text-wrap:balance}
+.goal{margin:0;font-size:clamp(19px,1.7vw,24px);color:var(--muted);max-width:62ch;text-wrap:pretty}
+.say{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:22px 26px;display:flex;flex-direction:column;gap:12px}
+.say-l{font-size:12px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:var(--muted)}
+.say p{margin:0;font-family:var(--display);font-size:clamp(20px,1.8vw,26px);line-height:1.38;font-weight:300}
+.cols2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:18px;align-items:start}
+@media (max-width:820px){.cols2{grid-template-columns:minmax(0,1fr)}}
+.panel{border-top:1px solid var(--line);padding-top:14px;display:flex;flex-direction:column;gap:8px;min-width:0}
+.panel h3{margin:0;font-size:12px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:var(--muted)}
+.panel ul,.panel ol{margin:0;padding-left:22px;display:flex;flex-direction:column;gap:5px}
+.panel li{text-wrap:pretty}
+details.fold{border-top:1px solid var(--line)}
+details.fold:last-of-type{border-bottom:1px solid var(--line)}
+details.fold>summary{list-style:none;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:12px;padding:13px 2px;font-weight:600}
+details>summary::-webkit-details-marker{display:none}
+details.fold>summary::after{content:"+";flex:none;font-size:24px;line-height:1;color:var(--muted);transition:transform .2s}
+details.fold[open]>summary::after{transform:rotate(45deg)}
+.fold-body{padding:0 2px 16px;display:flex;flex-direction:column;gap:8px}
+.fold-body ul,.fold-body ol{margin:0;padding-left:22px;display:flex;flex-direction:column;gap:5px}
+.fold-body p{margin:0}
+.fold-body blockquote{margin:0;padding:2px 0 2px 16px;border-left:2px solid var(--line);font-family:var(--display);font-size:20px;line-height:1.4;font-weight:300}
+.quad{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;align-items:start}
+@media (max-width:1250px){.quad{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:640px){.quad{grid-template-columns:minmax(0,1fr)}}
+.tc{background:var(--card);border:1px solid var(--line);border-top:6px solid var(--c);border-radius:16px;padding:16px 18px 6px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.tc-head{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+.tc-name{font-size:13px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--c)}
+.tc-open{border:0;background:none;padding:0;font-size:13px;color:var(--muted);cursor:pointer;text-decoration:underline;text-underline-offset:3px;white-space:nowrap}
+.tc-title{margin:0;font-family:var(--display);font-weight:400;font-size:24px;line-height:1.12}
+.tc-sub{margin:-4px 0 0;font-family:var(--mono);font-size:12px;color:var(--muted)}
+.tc p{margin:0}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font-size:13px;padding:3px 10px;border-radius:999px;background:var(--cs);color:var(--ink)}
+.tc details.fold{border-color:var(--line)}
+.tc details.fold>summary{font-size:15px;padding:10px 0}
+.tc .fold-body{font-size:16px}
+.tc details.fold:last-of-type{border-bottom:0}
+.warn{font-size:15px;padding:8px 12px;border-radius:10px;background:var(--cs)}
+.themestrip{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.themestrip span{font-size:14px;color:var(--muted);margin-right:4px}
+.tchip{border:1px solid var(--line);background:var(--card);border-radius:999px;padding:5px 14px 5px 10px;cursor:pointer;font-size:14px;display:inline-flex;align-items:center;gap:8px}
+.tchip i{width:10px;height:10px;border-radius:3px;background:var(--c)}
+.tchip:hover{border-color:var(--c)}
+.next{display:flex;flex-wrap:wrap;gap:14px 20px;align-items:center;justify-content:space-between;padding:16px 20px;border-radius:16px;background:var(--soft)}
+.next-txt{display:flex;flex-direction:column;gap:2px;min-width:0}
+.next-txt small{font-size:12px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:var(--muted)}
+.next-txt b{font-family:var(--display);font-weight:400;font-size:22px;line-height:1.2}
+.next-txt span{font-family:var(--mono);font-size:14px;color:var(--muted)}
+.btns{display:flex;gap:8px}
+.btn{border:1px solid var(--line);background:var(--card);border-radius:999px;padding:9px 18px;cursor:pointer;font-size:15px;white-space:nowrap}
+.btn.primary{background:var(--now);color:var(--now-ink);border-color:var(--now)}
+.next details{flex-basis:100%}
+.next details summary{cursor:pointer;font-size:14px;color:var(--muted);text-decoration:underline;text-underline-offset:3px;display:inline-block}
+.next details p{margin:10px 0 0;font-family:var(--display);font-size:19px;line-height:1.4;font-weight:300}
+.pausebox{display:flex;flex-direction:column;gap:16px;align-items:flex-start;padding:10px 0}
+.count{font-family:var(--mono);font-size:clamp(70px,12vw,170px);line-height:1;font-variant-numeric:tabular-nums;letter-spacing:-.04em}
+.steps{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border:1px solid var(--line);border-radius:16px;overflow:hidden;background:var(--card)}
+.steps div{padding:16px 18px;border-right:1px solid var(--line);display:flex;flex-direction:column;gap:2px}
+.steps div:last-child{border-right:0}
+.steps .min{font-family:var(--mono);font-size:13px;color:var(--muted)}
+.steps b{font-family:var(--display);font-weight:400;font-size:22px}
+@media (max-width:760px){.steps{grid-template-columns:minmax(0,1fr)}.steps div{border-right:0;border-bottom:1px solid var(--line)}}
+.th-head{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:14px}
+.grid4{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px;align-items:start}
+@media (max-width:900px){.grid4{grid-template-columns:minmax(0,1fr)}}
+.grid4.focus{grid-template-columns:minmax(0,1fr)}
+.grid4.focus .tcard:not(.on){display:none}
+.tcard{background:var(--card);border:1px solid var(--line);border-radius:22px;overflow:hidden;display:flex;flex-direction:column;min-width:0}
+.tcard-top{padding:22px 24px 18px;border-top:8px solid var(--c);display:flex;flex-direction:column;gap:10px}
+.tcard-row{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
+.tcard h2{margin:0;font-family:var(--display);font-weight:400;font-size:clamp(28px,2.6vw,38px);line-height:1.05}
+.tcard .lq{margin:0;font-family:var(--display);font-style:italic;font-weight:300;font-size:clamp(20px,1.7vw,25px);line-height:1.25;color:var(--c)}
+.tcard .about{margin:0;color:var(--ink);max-width:60ch}
+.fit{margin:0;font-size:16px;color:var(--muted)}
+.fit b{color:var(--ink);font-weight:600}
+.proc{padding:6px 24px 22px;display:flex;flex-direction:column;gap:16px}
+.ends{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:12px;align-items:stretch}
+.end{border-radius:14px;padding:12px 14px;display:flex;flex-direction:column;gap:2px;min-width:0}
+.end small{font-size:11.5px;font-weight:600;letter-spacing:.09em;text-transform:uppercase}
+.end span{font-size:16px;line-height:1.3}
+.end.a{border:1.5px dashed var(--c)}
+.end.a small{color:var(--muted)}
+.end.z{background:var(--c);color:var(--card)}
+.end.z small{color:var(--card);opacity:.85}
+.ends .arr{display:flex;align-items:center;color:var(--c)}
+.ends .arr svg{width:46px;height:20px}
+.rail-line{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));position:relative}
+.rail-line::before{content:"";position:absolute;left:10%;right:10%;top:17px;height:2px;background:var(--c);opacity:.35}
+.rail-line li{display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center;position:relative;padding:0 4px}
+.rail-line .n{width:36px;height:36px;border-radius:50%;background:var(--card);border:2px solid var(--c);color:var(--c);display:flex;align-items:center;justify-content:center;font-family:var(--display);font-size:17px;font-weight:500;position:relative}
+.rail-line li:last-child .n{background:var(--c);color:var(--card)}
+.rail-line .l{font-size:14px;line-height:1.25;text-wrap:balance;min-height:2.5em}
+.rail-line .tm{font-family:var(--mono);font-size:11.5px;color:var(--muted)}
+@media (max-width:520px){
+  .ends{grid-template-columns:minmax(0,1fr)}.ends .arr{justify-content:center;transform:rotate(90deg)}
+  .rail-line{grid-template-columns:minmax(0,1fr);gap:10px}
+  .rail-line::before{left:17px;right:auto;top:18px;bottom:18px;width:2px;height:auto}
+  .rail-line li{flex-direction:row;text-align:left;align-items:center}
+}
+.take{margin:0 24px 18px;padding:16px 18px;border-radius:16px;background:var(--cs);display:flex;flex-direction:column;gap:8px}
+.take h3{margin:0;font-size:12px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:var(--c)}
+.take ul{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:4px}
+.tcard .folds{padding:0 24px 8px}
+.ph-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:12px}
+.ph-list li{display:grid;grid-template-columns:2em minmax(0,1fr);gap:8px}
+.ph-list li>b{font-family:var(--display);font-weight:500;color:var(--c);font-size:18px}
+.ph-list p{margin:0}
+.ph-list .pt{font-weight:600}
+.models{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px}
+.models li b{font-weight:600}
+.intro-themes{display:flex;flex-direction:column;gap:6px}
+.sig{border-top:1px solid var(--line);padding-top:14px;font-size:13px;color:var(--muted);line-height:1.6}
+.sig b{color:var(--ink);font-weight:600}
+
+/* ── ADMIN GATE ── */
+#pb-gate{position:fixed;inset:0;z-index:9999;background:var(--paper);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:36px;padding:32px;text-align:center;font-family:var(--body)}
+#pb-gate .g-eye{font-size:12px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:0 0 8px}
+#pb-gate .g-title{font-family:var(--display);font-weight:300;font-size:clamp(24px,6vw,38px);margin:0;line-height:1.1;color:var(--ink)}
+#pb-gate form{display:flex;flex-direction:column;align-items:center;gap:10px;width:100%;max-width:280px}
+#pb-gate input[type=password]{width:100%;font:inherit;font-size:18px;letter-spacing:.15em;text-align:center;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 16px}
+#pb-gate input[type=password]:focus{outline:none;border-color:var(--res);box-shadow:0 0 0 3px var(--res-soft)}
+#pb-gate .g-btn{width:100%;border:0;border-radius:999px;background:var(--res);color:#fff;font:inherit;font-weight:600;font-size:16px;padding:13px;cursor:pointer}
+#pb-gate .g-err{font-size:14px;color:#c2412d;min-height:20px;margin:0}
+#pb-gate .g-back{font-size:13px;color:var(--muted);text-decoration:underline;text-underline-offset:3px}
+#pb-gate .g-hint{font-size:13px;color:var(--muted);margin:0}
+#pb-app[hidden]{display:none!important}
+#pb-app:not([hidden]){display:contents}
+</style>
+</head>
+<body>
+
+<div id="pb-gate">
+  <div>
+    <p class="g-eye">Moderation &middot; Workshop-Materialien</p>
+    <h1 class="g-title">Leadership-Werkstatt</h1>
+  </div>
+  <form id="pb-form">
+    <input type="password" id="pb-pw" placeholder="Passwort" autocomplete="current-password" aria-label="Passwort">
+    <p class="g-err" id="pb-err" role="alert"></p>
+    <button class="g-btn" type="submit">Zugang &#x2192;</button>
+    <a class="g-back" href="/playbooks">&#x2190; Zu den Playbooks</a>
+    <p class="g-hint">Nur f&#xFC;r Dozentinnen.</p>
+  </form>
+</div>
+<div id="pb-app" hidden>
+<header class="top">
+  <div class="top-in">
+    <span class="brand"><span class="bricks" aria-hidden="true"><i class="brick t-res"></i><i class="brick t-team"></i><i class="brick t-werte"></i><i class="brick t-konf"></i></span>Leadership-Werkstatt</span>
+    <a href="/playbooks" class="tab-link">&#x2190; Playbooks</a>
+    <nav class="tabs" aria-label="Ansicht">
+      <button class="tab" type="button" id="tab-themen">Die vier Themen</button>
+      <button class="tab" type="button" id="tab-ablauf">Ablauf</button>
+    </nav>
+    <div class="status">
+      <span class="status-text" id="status-text" aria-live="polite"></span>
+      <button class="live" type="button" id="live" aria-pressed="true"><span class="dot"></span><span id="live-label">Live</span></button>
+      <span class="clock" id="clock">--:--</span>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+  <aside class="rail" aria-label="Tagesablauf">
+    <h2>Ablauf &middot; Donnerstag</h2>
+    <ol class="agenda" id="agenda"></ol>
+    <p class="rail-foot"><kbd>&larr;</kbd> <kbd>&rarr;</kbd> Bl&ouml;cke &middot; <kbd>T</kbd> Themen &middot; <kbd>L</kbd> Live &middot; <kbd>F</kbd> Vollbild</p>
+  </aside>
+  <main class="stage" id="stage"></main>
+</div>
+
+<script>
+(function(){
+  var PW_KEY='rostek-pb-admin-auth-v1';
+  var CORRECT='PLAYBOOK_ADMIN_!';
+  var gEl=document.getElementById('pb-gate');
+  var aEl=document.getElementById('pb-app');
+  function unlock(){gEl.hidden=true;aEl.removeAttribute('hidden');}
+  try{if(sessionStorage.getItem(PW_KEY)==='1')unlock();}catch(e){}
+  document.getElementById('pb-form').addEventListener('submit',function(e){
+    e.preventDefault();
+    var v=document.getElementById('pb-pw').value;
+    if(v===CORRECT){try{sessionStorage.setItem(PW_KEY,'1');}catch(err){}document.getElementById('pb-err').textContent='';unlock();}
+    else{document.getElementById('pb-err').textContent='Falsches Passwort.';document.getElementById('pb-pw').value='';document.getElementById('pb-pw').focus();}
+  });
+})();
+</script>
+
+<script>
+(function(){
+"use strict";
+
+var THEMES=[
+{k:'res',name:'Leadership-Resilienz',q:'Was h\xe4lt mich, auch wenn es st\xfcrmt?',
+ about:'Die eigene Widerstandskraft als Leitung. Was gibt mir Kraft, was nimmt sie mir, woran merke ich fr\xfch, dass es zu viel wird, und wie st\xe4rke ich auch mein Team?',
+ fit:'du merkst, dass deine Akkus \xf6fter leer sind, als dir lieb ist, oder du dein Team durch eine anstrengende Zeit f\xfchrst.',
+ start:'Meine Energielandschaft, wie sie heute ist',
+ goal:'Ein pers\xf6nlicher Anker und ein erster Schritt f\xfcr mich und mein Team',
+ steps:['Was h\xe4lt gesund?','Energie­landschaft','Wenn es st\xfcrmt','Mein Anker','Und mein Team?'],
+ take:['Deinen Anker aus Knete, getrocknet und zum Mitnehmen','Deine pers\xf6nlichen Fr\xfchwarnzeichen','Ein Modell, um Belastung zu verstehen: Koh\xe4renzgef\xfchl und Stressampel','Einen ersten Schritt f\xfcr dich und eine Idee f\xfcr dein Team','Dein Playbook als PDF'],
+ models:[['Salutogenese','Antonovsky: Verstehbarkeit, Handhabbarkeit, Sinnhaftigkeit.'],['Stressampel','Kaluza: Stressoren, pers\xf6nliche Verst\xe4rker, Stressreaktion.'],['Sieben Resilienzsf\xe4ktoren','Akzeptanz, Optimismus, Selbstwirksamkeit, Verantwortung, Netzwerk, L\xf6sungsorientierung, Zukunftsplanung.'],['Leistungskurve','Gute Spannung und der Punkt, an dem es kippt.'],['Erholung','Sonnentag: abschalten, entspannen, Neues meistern, selbst bestimmen.'],['Gesund f\xfchren','Felfe und Franke: SelfCare und StaffCare.']],
+ kern:'Mein Anker in einem Satz und mein erster Schritt f\xfcr mich und mein Team.',
+ warn:'Kann pers\xf6nlich werden, etwa bei Ersch\xf6pfung. Respekt zeigen, in der Pause ein Gespr\xe4ch anbieten.',
+ ph:[
+  {t:'Was h\xe4lt gesund?',a:'Koh\xe4renzgef\xfchl im Playbook lesen: Verstehbarkeit, Handhabbarkeit, Sinnhaftigkeit. Welcher Teil wackelt gerade?',m:['Playbook'],f:['Welcher der drei Teile ist bei dir gerade stark?','Wof\xfcr lohnt sich dein Einsatz auch an schweren Tagen?'],th:'Antonovsky fragte nicht, was krank macht, sondern was gesund h\xe4lt. Der Sinn ist dabei der Motor.'},
+  {t:'Meine Energielandschaft',a:'Tuch als Untergrund. Steine f\xfcr das, was Kraft kostet, Naturmaterial oder LEGO f\xfcr das, was n\xe4hrt.',m:['Tuch','Steine','Naturmaterial','LEGO'],f:['Was liegt in der Mitte, was am Rand?','Was ist schwer, was leicht?','Was fehlt?'],th:'Auf Dauer bleibt gesund, wessen Bilanz stimmt. Erholung hat vier Gesichter: abschalten, entspannen, Neues meistern, selbst bestimmen.'},
+  {t:'Wenn es st\xfcrmt',a:'Einen typischen Sturm aus dem Leitungsalltag in die Landschaft bringen. Was wankt, was h\xe4lt, woran merke ich es fr\xfch?',m:['Seile','LEGO','Schleich-Tiere'],f:['Welches Tier bist du im Sturm, welches w\xe4rst du gern?','Woran merkt dein Team es zuerst?'],th:'Stressampel nach Kaluza: Stressoren, pers\xf6nliche Verst\xe4rker wie „Sei stark!“, Stressreaktion. Ansetzen l\xe4sst sich auf allen drei Ebenen.'},
+  {t:'Mein Anker',a:'Den eigenen Anker aus Knete formen. Er trocknet \xfcber Mittag und geht mit nach Hause.',m:['Knete'],f:['Wann hat dich dieser Anker schon einmal gehalten?','Wo legst du ihn zu Hause hin?'],th:'Ein Anker kann ein Mensch sein, ein Ritual, ein Ort, ein Satz oder der eigene K\xf6rper.',w:'Die Knete muss vor 12 Uhr fertig sein, damit sie trocknet.'},
+  {t:'Und mein Team?',a:'Zu dritt ein gemeinsames Modell: Wie st\xe4rke ich als Leitung die Resilienz meines Teams?',m:['LEGO','Seile','Schleich-Tiere'],f:['Was davon lebst du deinem Team schon vor?','Welches kleine Ritual k\xf6nntet ihr ab Montag einf\xfchren?'],th:'SelfCare und StaffCare h\xe4ngen zusammen. Das Team glaubt dem Verhalten der Leitung, nicht ihren Worten.'}
+ ]},
+{k:'team',name:'Teamvision und Ausrichtung',q:'Wohin wollen wir als Team?',
+ about:'Das eigene Team sehen, wie es heute ist, ein Bild davon entwickeln, wo es in einem Jahr stehen soll, und die Br\xfccke dorthin bauen.',
+ fit:'du ein Team \xfcbernommen hast, dein Team sich gerade ver\xe4ndert oder du das Gef\xfchl hast, dass alle in verschiedene Richtungen laufen.',
+ start:'Mein Team heute, als Aufstellung sichtbar gemacht',
+ goal:'Ein gemeinsames Warum und der erste Br\xfcckenstein ab Montag',
+ steps:['Vom Warum aus denken','Mein Team heute','In einem Jahr','Die Br\xfccke','Unser Warum'],
+ take:['Fotos deines Teams heute und in einem Jahr','Einen Satz f\xfcr das Warum deines Teams','Deinen ersten, kleinsten Br\xfcckenstein','Modelle, um Teams zu verstehen: Tuckman und psychologische Sicherheit','Dein Playbook als PDF'],
+ models:[['Golden Circle','Sinek: Warum, Wie, Was, von innen nach au\xdfen.'],['Teamphasen','Tuckman: Forming, Storming, Norming, Performing, Adjourning.'],['Psychologische Sicherheit','Edmondson: Sicherheit und Anspruch ergeben die Lernzone.'],['F\xfcnf Dysfunktionen','Lencioni: Ohne Vertrauen kein echtes Commitment.'],['Warum Aufstellen wirkt','N\xe4he, Abstand und Blickrichtung machen Beziehungen sichtbar.']],
+ kern:'Unser Warum in einem Satz und mein erster Br\xfcckenstein ab Montag.',
+ warn:'Aufstellungen zeigen eine Sicht, nicht die Wahrheit. Namen braucht niemand.',
+ ph:[
+  {t:'Vom Warum aus denken',a:'Golden Circle im Playbook lesen und ein erstes Warum f\xfcr das eigene Team notieren.',m:['Playbook'],f:['Was w\xfcrde fehlen, wenn es euer Team morgen nicht mehr g\xe4be?','Wann warst du zuletzt stolz auf dein Team?'],th:'Starke Teams denken von innen nach au\xdfen. Das Was ist auf Station klar, das Warum geht im Alltag leicht verloren.'},
+  {t:'Mein Team heute',a:'Das eigene Team mit Schleich-Tieren aufstellen, sich selbst dazu. N\xe4he, Abstand und Blickrichtung z\xe4hlen.',m:['Schleich-Tiere','T\xfccher'],f:['Wohin schauen die Figuren?','Wo stehst du als Leitung?','Wer fehlt?'],th:'Teamphasen nach Tuckman. Personalwechsel werfen Teams zur\xfcck, und Storming ist normal.'},
+  {t:'Mein Team in einem Jahr',a:'Daneben eine zweite Aufstellung: das Team, wie es in einem Jahr sein soll.',m:['Schleich-Tiere','Seile','T\xfccher'],f:['Woran merkst du am Montagmorgen, dass es gelungen ist?','Wer w\xfcrde es zuerst bemerken?'],th:'Psychologische Sicherheit nach Edmondson: Die besten Klinikteams melden mehr Fehler, weil sie offener dar\xfcber sprechen.'},
+  {t:'Die Br\xfccke',a:'Mit LEGO eine Br\xfccke zwischen beiden Aufstellungen bauen. Jeder Stein ist ein Beitrag der Leitung.',m:['LEGO'],f:['Welcher Stein ist der wackligste?','Was ist der kleinste erste Stein?'],th:'Lencioni: Das Fundament jeder Teamentwicklung ist Vertrauen.',w:'Die Br\xfccke wird gern zu gro\xdf. Hilf auf den kleinsten Stein, der ab Montag machbar ist.'},
+  {t:'Unser gemeinsames Warum',a:'Zu dritt ein gemeinsames Modell bauen und daraus einen Satz formen: Wir sind da, damit …',m:['LEGO'],f:['W\xfcrde euer Team diesen Satz unterschreiben?','Hilft er bei schwierigen Entscheidungen?'],th:'Ein gutes Warum ist kurz, konkret, ber\xfchrend und wahr.'}
+ ]},
+{k:'werte',name:'Wertearbeit',q:'Wof\xfcr stehe ich als Leitung?',
+ about:'Die eigenen Kernwerte kl\xe4ren, sehen, wo sie im Klinikalltag unter Druck geraten, und lernen, wie sie im Gleichgewicht bleiben, statt in ihre \xdcbertreibung zu kippen.',
+ fit:'du dich \xf6fter zwischen dem, was dir wichtig ist, und dem, was von dir erwartet wird, zerrissen f\xfchlst.',
+ start:'Ein erster Wert, der mir spontan einf\xe4llt',
+ goal:'Mein Wertekompass und meine Entwicklungsrichtung',
+ steps:['Werte in Balance','Meine Kernwerte','Wert unter Druck','Mein Wertekompass','Das Wertequadrat'],
+ take:['Deinen gezeichneten Wertekompass','Deine drei Kernwerte, gewichtet','Deine pers\xf6nliche Entwicklungsrichtung im Wertequadrat','Eine Sprache f\xfcr moralischen Stress und innere Stimmen','Dein Playbook als PDF'],
+ models:[['Werte- und Entwicklungsquadrat','Schulz von Thun: Jeder Wert braucht einen Schwesterwert.'],['Werte, Normen, Bed\xfcrfnisse','Was unter der sichtbaren Oberfl\xe4che liegt.'],['Das Innere Team','Schulz von Thun: viele Stimmen in einer Brust.'],['Vier ethische Prinzipien','Beauchamp und Childress: Autonomie, Nichtschaden, F\xfcrsorge, Gerechtigkeit.'],['Moralischer Stress','Jameton: Wissen, was richtig w\xe4re, und es nicht tun k\xf6nnen.']],
+ kern:'Mein Norden und meine Entwicklungsrichtung.',
+ warn:'Kann ber\xfchren, besonders beim moralischen Stress. W\xfcrdigen, nicht bewerten.',
+ ph:[
+  {t:'Werte in Balance',a:'Wertequadrat im Playbook lesen und einen ersten Leitungswert notieren.',m:['Playbook'],f:['Welcher Wert f\xe4llt dir spontan ein?','Was w\xfcrde dein Team sagen, wof\xfcr du stehst?'],th:'Jeder Wert braucht einen Schwesterwert, sonst kippt er. F\xfcrsorge ohne Konsequenz wird Aufopferung.'},
+  {t:'Meine Kernwerte',a:'Drei Bildkarten f\xfcr die wichtigsten Werte w\xe4hlen und mit Muggelsteinen gewichten.',m:['Bildkarten','Muggelsteine','Moderationskarten'],f:['Woran w\xfcrde dein Team erkennen, dass dir das wichtig ist?','Welche Karte h\xe4ttest du beinahe gew\xe4hlt?'],th:'Unter dem Verhalten liegen Werte, darunter Bed\xfcrfnisse. Werte erkennt man oft am \xc4rger.'},
+  {t:'Wert unter Druck',a:'Eine Szene aus dem Alltag bauen, in der ein Wert unter Druck ger\xe4t.',m:['LEGO','Schleich-Tiere'],f:['Welche inneren Stimmen melden sich hier?','Was steht gegen deinen Wert?'],th:'Moralischer Stress: Ich wei\xdf, was richtig w\xe4re, kann es aber nicht tun. Das Innere Team hilft, die Stimmen zu sortieren.'},
+  {t:'Mein Wertekompass',a:'Den pers\xf6nlichen Wertekompass zeichnen: Wo ist mein Norden?',m:['Zeichenstifte','Papier'],f:['Wo ist dein Norden?','Wohin zeigt der Kompass, wenn du m\xfcde bist?'],th:'Ein Kompass zeigt nicht den Weg, nur die Richtung.',w:'Es geht um Orientierung, nicht um Kunst.'},
+  {t:'Das Wertequadrat',a:'Zu dritt ein Wertequadrat f\xfcr einen gemeinsamen Leitungswert legen, mit Seilen verbunden.',m:['Moderationskarten','Seile'],f:['Zu welcher \xdcbertreibung neigst du unter Stress?','In welche Richtung willst du wachsen?'],th:'Die Diagonalen zeigen die Entwicklungsrichtung: von der \xdcbertreibung hin zum Schwesterwert.'}
+ ]},
+{k:'konf',name:'Kommunikation und Konflikte',q:'Was steckt in meiner schwierigen Situation?',
+ about:'Eine konkrete Konfliktsituation aus dem eigenen Alltag verstehen, sie aus anderen Perspektiven anschauen und das n\xe4chste Gespr\xe4ch vorbereiten. Aufbauend auf dem SL-Kurs.',
+ fit:'dich gerade eine bestimmte Situation oder ein Gespr\xe4ch besch\xe4ftigt, das du lieber heute als morgen kl\xe4ren w\xfcrdest.',
+ start:'Meine Situation, mit allen Beteiligten aufgestellt',
+ goal:'Ein ge\xfcbter erster Satz f\xfcr das n\xe4chste Gespr\xe4ch',
+ steps:['Wie Konflikte eskalieren','Meine Situation','Perspektiv­wechsel','Ein Element ver\xe4ndern','Das n\xe4chste Gespr\xe4ch'],
+ take:['Eine Einsch\xe4tzung, wo dein Konflikt steht','Eine neue Perspektive auf die andere Seite','Deinen eigenen Handlungsspielraum','Einen ge\xfcbten Gespr\xe4chseinstieg mit R\xfcckmeldung','Dein Playbook als PDF'],
+ models:[['Eskalationsstufen','Glasl: neun Stufen in drei Abschnitten.'],['Konfliktarten','Sache, Beziehung, Werte, Verteilung, Rolle, Struktur.'],['Gewaltfreie Kommunikation','Rosenberg: Beobachtung, Gef\xfchl, Bed\xfcrfnis, Bitte.'],['Nachrichtenquadrat','Schulz von Thun: vier Seiten einer Nachricht.'],['Konfliktstile','Thomas und Kilmann: f\xfcnf Wege, mit Konflikten umzugehen.'],['Harvard-Konzept','Fisher und Ury: Interessen statt Positionen.']],
+ kern:'Mein erster Satz im n\xe4chsten Gespr\xe4ch.',
+ warn:'Keine Namen, keine Konflikte mit Personen hier im Raum.',
+ ph:[
+  {t:'Wie Konflikte eskalieren',a:'Glasl im Playbook lesen und die eigene Situation ungef\xe4hr einstufen.',m:['Playbook'],f:['Seit wann gibt es den Konflikt?','Wer wei\xdf alles davon?'],th:'Neun Stufen nach unten. Bis Stufe 3 k\xf6nnen beide gewinnen, danach braucht es oft Hilfe von au\xdfen.'},
+  {t:'Meine Situation',a:'Die Situation mit allen Beteiligten aufstellen. Seile zeigen die Spannungen.',m:['Schleich-Tiere','Seile'],f:['Wo ist die st\xe4rkste Spannung?','Wer fehlt noch?','Wie weit stehst du selbst weg?'],th:'Welche Konfliktart liegt obenauf: Sache, Beziehung, Werte, Verteilung, Rolle oder Struktur?'},
+  {t:'Perspektivwechsel',a:'An den Platz einer anderen Figur gehen und von dort auf die Aufstellung schauen.',m:['Aufstellung aus Phase 2'],f:['Was ist dieser Person vielleicht wichtig?','Was w\xfcrde sie \xfcber dich sagen?'],th:'Interessen statt Positionen. Welches Bed\xfcrfnis steckt hinter dem Verhalten?'},
+  {t:'Ein Element ver\xe4ndern',a:'Eine Figur, einen Abstand oder ein Seil ver\xe4ndern und beobachten, was sich verschiebt.',m:['LEGO','Schleich-Tiere','Seile'],f:['Was liegt in deiner Hand?','Was w\xe4re der kleinste Schritt?'],th:'Konfliktstile nach Thomas und Kilmann: Welcher passt jetzt besser als der bisherige?'},
+  {t:'Das n\xe4chste Gespr\xe4ch',a:'Zu dritt den Gespr\xe4chseinstieg durchspielen: eine spricht, eine antwortet, eine beobachtet, dann wechseln.',m:['Rollenspiel'],f:['Wie klang der erste Satz?','Beobachtung oder Bewertung?'],th:'GFK-Satzanf\xe4nge: Ich habe beobachtet … Mir geht es damit … Mir ist wichtig … W\xe4rst du bereit …?'}
+ ]}
+];
+
+var B=[
+{s:'08:30',e:'09:00',t:'Ankommen und Einstieg',k:'plenum',
+ goal:'Alle wissen, was heute passiert und warum, und sind mit dem Kopf im Raum.',
+ say:['Sch\xf6n, dass ihr da seid. Ein Jahr seid ihr jetzt gemeinsam unterwegs, und die ersten Pr\xfcfungen habt ihr geschafft. Heute m\xf6chte ich euch einen Tag geben, an dem ihr an euren eigenen Fragen arbeitet.','Wir arbeiten mit LEGO Serious Play und mit vielen anderen Materialien. Die Idee dahinter: mit den H\xe4nden denken. Was wir bauen, zeigt oft mehr, als wir mit Worten sagen k\xf6nnten.'],
+ do:['Begr\xfc\xdfen und den Hund vorstellen','Erkl\xe4ren, was du vorhast und warum','Den Ablauf zeigen, links in der \xdcbersicht','Spielregeln','Check-in: Wie geht es euch?'],
+ folds:[
+  ['Was ich heute vorhabe',['Jede Person arbeitet den ganzen Tag an einem Thema, und zwar tief statt breit.','Ihr arbeitet zu zweit oder zu dritt, gef\xfchrt durch euer Playbook auf dem eigenen Ger\xe4t.','Ich gebe den Takt vor, und ihr gestaltet eure Arbeitszeit selbst.','F\xfcnf kurze Zwischenst\xe4nde holen uns immer wieder zusammen.','Ab 13:55 interviewt ihr euch gegenseitig, um 14:30 schlie\xdfen wir gemeinsam ab, Ende ist um 15:00.']],
+  ['Warum dieser Tag',['Kommunikation und Konflikte habt ihr schon im SL-Kurs bearbeitet. Deshalb ist der Tag heute breiter angelegt.','LEGO Serious Play setzt an euren echten Fragen an, nicht an einem Lehrbuchfall.','Jede Person w\xe4hlt das Thema, das f\xfcr sie gerade den gr\xf6\xdften Mehrwert hat.','Ihr geht mit einem Ergebnis nach Hause, das wirklich euch geh\xf6rt, als PDF und zum Teil zum Anf\xe4ssen.']],
+  ['Spielregeln',['Es gibt keine falschen Modelle.','Wer baut, erz\xe4hlt die Geschichte dazu.','Fragen gehen an das Modell, nicht an die Person.','Jede Person entscheidet, wie viel sie teilt.','Was hier erz\xe4hlt wird, bleibt hier.','Ihr d\xfcrft drinnen, in der Kaffeeecke oder drau\xdfen arbeiten.']],
+  ['Check-in: Wie geht es euch?',['Ein Schleich-Tier aus der Mitte holen: So komme ich heute an. Ein Satz dazu.','Alternative: ein Wort pro Person.','Alternative: Wetterbericht, wie ist dein Wetter heute?','Nachfragen, wie es nach den Pr\xfcfungen geht.']]
+ ]},
+{s:'09:00',e:'09:15',t:'Die vier Themen',k:'plenum',themes:true,
+ goal:'Alle kennen die vier Themen und wissen, woran die anderen heute arbeiten.',
+ say:['Ihr habt euch vorab f\xfcr ein Thema entschieden. Ich zeige euch kurz alle vier: worum es geht, wo ihr startet, wo ihr ankommt und was ihr mit nach Hause nehmt. Sp\xe4ter im Interview fragt ihr genau danach, und zwar bei jemandem aus einem anderen Thema.'],
+ do:['Die Themenseite zeigen, Taste T','Pro Thema: Leitfrage, Anfang, Ziel, was man mitnimmt','Fragen kl\xe4ren und pr\xfcfen, ob die Wahl noch passt'],
+ folds:[['Wenn jemand wechseln m\xf6chte',['Wechseln ist bis zum Start erlaubt.','Bei ungerader Zahl lieber eine Dreiergruppe als eine Person allein.','Hat ein Thema nur eine Person: allein mit dir arbeiten oder ein zweites Thema w\xe4hlen.']]]},
+{s:'09:15',e:'09:30',t:'Aufw\xe4rmen und Start',k:'plenum',
+ goal:'Die H\xe4nde sind warm, die Gruppen haben sich gefunden, die Playbooks sind offen.',
+ say:['Bevor es losgeht, ein kurzer Bau zum Warmwerden. Baut in drei Minuten den h\xf6chsten Turm, der allein steht. Und dann: Was sagt dein Turm \xfcber dich?','Geht jetzt zu eurer Themeninsel, findet euch zu zweit oder zu dritt und \xf6ffnet euer Playbook \xfcber den Link. Die Eintr\xe4ge bleiben auf eurem Ger\xe4t, also bitte ein Ger\xe4t f\xfcr den ganzen Tag.'],
+ do:['Turm bauen, 3 Minuten, kurz erz\xe4hlen','Gruppen an den Themeninseln bilden','Playbook-Links zeigen','Die Einladung zur freien Arbeitsform aussprechen'],
+ folds:[['Die Einladung zur freien Arbeitsform',['„Ihr m\xfcsst heute nicht am Tisch sitzen bleiben. Geht in die Kaffeeecke, geht drau\xdfen eine Runde zu dritt, nehmt eure Modelle mit oder lasst sie stehen. Die Materialien liegen in der Mitte, nehmt euch, was ihr braucht. Einzige Verabredung: Wenn die Glocke dreimal klingt, kommen alle zur\xfcck in den Kreis.“']],['R\xfcckholsignal',['Glocke einmal leise: noch 5 Minuten.','Glocke dreimal: alle in den Kreis.','Die Uhrzeit des n\xe4chsten Treffens steht an der Tafel, f\xfcr alle, die drau\xdfen sind.']]]},
+{s:'09:30',e:'10:15',t:'Phase 1 und 2 · Impuls und Erkunden',k:'themen',ph:[0,1],
+ goal:'Jede Gruppe kennt ihr Modell und hat ihr erstes Modell auf dem Tisch.',
+ say:['Im Playbook findet ihr den Start und eine Theoriebibliothek. Lest so viel, wie ihr braucht. Wer lieber gleich baut, springt direkt zu Phase 2. Die Theorie l\xe4uft euch nicht weg. Wie ihr arbeitet, entscheidet ihr. Wir sehen uns um 10:15 im Kreis.'],
+ do:['Rundgang, pro Gruppe h\xf6chstens 3 Minuten','Nach etwa 15 Minuten Lesende zum Bauen einladen','Theorie nur auf Nachfrage, kurz aus den Karten unten']},
+{s:'10:15',e:'10:25',t:'Zwischenstand 1 · Wetterbericht',k:'check',
+ goal:'Ein erster Eindruck, wie es den Gruppen geht.',
+ say:['Bevor wir in die Pause gehen: Wie ist das Wetter in eurer Gruppe? Sonnig, wolkig, st\xfcrmisch, Nebel? Eine Person pro Gruppe, ein Satz. Die anderen d\xfcrfen erg\xe4nzen.'],
+ do:['Glocke dreimal, alle in den Kreis','Eine Stimme pro Gruppe','Kein Ergebnis pr\xe4sentieren lassen','Pause ansagen: weiter um 10:40'],
+ folds:[['Fragen, wie es ihnen geht',['Wie geht es euch gerade mit eurem Thema?','Was ist leichter als gedacht, was schwerer?','Braucht ihr gerade etwas: Material, Theorie, Zeit, Ruhe?']]]},
+{s:'10:25',e:'10:40',t:'Pause',k:'pause',goal:'15 Minuten. Die Modelle bleiben stehen.',say:['Die Modelle bleiben stehen. Weiter geht es um 10:40.']},
+{s:'10:40',e:'11:15',t:'Phase 3 · Vertiefen',k:'themen',ph:[2],
+ goal:'Das erste Modell wird gepr\xfcft, ver\xe4ndert oder unter Druck gesetzt.',
+ say:['Ihr habt jetzt ein erstes Bild. In Phase 3 geht ihr eine Ebene tiefer, der Bauauftrag baut auf eurem ersten Modell auf. Wer noch tiefer will, findet unter „Mehr Impulse“ Material bis hin zu „F\xfcr Mutige“. Wer mag, nimmt die Arbeit mit nach drau\xdfen. Kurz im Kreis um 11:15.'],
+ do:['Rundgang','Schnelle Gruppen auf „F\xfcr Mutige“ verweisen','H\xe4ngende Gruppen: „Was w\xe4re das kleinste Modell, das ihr jetzt bauen k\xf6nnt?“']},
+{s:'11:15',e:'11:20',t:'Zwischenstand 2 · Puls im Stehen',k:'check',
+ goal:'Kurz Stimmung und Bedarf abfragen, ohne Hinsetzen.',
+ say:['Kurz alle in den Kreis, wir setzen uns nicht. Auf drei zeigt ihr mit dem Daumen, wie es gerade l\xe4uft. Eins, zwei, drei. Danke. Braucht eine Gruppe etwas?'],
+ do:['Daumen hoch, quer oder runter','Bei Daumen runter sp\xe4ter am Rand nachfragen, nicht vor allen']},
+{s:'11:20',e:'11:50',t:'Phase 4 · Vertiefen',k:'themen',ph:[3],
+ goal:'Etwas Eigenes entsteht, oft mit einem neuen Material.',
+ say:['Phase 4 bringt bei vielen von euch ein neues Material ins Spiel: Knete, Zeichenstifte, LEGO f\xfcr eine Br\xfccke. Wer mit Knete arbeitet: Euer Objekt trocknet \xfcber Mittag und geht mit euch nach Hause.'],
+ do:['Rundgang','Darauf achten, dass die Knete vor 12 Uhr fertig ist']},
+{s:'11:50',e:'12:00',t:'Zwischenstand 3 · Tier des Moments',k:'check',
+ goal:'Ein Bild vom Vormittag, bevor alle essen gehen.',
+ say:['Jede Gruppe holt sich ein Schleich-Tier, das zeigt, wie ihr gerade unterwegs seid. Stellt es auf das Tuch in der Mitte und sagt einen Satz dazu.'],
+ do:['Tiere in die Mitte','Ein Satz pro Gruppe','Einladung nach drau\xdfen f\xfcr die Mittagspause','Weiter um 13:00']},
+{s:'12:00',e:'13:00',t:'Mittagspause',k:'pause',goal:'Eine Stunde. Wer mag, geht eine Runde an die frische Luft, der Hund kommt mit.',say:['Wer mag, geht eine Runde drau\xdfen, der Hund kommt gern mit. Weiter geht es um 13:00 im Kreis.']},
+{s:'13:00',e:'13:10',t:'Zwischenstand 4 · Energie-Aufstellung',k:'check',
+ goal:'Mit Bewegung zur\xfcck in den Tag, gegen das Mittagstief.',
+ say:['Stellt euch auf eine Linie durch den Raum: hier am Fenster volle Energie, dort an der T\xfcr Mittagskoma. Wo steht ihr? Und an alle in der Mitte: Was w\xfcrde euch einen Schritt Richtung Fenster bringen?'],
+ do:['Linie im Raum ansagen','Zwei, drei Stimmen h\xf6ren','Mit einem Lacher in Phase 5 \xfcberleiten']},
+{s:'13:10',e:'13:40',t:'Phase 5 · Gemeinsam',k:'themen',ph:[4],
+ goal:'Vom Ich zum Wir: ein gemeinsames Modell oder ein gemeinsames Ausprobieren.',
+ say:['Bisher hat jede und jeder an der eigenen Frage gearbeitet. Jetzt baut ihr zusammen. Jede Person bringt etwas ein, und ihr schaut, was daraus als Ganzes entsteht.'],
+ do:['Rundgang','Diskutiert eine Gruppe statt zu bauen: „Baut, wor\xfcber ihr gerade sprecht.“']},
+{s:'13:40',e:'13:55',t:'Kern und Interview vorbereiten',k:'themen',ph:'kern',
+ goal:'Jede Person hat einen Satz, einen ersten Schritt und wei\xdf, was sie im Interview erz\xe4hlen will.',
+ say:['Jetzt wird es ruhiger. Bl\xe4ttert in eurem Playbook zur\xfcck: Was zieht sich durch euren Tag? Schreibt euren Kernsatz und euren ersten Schritt ab Montag. Dann schaut euch die Fragenkarten an. Um 13:55 suchen wir Tandems.'],
+ do:['Raum ruhig halten, Musik leise m\xf6glich','Auf die Fragenkarten im Playbook hinweisen']},
+{s:'13:55',e:'14:15',t:'Tandem-Interviews',k:'tandem',
+ goal:'Alle werden gefragt, alle fragen, und alle \xfcben systemische Fragen.',
+ say:['Sucht euch eine Person aus einem anderen Thema. Wer fragt, wei\xdf nichts \xfcber das Thema der anderen, und das ist gut so. Fragt neugierig, am Modell entlang. Keine Ratschl\xe4ge, nur Fragen. Acht Minuten, dann wechselt ihr.'],
+ do:['Tandems bilden: Gr\xfcn mit Blau, Ocker mit Beere, sonst frei mischen','Zeit ansagen: 8 Minuten, Wechsel, 8 Minuten, 3 Minuten Notizen'],
+ steps:[['1 Min.','Tandem finden','aus einem anderen Thema'],['8 Min.','A fragt B','am Modell entlang'],['8 Min.','B fragt A','Rollen tauschen'],['3 Min.','Festhalten','Neues ins Playbook']],
+ folds:[['Die neun Fragearten',['Bedeutung: Was bedeutet dieses Teil?','Zirkul\xe4r: Was w\xfcrde dein Team sagen, wenn es das s\xe4he?','Skala: Wo stehst du von 1 bis 10?','Unterschied: Was w\xe4re anders, wenn es fehlte?','Ausnahme: Wann war es schon einmal leichter?','Ressource: Was hilft dir schon?','Hypothetisch: Angenommen, es ist gelungen, was hast du getan?','Paradox: Was m\xfcsste du tun, damit es schlimmer wird?','Zukunft: Was ist dein kleinster Schritt am Montag?']]]},
+{s:'14:15',e:'14:30',t:'Galerie und Pause',k:'pause',
+ goal:'Kerns\xe4tze neben die Modelle legen und mit einem Kaffee herumgehen.',
+ say:['Legt eine Karte mit eurem Kernsatz neben euer Modell. Dann holt euch einen Kaffee und geht in Ruhe herum. Wer mag, klebt ein Post-it dazu: Das ber\xfchrt mich. Um 14:30 treffen wir uns zum Abschluss im Kreis.']},
+{s:'14:30',e:'15:00',t:'Abschlussrunde',k:'plenum',themes:true,
+ goal:'Jede Person sagt, was sie mitnimmt, speichert ihr Playbook, und das erste Jahr wird gew\xfcrdigt.',
+ say:['Wir schlie\xdfen im Kreis. Eine Runde, ein Satz pro Person: Ich nehme heute mit … Ohne Kommentar, einfach h\xf6ren.','Danach speichert ihr euer Playbook als PDF. Und dann m\xf6chte ich noch etwas zu diesem ersten Jahr sagen.'],
+ do:['Runde: Ich nehme heute mit …, etwa 10 Minuten','PDF speichern: Abschluss \xf6ffnen, „PDF erstellen“, „Als PDF speichern“','W\xfcrdigung des ersten Jahres','Knete-Anker einpacken lassen','Dank und Verabschiedung'],
+ folds:[['Ideen f\xfcr die W\xfcrdigung',['Ein Blick zur\xfcck auf den Anfang der Ausbildung.','Was du an dieser Gruppe beobachtet hast.','Ein Gedanke f\xfcr das zweite Jahr.']]]}
+];
+
+var SIG='<b>Dagmar Rostek</b> &middot; dagmar@ecoaching-rostek.de &middot; 0176 611 59 403 &middot; rostek-dagmar.de<br>rostek unternehmensKOMMUNIKATION &middot; superVision &middot; coaching<br>KI-Strategie &amp; Organisationsentwicklung';
+var KIND={plenum:'Plenum',themen:'Themenarbeit',check:'Zwischenstand',pause:'Pause',tandem:'Tandems'};
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
+function mins(hm){var p=hm.split(':');return +p[0]*60+ +p[1];}
+function nowMin(){var d=new Date();return d.getHours()*60+d.getMinutes()+d.getSeconds()/60;}
+function liveIndex(){var n=nowMin();for(var i=0;i<B.length;i++){if(n>=mins(B[i].s)&&n<mins(B[i].e))return i;}return n<mins(B[0].s)?-1:B.length;}
+function li(a){return '<ul>'+a.map(function(x){return '<li>'+x+'</li>';}).join('')+'</ul>';}
+function chips(a){return '<div class="chips">'+a.map(function(x){return '<span class="chip">'+esc(x)+'</span>';}).join('')+'</div>';}
+function fold(h,body,open){return '<details class="fold"'+(open?' open':'')+'><summary>'+h+'</summary><div class="fold-body">'+body+'</div></details>';}
+function themeStrip(){return '<div class="themestrip"><span>Die vier Themen:</span>'+THEMES.map(function(t,i){return '<button class="tchip t-'+t.k+'" type="button" data-theme="'+i+'"><i></i>'+t.name+'</button>';}).join('')+'</div>';}
+
+var view='ablauf', sel=0, live=true, focusTheme=-1;
+function parseHash(){var h=location.hash||'';var m=/^#block-(\d+)$/.exec(h);if(m){view='ablauf';sel=Math.min(B.length-1,Math.max(0,+m[1]-1));live=false;return;}
+ m=/^#thema-(\d)$/.exec(h);if(m){view='themen';focusTheme=Math.min(3,+m[1]-1);return;}
+ if(h==='#themen'){view='themen';focusTheme=-1;return;}}
+function setHash(){var h=view==='themen'?(focusTheme>=0?'#thema-'+(focusTheme+1):'#themen'):'#block-'+(sel+1);try{if(location.hash!==h)history.replaceState(null,'',h);}catch(e){}}
+
+function renderAgenda(){
+ var cur=liveIndex(), n=nowMin();
+ document.getElementById('agenda').innerHTML=B.map(function(b,i){
+  var cls='ag k-'+b.k+(i<cur?' past':'')+(i===cur?' now':'')+(view==='ablauf'&&i===sel?' sel':'');
+  var p=i===cur?Math.min(1,(n-mins(b.s))/(mins(b.e)-mins(b.s))):0;
+  return '<li><button class="'+cls+'" type="button" data-go="'+i+'" style="--p:'+p.toFixed(3)+'"'+(view==='ablauf'&&i===sel?' aria-current="step"':'')+'><span class="tm">'+b.s+'</span><span class="nm">'+esc(b.t)+'</span><span class="bar"></span></button></li>';
+ }).join('');
+}
+
+function fmtLeft(m){m=Math.max(0,Math.round(m));return m>=60?Math.floor(m/60)+' Std. '+(m%60)+' Min.':m+' Min.';}
+function renderStatus(){
+ var d=new Date();document.getElementById('clock').textContent=String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
+ var cur=liveIndex(),n=nowMin(),txt;
+ if(cur<0)txt='Start um <b>08:30</b>, noch '+fmtLeft(mins(B[0].s)-n);
+ else if(cur>=B.length)txt='<b>Geschafft.</b> Danke f\xfcr den Tag.';
+ else{var b=B[cur],nx=B[cur+1];txt='Jetzt: <b>'+esc(b.t)+'</b>, noch '+fmtLeft(mins(b.e)-n)+(nx?' &middot; danach '+esc(nx.t):'');}
+ document.getElementById('status-text').innerHTML=txt;
+ var lb=document.getElementById('live');lb.classList.toggle('on',live);lb.setAttribute('aria-pressed',live?'true':'false');
+ document.getElementById('live-label').textContent=live?'Live':'Live folgen';
+ document.getElementById('tab-themen').setAttribute('aria-current',view==='themen'?'page':'false');
+ document.getElementById('tab-ablauf').setAttribute('aria-current',view==='ablauf'?'page':'false');
+ var pc=document.getElementById('pause-count');
+ if(pc){var b2=B[sel];var left=mins(b2.e)*60-(d.getHours()*3600+d.getMinutes()*60+d.getSeconds());var total=(mins(b2.e)-mins(b2.s))*60;if(left>total||left<0)left=total;pc.textContent=String(Math.floor(left/60)).padStart(2,'0')+':'+String(left%60).padStart(2,'0');}
+}
+
+function themeCol(t,i,b){
+ var h='<article class="tc t-'+t.k+'"><div class="tc-head"><span class="tc-name">'+t.name+'</span><button class="tc-open" type="button" data-theme="'+i+'">Thema ansehen</button></div>';
+ if(b.ph==='kern'){
+  h+='<h3 class="tc-title">Mein Kern</h3><p>'+t.kern+'</p>'+fold('Fragen beim Rundgang',li(['Was zieht sich durch deinen Tag?','Welches Foto aus deinem Playbook zeigt das am besten?','Was willst du im Interview erz\xe4hlen?']),false);
+  return h+'</article>';
+ }
+ b.ph.forEach(function(pi,n){
+  var p=t.ph[pi];
+  if(n>0)h+='<hr style="border:0;border-top:1px solid var(--line);margin:4px 0">';
+  h+='<p class="tc-sub">Phase '+(pi+1)+'</p><h3 class="tc-title">'+p.t+'</h3><p>'+p.a+'</p>'+chips(p.m);
+  h+=fold('Fragen beim Rundgang',li(p.f),false)+fold('Theorie in zwei S\xe4tzen','<p>'+p.th+'</p>',false);
+  if(p.w)h+='<p class="warn">'+p.w+'</p>';
+ });
+ if(b.ph[0]===0||b.ph[0]===1)h+=fold('Achte darauf','<p>'+t.warn+'</p>',false);
+ return h+'</article>';
+}
+function renderBlock(){
+ var b=B[sel],cur=liveIndex(),isNow=sel===cur,nx=B[sel+1];
+ var h='<section class="view" aria-labelledby="bt">';
+ h+='<p class="eyebrow"><span class="t">'+b.s+'–'+b.e+'</span><span class="kind">'+KIND[b.k]+'</span>'+(isNow?'<span class="nowtag">Jetzt</span>':'')+'</p>';
+ h+='<h1 id="bt">'+esc(b.t)+'</h1><p class="goal">'+b.goal+'</p>';
+ if(b.k==='pause'){h+='<div class="pausebox"><div class="count" id="pause-count">'+String(mins(b.e)-mins(b.s)).padStart(2,'0')+':00</div></div>';}
+ if(b.say)h+='<div class="say"><span class="say-l">So kannst du es sagen</span>'+b.say.map(function(s){return '<p>'+s+'</p>';}).join('')+'</div>';
+ if(b.steps)h+='<div class="steps">'+b.steps.map(function(s){return '<div><span class="min">'+s[0]+'</span><b>'+s[1]+'</b><span>'+s[2]+'</span></div>';}).join('')+'</div>';
+ if(b.k==='themen')h+='<div class="quad">'+THEMES.map(function(t,i){return themeCol(t,i,b);}).join('')+'</div>';
+ if(b.do||b.folds){
+  h+='<div class="cols2">';
+  if(b.do)h+='<div class="panel"><h3>Du machst</h3>'+li(b.do)+'</div>';
+  if(b.folds)h+='<div class="panel"><h3>Zum Aufklappen</h3><div>'+b.folds.map(function(f){return fold(f[0],li(f[1]),false);}).join('')+'</div></div>';
+  h+='</div>';
+ }
+ if(b.themes||b.k!=='themen')h+=themeStrip();
+ h+='<div class="next">';
+ if(nx){h+='<div class="next-txt"><small>Als N\xe4chstes</small><b>'+esc(nx.t)+'</b><span>'+nx.s+'–'+nx.e+' &middot; '+KIND[nx.k]+'</span></div>';}
+ else{h+='<div class="next-txt"><small>Ende</small><b>Danke f\xfcr den Tag</b><span>15:00</span></div>';}
+ h+='<div class="btns"><button class="btn" type="button" data-step="-1"'+(sel===0?' disabled':'')+'>Zur\xfcck</button>'+(nx?'<button class="btn primary" type="button" data-step="1">Weiter</button>':'')+'</div>';
+ if(nx&&nx.say)h+='<details><summary>\xdcberleitung zum n\xe4chsten Block lesen</summary><p>'+nx.say[0]+'</p></details>';
+ h+='</div>';
+ h+='<div class="sig">'+SIG+'</div></section>';
+ return h;
+}
+
+function themeCard(t,i){
+ var times=['09:30','09:30','10:40','11:20','13:10'];
+ var h='<article class="tcard t-'+t.k+(focusTheme===i?' on':'')+'" id="thema-'+(i+1)+'"><div class="tcard-top"><div class="tcard-row"><h2>'+t.name+'</h2><button class="btn" type="button" data-focus="'+i+'">'+(focusTheme===i?'Alle vier zeigen':'Gro\xdf zeigen')+'</button></div><p class="lq">'+t.q+'</p><p class="about">'+t.about+'</p><p class="fit"><b>Passt zu dir, wenn</b> '+t.fit+'</p></div>';
+ h+='<div class="proc" aria-label="Prozess '+esc(t.name)+'"><div class="ends"><div class="end a"><small>Anfang</small><span>'+t.start+'</span></div><div class="arr" aria-hidden="true"><svg viewBox="0 0 46 20"><path d="M2 10h38M32 3l8 7-8 7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="end z"><small>Ziel</small><span>'+t.goal+'</span></div></div>';
+ h+='<ol class="rail-line">'+t.steps.map(function(s,n){return '<li><span class="n">'+(n+1)+'</span><span class="l">'+s+'</span><span class="tm">'+times[n]+'</span></li>';}).join('')+'</ol></div>';
+ h+='<div class="take"><h3>Damit gehst du nach Hause</h3>'+li(t.take)+'</div>';
+ h+='<div class="folds">';
+ h+=fold('Die f\xfcnf Phasen im Detail','<ol class="ph-list">'+t.ph.map(function(p,n){return '<li><b>'+(n+1)+'</b><div><p class="pt">'+p.t+'</p><p>'+p.a+'</p>'+chips(p.m)+'</div></li>';}).join('')+'</ol>',focusTheme===i);
+ h+=fold('Theorie im Playbook','<ul class="models">'+t.models.map(function(m){return '<li><b>'+m[0]+':</b> '+m[1]+'</li>';}).join('')+'</ul>',false);
+ h+=fold('Mein Kern am Ende','<p>'+t.kern+'</p>',false);
+ h+=fold('F\xfcr dich als Dozentin','<p>'+t.warn+'</p>',false);
+ h+='</div></article>';
+ return h;
+}
+function renderThemes(){
+ var h='<section class="view" aria-labelledby="tt"><div class="th-head"><div class="intro-themes"><p class="eyebrow"><span class="t">09:00</span><span class="kind">\xdcberblick</span></p><h1 id="tt">Vier Themen, eines davon <em>ganz</em>.</h1><p class="goal">Jede Person arbeitet den ganzen Tag an einem Thema, in f\xfcnf Phasen vom Anfang bis zum Ziel.</p></div>'+
+  '<button class="btn" type="button" data-toggle-all>Alle Details aufklappen</button></div>';
+ h+='<div class="grid4'+(focusTheme>=0?' focus':'')+'">'+THEMES.map(themeCard).join('')+'</div>';
+ h+='<div class="next"><div class="next-txt"><small>Zur\xfcck in den Ablauf</small><b>'+esc(B[sel].t)+'</b><span>'+B[sel].s+'–'+B[sel].e+'</span></div><div class="btns"><button class="btn primary" type="button" id="back-ablauf">Zum Ablauf</button></div></div>';
+ h+='<div class="sig">'+SIG+'</div></section>';
+ return h;
+}
+
+var stage=document.getElementById('stage');
+function render(scrollTop){
+ if(live&&view==='ablauf'){var c=liveIndex();sel=c<0?0:(c>=B.length?B.length-1:c);}
+ stage.innerHTML=view==='themen'?renderThemes():renderBlock();
+ renderAgenda();renderStatus();setHash();
+ if(scrollTop)window.scrollTo(0,0);
+}
+function go(i){sel=Math.max(0,Math.min(B.length-1,i));view='ablauf';live=false;render(true);}
+function showThemes(i){view='themen';focusTheme=(typeof i==='number')?i:-1;render(true);
+ if(focusTheme>=0){var el=document.getElementById('thema-'+(focusTheme+1));if(el)el.scrollIntoView({block:'start'});}}
+
+document.getElementById('agenda').addEventListener('click',function(e){var b=e.target.closest('[data-go]');if(b)go(+b.getAttribute('data-go'));});
+document.getElementById('tab-themen').addEventListener('click',function(){showThemes();});
+document.getElementById('tab-ablauf').addEventListener('click',function(){view='ablauf';render(true);});
+document.getElementById('live').addEventListener('click',function(){live=!live;if(live)view='ablauf';render(true);});
+stage.addEventListener('click',function(e){
+ var t=e.target.closest('button');if(!t)return;
+ if(t.hasAttribute('data-step')){go(sel+(+t.getAttribute('data-step')));return;}
+ if(t.hasAttribute('data-theme')){showThemes(+t.getAttribute('data-theme'));return;}
+ if(t.hasAttribute('data-focus')){var i=+t.getAttribute('data-focus');focusTheme=focusTheme===i?-1:i;render(true);return;}
+ if(t.id==='back-ablauf'){view='ablauf';render(true);return;}
+ if(t.hasAttribute('data-toggle-all')){var ds=[].slice.call(stage.querySelectorAll('details.fold'));var open=!ds.every(function(d){return d.open;});ds.forEach(function(d){d.open=open;});t.textContent=open?'Alle Details zuklappen':'Alle Details aufklappen';}
+});
+document.addEventListener('keydown',function(e){
+ var tag=(e.target.tagName||'').toLowerCase();if(tag==='input'||tag==='textarea')return;
+ if(e.key==='ArrowRight'||e.key==='PageDown'){e.preventDefault();go(sel+1);}
+ else if(e.key==='ArrowLeft'||e.key==='PageUp'){e.preventDefault();go(sel-1);}
+ else if(e.key==='t'||e.key==='T'){showThemes();}
+ else if(e.key==='l'||e.key==='L'){live=true;view='ablauf';render(true);}
+ else if(e.key==='f'||e.key==='F'){try{if(document.fullscreenElement)document.exitFullscreen();else{var p=document.documentElement.requestFullscreen();if(p&&p.catch)p.catch(function(){});}}catch(err){}}
+});
+window.addEventListener('hashchange',function(){parseHash();render(true);});
+
+parseHash();render(false);
+var lastLive=liveIndex();
+setInterval(function(){
+ var c=liveIndex();
+ if(c!==lastLive){lastLive=c;if(live&&view==='ablauf'){render(true);return;}renderAgenda();}
+ renderStatus();
+ var bars=document.querySelectorAll('.ag.now');if(bars.length){var b=B[c];if(b){var p=Math.min(1,(nowMin()-mins(b.s))/(mins(b.e)-mins(b.s)));bars[0].style.setProperty('--p',p.toFixed(3));}}
+},1000);
+})();
+</script>
+
+</div>
+</body>
+</html>
