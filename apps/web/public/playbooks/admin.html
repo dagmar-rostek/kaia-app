@@ -271,23 +271,6 @@ details.fold[open]>summary::after{transform:rotate(45deg)}
 
 <script>
 (function(){
-  var PW_KEY='rostek-pb-admin-auth-v1';
-  var CORRECT='PLAYBOOK_ADMIN_!';
-  var gEl=document.getElementById('pb-gate');
-  var aEl=document.getElementById('pb-app');
-  function unlock(){gEl.hidden=true;aEl.removeAttribute('hidden');}
-  try{if(sessionStorage.getItem(PW_KEY)==='1')unlock();}catch(e){}
-  document.getElementById('pb-form').addEventListener('submit',function(e){
-    e.preventDefault();
-    var v=document.getElementById('pb-pw').value;
-    if(v===CORRECT){try{sessionStorage.setItem(PW_KEY,'1');}catch(err){}document.getElementById('pb-err').textContent='';unlock();}
-    else{document.getElementById('pb-err').textContent='Falsches Passwort.';document.getElementById('pb-pw').value='';document.getElementById('pb-pw').focus();}
-  });
-})();
-</script>
-
-<script>
-(function(){
 "use strict";
 
 var THEMES=[
@@ -589,5 +572,23 @@ setInterval(function(){
 </script>
 
 </div>
+
+<script>
+(function(){
+  var PW_KEY='rostek-pb-admin-auth-v1';
+  var CORRECT='PLAYBOOK_ADMIN_!';
+  var gEl=document.getElementById('pb-gate');
+  var aEl=document.getElementById('pb-app');
+  function unlock(){gEl.hidden=true;aEl.removeAttribute('hidden');}
+  try{if(sessionStorage.getItem(PW_KEY)==='1')unlock();}catch(e){}
+  document.getElementById('pb-form').addEventListener('submit',function(e){
+    e.preventDefault();
+    var v=document.getElementById('pb-pw').value;
+    if(v===CORRECT){try{sessionStorage.setItem(PW_KEY,'1');}catch(err){}document.getElementById('pb-err').textContent='';unlock();}
+    else{document.getElementById('pb-err').textContent='Falsches Passwort.';document.getElementById('pb-pw').value='';document.getElementById('pb-pw').focus();}
+  });
+})();
+</script>
+
 </body>
 </html>
