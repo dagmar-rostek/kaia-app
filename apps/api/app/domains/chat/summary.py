@@ -14,7 +14,6 @@ import json
 import re
 import traceback
 
-import httpx
 import structlog
 from openai import AsyncOpenAI
 from sqlalchemy import select
@@ -67,7 +66,7 @@ async def _extract_via_openai(transcript: str) -> str:
     """Call GPT-4.1-mini and return raw JSON string. Raises on any error."""
     client = AsyncOpenAI(
         api_key=settings.openai_api_key,
-        timeout=httpx.Timeout(connect=10.0, read=60.0, write=10.0, pool=5.0),
+        timeout=60.0,
     )
     response = await client.chat.completions.create(
         model=_EXTRACTION_MODEL,

@@ -1,7 +1,6 @@
 import hashlib
 import json
 
-import httpx
 import structlog
 from openai import AsyncOpenAI
 from sqlalchemy.exc import IntegrityError
@@ -84,7 +83,7 @@ async def maybe_create_learning_profile(user_id: int) -> None:
 
         client = AsyncOpenAI(
             api_key=settings.openai_api_key,
-            timeout=httpx.Timeout(connect=10.0, read=30.0, write=10.0, pool=5.0),
+            timeout=30.0,
         )
         try:
             response = await client.chat.completions.create(

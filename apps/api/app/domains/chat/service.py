@@ -16,7 +16,6 @@ from collections.abc import AsyncGenerator
 from decimal import Decimal
 from typing import Any
 
-import httpx
 import structlog
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -75,7 +74,7 @@ async def _iter_llm(
     oai = AsyncOpenAI(
         api_key=api_key,
         base_url=base_url,
-        timeout=httpx.Timeout(connect=10.0, read=120.0, write=10.0, pool=5.0),
+        timeout=120.0,
     )
     all_msgs = [{"role": "system", "content": system_prompt}, *messages]
 

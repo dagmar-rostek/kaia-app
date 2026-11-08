@@ -299,7 +299,7 @@ async def _call_judge(
     user_prompt = _render_user_prompt(user_template, context)
 
     try:
-        response = await client.messages.create(
+        response = await client.messages.create(  # type: ignore[call-overload, unused-ignore]
             model=JUDGE_MODEL,
             max_tokens=512,
             temperature=0,
@@ -730,10 +730,10 @@ async def _call_persona_simulator(
         else:
             messages.append({"role": "assistant", "content": msg["content"]})
 
-    response = await client.messages.create(
+    response = await client.messages.create(  # type: ignore[call-overload, unused-ignore]
         model="claude-haiku-4-5-20251001",
         system=[{"type": "text", "text": system, "cache_control": {"type": "ephemeral"}}],
-        messages=messages,  # type: ignore[arg-type]
+        messages=messages,  # type: ignore[arg-type, unused-ignore]
         max_tokens=200,
         temperature=0.7,
     )
