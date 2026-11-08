@@ -225,6 +225,16 @@ details.fold[open]>summary::after{transform:rotate(45deg)}
 #pb-gate .g-back{font-size:13px;color:var(--muted);text-decoration:underline;text-underline-offset:3px}
 #pb-gate .g-hint{font-size:13px;color:var(--muted);margin:0}
 #pb-app{display:none}
+/* Du-machst: eingeklappt/ausgeklappt */
+.dm-fold{border-top:0;border-bottom:0;min-width:0}
+.dm-fold>summary{font-size:12px;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);padding:0 2px 10px;font-weight:600}
+.dm-fold[open]>summary::after{transform:rotate(45deg)}
+/* Enjah-Karte */
+.enjah-card{background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden;display:flex;flex-direction:column}
+.enjah-card img,.enjah-card video{width:100%;max-height:280px;object-fit:cover;display:block}
+.enjah-card-body{padding:12px 16px 14px;display:flex;flex-direction:column;gap:4px}
+.enjah-card-body b{font-size:14px;font-weight:600}
+.enjah-card-body p{margin:0;font-size:13px;color:var(--muted);line-height:1.4}
 </style>
 </head>
 <body>
@@ -347,7 +357,7 @@ var B=[
 {s:'08:30',e:'09:00',t:'Ankommen und Einstieg',k:'plenum',
  goal:'Alle wissen, was heute passiert und warum, und sind mit dem Kopf im Raum.',
  say:['Sch\xf6n, dass ihr da seid. Ein Jahr seid ihr jetzt gemeinsam unterwegs, und die ersten Pr\xfcfungen habt ihr geschafft. Heute m\xf6chte ich euch einen Tag geben, an dem ihr an euren eigenen Fragen arbeitet.','Wir arbeiten mit LEGO Serious Play und mit vielen anderen Materialien. Die Idee dahinter: mit den H\xe4nden denken. Was wir bauen, zeigt oft mehr, als wir mit Worten sagen k\xf6nnten.'],
- do:['Begr\xfc\xdfen und den Hund vorstellen','Erkl\xe4ren, was du vorhast und warum','Den Ablauf zeigen, links in der \xdcbersicht','Spielregeln','Check-in: Wie geht es euch?'],
+ do:['Begr\xfc\xdfen — Flusen kennen alle. Kurz erkl\xe4ren, warum Enjah heute fehlt','Erkl\xe4ren, was du vorhast und warum','Den Ablauf zeigen, links in der \xdcbersicht','Spielregeln','Check-in: Wie geht es euch?'],
  folds:[
   ['Was ich heute vorhabe',['Jede Person arbeitet den ganzen Tag an einem Thema, und zwar tief statt breit.','Ihr arbeitet zu zweit oder zu dritt, gef\xfchrt durch euer Playbook auf dem eigenen Ger\xe4t.','Ich gebe den Takt vor, und ihr gestaltet eure Arbeitszeit selbst.','F\xfcnf kurze Zwischenst\xe4nde holen uns immer wieder zusammen.','Ab 13:55 interviewt ihr euch gegenseitig, um 14:30 schlie\xdfen wir gemeinsam ab, Ende ist um 15:00.']],
   ['Warum dieser Tag',['Kommunikation und Konflikte habt ihr schon im SL-Kurs bearbeitet. Deshalb ist der Tag heute breiter angelegt.','LEGO Serious Play setzt an euren echten Fragen an, nicht an einem Lehrbuchfall.','Jede Person w\xe4hlt das Thema, das f\xfcr sie gerade den gr\xf6\xdften Mehrwert hat.','Ihr geht mit einem Ergebnis nach Hause, das wirklich euch geh\xf6rt, als PDF und zum Teil zum Anf\xe4ssen.']],
@@ -484,11 +494,12 @@ function renderBlock(){
  h+='<h1 id="bt">'+esc(b.t)+'</h1><p class="goal">'+b.goal+'</p>';
  if(b.k==='pause'){h+='<div class="pausebox"><div class="count" id="pause-count">'+String(mins(b.e)-mins(b.s)).padStart(2,'0')+':00</div></div>';}
  if(b.say)h+='<div class="say"><span class="say-l">So kannst du es sagen</span>'+b.say.map(function(s){return '<p>'+s+'</p>';}).join('')+'</div>';
+ if(sel===0)h+='<div class="enjah-card"><img src="/playbooks/enjah.jpg" alt="Enjah" onerror="this.style.display=\'none\'"><div class="enjah-card-body"><b>Warum Enjah heute fehlt</b><p>Enjah ist unser zweiter Hund — er ist noch in Ausbildung und darf deshalb noch nicht zu Veranstaltungen mitgenommen werden. Wenn die Ausbildung abgeschlossen ist, kommt er mit. Flusen kennt ihr ja schon.</p></div></div>';
  if(b.steps)h+='<div class="steps">'+b.steps.map(function(s){return '<div><span class="min">'+s[0]+'</span><b>'+s[1]+'</b><span>'+s[2]+'</span></div>';}).join('')+'</div>';
  if(b.k==='themen')h+='<div class="quad">'+THEMES.map(function(t,i){return themeCol(t,i,b);}).join('')+'</div>';
  if(b.do||b.folds){
   h+='<div class="cols2">';
-  if(b.do)h+='<div class="panel"><h3>Du machst</h3>'+li(b.do)+'</div>';
+  if(b.do)h+='<details class="fold dm-fold" open><summary>Du machst</summary><div class="fold-body">'+li(b.do)+'</div></details>';
   if(b.folds)h+='<div class="panel"><h3>Zum Aufklappen</h3><div>'+b.folds.map(function(f){return fold(f[0],li(f[1]),false);}).join('')+'</div></div>';
   h+='</div>';
  }
