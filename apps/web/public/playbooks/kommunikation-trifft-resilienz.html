@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Mein Playbook · Kommunikation trifft Resilienz</title>
+<style>
+:root{
+  --blue:#7c97ee; --blue-d:#4a63c9; --blue-l:#e9eefd; --blue-xl:#f4f6fe;
+  --mag:#a3236c; --mag-l:#fbe9f2; --yel:#f2e85a; --yel-l:#fdfbe0;
+  --ink:#1d2140; --mut:#5a5f80; --line:#d9ddf0; --bg:#f6f7fc; --ok:#2f8a5b;
+  --r:18px;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;padding-bottom:96px}
+button,input,textarea,select{font:inherit;color:inherit}
+a{color:var(--blue-d)}
+.top{position:sticky;top:0;z-index:20;background:rgba(246,247,252,.94);backdrop-filter:saturate(1.4) blur(10px);-webkit-backdrop-filter:saturate(1.4) blur(10px);border-bottom:1px solid var(--line)}
+.top-in{max-width:980px;margin:0 auto;padding:10px 18px 0}
+.top-row{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.brand{font-weight:700;letter-spacing:.01em;display:flex;align-items:center;gap:10px}
+.brand i{width:14px;height:14px;border-radius:50%;background:var(--mag);box-shadow:10px 0 0 var(--blue),20px 0 0 var(--yel);margin-right:22px}
+.saved{font-size:13px;color:var(--ok);min-height:1em;transition:opacity .4s}
+.progress{display:flex;gap:6px;overflow-x:auto;padding:10px 0 12px;scrollbar-width:none}
+.progress::-webkit-scrollbar{display:none}
+.progress button{flex:0 0 auto;border:1px solid var(--line);background:#fff;border-radius:999px;padding:5px 12px;font-size:13.5px;cursor:pointer;white-space:nowrap;color:var(--mut)}
+.progress button.on{background:var(--ink);border-color:var(--ink);color:#fff}
+.progress button.done:not(.on){border-color:var(--blue);color:var(--blue-d)}
+main{max-width:980px;margin:0 auto;padding:26px 18px 30px}
+.hero{border-radius:28px;padding:34px 30px;background:linear-gradient(135deg,var(--blue) 0%,#9bb0f3 55%,var(--blue-l) 100%);color:#fff;position:relative;overflow:hidden;margin-bottom:26px}
+.hero::after{content:"";position:absolute;right:-60px;top:-60px;width:240px;height:240px;border-radius:50%;background:var(--mag);opacity:.9}
+.hero::before{content:"";position:absolute;right:90px;bottom:-70px;width:150px;height:150px;background:var(--yel);transform:rotate(18deg);clip-path:polygon(50% 0,100% 100%,0 100%)}
+.hero>*{position:relative;z-index:1;max-width:620px}
+.kicker{text-transform:uppercase;letter-spacing:.12em;font-size:12.5px;font-weight:700;opacity:.9;margin:0 0 8px}
+h1{font-size:clamp(30px,5vw,46px);line-height:1.08;margin:0 0 12px;letter-spacing:-.01em}
+.hero p.lead{font-size:18.5px;margin:0;opacity:.96}
+h2{font-size:24px;line-height:1.2;margin:0 0 6px}
+h3{font-size:19px;margin:22px 0 6px}
+h4{font-size:16px;margin:16px 0 4px;color:var(--mag)}
+.card{background:#fff;border:1px solid var(--line);border-radius:var(--r);padding:22px 22px 20px;margin:0 0 18px;box-shadow:0 1px 0 rgba(29,33,64,.03)}
+.card.th{border-left:6px solid var(--blue)}
+.card.ex{border-left:6px solid var(--mag);background:linear-gradient(#fff,#fff) padding-box}
+.tag{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;border-radius:999px;padding:3px 10px;margin-bottom:10px}
+.tag.th{background:var(--blue-l);color:var(--blue-d)}
+.tag.ex{background:var(--mag-l);color:var(--mag)}
+.meta{display:flex;flex-wrap:wrap;gap:8px;margin:2px 0 12px}
+.meta span{font-size:13.5px;background:var(--yel-l);border:1px solid #ece49b;border-radius:8px;padding:2px 9px}
+.src{font-size:12.5px;color:var(--mut);margin-top:10px}
+.card p{margin:8px 0}
+.card ul{margin:6px 0 10px;padding-left:22px}
+.card li{margin:3px 0}
+blockquote{margin:10px 0;padding:10px 14px;border-left:4px solid var(--yel);background:var(--yel-l);border-radius:0 10px 10px 0;font-style:italic}
+table.tb{border-collapse:collapse;width:100%;font-size:15px;margin:8px 0}
+table.tb td,table.tb th{border:1px solid var(--line);padding:7px 9px;vertical-align:top;text-align:left}
+table.tb th{background:var(--blue-xl)}
+.amp td:first-child{font-weight:700;width:90px}
+.amp tr.r td:first-child{background:#f6c9c9}.amp tr.g td:first-child{background:#f6ef9e}.amp tr.n td:first-child{background:#c7e8c3}
+.fld{margin:16px 0 4px}
+.q{display:block;font-weight:600;margin:0 0 6px;line-height:1.4}
+.q small{display:block;font-weight:400;color:var(--mut)}
+textarea,input[type=text],input[type=number],select{width:100%;border:1.5px solid var(--line);border-radius:12px;padding:11px 13px;background:var(--blue-xl);transition:border-color .2s,background .2s}
+textarea{min-height:84px;resize:vertical}
+textarea:focus,input:focus,select:focus{outline:none;border-color:var(--blue);background:#fff}
+.tarea{position:relative}
+.dict{position:absolute;right:8px;bottom:10px;border:0;background:#fff;border-radius:999px;padding:3px 10px;font-size:12.5px;color:var(--blue-d);box-shadow:0 0 0 1px var(--line);cursor:pointer}
+.dict.on{background:var(--mag);color:#fff}
+.lst input{margin-bottom:6px}
+.scale{display:flex;flex-wrap:wrap;gap:5px}
+.scale button{min-width:38px;height:38px;border-radius:10px;border:1.5px solid var(--line);background:#fff;cursor:pointer;font-weight:600}
+.scale button.on{background:var(--blue-d);border-color:var(--blue-d);color:#fff}
+.scale.opts button{min-width:0;height:auto;padding:8px 12px;text-align:left;font-weight:500}
+.item{display:grid;grid-template-columns:1fr;gap:6px;padding:10px 0;border-top:1px dashed var(--line)}
+.item:first-of-type{border-top:0}
+.item .t{font-size:15.5px}
+.item .t b{color:var(--mag);margin-right:4px}
+@media(min-width:760px){.item.compact{grid-template-columns:1fr auto;align-items:center;gap:16px}}
+.rng{display:flex;align-items:center;gap:12px}
+.rng input{flex:1;accent-color:var(--mag)}
+.rng output{min-width:52px;text-align:right;font-weight:700;color:var(--mag)}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0 10px}
+.chip{border:1.5px solid var(--line);background:#fff;border-radius:999px;padding:4px 12px;cursor:pointer;font-size:14.5px}
+.chip.on{background:var(--mag);border-color:var(--mag);color:#fff}
+.cgroup{margin:6px 0}
+.cgroup b{display:inline-block;min-width:110px;font-size:14px;color:var(--mut)}
+.grid2{display:grid;gap:14px}
+@media(min-width:760px){.grid2{grid-template-columns:1fr 1fr}}
+.res{margin:14px 0 4px;padding:14px 16px;border-radius:14px;background:var(--blue-xl);border:1px solid var(--line)}
+.res h4{margin:0 0 8px;color:var(--ink)}
+.bar{display:grid;grid-template-columns:150px 1fr 54px;align-items:center;gap:10px;margin:5px 0;font-size:14.5px}
+.bar .tr{height:14px;border-radius:7px;background:#fff;border:1px solid var(--line);overflow:hidden}
+.bar .tr i{display:block;height:100%;background:linear-gradient(90deg,var(--blue),var(--mag));border-radius:7px}
+.bar span:last-child{text-align:right;font-weight:700}
+.note{font-size:14.5px;color:var(--mut)}
+.mtable{width:100%;border-collapse:collapse;font-size:14.5px}
+.mtable th{font-weight:600;text-align:left;padding:4px 4px;color:var(--mut);font-size:13px}
+.mtable td{padding:3px 4px}
+.mtable select,.mtable input{padding:7px 8px;border-radius:9px}
+.mtable td.ix{font-weight:700;color:var(--mag);text-align:center;min-width:44px}
+.svgw{display:flex;justify-content:center;margin:10px 0}
+.svgw svg{max-width:100%;height:auto}
+.img{width:100%;border-radius:14px;border:1px solid var(--line);display:block;margin:10px 0}
+details.more{border:1px solid var(--line);border-radius:14px;padding:0 14px;margin:10px 0;background:#fff}
+details.more>summary{cursor:pointer;padding:11px 0;font-weight:600;list-style:none}
+details.more>summary::before{content:"+";display:inline-block;width:20px;color:var(--mag);font-weight:700}
+details.more[open]>summary::before{content:"–"}
+.photos{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.photos figure{margin:0;position:relative}
+.photos img{width:110px;height:110px;object-fit:cover;border-radius:10px;border:1px solid var(--line)}
+.photos button{position:absolute;top:4px;right:4px;border:0;border-radius:999px;background:rgba(0,0,0,.6);color:#fff;font-size:12px;padding:2px 7px;cursor:pointer}
+.pbtn{display:inline-flex;align-items:center;gap:8px;border:1.5px dashed var(--blue);border-radius:12px;padding:9px 14px;cursor:pointer;color:var(--blue-d);background:var(--blue-xl)}
+.pbtn input{display:none}
+.chapter-intro{color:var(--mut);margin:0 0 22px;font-size:17.5px}
+.sum-ch{display:flex;justify-content:space-between;gap:10px;padding:10px 0;border-top:1px solid var(--line)}
+.sum-ch:first-child{border-top:0}
+.sum-ch a{cursor:pointer;text-decoration:none;font-weight:600}
+.pill{font-size:13px;border-radius:999px;padding:2px 10px;background:var(--blue-l);color:var(--blue-d);white-space:nowrap}
+.actions{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:14px 0}
+.primary{background:var(--mag);color:#fff;border:0;border-radius:14px;padding:13px 22px;font-weight:700;cursor:pointer;font-size:17px}
+.primary:disabled{opacity:.6}
+.ghost{background:#fff;border:1.5px solid var(--line);border-radius:14px;padding:11px 18px;cursor:pointer}
+.danger{background:#b3261e;color:#fff;border:0;border-radius:12px;padding:9px 16px;cursor:pointer}
+.check{display:flex;gap:10px;align-items:flex-start;font-size:15.5px;margin:8px 0}
+.check input{width:20px;height:20px;margin-top:3px;accent-color:var(--mag)}
+.howto{font-size:14.5px;color:var(--mut);background:var(--yel-l);border-radius:12px;padding:10px 14px}
+.howto p{margin:4px 0}
+.confirm{border:1px solid #f0c4c1;background:#fdf1f0;border-radius:12px;padding:10px 14px}
+.qlist{font-size:14px;line-height:1.5}
+.qlist h4{margin-top:18px}
+.qlist p{margin:5px 0;word-break:break-word}
+.sig{font-size:13.5px;color:var(--mut);line-height:1.55}
+footer{max-width:980px;margin:0 auto;padding:10px 18px 30px;font-size:13px;color:var(--mut)}
+.nav{position:fixed;left:0;right:0;bottom:0;z-index:30;background:rgba(255,255,255,.96);border-top:1px solid var(--line);padding:10px 18px calc(10px + env(safe-area-inset-bottom))}
+.nav-in{max-width:980px;margin:0 auto;display:flex;justify-content:space-between;gap:12px}
+.nav button{border:0;border-radius:14px;padding:12px 20px;font-weight:700;cursor:pointer;font-size:16px}
+#prev{background:var(--blue-l);color:var(--blue-d)}
+#next{background:var(--ink);color:#fff;margin-left:auto}
+.toast{position:fixed;left:50%;bottom:86px;transform:translateX(-50%);background:var(--ink);color:#fff;border-radius:999px;padding:7px 16px;font-size:14px;opacity:0;transition:opacity .3s;pointer-events:none;z-index:40}
+.toast.on{opacity:.95}
+@media(max-width:600px){
+  body{font-size:16px}
+  .hero{padding:26px 20px;border-radius:22px}
+  .hero::after{width:130px;height:130px;right:-55px;top:-55px}
+  .hero::before{width:90px;height:90px;right:20px;bottom:-50px}
+  .card{padding:18px 15px}
+  .bar{grid-template-columns:110px 1fr 44px}
+}
+@media print{
+  .top,.nav,.dict,.pbtn,.actions,.howto,.toast{display:none!important}
+  body{background:#fff;padding:0}
+  .card{break-inside:avoid;box-shadow:none}
+}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="top-in">
+    <div class="top-row">
+      <span class="brand"><i></i>Kommunikation trifft Resilienz</span>
+      <span class="saved" id="saved" aria-live="polite"></span>
+    </div>
+    <nav class="progress" id="progress" aria-label="Kapitel"></nav>
+  </div>
+</header>
+
+<main id="main"></main>
+
+<footer><p>Dagmar Rostek · rostek unternehmensKOMMUNIKATION · superVision · coaching</p></footer>
+
+<div class="nav"><div class="nav-in">
+  <button id="prev" type="button">Zurück</button>
+  <button id="next" type="button">Weiter</button>
+</div></div>
+<div class="toast" id="toast"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script>
+(function(){
+"use strict";
+
+function T(h,b){return {t:'th',h:h,b:b};}
+function X(o){o.t='ex';return o;}
+function txt(id,q,r){return {f:'txt',id:id,q:q,r:r||3};}
+function inp(id,q){return {f:'inp',id:id,q:q};}
+function lst(id,q,n){return {f:'lst',id:id,q:q,n:n};}
+function info(b){return {f:'info',b:b};}
+function sc(id,q,min,max){return {f:'sc',id:id,q:q,min:min,max:max};}
+function opt(id,q,o){return {f:'opt',id:id,q:q,o:o};}
+function rng(id,q,min,max,u){return {f:'rng',id:id,q:q,min:min,max:max,u:u||''};}
+function photo(id,q){return {f:'photo',id:id,q:q};}
+function chips(id,q,g){return {f:'chips',id:id,q:q,g:g};}
+function w(k){return {f:'w',k:k};}
+function qs(prefix,list,r){return list.map(function(q,i){return txt(prefix+'_'+(i+1),q,r||2);});}
+
+var SIG='Dagmar Rostek · dagmar@ecoaching-rostek.de · 0176 611 59 403 · rostek-dagmar.de<br>rostek unternehmensKOMMUNIKATION · superVision · coaching<br>KI-Strategie &amp; Organisationsentwicklung';
+var KORELLA='Arbeitsblatt aus: Patricia Korella, Resilienztrainings erfolgreich leiten, EDITION Training aktuell, © managerSeminare';
+
+var RF=[
+ ['Optimismus',['Ich empfinde mein Leben als sinnvoll und lebenswert.','Wenn ich mit neuen Herausforderungen konfrontiert werde, schaue ich optimistisch auf die Umsetzung.','Ich weiß, was ich kann, und vertraue auf meine Fähigkeiten und Kompetenzen.']],
+ ['Akzeptanz',['Auch wenn in der Vergangenheit Dinge mal nicht so gut gelaufen sind, wie ich es mir gewünscht hätte, kann ich das annehmen und schaue nach vorne.','Ich kann mich gut an Veränderungen anpassen, aber mich auch damit abfinden, wenn etwas nicht veränderbar ist.','Wenn bei Aufgabenumsetzungen unvorhersehbare Probleme auftreten, dann wende ich mich schnell Überlegungen für den Umgang damit zu.']],
+ ['Lösungsorientierung',['Ich finde es wichtig, mich auf die Lösung eines Problems zu konzentrieren, anstatt nach Schuldigen zu suchen.','Ich habe die Erfahrung gemacht, dass ein Umfeld, das die Lösungsorientierung fördert, wichtig ist.','Es gelingt mir oft, eine positive Einstellung bei der Suche nach Lösungen zu bewahren.']],
+ ['Selbstregulation',['Selbst in stressigen Situationen gelingt es mir, angemessen zu reagieren und meine Gefühle zum Ausdruck zu bringen.','Ich habe ein gutes Körperempfinden und spüre, was mir guttut und was nicht.','An stressigen Tagen gelingt es mir gut, nach der Arbeit den Hebel umzulegen und abzuschalten.']],
+ ['Selbstverantwortung',['Wenn es darum geht, Entscheidungen zu treffen, vertraue ich auf mich und mache mich nicht abhängig von Meinungen anderer.','Ich bin motiviert und weiß, was mich antreibt.','Ich reflektiere meine Erfahrungen, lerne aus Fehlern und gestalte meine Zukunft.']],
+ ['Netzwerkorientierung',['Ich nehme mir Zeit, um mit Menschen in Kontakt zu sein, und versuche, sie zu verstehen und zu unterstützen.','Ich vertraue anderen und weiß, auf wen ich mich in Krisenzeiten verlassen kann.','Mein Motto ist: „Freude teilen verdoppelt die Freude."']],
+ ['Zukunftsorientierung',['Ich habe klare Prioritäten für meine weitere Lebensplanung.','Veränderungen sind Herausforderungen, sich neu auszurichten.','Ich kenne meine Werte und versuche, diese in meinem Leben zu leben.']]
+];
+var SR=['Ich habe das Gefühl, dass mein Leben sinnvoll ist, ich habe noch viel vor.','Ich weiß, dass ich Stresssituationen real bewerten kann.','Ich kann von mir sagen, dass ich bei Schwierigkeiten nicht überreagiere.','In Stress- und Belastungssituationen finde ich meistens einen Lösungsweg, weil ich weiß, was ich kann.','Ich versuche möglichst immer, mir meine Ziele selbst zu suchen und Aufgaben zu übernehmen, die mich fordern.','Bei besonderen Anforderungen treibt mich vor allem die Lösung der Aufgabe an; Anerkennung und/oder materieller Gewinn sind nachgeordnet.','Die meisten Aufgaben, die ich zu bewältigen habe, machen mir Spaß.','Ich glaube, vorausschauendes Handeln ist eine besondere Stärke von mir.','Entscheidungen treffe ich schnell und sicher, das macht mir immer richtig Spaß.','Meine Leistungen und Fähigkeiten kann ich realistisch beurteilen.','Ich vertraue meinen Leistungen und Fähigkeiten, deshalb fühle ich mich in schwierigen Situationen meistens auch recht sicher.','Ich sehe mich als wertvollen Menschen an und akzeptiere mich so, wie ich bin.','Neugier und Veränderung sind für mich sehr wichtig, denn nur so kann ich meine eigenen Ressourcen erkennen und mir neue erschließen.','Ich kann ganz gut Prioritäten setzen sowie zwischen wichtig und unwichtig unterscheiden.'];
+var AQ=['Wenn ich eine Arbeit durchführe, dann mache ich sie gründlich.','Ich fühle mich verantwortlich, dass diejenigen, die mit mir zu tun haben, sich wohl fühlen.','Ich bin ständig auf Trab.','Anderen gegenüber zeige ich meine Schwächen nur ungern.','Wenn ich raste, dann roste ich.','Oft gebrauche ich den Satz: „Es ist schwierig, etwas so genau zu sagen."','Ich sage oft mehr, als nötig wäre.','Ich habe Mühe, Leute zu akzeptieren, die ungenau sind.','Es fällt mir schwer, Gefühle zu zeigen.','„Nur nicht lockerlassen" ist meine Devise.','Wenn ich eine Meinung äußere, begründe ich sie auch meist.','Wenn ich einen Wunsch habe, erfülle ich ihn mir schnell.','Ich liefere einen Bericht erst ab, wenn ich ihn mehrere Male überarbeitet habe.','Leute, die „herumtrödeln", regen mich auf.','Es ist für mich wichtig, von den anderen akzeptiert zu werden.','Ich habe eine harte Schale, aber einen weichen Kern.','Ich versuche oft herauszufinden, was andere von mir erwarten, um mich danach zu richten.','Leute, die unbekümmert in den Tag hineinleben, kann ich nur schwer verstehen.','Bei Diskussionen unterbreche ich die anderen häufig.','Ich löse meine Probleme selbst.','Aufgaben erledige ich möglichst rasch.','Im Umgang mit anderen bin ich eher auf Distanz bedacht.','Ich sollte viele Aufgaben noch besser erledigen.','Ich kümmere mich persönlich auch um nebensächliche Details.','Erfolge fallen nicht vom Himmel. Ich muss sie hart erarbeiten.','Für dumme Fehler habe ich wenig Verständnis.','Ich schätze es, wenn andere auf meine Fragen rasch und bündig antworten.','Es ist mir wichtig, von anderen zu erfahren, ob ich meine Sache gut gemacht habe.','Wenn ich eine Aufgabe einmal begonnen habe, führe ich sie auch zu Ende.','Ich stelle meine Wünsche und Bedürfnisse zugunsten jener anderer Personen zurück.','Ich bin anderen gegenüber oft hart, um von ihnen nicht verletzt zu werden.','Ich trommle oft ungeduldig mit meinen Fingern auf den Tisch.','Beim Erklären von Sachverhalten verwende ich gerne die klare Aufzählung: „Erstens …, zweitens …, drittens …"','Ich glaube, dass die meisten Dinge nicht so einfach sind, wie viele meinen.','Es ist mir unangenehm, andere Leute zu kritisieren.','Bei Diskussionen nicke ich häufig mit dem Kopf.','Ich strenge mich an, um meine Ziele zu erreichen.','Mein Gesichtsausdruck ist eher ernst.','Ich bin oft nervös.','So schnell kann mich nichts erschüttern.','Meine Probleme gehen die anderen nichts an.','Ich sage oft: „Das geht zu langsam."','Ich sage oft: „genau", „exakt", „klar", „logisch".','Ich sage oft: „Das verstehe ich nicht …"','Ich sage eher: „Könnten Sie es nicht einmal versuchen?", statt: „Versuchen Sie es einmal."','Ich bin diplomatisch.','Ich versuche, die an mich gestellten Erwartungen zu übertreffen.','Beim Telefonieren erledige ich oft noch andere Arbeiten.','„Die Zähne zusammenbeißen" heißt meine Devise.','Trotz enormer Anstrengung will mir Vieles einfach nicht gelingen.'];
+var AKEY=[['Sei perfekt!',[1,8,11,13,23,24,33,38,43,47]],['Beeil dich!',[3,12,14,19,21,27,32,39,42,48]],['Streng dich an!',[5,6,10,18,25,29,34,37,44,50]],['Mach es allen recht!',[2,7,15,17,28,30,35,36,45,46]],['Sei stark!',[4,9,16,20,22,26,31,40,41,49]]];
+var ENT=[['Wie oft vergleichst du dich mit anderen?',['Sehr oft','Manchmal','Selten']],['Wie wichtig ist es für dich, stets die beste Wahl zu treffen?',['Sehr wichtig','Wichtig, aber nicht entscheidend','Nicht so wichtig']],['Wie oft bist du unzufrieden mit deinen Entscheidungen?',['Häufig','Manchmal','Selten']],['Wie viel Zeit investierst du in die Suche nach der besten Option?',['Sehr viel Zeit','Einige Zeit','Wenig Zeit']],['Wie wichtig ist es für dich, dass andere deine Entscheidungen bewundern?',['Sehr wichtig','Wichtig, aber nicht entscheidend','Nicht so wichtig']]];
+var ENT_AUS=['Hast du überwiegend mit a) geantwortet, dann bist du wahrscheinlich ein Maximierer. Du strebst danach, immer die beste Option zu finden, und vergleichst dich oft mit anderen. Du bist möglicherweise häufig unzufrieden mit deinen Entscheidungen, da du immer das Gefühl hast, es könnte etwas Besseres geben.','Hast du überwiegend mit b) geantwortet, dann bist du möglicherweise eine Mischung aus Maximierer und Genügsamem. Du legst Wert darauf, gute Entscheidungen zu treffen, bist aber nicht so besessen davon, immer die beste Option zu finden. Du vergleichst dich gelegentlich mit anderen, aber nicht zu häufig, und bist meistens zufrieden mit deinen Entscheidungen.','Hast du überwiegend mit c) geantwortet, dann bist du wahrscheinlich ein Genügsamer. Du legst keinen großen Wert darauf, immer die beste Option zu finden oder dich mit anderen zu vergleichen. Du bist in der Regel zufrieden mit den Entscheidungen, die du triffst, und investierst nicht viel Zeit in die Suche nach alternativen Optionen.'];
+var LR=['Gesundheit/Körper','Beruf/Karriere','Familie/Freunde','Liebe/Partnerschaft','Selbstverwirklichung/Persönliche Weiterentwicklung','Finanzen','Wohnen/Umfeld','Hobby/Freizeit/Erholung'];
+var GR=[['Freude',['glücklich','zufrieden','heiter','erfreut']],['Überraschung',['sprachlos','überrascht','verblüfft','verwundert']],['Verachtung',['missachtend','herablassend','hochmütig','überlegen']],['Ekel',['angewidert','angeekelt','ablehnend','abgeneigt']],['Trauer',['verzweifelt','resigniert','enttäuscht','bedrückt']],['Wut',['zornig','aufgebracht','sauer','frustriert']],['Angst',['panisch','erschrocken','besorgt','unsicher']]];
+var STECK=[
+ {n:'Sei perfekt!',i:'Dieser Antreiber sorgt bei uns dafür, dass wir bei allem, was wir tun, einen sehr hohen Anspruch an unsere Arbeit haben.',
+  g:['„Das geht noch besser!"','„Fehler sind nicht akzeptabel!"','„Gut ist nicht gut genug!"'],
+  z:['Anerkennung durch fehlerfreie, qualitativ hochwertige Umsetzung'],
+  s:['Aufgaben werden auf höchstem Qualitätsniveau umgesetzt','Präzision in den Ausführungen','Vorausschauende Planung'],
+  w:['Verliert sich im Detail','Stellt hohe Erwartungen an andere','Zeitaufwand steht nicht im Verhältnis'],
+  a:['„Auch ich darf Fehler machen."','„Gut ist gut genug!"','„Weniger ist manchmal mehr."']},
+ {n:'Beeil dich!',i:'Menschen mit diesem Antreiber sind stets unruhig und in Hektik.',
+  g:['„Wer rastet, der rostet!"','„Ich darf keine Zeit verschwenden!"'],
+  z:['Nichts Wichtiges verpassen und überall dabei sein'],
+  s:['In kurzer Zeit wird viel geschafft','Hohe Eigenaktivität','Schnelle Auffassungsgabe'],
+  w:['Hohe Fehleranfälligkeit','Aufgaben werden nicht zu Ende gebracht','Keine Pausen'],
+  a:['„Ich darf mir die Zeit geben, die ich brauche!"','„In der Ruhe liegt die Kraft!"']},
+ {n:'Streng dich an!',i:'Anstrengung und Erfolg sind miteinander gekoppelt.',
+  g:['„Ohne Fleiß kein Preis!"','„Was Spaß macht, kann nichts wert sein!"'],
+  z:['Anstrengung garantiert den Erfolg'],
+  s:['Starkes Pflichtbewusstsein','Hält Leistungsdruck stand','Hohe Einsatzbereitschaft'],
+  w:['Überforderung','Nimmt keine Hilfe an','Sorgt nicht für Auszeiten'],
+  a:['„Ich darf Spaß an der Arbeit haben."','„Auch wenn es leicht geht, ist es wertvoll."']},
+ {n:'Mach es allen recht!',i:'In guter Beziehung zu stehen und harmonisch im Miteinander zu sein, hat hohe Bedeutung.',
+  g:['„Ich muss für alle da sein!"','„Ich möchte gemocht werden!"'],
+  z:['Mit allen in gutem Kontakt zu sein'],
+  s:['Hohe soziale Kompetenz','Sensibilität für Emotionen','Setzt sich für den Zusammenhalt ein'],
+  w:['Sorgt nicht für eigene Bedürfnisse','Kann nur schwer Entscheidungen treffen'],
+  a:['„Ich darf Nein sagen."','„Nicht alle müssen mich mögen."']},
+ {n:'Sei stark!',i:'Stärke zeigen, Aufgaben allein meistern und stets die Kontrolle behalten.',
+  g:['„Ich schaffe das allein!"','„Ein Indianer kennt keinen Schmerz!"'],
+  z:['Unabhängigkeit und Selbstbestimmung'],
+  s:['Hoher Umsetzungswille','Kann unpopuläre Entscheidungen treffen','Bewahrt Haltung in schwierigen Situationen'],
+  w:['Wirkt gefühlskalt','Achtet nicht auf eigene Ressourcen','Kann keine Hilfe annehmen'],
+  a:['„Schwächen sind menschlich."','„Ich darf um Hilfe bitten."']}
+];
+var SYS=[['Lösungsorientierte Fragen','Blick nach vorn'],['Zirkuläre Fragen','Perspektivwechsel'],['Ressourcenfragen','Unterstützungen identifizieren'],['Begründungsfragen','Denkprozesse hinter Entscheidungen'],['Skalierungsfragen','Subjektive Eindrücke messen'],['Vergleichsfragen','Unterschiede ermitteln'],['Hypothetische Fragen','Was wäre, wenn?'],['Paradoxe Fragen','Das Problem auf den Kopf stellen'],['Ökologische Fragen','Auswirkungen auf das Umfeld'],['Fragen zur Wirklichkeitskonstruktion','Denkmuster erkennen'],['Wunderfrage','Hürden ignorieren']];
+
+var KEY='rostek-komm-resilienz-v1';
+var state={step:0,f:{},theory:true};
+try{var saved=JSON.parse(localStorage.getItem(KEY)||'null');if(saved&&saved.f){state.f=saved.f;state.step=saved.step||0;state.theory=saved.theory!==false;}}catch(e){}
+var flashT=null;
+function persist(quiet){try{localStorage.setItem(KEY,JSON.stringify(state));if(!quiet)savedMsg();}catch(e){toast('Speichern nicht möglich (privater Modus?)');}}
+function savedMsg(){var s=document.getElementById('saved');s.textContent='✓ gespeichert';s.style.opacity=1;clearTimeout(flashT);flashT=setTimeout(function(){s.style.opacity=0;},1400);}
+function toast(m){var t=document.getElementById('toast');t.textContent=m;t.classList.add('on');setTimeout(function(){t.classList.remove('on');},1800);}
+function V(id){return state.f[id];}
+function num(id){var v=state.f[id];return (v===undefined||v===''||v===null)?null:+v;}
+
+var DB=(function(){
+ var dbp=null;
+ function open(){if(dbp)return dbp;dbp=new Promise(function(res,rej){if(!window.indexedDB)return rej();var r=indexedDB.open('rostek-kr-fotos',1);r.onupgradeneeded=function(){r.result.createObjectStore('p');};r.onsuccess=function(){res(r.result);};r.onerror=function(){rej();};});return dbp;}
+ function tx(mode,fn){return open().then(function(db){return new Promise(function(res,rej){var t=db.transaction('p',mode);var s=t.objectStore('p');var out=fn(s);t.oncomplete=function(){res(out&&out.result);};t.onerror=function(){rej();};});});}
+ return {get:function(k){return tx('readonly',function(s){return s.get(k);}).then(function(v){return v||[];}).catch(function(){return [];});},
+  set:function(k,v){return tx('readwrite',function(s){s.put(v,k);});},
+  clear:function(){return tx('readwrite',function(s){s.clear();}).catch(function(){});}};
+})();
+function compress(file){return new Promise(function(res,rej){var r=new FileReader();r.onload=function(){var img=new Image();img.onload=function(){var m=1400,sc=Math.min(1,m/Math.max(img.width,img.height));var c=document.createElement('canvas');c.width=Math.round(img.width*sc);c.height=Math.round(img.height*sc);c.getContext('2d').drawImage(img,0,0,c.width,c.height);res({d:c.toDataURL('image/jpeg',.8),w:c.width,h:c.height});};img.onerror=rej;img.src=r.result;};r.onerror=rej;r.readAsDataURL(file);});}
+
+function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
+function node(n){
+ if(typeof n==='string')return '<p>'+n+'</p>';
+ if(Array.isArray(n))return '<ul>'+n.map(function(x){return '<li>'+x+'</li>';}).join('')+'</ul>';
+ if(n.q)return '<blockquote>'+n.q+'</blockquote>';
+ if(n.h!==undefined&&n.l)return '<h4>'+n.h+'</h4><ul>'+n.l.map(function(x){return '<li>'+x+'</li>';}).join('')+'</ul>';
+ if(n.h!==undefined)return '<h4>'+n.h+'</h4>';
+ if(n.tbl)return '<div style="overflow-x:auto"><table class="tb">'+n.tbl.map(function(r,i){return '<tr>'+r.map(function(c){return i?'<td>'+c+'</td>':'<th>'+c+'</th>';}).join('')+'</tr>';}).join('')+'</table></div>';
+ if(n.amp)return ampel();
+ if(n.tree)return '<div class="svgw">'+treeSVG()+'</div>';
+ if(n.sig)return '<p class="sig">'+SIG+'</p>';
+ return '';
+}
+function ampel(){return '<div style="overflow-x:auto"><table class="tb amp"><tr><th></th><th>Ebene</th><th>Stresskompetenz</th></tr>'+
+ '<tr class="r"><td>Rot</td><td><b>Stressoren</b> – „Ich gerate in Stress, wenn …"</td><td><b>Instrumentelle Stresskompetenz</b></td></tr>'+
+ '<tr class="g"><td>Gelb</td><td><b>Stressverstärker</b> – „Ich setze mich selbst unter Stress, indem …"</td><td><b>Mentale Stresskompetenz</b></td></tr>'+
+ '<tr class="n"><td>Grün</td><td><b>Stressreaktion</b> – „Wenn ich im Stress bin, dann …"</td><td><b>Regenerative Stresskompetenz</b></td></tr></table></div>';}
+function treeSVG(){var f=['Selbstregulation','Selbstverantwortung','Zukunftsorientierung','Lösungsorientierung','Optimismus','Akzeptanz','Netzwerkorientierung'];
+ var s='<svg viewBox="0 0 420 420" width="380" role="img" aria-label="Resilienzbaum"><circle cx="210" cy="210" r="196" fill="#f4f6fe" stroke="#7c97ee" stroke-width="2"/><circle cx="210" cy="210" r="150" fill="#fff" stroke="#d9ddf0"/>';
+ for(var i=0;i<7;i++){var a=(-90+i*360/7)*Math.PI/180,x1=210+150*Math.cos(a),y1=210+150*Math.sin(a),x2=210+196*Math.cos(a),y2=210+196*Math.sin(a);s+='<line x1="'+x1+'" y1="'+y1+'" x2="'+x2+'" y2="'+y2+'" stroke="#7c97ee"/>';
+  var b=(-90+(i+.5)*360/7)*Math.PI/180,tx=210+173*Math.cos(b),ty=210+173*Math.sin(b),rot=(i+.5)*360/7;if(rot>90&&rot<270)rot+=180;s+='<text x="'+tx+'" y="'+ty+'" font-size="11" font-weight="600" fill="#1d2140" text-anchor="middle" dominant-baseline="middle" transform="rotate('+rot+' '+tx+' '+ty+')">'+f[i]+'</text>';}
+ s+='<path d="M204 300 C206 260 202 220 196 195 L224 195 C218 220 214 260 216 300 Z" fill="#8a5a3b"/>';
+ s+='<circle cx="210" cy="150" r="58" fill="#7fbf7a"/><circle cx="165" cy="172" r="40" fill="#6fae6a"/><circle cx="255" cy="172" r="40" fill="#6fae6a"/>';
+ s+='<text x="210" y="368" font-size="14" font-weight="700" text-anchor="middle" fill="#1d2140">Mein Resilienzbaum</text></svg>';return s;}
+
+function label(f){return f.q?'<label class="q" for="'+f.id+'">'+f.q+'</label>':'';}
+var SR_API=window.SpeechRecognition||window.webkitSpeechRecognition;var SPEECH=!!SR_API;var rec=null,recBtn=null;
+function field(f){
+ var v;
+ switch(f.f){
+ case 'txt': v=V(f.id)||'';return '<div class="fld">'+label(f)+'<div class="tarea"><textarea id="'+f.id+'" data-key="'+f.id+'" rows="'+f.r+'">'+esc(v)+'</textarea>'+(SPEECH?'<button class="dict" type="button" data-dict="'+f.id+'">Diktieren</button>':'')+'</div></div>';
+ case 'inp': return '<div class="fld">'+label(f)+'<input type="text" id="'+f.id+'" data-key="'+f.id+'" value="'+esc(V(f.id)||'')+'"></div>';
+ case 'lst': var h='<div class="fld lst"><span class="q">'+f.q+'</span>';for(var i=0;i<f.n;i++){var k=f.id+'_'+i;h+='<input type="text" data-key="'+k+'" aria-label="'+esc(f.q)+' '+(i+1)+'" placeholder="'+(i+1)+'." value="'+esc(V(k)||'')+'">';}return h+'</div>';
+ case 'info': return '<div class="fld">'+f.b.map(node).join('')+'</div>';
+ case 'sc': return '<div class="fld"><span class="q">'+f.q+'</span>'+scale(f.id,f.min,f.max)+'</div>';
+ case 'opt': return '<div class="fld"><span class="q">'+f.q+'</span><div class="scale opts" data-sc="'+f.id+'">'+f.o.map(function(o,j){return '<button type="button" data-v="'+j+'" class="'+(V(f.id)===j?'on':'')+'">'+o+'</button>';}).join('')+'</div></div>';
+ case 'rng': v=num(f.id);return '<div class="fld"><label class="q" for="'+f.id+'">'+f.q+'</label><div class="rng"><input type="range" id="'+f.id+'" data-key="'+f.id+'" data-num="1" min="'+f.min+'" max="'+f.max+'" step="1" value="'+(v==null?Math.round((f.min+f.max)/2):v)+'"><output data-out="'+f.id+'">'+(v==null?'–':v+f.u)+'</output></div></div>';
+ case 'chips': var sel=V(f.id)||[];return '<div class="fld"><span class="q">'+f.q+'</span>'+f.g.map(function(g){return '<div class="cgroup"><b>'+g[0]+'</b><div class="chips" style="display:inline-flex">'+g[1].map(function(wd){return '<button type="button" class="chip'+(sel.indexOf(wd)>-1?' on':'')+'" data-chip="'+f.id+'" data-w="'+wd+'">'+wd+'</button>';}).join('')+'</div></div>';}).join('')+'</div>';
+ case 'photo': return '<div class="fld"><span class="q">'+f.q+'</span><label class="pbtn">📷 Foto aufnehmen oder auswählen<input type="file" accept="image/*" data-photo="'+f.id+'" multiple></label><div class="photos" data-thumbs="'+f.id+'"></div></div>';
+ case 'w': return widget(f.k);
+ }
+ return '';
+}
+function scale(id,min,max){var h='<div class="scale" data-sc="'+id+'">';for(var i=min;i<=max;i++)h+='<button type="button" data-v="'+i+'" class="'+(V(id)===i?'on':'')+'" aria-label="'+i+'">'+i+'</button>';return h+'</div>';}
+
+function widget(k){
+ switch(k){
+ case 'rf': return RF.map(function(g,gi){return '<h4>'+g[0]+'</h4>'+g[1].map(function(t,i){var id='rf_'+gi+'_'+i;return '<div class="item"><div class="t">'+t+'</div>'+scale(id,1,10)+'</div>';}).join('');}).join('');
+ case 'sr': return SR.map(function(t,i){return '<div class="item compact"><div class="t"><b>'+(i+1)+'.</b>'+t+'</div>'+scale('sr_'+i,1,5)+'</div>';}).join('')+'<div class="res" data-calc="sr"></div>';
+ case 'antr': return AQ.map(function(t,i){return '<div class="item compact"><div class="t"><b>'+(i+1)+'.</b>'+t+'</div>'+scale('an_'+(i+1),1,5)+'</div>';}).join('');
+ case 'rfres': case 'antrres': case 'entres': case 'lebensrad': case 'akku': case 'wqsvg': return '<div class="res" data-calc="'+k+'"></div>';
+ case 'steck': return STECK.map(function(s){return '<details class="more"><summary>'+s.n+'</summary><p>'+s.i+'</p><h4>Typische Glaubenssätze</h4>'+node(s.g)+'<h4>Ziel</h4>'+node(s.z)+'<h4>Stärken</h4>'+node(s.s)+'<h4>Schwächen</h4>'+node(s.w)+'<h4>Alternative Glaubenssätze</h4>'+node(s.a)+'</details>';}).join('');
+ case 'matrix': var h='<div style="overflow-x:auto"><table class="mtable"><tr><th>Name</th><th>Häufigkeit</th><th>Wohlfühl&shy;faktor</th><th>Qualität</th><th>Index</th></tr>';
+  for(var i=0;i<10;i++){h+='<tr><td><input type="text" data-key="mx_n'+i+'" value="'+esc(V('mx_n'+i)||'')+'" aria-label="Name '+(i+1)+'"></td>'+['h','w','q'].map(function(c){return '<td>'+sel3('mx_'+c+i)+'</td>';}).join('')+'<td class="ix" data-ix="'+i+'">–</td></tr>';}
+  return h+'</table></div>';
+ case 'radar': var qd=['Familie','Freunde','Beruf','Virtuelle Kontakte'];var h2='<div class="grid2">';
+  qd.forEach(function(q,qi){h2+='<div><h4>'+q+'</h4><table class="mtable"><tr><th>Kontakt</th><th>Nähe</th><th>Intensität</th></tr>';for(var i=0;i<5;i++){var b='rd_'+qi+'_'+i;h2+='<tr><td><input type="text" data-key="'+b+'_n" value="'+esc(V(b+'_n')||'')+'" aria-label="'+q+' Kontakt '+(i+1)+'"></td><td>'+selx(b+'_d',['','nah','mittel','fern'])+'</td><td>'+selx(b+'_i',['','+','++','+++','−','−−','−−−'])+'</td></tr>';}h2+='</table></div>';});
+  return h2+'</div><div class="svgw" data-calc="radar"></div>';
+ case 'torte': var h3='<table class="mtable"><tr><th>Rolle/Tätigkeit</th><th>Stunden</th></tr>';var pre=['Schlafen','Arbeit','','','','','',''];
+  for(var i=0;i<8;i++){h3+='<tr><td><input type="text" data-key="to_n'+i+'" placeholder="'+(pre[i]||'z. B. Familie, Sport …')+'" value="'+esc(V('to_n'+i)||'')+'"></td><td style="width:100px"><input type="number" min="0" max="24" step="0.5" data-key="to_h'+i+'" data-num="1" value="'+esc(V('to_h'+i)==null?'':V('to_h'+i))+'"></td></tr>';}
+  return h3+'</table><div class="res" data-calc="torte"></div>';
+ }
+ return '';
+}
+function sel3(id){return selx(id,['','1','2','3'],1);}
+function selx(id,o,isNum){var v=V(id);v=v==null?'':String(v);return '<select data-key="'+id+'"'+(isNum?' data-num="1"':'')+'>'+o.map(function(x){return '<option'+(x===v?' selected':'')+'>'+x+'</option>';}).join('')+'</select>';}
+
+function rfSums(){return RF.map(function(g,gi){var s=0,n=0;for(var i=0;i<3;i++){var v=num('rf_'+gi+'_'+i);if(v!=null){s+=v;n++;}}return {n:g[0],s:s,c:n};});}
+function rfText(s){return s<=10?'In dieser Kategorie hast du noch Potenzial, deine Resilienz weiterzuentwickeln.':s<=20?'Hier befindest du dich im Mittelfeld. Deine Resilienz hat eine gewisse Stabilität.':'Bei diesem Resilienzfaktor liegen deine Stärken und Ressourcen.';}
+function antrSums(){return AKEY.map(function(a){var s=0,c=0;a[1].forEach(function(q){var v=num('an_'+q);if(v!=null){s+=v;c++;}});return {n:a[0],s:s,c:c};});}
+function entRes(){var c=[0,0,0],n=0;for(var i=0;i<5;i++){var v=V('ent_'+i);if(v!=null){c[v]++;n++;}}if(!n)return null;var m=c.indexOf(Math.max.apply(null,c));return {c:c,n:n,m:m};}
+function bars(list,max){return list.map(function(x){return '<div class="bar"><span>'+x.n+'</span><div class="tr"><i style="width:'+(Math.min(1,x.s/max)*100)+'%"></i></div><span>'+x.s+'</span></div>';}).join('');}
+function lebensradSVG(){var n=LR.length,cx=170,cy=170,R=120,s='<svg viewBox="0 0 340 340" width="340" role="img" aria-label="Lebensrad">';
+ for(var r=2;r<=10;r+=2)s+='<circle cx="'+cx+'" cy="'+cy+'" r="'+(R*r/10)+'" fill="none" stroke="#d9ddf0"/>';
+ var pts=[];for(var i=0;i<n;i++){var a=(-90+i*360/n)*Math.PI/180;s+='<line x1="'+cx+'" y1="'+cy+'" x2="'+(cx+R*Math.cos(a))+'" y2="'+(cy+R*Math.sin(a))+'" stroke="#d9ddf0"/>';var v=num('lr_'+i)||0;pts.push((cx+R*v/10*Math.cos(a)).toFixed(1)+','+(cy+R*v/10*Math.sin(a)).toFixed(1));
+  var lx=cx+(R+26)*Math.cos(a),ly=cy+(R+26)*Math.sin(a);s+='<text x="'+lx+'" y="'+ly+'" font-size="10.5" text-anchor="middle" dominant-baseline="middle" fill="#5a5f80">'+LR[i].split('/')[0]+'</text>';}
+ s+='<polygon points="'+pts.join(' ')+'" fill="rgba(163,35,108,.25)" stroke="#a3236c" stroke-width="2"/></svg>';return s;}
+function radarSVG(){var cx=180,cy=180,s='<svg viewBox="0 0 360 360" width="340" role="img" aria-label="Netzwerk-Radar">';
+ [150,100,50].forEach(function(r,i){s+='<circle cx="'+cx+'" cy="'+cy+'" r="'+r+'" fill="'+['#f4f6fe','#e9eefd','#dfe6fc'][i]+'" stroke="#7c97ee"/>';});
+ s+='<line x1="30" y1="180" x2="330" y2="180" stroke="#7c97ee"/><line x1="180" y1="30" x2="180" y2="330" stroke="#7c97ee"/><circle cx="180" cy="180" r="14" fill="#a3236c"/><text x="180" y="184" font-size="10" fill="#fff" text-anchor="middle">Ich</text>';
+ var qn=['Familie','Freunde','Beruf','Virtuelle Kontakte'],qa=[[-1,-1],[1,-1],[-1,1],[1,1]];
+ qn.forEach(function(q,qi){s+='<text x="'+(cx+qa[qi][0]*120)+'" y="'+(cy+qa[qi][1]*165+(qa[qi][1]>0?4:8))+'" font-size="11" font-weight="700" text-anchor="middle" fill="#1d2140">'+q+'</text>';
+  for(var i=0;i<5;i++){var b='rd_'+qi+'_'+i,nm=V(b+'_n');if(!nm)continue;var d={'nah':38,'mittel':80,'fern':128}[V(b+'_d')]||80;var ang=(10+i*17)*Math.PI/180;var x=cx+qa[qi][0]*d*Math.cos(ang),y=cy+qa[qi][1]*d*Math.sin(ang);var it=V(b+'_i')||'';var neg=it.indexOf('−')>-1;
+   s+='<circle cx="'+x+'" cy="'+y+'" r="5" fill="'+(neg?'#b3261e':'#4a63c9')+'"/><text x="'+x+'" y="'+(y-8)+'" font-size="10" text-anchor="middle" fill="#1d2140">'+esc(nm)+(it?' '+it:'')+'</text>';}});
+ return s+'</svg>';}
+var PIE=['#7c97ee','#a3236c','#f2e85a','#4a63c9','#e98ab8','#9fd3a5','#c9b6f2','#f5b97a'];
+function torteSVG(){var rows=[],tot=0;for(var i=0;i<8;i++){var h=num('to_h'+i);if(h&&h>0){rows.push({n:V('to_n'+i)||('Bereich '+(i+1)),h:h,c:PIE[i]});tot+=h;}}
+ if(!tot)return '<p class="note">Trage Stunden ein, dann entsteht dein Tagesdiagramm.</p>';
+ var s='<div class="svgw"><svg viewBox="0 0 220 220" width="220" role="img" aria-label="Tortendiagramm">',a0=-Math.PI/2,full=Math.max(24,tot);
+ rows.forEach(function(r){var a1=a0+2*Math.PI*r.h/full;var x0=110+100*Math.cos(a0),y0=110+100*Math.sin(a0),x1=110+100*Math.cos(a1),y1=110+100*Math.sin(a1);var lg=(a1-a0)>Math.PI?1:0;
+  s+=(r.h>=full)?'<circle cx="110" cy="110" r="100" fill="'+r.c+'"/>':'<path d="M110 110 L'+x0+' '+y0+' A100 100 0 '+lg+' 1 '+x1+' '+y1+' Z" fill="'+r.c+'" stroke="#fff" stroke-width="2"/>';a0=a1;});
+ s+='</svg></div>';s+=rows.map(function(r){return '<div class="bar" style="grid-template-columns:18px 1fr 70px"><i style="width:14px;height:14px;border-radius:4px;background:'+r.c+'"></i><span>'+esc(r.n)+'</span><span>'+r.h+' h</span></div>';}).join('');
+ return s;}
+function wqSVG(){var a=esc(V('wq_a')||'Antreiber');return '<div class="svgw"><svg viewBox="0 0 440 300" width="440" role="img" aria-label="Wertequadrat">'+
+ '<rect x="10" y="10" width="170" height="70" rx="12" fill="#e9eefd" stroke="#7c97ee"/><text x="95" y="48" font-size="12" font-weight="700" text-anchor="middle" fill="#1d2140">Stärken</text>'+
+ '<rect x="260" y="10" width="170" height="70" rx="12" fill="#e9eefd" stroke="#7c97ee"/><text x="345" y="48" font-size="12" font-weight="700" text-anchor="middle" fill="#1d2140">Konterstärken</text>'+
+ '<rect x="10" y="220" width="170" height="70" rx="12" fill="#fbe9f2" stroke="#a3236c"/><text x="95" y="258" font-size="12" font-weight="700" text-anchor="middle" fill="#1d2140">Stolperstein</text>'+
+ '<rect x="260" y="220" width="170" height="70" rx="12" fill="#fbe9f2" stroke="#a3236c"/><text x="345" y="258" font-size="12" font-weight="700" text-anchor="middle" fill="#1d2140">Übertreibung</text>'+
+ '<text x="220" y="140" font-size="13" font-weight="700" text-anchor="middle" fill="#1d2140">'+a+'</text></svg></div>';}
+function updateCalcs(){
+ var els=document.querySelectorAll('[data-calc]');
+ for(var i=0;i<els.length;i++){var el=els[i],k=el.getAttribute('data-calc'),h='';
+  if(k==='rfres'){var sums=rfSums();h='<h4>Deine Auswertung</h4>'+bars(sums,30)+sums.filter(function(x){return x.c===3;}).map(function(x){return '<p><b>'+x.n+' ('+x.s+' Punkte):</b> '+rfText(x.s)+'</p>';}).join('')+'<p class="note">3–10 Punkte: Potenzial · 11–20 Punkte: Mittelfeld · 21–30 Punkte: Stärken</p>';}
+  else if(k==='sr'){var s=0;SR.forEach(function(_,j){var v=num('sr_'+j);if(v!=null)s+=v;});h='<h4>Summe: '+s+' von '+SR.length*5+'</h4>';}
+  else if(k==='antrres'){var a=antrSums();h='<h4>Dein Antreiber-Profil</h4>'+bars(a,50);}
+  else if(k==='entres'){var e=entRes();h=e?'<h4>Auswertung</h4><p>'+ENT_AUS[e.m]+'</p>':'<p class="note">Wähle deine Antworten.</p>';}
+  else if(k==='lebensrad'){h='<div class="svgw">'+lebensradSVG()+'</div>';}
+  else if(k==='radar'){h=radarSVG();}
+  else if(k==='torte'){h=torteSVG();}
+  else if(k==='wqsvg'){h=wqSVG();}
+  else if(k==='akku'){var p=num('akku_p');h=p==null?'<p class="note">Bewege den Regler.</p>':'<div class="svgw"><svg viewBox="0 0 220 90" width="220"><rect x="5" y="10" width="190" height="70" rx="12" fill="#fff" stroke="#1d2140" stroke-width="3"/><rect x="197" y="32" width="14" height="26" rx="4" fill="#1d2140"/><rect x="12" y="17" width="'+(176*p/100)+'" height="56" rx="7" fill="'+(p<25?'#b3261e':p<60?'#f2c94c':'#2f8a5b')+'"/><text x="100" y="54" font-size="22" font-weight="700" text-anchor="middle" fill="#1d2140">'+p+' %</text></svg></div>';}
+  el.innerHTML=h;}
+ var ix=document.querySelectorAll('[data-ix]');for(var j=0;j<ix.length;j++){var r=ix[j].getAttribute('data-ix');var H=num('mx_h'+r),W=num('mx_w'+r),Q=num('mx_q'+r);ix[j].textContent=(H!=null&&W!=null&&Q!=null)?((H+W)*Q):'–';}
+}
+
+var CH=[
+{id:'start',nav:'Start',kicker:'Dein Playbook',title:'Kommunikation trifft Resilienz',lead:'Stärke deine Widerstandskraft und fördere Teamarbeit. Hier findest du alle Inhalte des Tages als Theorie und alle Arbeitsblätter als Übungen zum Ausfüllen.',blocks:[
+ X({id:'me',h:'Für wen ist dieses Playbook?',fields:[inp('name','Dein Name'),inp('datum','Datum des Seminars')]}),
+ T('So funktioniert dein Playbook',[
+  ['Oben wählst du ein Kapitel, unten blätterst du mit „Weiter" und „Zurück".','Blau markierte Karten sind Theorie, magenta markierte Karten sind Übungen mit Platz für deine Antworten.','Alles, was du einträgst, wird automatisch gespeichert, nur in diesem Browser auf diesem Gerät.','Am Ende speicherst du dein Playbook als PDF, im letzten Kapitel „Mein Playbook".'],
+  'Tipp: Nutze am Seminartag ein Gerät durchgehend.'])
+]},
+{id:'checkin',nav:'Check-in',kicker:'Ankommen',title:'#check-in',lead:'Ein guter Start beginnt bei dir.',blocks:[
+ X({id:'ci',h:'Check-in',meta:['Moderationskarte'],fields:[txt('ci_1','1. Warum bist du heute hier?'),txt('ci_2','2. Was ist dir für heute wichtig?','2'),txt('ci_3','3. Wie beschreiben dich Menschen, die dich sehr gut kennen, mit 3–4 Sätzen?',4)]})
+]},
+{id:'grundlagen',nav:'Gesundheit & Resilienz',kicker:'Grundlagen',title:'Gesundheit und Resilienz',lead:'Was hält uns gesund, und was macht uns widerstandsfähig?',blocks:[
+ T('Gesundheit',[{q:'Zustand des objektiven und subjektiven Empfindens einer Person, der gegeben ist, wenn diese Person sich in den physischen, psychischen und sozialen Bereichen ihrer Entwicklung im Einklang mit den eigenen Möglichkeiten und Zielvorstellungen und den jeweils gegebenen äußeren Lebensbedingungen befindet.'},'Prof. Dr. rer. pol. Klaus Hurrelmann']),
+ T('Definition Resilienz',[{q:'Der Begriff Resilienz bezeichnet die psychische Widerstandsfähigkeit. Im Erwachsenenalter wird die erfolgreiche Bewältigung stressreicher und potenziell traumatischer Ereignisse als Zielgröße betrachtet.'},'Bundeszentrale für gesundheitliche Aufklärung']),
+ X({id:'stark',h:'Was macht mich stark?',src:KORELLA,meta:['Arbeitsblatt','30 Minuten'],fields:[
+  txt('st_sit','Meine besondere Situation',2),
+  txt('st_1','Was bedeutet es für mich, konstruktiv mit Krisen umzugehen?'),
+  txt('st_2','Was war für mich in der jeweiligen Situation bedeutsam/wichtig?'),
+  txt('st_3','Welche meiner Stärken habe ich genutzt?'),
+  txt('st_4','Was hat uns geholfen, schwierige Lebenssituationen zu meistern? (Plenum)',3)]}),
+ X({id:'lebensrad',h:'Vorlage Lebensrad',src:KORELLA,meta:['Arbeitsblatt'],intro:'Wie zufrieden bist du gerade mit den Bereichen deines Lebens? Bewerte von 0 bis 10.',fields:LR.map(function(n,i){return rng('lr_'+i,n,0,10);}).concat([w('lebensrad'),txt('lr_note','Was fällt dir auf?',3)])})
+]},
+{id:'faktoren',nav:'7 Resilienzfaktoren',kicker:'Die sieben Säulen',title:'Die sieben Resilienzfaktoren',lead:'Optimismus · Akzeptanz · Lösungsorientierung · Selbstregulation · Selbstverantwortung · Zukunftsorientierung · Netzwerkorientierung',blocks:[
+ X({id:'rf',h:'Selbsttest Resilienzfaktoren',src:KORELLA,meta:['Arbeitsblatt'],intro:'Bewerte jede Aussage von 1 bis 10.',fields:[w('rf'),w('rfres')]}),
+ X({id:'opt',h:'Reflexion: Optimismus',fields:qs('opt',['Denkst du eher an Probleme oder an den Reiz der neuen Aufgabe?','Belasten dich neue Anforderungen oder überlegst du, wie du bereits Ähnliches gelöst hast?'])}),
+ X({id:'akz',h:'Reflexion: Akzeptanz',fields:[txt('akz_1','Du hast einen Ausflug geplant und es beginnt zu regnen.',2),txt('akz_2','Du stehst im Stau vor einem wichtigen Termin.',2),txt('akz_3','Du bewirbst dich für ein Projekt und erhältst eine Absage.',2)]}),
+ X({id:'esel',h:'Geschichte: Der Esel und der Brunnen',meta:['Impuls'],fields:[info(['Eines Tages fiel ein Esel in einen tiefen Brunnen. So sehr sich alle mühten, es gelang nicht, das Tier herauszuziehen. Der Bauer schaufelte Erde hinein, um ihn zu begraben. Jede Schaufel Dreck schüttelte der Esel ab und trampelte sie fest. So stieg er langsam höher, bis er aus eigener Kraft aus dem Loch steigen und davontrotten konnte.']),txt('esel_1','Meine Gedanken zur Geschichte',3)]}),
+ X({id:'kopf',h:'Kopfstandmethode',src:KORELLA,meta:['Arbeitsblatt'],fields:[
+  txt('kopf_1','Schritt 1 – Meine Ausgangsfrage',2),txt('kopf_2','Schritt 2 – Meine Kopfstand-Frage',2),
+  txt('kopf_3','Schritt 3 – Antworten auf die Kopfstand-Frage',5),txt('kopf_4','Schritt 4 – Umformulierungen ins Gegenteil',5),
+  txt('kopf_5','Schritt 5 – Konkrete Maßnahmen',4),txt('kopf_6','Schritt 6 – Mein erster Schritt',3)]}),
+ X({id:'sys',h:'Systemische Fragestellungen',src:KORELLA,meta:['Arbeitsblatt'],intro:'Notiere zu jedem Fragetyp eigene Fragen.',fields:SYS.map(function(s,i){return txt('sys_'+i,s[0]+'<small>'+s[1]+'</small>',2);})}),
+ X({id:'sreg',h:'Reflexion: Selbstregulation',fields:qs('sreg',['Kennst du deine Hot Buttons?','Welche Bedürfnisse wurden verletzt?','Nehmen andere Einfluss auf deine Stimmung?'])}),
+ X({id:'srt',h:'Selbsttest: Selbstregulation',src:KORELLA,meta:['Arbeitsblatt'],intro:'Bewerte von 1 (kaum) bis 5 (deutlich).',fields:[w('sr')]}),
+ X({id:'hot',h:'Umgang mit Hot Buttons',src:KORELLA,meta:['Arbeitsblatt'],fields:[txt('hot_1','1. Identifikation des Hot Buttons',5),txt('hot_2','2. Perspektivwechsel vornehmen',5),txt('hot_3','3. Strategien entwickeln',5),txt('hot_4','4. Ausprobieren und Implementieren',3)]}),
+ X({id:'gr',h:'Arbeitsblatt Gefühlsrad',src:KORELLA,meta:['Arbeitsblatt'],fields:[txt('gr_sit','Meine Situation',3),txt('gr_1','Wie geht/ging es mir?'),chips('gr_w','Welche Gefühlswörter passen?',GR),txt('gr_5','Was bedeuten die Emotionen für die Situation?',3)]}),
+ X({id:'zo',h:'Reflexion: Zukunftsorientierung',fields:qs('zo',['Was ist dir wichtig zu erreichen?','Was kannst du tun, um deine Ziele zu erreichen?','Welche Veränderungen stehen bei dir an?'])}),
+ X({id:'nw',h:'Reflexion: Netzwerkorientierung',fields:qs('nw',['Wer ist für dich da?','Mit wem teilst du dein Leben?','Wo solltest du den Kontakt einschränken?'])}),
+ X({id:'radar',h:'Netzwerk-Radar-Sichtung',src:KORELLA,meta:['Arbeitsblatt'],fields:[w('radar')]}),
+ X({id:'matrix',h:'Vernetzungs- und Kommunikationsmatrix',src:KORELLA,meta:['Arbeitsblatt'],fields:[w('matrix')].concat(qs('mx',['Bei welchem Kontakt möchte ich etwas verändern?','Was genau möchte ich verändern?','Wofür schätze ich die Person?']))}),
+ X({id:'sv',h:'Reflexion: Selbstverantwortung',fields:qs('sv',['Nimmst du die Dinge in die Hand?','Neigst du dazu, dich zu rechtfertigen?','Wie viel Einfluss nehmen andere auf deine Entscheidungen?'])}),
+ X({id:'refl3',h:'Reflexion in der 3er-Gruppe',meta:['3er-Gruppe'],fields:qs('refl3',['Wie nimmst du das Ergebnis des Selbsttests wahr?','Wo siehst du deine Stärken, wo deine Schwächen?','Meine größte Erkenntnis'])})
+]},
+{id:'change',nav:'Change',kicker:'Veränderung',title:'Change und die 7 Phasen',lead:'Jede Phase einer Veränderung mit einem Resilienzfaktor begleiten.',blocks:[
+ T('Die 7 Phasen im Überblick',[{tbl:[['Phase','Typischer Satz','Resilienzfaktor'],['1. Schock/Angst','','Optimismus'],['2. Ablehnung','„Das haben wir noch nie so gemacht"','Akzeptanz'],['3. Frustration','„Das lasse ich mir nicht gefallen"','Selbstregulation'],['4. Abschied/Trauer','„Ich muss loslassen"','Zukunftsorientierung'],['5. Ausprobieren','„Vielleicht gibt es ja doch was Gutes"','Selbstverantwortung'],['6. Neuorientierung','„Ich erkenne einen Mehrwert"','Lösungsorientierung'],['7. Integration','„Ich bin daran gewachsen"','Netzwerkorientierung']]}]),
+ X({id:'chg0',h:'Meine Veränderung',fields:[txt('chg_0','Um welche Veränderung geht es?',2)]}),
+ X({id:'chg1',h:'Phase 1–7: Meine Reflexion',fields:qs('chg1',['Phase 1 – Optimismus: Was ist das Gute in der Situation?','Phase 2 – Akzeptanz: Was kann ich annehmen?','Phase 3 – Selbstregulation: Welche Emotionen spüre ich?','Phase 4 – Zukunftsorientierung: Wie sehen meine Ziele aus?','Phase 5 – Selbstverantwortung: Wie will ich mich positionieren?','Phase 6 – Lösungsorientierung: Was gilt es zu tun?','Phase 7 – Netzwerkorientierung: Wie gestalten sich neue Verbindungen?'])})
+]},
+{id:'stress',nav:'Stress',kicker:'Stresskompetenz',title:'Stressampel nach Kaluza',lead:'Stress verstehen, eigene Stressverstärker erkennen, Ressourcen aufbauen.',blocks:[
+ T('Die Stressampel nach Kaluza',[{amp:1}]),
+ X({id:'ampel',h:'Meine Stressampel',fields:[txt('amp_1','Ich gerate in Stress, wenn …'),txt('amp_2','Ich setze mich selbst unter Stress, indem …'),txt('amp_3','Wenn ich im Stress bin, dann …')]}),
+ X({id:'rollen',h:'Meine Rollen',src:KORELLA,meta:['Arbeitsblatt','20 Minuten'],fields:[
+  lst('rol','Meine Rollen (beruflich, privat, öffentlich)',12),
+  inp('rol_a_n','Rolle 1'),txt('rol_a_e','Erwartungen und Aufgaben',2),txt('rol_a_v','Was kann ich verändern?',2),
+  inp('rol_b_n','Rolle 2'),txt('rol_b_e','Erwartungen und Aufgaben',2),txt('rol_b_v','Was kann ich verändern?',2),
+  inp('rol_c_n','Rolle 3'),txt('rol_c_e','Erwartungen und Aufgaben',2),txt('rol_c_v','Was kann ich verändern?',2)]}),
+ X({id:'torte',h:'24-Stunden-Tortendiagramm',src:KORELLA,meta:['Arbeitsblatt'],fields:[w('torte'),txt('tor_r','Rollen',3),txt('tor_s','Stressoren',3)]}),
+ T('Stressverstärker: die 5 inneren Antreiber',[['Sei perfekt!','Sei stark!','Streng dich an!','Beeil dich!','Mach es allen recht!']]),
+ X({id:'antr',h:'Selbsttest: Innere Antreiber',src:KORELLA,meta:['Arbeitsblatt','20 Minuten'],intro:'Bewerte von 1 (gar nicht) bis 5 (voll und ganz).',fields:[w('antr'),w('antrres')]}),
+ X({id:'steck',h:'Antreiber-Steckbriefe',src:KORELLA,meta:['Lesen'],fields:[w('steck'),txt('steck_1','Was erkenne ich bei mir wieder?',4)]}),
+ X({id:'wq',h:'Wertequadrat',src:KORELLA,fields:[inp('wq_a','Antreiber'),w('wqsvg'),txt('wq_1','Stärken des Antreibers',2),txt('wq_2','Konterstärken',2),txt('wq_3','Stolperstein',2),txt('wq_4','Übertreibung der Konterstärke',2),txt('wq_5','Neubewertung/Erlaubnis',2)]}),
+ X({id:'akku',h:'Stressoren mindern – Ressourcen aufbauen',src:KORELLA,meta:['Arbeitsblatt'],fields:[
+  rng('akku_p','Mein Akkustand',0,100,' %'),w('akku'),
+  txt('akku_l','Was leert? – Stressoren',4),txt('akku_f','Was füllt? – Ressourcen',4),
+  txt('akku_a','Stressorenabbau',4),txt('akku_r','Ressourcenaufbau',4)]}),
+ X({id:'berlin',h:'Berlin-Ressourcenliste',src:KORELLA,fields:[
+  txt('ber_b','B – Body'),txt('ber_e','E – Emotionen'),txt('ber_r','R – Ressourcen'),
+  txt('ber_l','L – Liebe'),txt('ber_i','I – Imaginationen'),txt('ber_n','N – Natur')]})
+]},
+{id:'fuenfa',nav:'5-A-Strategie',kicker:'Gelassenheit',title:'Die 5-A-Strategie',lead:'Achtsam wahrnehmen · Akzeptanz · Abkühlen · Analyse · Aktion',blocks:[
+ T('Die 5-A-Strategie',[['1. Achtsam wahrnehmen','2. Akzeptanz','3. Abkühlen','4. Analyse (Kreise des Einflusses)','5. Aktion (LOVE IT / CHANGE IT / LEAVE IT / STAY AND PAY)']]),
+ X({id:'a2',h:'A2 · Akzeptanz',fields:qs('a2',['Wo fällt dir Akzeptanz schwer?','Wo fällt es dir leicht?','Wie hoch war die Stressintensität?'])}),
+ X({id:'sieben',h:'7 Schritte zur Akzeptanz',src:KORELLA,meta:['Arbeitsblatt'],fields:[
+  txt('s7_1','Schritt 1: Identifikation – Was ärgert dich konkret?',4),
+  txt('s7_2','Schritt 2: Emotionalität – Welche Emotionen werden ausgelöst?',3),
+  rng('s7_3a','Schritt 3: Energielevel im Widerstand',0,100),rng('s7_3b','Energielevel ohne dieses Ereignis',0,100),
+  txt('s7_4','Schritt 4: Hinterfragung',3),txt('s7_5','Schritt 5: Perspektivwechsel',3),
+  txt('s7_6','Schritt 6: Veränderungstaktiken',4),rng('s7_7','Schritt 7: Wie weit bist du auf dem Weg zur Akzeptanz?',0,10)]}),
+ X({id:'a3',h:'A3 · Abkühlen',fields:[txt('a3_1','Kurzfristige Techniken – was hilft mir im Moment?'),txt('a3_2','Langfristige Techniken – was tue ich regelmäßig?'),txt('a3_3','Ideen aus der Gruppe',3)]}),
+ X({id:'a4',h:'A4 · Analyse – Kreise des Einflusses',fields:[txt('a4_1','Kreis der Bedenken und Sorgen'),txt('a4_2','Kreis des Einflusses'),txt('a4_3','Kreis der Kontrolle')]}),
+ X({id:'a5',h:'A5 · Aktion',fields:[txt('a5_0','Meine Situation',2),txt('a5_1','LOVE IT – Wie kann ich meine Einstellung verändern?'),lst('a5_2','CHANGE IT – mindestens 7 Optionen',7),txt('a5_3','LEAVE IT – Ausstiegsplan'),txt('a5_4','STAY AND PAY – Welchen Preis zahle ich?')]})
+]},
+{id:'baum',nav:'Resilienzbaum',kicker:'Verankern',title:'Mein Resilienzbaum',lead:'Reflexion der eigenen Resilienz und Verankerung des Tages.',blocks:[
+ T('Mein Resilienzbaum',[{tree:1},'Wurzeln = Halt · Stamm = Persönlichkeit · Krone & Früchte = Wachstum']),
+ X({id:'rb',h:'Mein Resilienzbaum',src:KORELLA,meta:['Arbeitsblatt','30 Minuten'],fields:[
+  txt('rbw_1','Wurzeln: Was gibt mir Halt?',2),txt('rbw_2','Wurzeln: Was sind meine Werte?',2),txt('rbw_4','Wurzeln: Was gibt mir Kraft?',2),
+  txt('rbs_1','Stamm: Welche Fähigkeiten habe ich?',2),txt('rbs_2','Stamm: Wo zeigen sich meine Resilienzfaktoren?',2),txt('rbs_5','Stamm: Was sind meine besonderen Stärken?',2),
+  txt('rbk_1','Krone: Was lässt mich wachsen?',2),txt('rbk_4','Krone: Was muss ich loslassen?',2),txt('rbk_6','Krone: Welchen Resilienzfaktor muss ich stärken?',2),
+  photo('rb_foto','Foto von meinem gezeichneten Resilienzbaum')]})
+]},
+{id:'abschluss',nav:'Abschluss',kicker:'Feedback',title:'Abschluss',lead:'Was nimmst du mit, und was ist dein nächster Schritt?',blocks:[
+ X({id:'ti',h:'Mein wichtigster Tagesimpuls',src:KORELLA,fields:qs('ti',['Was war ein wichtiger Tagesimpuls?','Was war ein Impuls für meine Resilienzentwicklung?','Ich gehe heute in dem Gefühl aus dem Seminar …','Mein nächster Schritt',])}),
+ X({id:'ss',h:'Abschlussfragen Resilienz-Schutzschild',src:KORELLA,fields:[].concat(
+  qs('ss_o',['Optimismus: Was stärkt deinen Optimismus?','Optimismus: Was kannst du besonders gut?']),
+  qs('ss_a',['Akzeptanz: Was brauchst du, um Herausforderungen akzeptieren zu können?']),
+  qs('ss_l',['Lösungsorientierung: Wie gelingt es dir, in die Lösungsfindung zu kommen?']),
+  qs('ss_v',['Selbstverantwortung: Wofür stehst du?']),
+  qs('ss_r',['Selbstregulation: Was bringt dich in die Ruhe?']),
+  qs('ss_n',['Netzwerkorientierung: Welche Menschen machen dir Mut?']),
+  qs('ss_z',['Zukunftsorientierung: Was ist dir wichtig für deine Zukunft?']))}),
+ X({id:'fb',h:'Feedback',fields:[txt('fb_1','Wurde alles bearbeitet?'),txt('fb_2','Wie zufrieden bist du mit dem Tag?',2),txt('fb_3','Mit welchen Emotionen gehst du nach Hause?',2),txt('fb_4','Was ist mein nächster Schritt zur persönlichen Weiterentwicklung?',4)]})
+]},
+{id:'ende',nav:'Mein Playbook',kicker:'Speichern',title:'Mein Playbook',lead:'Hier siehst du, was du schon ausgefüllt hast. Speichere dein Playbook als PDF.',blocks:[{t:'end'}]}
+];
+
+var main=document.getElementById('main');
+function chapterFilled(ch){var ids=[];ch.blocks.forEach(function(b){if(b.t==='ex')collectIds(b).forEach(function(i){ids.push(i);});});var n=ids.filter(function(i){return filled(i);}).length;return [n,ids.length];}
+function filled(id){var v=state.f[id];return v!==undefined&&v!==null&&v!==''&&!(Array.isArray(v)&&!v.length);}
+function collectIds(b){var ids=[];b.fields.forEach(function(f){
+  if(['txt','inp','sc','opt','rng','chips'].indexOf(f.f)>-1)ids.push(f.id);
+  else if(f.f==='lst'){for(var i=0;i<f.n;i++)ids.push(f.id+'_'+i);}
+  else if(f.f==='w'){if(f.k==='rf')RF.forEach(function(g,gi){for(var i=0;i<3;i++)ids.push('rf_'+gi+'_'+i);});
+   if(f.k==='sr')SR.forEach(function(_,i){ids.push('sr_'+i);});
+   if(f.k==='antr')AQ.forEach(function(_,i){ids.push('an_'+(i+1));});}
+ });return ids;}
+function renderProgress(){document.getElementById('progress').innerHTML=CH.map(function(c,i){var p=chapterFilled(c);return '<button type="button" data-go="'+i+'" class="'+(i===state.step?'on':'')+(p[0]>0?' done':'')+'">'+(i?i+' · ':'')+c.nav+'</button>';}).join('');
+ var on=document.querySelector('.progress .on');if(on&&on.scrollIntoView)try{on.scrollIntoView({block:'nearest',inline:'center'});}catch(e){}}
+function render(){
+ var ch=CH[state.step];var h='<section class="hero"><p class="kicker">'+ch.kicker+'</p><h1>'+ch.title+'</h1><p class="lead">'+ch.lead+'</p></section>';
+ ch.blocks.forEach(function(b){
+  if(b.t==='th')h+='<article class="card th"><span class="tag th">Theorie</span><h2>'+b.h+'</h2>'+b.b.map(node).join('')+'</article>';
+  else if(b.t==='ex')h+='<article class="card ex"><span class="tag ex">'+(b.src?'Arbeitsblatt':'Übung')+'</span><h2>'+b.h+'</h2>'+(b.meta?'<div class="meta">'+b.meta.map(function(m){return '<span>'+m+'</span>';}).join('')+'</div>':'')+(b.intro?'<p>'+b.intro+'</p>':'')+b.fields.map(field).join('')+(b.src?'<p class="src">'+b.src+'</p>':'')+'</article>';
+  else if(b.t==='end')h+=endHTML();
+ });
+ main.innerHTML=h;renderProgress();updateCalcs();
+ var ph=main.querySelectorAll('[data-thumbs]');for(var i=0;i<ph.length;i++)loadThumbs(ph[i].getAttribute('data-thumbs'));
+ document.getElementById('prev').style.visibility=state.step===0?'hidden':'visible';
+ var nx=document.getElementById('next');nx.style.visibility=state.step===CH.length-1?'hidden':'visible';nx.textContent=state.step===CH.length-2?'Zum PDF':'Weiter';
+}
+function endHTML(){
+ var h='<article class="card"><h2>Dein Stand</h2>';
+ CH.forEach(function(c,i){if(i===CH.length-1)return;var p=chapterFilled(c);if(!p[1])return;h+='<div class="sum-ch"><a data-go="'+i+'">'+c.nav+'</a><span class="pill">'+p[0]+' von '+p[1]+'</span></div>';});
+ h+='</article><article class="card ex"><span class="tag ex">PDF</span><h2>Playbook als PDF speichern</h2>'+
+ '<label class="check"><input type="checkbox" id="withTheory"'+(state.theory?' checked':'')+'> Theorie mit aufnehmen</label>'+
+ '<div class="actions"><button class="primary" type="button" id="pdf">PDF herunterladen</button></div>'+
+ '<div class="howto"><p><b>Falls kein Download startet:</b> Druckfenster öffnet sich → „Als PDF speichern".</p></div>'+
+ '<div class="actions"><button class="ghost" type="button" id="reset">Alle Einträge löschen</button></div><div class="confirm" id="confirm" hidden><p>Alle Texte und Fotos löschen?</p><button class="danger" type="button" id="reset-yes">Ja, löschen</button> <button class="ghost" type="button" id="reset-no">Abbrechen</button></div>'+
+ '</article><article class="card"><p class="sig">'+SIG+'</p></article>';
+ return h;}
+
+function loadThumbs(id){var box=main.querySelector('[data-thumbs="'+id+'"]');if(!box)return;DB.get(id).then(function(l){box.innerHTML=l.map(function(p,i){return '<figure><img src="'+p.d+'" alt="Foto '+(i+1)+'"><button type="button" data-del="'+id+'" data-i="'+i+'">✕</button></figure>';}).join('');});}
+
+var SR_API2=window.SpeechRecognition||window.webkitSpeechRecognition;var rec=null,recBtn=null;
+function toggleDictate(btn){var id=btn.getAttribute('data-dict');if(rec){try{rec.stop();}catch(e){}return;}
+ var ta=document.getElementById(id);if(!ta)return;rec=new SR_API2();rec.lang='de-DE';rec.continuous=true;rec.interimResults=false;recBtn=btn;
+ rec.onresult=function(ev){for(var i=ev.resultIndex;i<ev.results.length;i++){if(ev.results[i].isFinal){var t=ev.results[i][0].transcript.trim();ta.value=ta.value?(ta.value.replace(/\s+$/,'')+' '+t):t;ta.dispatchEvent(new Event('input',{bubbles:true}));}}};
+ rec.onend=function(){if(recBtn){recBtn.classList.remove('on');recBtn.textContent='Diktieren';}rec=null;recBtn=null;};rec.onerror=function(){};
+ try{rec.start();btn.classList.add('on');btn.textContent='Stopp';}catch(e){rec=null;}}
+
+function makePDF(btn){
+ if(!window.jspdf||!window.jspdf.jsPDF){window.print();return;}
+ btn.disabled=true;btn.textContent='PDF wird erstellt …';
+ var withT=state.theory;
+ DB.get('rb_foto').then(function(photos){
+  var doc=new window.jspdf.jsPDF({unit:'mm',format:'a4'});
+  var W=210,H=297,M=18,y=M,BL=[74,99,201],MG=[163,35,108],INK=[29,33,64],MUT=[90,95,128];
+  function ensure(h){if(y+h>H-M){doc.addPage();y=M;}}
+  function t(s,size,style,col,gap,indent){s=String(s==null?'':s).replace(/<[^>]+>/g,' ').replace(/&amp;/g,'&').replace(/[„""]/g,'"').replace(/[–—]/g,'-').replace(/[^\x00-\xFF\n]/g,'').replace(/[ \t]+/g,' ').trim();if(!s){y+=gap||0;return;}indent=indent||0;doc.setFont('helvetica',style);doc.setFontSize(size);doc.setTextColor(col[0],col[1],col[2]);var lines=doc.splitTextToSize(s,W-2*M-indent),lh=size*0.3528*1.42;lines.forEach(function(l){ensure(lh);doc.text(l,M+indent,y+lh*0.78);y+=lh;});y+=gap||0;}
+  function answer(v){if(v===undefined||v===null||v===''||(Array.isArray(v)&&!v.length)){t('-',10.5,'italic',MUT,2.5,3);return;}t(Array.isArray(v)?v.join(', '):String(v),10.5,'normal',INK,2.8,3);}
+  function pNode(n){
+   if(typeof n==='string'){t(n,10.5,'normal',INK,2);return;}
+   if(Array.isArray(n)){n.forEach(function(x){t('- '+x,10,'normal',INK,0.6,3);});y+=1.5;return;}
+   if(n.q){t('"'+n.q+'"',10.5,'italic',INK,2,3);return;}
+   if(n.h!==undefined){t(n.h,11,'bold',MG,1);if(n.l){n.l.forEach(function(x){t('- '+x,10,'normal',INK,0.6,3);});y+=1.5;}return;}
+   if(n.tbl){n.tbl.slice(1).forEach(function(r){t(r.filter(Boolean).join(' - '),10,'normal',INK,1.2,3);});y+=1.5;return;}
+   if(n.sig){t(SIG,9.5,'normal',MUT,2);return;}
+  }
+  function pField(f){
+   switch(f.f){
+   case 'txt':case 'inp':t((f.q||'').replace(/<[^>]+>/g,' '),10.5,'bold',INK,0.6);answer(V(f.id));break;
+   case 'lst':t(f.q,10.5,'bold',INK,0.6);for(var i=0;i<f.n;i++){var v=V(f.id+'_'+i);if(v)t((i+1)+'. '+v,10.5,'normal',INK,0.8,3);}y+=2;break;
+   case 'info':if(withT)f.b.forEach(pNode);break;
+   case 'opt':t(f.q,10.5,'bold',INK,0.6);answer(V(f.id)!=null?f.o[V(f.id)]:'');break;
+   case 'rng':t(f.q,10.5,'bold',INK,0.6);answer(num(f.id)!=null?num(f.id)+(f.u||''):'');break;
+   case 'chips':t((f.q||'').replace(/<[^>]+>/g,' '),10.5,'bold',INK,0.6);answer(V(f.id)||[]);break;
+   case 'photo':t(f.q,10.5,'bold',INK,0.6);photos.forEach(function(p){var iw=W-2*M,ih=iw*p.h/p.w;if(ih>200){ih=200;iw=ih*p.w/p.h;}ensure(ih+3);try{doc.addImage(p.d,'JPEG',M,y,iw,ih);}catch(e){}y+=ih+3;});break;
+   case 'w':pWidget(f.k);break;
+   }
+  }
+  function pWidget(k){
+   if(k==='rf')RF.forEach(function(g,gi){t(g[0],11,'bold',MG,0.8);g[1].forEach(function(q,i){var v=num('rf_'+gi+'_'+i);t((v==null?'-':v)+'  '+q,10,'normal',INK,0.8,3);});y+=1;});
+   else if(k==='rfres'){rfSums().forEach(function(x){t(x.n+': '+x.s+' Punkte',10,'normal',INK,1.2,3);});}
+   else if(k==='sr'){var s=0;SR.forEach(function(q,i){var v=num('sr_'+i);if(v!=null)s+=v;t((i+1)+'. ['+(v==null?'-':v)+'] '+q,9.5,'normal',INK,0.5,3);});t('Summe: '+s+' von '+SR.length*5,10.5,'bold',BL,2.5);}
+   else if(k==='antr'){AQ.forEach(function(q,i){var v=num('an_'+(i+1));t((i+1)+'. ['+(v==null?'-':v)+'] '+q,9.5,'normal',INK,0.5,3);});y+=2;}
+   else if(k==='antrres'){antrSums().forEach(function(x){t(x.n+': '+x.s+' Punkte',10,'normal',INK,1.2,3);});}
+   else if(k==='steck'){if(withT)STECK.forEach(function(s){t(s.n,11,'bold',MG,0.8);t(s.i,10,'normal',INK,1);y+=2;});}
+   else if(k==='matrix'){for(var i=0;i<10;i++){var n=V('mx_n'+i);if(!n)continue;var H2=num('mx_h'+i),W2=num('mx_w'+i),Q2=num('mx_q'+i);t(n+': '+(H2||'-')+', '+(W2||'-')+', '+(Q2||'-')+' -> '+((H2!=null&&W2!=null&&Q2!=null)?(H2+W2)*Q2:'-'),10,'normal',INK,0.8,3);}}
+   else if(k==='radar'){['Familie','Freunde','Beruf','Virtuelle Kontakte'].forEach(function(q,qi){t(q,10.5,'bold',MG,0.6);for(var i=0;i<5;i++){var b='rd_'+qi+'_'+i,n=V(b+'_n');if(n)t(n+(V(b+'_d')?' ('+V(b+'_d')+')':('')),10,'normal',INK,0.8,3);}});}
+   else if(k==='torte'){var tot=0;for(var i=0;i<8;i++){var hh=num('to_h'+i);if(hh){tot+=hh;t((V('to_n'+i)||'Bereich '+(i+1))+': '+hh+' h',10,'normal',INK,0.8,3);}}if(tot)t('Summe: '+tot+' h',10,'italic',MUT,2,3);}
+   else if(k==='akku'){var p=num('akku_p');if(p!=null)t('Akkustand: '+p+' %',10.5,'bold',INK,2);}
+   else if(k==='lebensrad'){}
+  }
+  // Deckblatt
+  var name=(V('name')||'').trim(),datum=(V('datum')||'').trim()||new Date().toLocaleDateString('de-DE',{day:'2-digit',month:'long',year:'numeric'});
+  doc.setFillColor(124,151,238);doc.rect(0,0,W,120,'F');doc.setFillColor(MG[0],MG[1],MG[2]);doc.circle(W-20,18,38,'F');doc.setFillColor(242,232,90);doc.triangle(140,120,170,72,200,120,'F');
+  y=60;t('MEIN PLAYBOOK',11,'bold',[255,255,255],3);t('Kommunikation trifft Resilienz',28,'bold',[255,255,255],2);t('Stärke deine Widerstandskraft und fördere Teamarbeit',13,'normal',[255,255,255],0);
+  y=140;if(name)t(name,16,'bold',INK,2);t(datum,12,'normal',MUT,0);
+  y=H-M-14;t(SIG,9,'normal',MUT,0);
+  // Kapitel
+  CH.forEach(function(ch,ci){if(ci===0||ch.id==='ende')return;
+   doc.addPage();y=M;t(ch.kicker.toUpperCase(),9,'bold',MG,1);t(ch.title,20,'bold',INK,2);doc.setDrawColor(BL[0],BL[1],BL[2]);doc.setLineWidth(0.6);doc.line(M,y,W-M,y);y+=4;
+   ch.blocks.forEach(function(b){
+    if(b.t==='th'){if(!withT)return;ensure(14);t('THEORIE',8,'bold',BL,0.5);t(b.h,13,'bold',INK,1.5);b.b.forEach(pNode);y+=3;}
+    else if(b.t==='ex'){ensure(16);t((b.src?'ARBEITSBLATT':'ÜBUNG')+(b.meta?'  –  '+b.meta.join(' · '):''),8,'bold',MG,0.5);t(b.h,13,'bold',INK,1.5);if(b.intro&&withT)t(b.intro,10,'italic',MUT,2);b.fields.forEach(pField);if(b.src&&withT)t(b.src,8,'italic',MUT,1);y+=4;}
+   });
+  });
+  var pages=doc.getNumberOfPages();for(var p=2;p<=pages;p++){doc.setPage(p);doc.setFont('helvetica','normal');doc.setFontSize(8);doc.setTextColor(MUT[0],MUT[1],MUT[2]);doc.text('Kommunikation trifft Resilienz - Dagmar Rostek',M,H-8);doc.text(String(p)+' / '+pages,W-M,H-8,{align:'right'});}
+  var file='Playbook-KommunikationResilienz'+(name?'-'+name.replace(/[^A-Za-z0-9À-ɏ]+/g,'-'):'')+'.pdf';
+  doc.save(file);
+ }).catch(function(){window.print();}).then(function(){btn.disabled=false;btn.textContent='PDF herunterladen';});
+}
+
+function go(i){if(i<0||i>=CH.length)return;state.step=i;persist(true);render();window.scrollTo(0,0);}
+document.getElementById('prev').addEventListener('click',function(){go(state.step-1);});
+document.getElementById('next').addEventListener('click',function(){go(state.step+1);});
+document.getElementById('progress').addEventListener('click',function(e){var b=e.target.closest('[data-go]');if(b)go(+b.getAttribute('data-go'));});
+var calcTimer=null;
+main.addEventListener('input',function(e){var el=e.target,k=el.getAttribute('data-key');if(!k)return;
+ var v=el.value;if(el.getAttribute('data-num')){v=v===''?'':+v;}state.f[k]=v;
+ var o=main.querySelector('[data-out="'+k+'"]');if(o){var flds=[];CH.forEach(function(c){c.blocks.forEach(function(b){if(b.fields)b.fields.forEach(function(f){if(f.id===k)flds.push(f);});});});o.textContent=v+(flds[0]&&flds[0].u?flds[0].u:'');}
+ persist();clearTimeout(calcTimer);calcTimer=setTimeout(updateCalcs,120);});
+main.addEventListener('change',function(e){var el=e.target;if(el.tagName==='SELECT'){var k=el.getAttribute('data-key');if(k){state.f[k]=el.getAttribute('data-num')?(el.value===''?'':+el.value):el.value;persist();updateCalcs();}return;}
+ var id=el.getAttribute('data-photo');if(!id)return;var files=[].slice.call(el.files||[]);el.value='';if(!files.length)return;toast('Foto wird gespeichert …');
+ DB.get(id).then(function(list){return Promise.all(files.map(compress)).then(function(add){return DB.set(id,list.concat(add));});}).then(function(){toast('Foto gespeichert');loadThumbs(id);}).catch(function(){toast('Foto konnte nicht gespeichert werden');});});
+main.addEventListener('click',function(e){
+ var g=e.target.closest('[data-go]');if(g){go(+g.getAttribute('data-go'));return;}
+ var t=e.target.closest('button');if(!t)return;
+ if(t.hasAttribute('data-dict'))return toggleDictate(t);
+ var scEl=t.parentNode&&t.parentNode.getAttribute&&t.parentNode.getAttribute('data-sc');
+ if(scEl&&t.hasAttribute('data-v')){var v=+t.getAttribute('data-v');if(state.f[scEl]===v){delete state.f[scEl];}else state.f[scEl]=v;
+  var bs=t.parentNode.querySelectorAll('button');for(var i=0;i<bs.length;i++)bs[i].classList.toggle('on',state.f[scEl]===+bs[i].getAttribute('data-v'));persist();updateCalcs();return;}
+ if(t.hasAttribute('data-chip')){var cid=t.getAttribute('data-chip'),wd=t.getAttribute('data-w');var a=(state.f[cid]||[]).slice();var ix=a.indexOf(wd);if(ix>-1)a.splice(ix,1);else a.push(wd);state.f[cid]=a;t.classList.toggle('on');persist();return;}
+ if(t.hasAttribute('data-del')){var pid=t.getAttribute('data-del'),pi=+t.getAttribute('data-i');DB.get(pid).then(function(l){l.splice(pi,1);return DB.set(pid,l);}).then(function(){loadThumbs(pid);toast('Foto entfernt');});return;}
+ if(t.id==='pdf'){var cb=document.getElementById('withTheory');state.theory=!!(cb&&cb.checked);persist(true);return makePDF(t);}
+ if(t.id==='reset'){document.getElementById('confirm').hidden=false;return;}
+ if(t.id==='reset-no'){document.getElementById('confirm').hidden=true;return;}
+ if(t.id==='reset-yes'){state={step:0,f:{},theory:true};try{localStorage.removeItem(KEY);}catch(err){}DB.clear().then(function(){render();window.scrollTo(0,0);toast('Alles gelöscht');});}
+});
+document.addEventListener('keydown',function(e){if(e.target.closest&&e.target.closest('input,textarea,select'))return;if(e.key==='ArrowRight')go(state.step+1);if(e.key==='ArrowLeft')go(state.step-1);});
+if(state.step>=CH.length)state.step=0;
+render();
+})();
+</script>
+</body>
+</html>

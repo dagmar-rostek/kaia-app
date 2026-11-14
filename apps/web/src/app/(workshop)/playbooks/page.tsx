@@ -53,6 +53,17 @@ const THEMES_DE = [
     accentSoftDark: "#2D1A1A",
     live: true,
   },
+  {
+    num: 5,
+    title: "Kommunikation trifft Resilienz",
+    sub: "Stärke deine Widerstandskraft und fördere Teamarbeit.",
+    href: "/playbooks/kommunikation-trifft-resilienz.html",
+    accent: "#5C3D8A",
+    accentSoft: "#EDE5F5",
+    accentDark: "#A97FD4",
+    accentSoftDark: "#251840",
+    live: true,
+  },
 ]
 
 const THEMES_EN = [
@@ -98,6 +109,17 @@ const THEMES_EN = [
     accentSoft: "#F0DEDE",
     accentDark: "#C28080",
     accentSoftDark: "#2D1A1A",
+    live: true,
+  },
+  {
+    num: 5,
+    title: "Communication meets Resilience",
+    sub: "Build your resilience and strengthen teamwork.",
+    href: "/playbooks/kommunikation-trifft-resilienz.html",
+    accent: "#5C3D8A",
+    accentSoft: "#EDE5F5",
+    accentDark: "#A97FD4",
+    accentSoftDark: "#251840",
     live: true,
   },
 ]
