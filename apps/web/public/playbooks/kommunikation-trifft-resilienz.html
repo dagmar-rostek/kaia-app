@@ -158,7 +158,16 @@ footer{max-width:980px;margin:0 auto;padding:10px 18px 30px;font-size:13px;color
   <div class="top-in">
     <div class="top-row">
       <span class="brand"><i></i>Kommunikation trifft Resilienz</span>
-      <span class="saved" id="saved" aria-live="polite"></span>
+      <span style="display:flex;align-items:center;gap:8px">
+        <span class="saved" id="saved" aria-live="polite"></span>
+        <button id="top-pdf" type="button" title="Als PDF speichern" style="border:0;background:none;cursor:pointer;padding:4px 6px;border-radius:8px;color:var(--mut);font-size:17px" aria-label="PDF speichern">⬇</button>
+        <button id="top-reset" type="button" title="Alles löschen" style="border:0;background:none;cursor:pointer;padding:4px 6px;border-radius:8px;color:var(--mut);font-size:17px" aria-label="Alles löschen">🗑</button>
+      </span>
+    </div>
+    <div id="confirm-bar" hidden style="align-items:center;gap:10px;padding:8px 0 4px;font-size:14px">
+      <span style="color:var(--ink)">Wirklich alles löschen?</span>
+      <button id="confirm-yes" type="button" style="border:0;border-radius:8px;padding:5px 12px;background:#b3261e;color:#fff;cursor:pointer;font-weight:600">Ja, löschen</button>
+      <button id="confirm-no" type="button" style="border:1px solid var(--line);border-radius:8px;padding:5px 12px;background:#fff;cursor:pointer">Abbrechen</button>
     </div>
     <nav class="progress" id="progress" aria-label="Kapitel"></nav>
   </div>
@@ -619,6 +628,10 @@ main.addEventListener('click',function(e){
  if(t.id==='reset-yes'){state={step:0,f:{},theory:true};try{localStorage.removeItem(KEY);}catch(err){}DB.clear().then(function(){render();window.scrollTo(0,0);toast('Alles gelöscht');});}
 });
 document.addEventListener('keydown',function(e){if(e.target.closest&&e.target.closest('input,textarea,select'))return;if(e.key==='ArrowRight')go(state.step+1);if(e.key==='ArrowLeft')go(state.step-1);});
+document.getElementById('top-pdf').addEventListener('click',function(){makePDF(this);});
+document.getElementById('top-reset').addEventListener('click',function(){var bar=document.getElementById('confirm-bar');bar.hidden=false;bar.style.display='flex';});
+document.getElementById('confirm-no').addEventListener('click',function(){var bar=document.getElementById('confirm-bar');bar.hidden=true;});
+document.getElementById('confirm-yes').addEventListener('click',function(){state={step:0,f:{},theory:true};try{localStorage.removeItem(KEY);}catch(err){}DB.clear().then(function(){var bar=document.getElementById('confirm-bar');bar.hidden=true;render();window.scrollTo(0,0);toast('Alles gelöscht');});});
 if(state.step>=CH.length)state.step=0;
 render();
 })();
