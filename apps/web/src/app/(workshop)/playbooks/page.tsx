@@ -101,7 +101,7 @@ const THEMES: Theme[] = [
     accentDark: "#A97FD4",
     accentSoftDark: "#251840",
     live: true,
-    hasHtmlAuth: true,
+    hasHtmlAuth: false,
   },
   {
     key: "science-ai",
@@ -116,7 +116,7 @@ const THEMES: Theme[] = [
     accentDark: "#4FC9C1",
     accentSoftDark: "#0D2E2C",
     live: true,
-    hasHtmlAuth: true,
+    hasHtmlAuth: false,
     hint: "für Manuela :-)",
   },
 ]

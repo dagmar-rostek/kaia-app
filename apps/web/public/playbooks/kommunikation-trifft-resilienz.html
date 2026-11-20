@@ -151,35 +151,9 @@ footer{max-width:980px;margin:0 auto;padding:10px 18px 30px;font-size:13px;color
   body{background:#fff;padding:0}
   .card{break-inside:avoid;box-shadow:none}
 }
-/* PASSWORD GATE */
-#pb-gate{position:fixed;inset:0;z-index:999;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:36px;padding:32px;text-align:center}
-.g-eye{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--blue-d);margin:0}
-.g-title{font-size:clamp(22px,5vw,34px);font-weight:300;letter-spacing:-.02em;color:var(--ink);margin:0}
-#pb-form{display:flex;flex-direction:column;align-items:center;gap:14px;width:100%;max-width:300px}
-#pb-pw{width:100%;padding:14px 20px;border:1.5px solid var(--line);border-radius:14px;font-size:18px;text-align:center;letter-spacing:.12em;background:var(--bg);color:var(--ink);outline:none}
-#pb-pw:focus{border-color:var(--blue-d)}
-.g-err{font-size:13px;color:#c62828;margin:0;min-height:18px}
-.g-btn{background:var(--blue-d);color:#fff;border:0;border-radius:50px;padding:14px 40px;font-size:16px;font-weight:600;cursor:pointer;transition:opacity .15s}
-.g-btn:hover{opacity:.85}
-.g-back{font-size:14px;color:var(--mut);text-decoration:none}
-.g-hint{font-size:12px;color:var(--mut);margin:0}
 </style>
 </head>
 <body>
-<div id="pb-gate">
-  <div>
-    <p class="g-eye">Mein Playbook</p>
-    <h1 class="g-title">Kommunikation trifft Resilienz</h1>
-  </div>
-  <form id="pb-form">
-    <input type="password" id="pb-pw" placeholder="Passwort" autocomplete="current-password" aria-label="Passwort">
-    <p class="g-err" id="pb-err" role="alert"></p>
-    <button class="g-btn" type="submit">Zugang &#x2192;</button>
-    <a class="g-back" href="/playbooks">&#x2190; Zur Übersicht</a>
-    <p class="g-hint">Nur für Kursteilnehmende.</p>
-  </form>
-</div>
-<div id="pb-app" hidden>
 <header class="top">
   <div class="top-in">
     <div class="top-row">
@@ -660,23 +634,6 @@ document.getElementById('confirm-no').addEventListener('click',function(){var ba
 document.getElementById('confirm-yes').addEventListener('click',function(){state={step:0,f:{},theory:true};try{localStorage.removeItem(KEY);}catch(err){}DB.clear().then(function(){var bar=document.getElementById('confirm-bar');bar.hidden=true;render();window.scrollTo(0,0);toast('Alles gelöscht');});});
 if(state.step>=CH.length)state.step=0;
 render();
-})();
-</script>
-</div>
-<script>
-(function(){
-  var PW_KEY='rostek-pb-auth-v1';
-  var CORRECT='PLAYBOOK_4Y';
-  var gEl=document.getElementById('pb-gate');
-  var aEl=document.getElementById('pb-app');
-  function unlock(){gEl.hidden=true;aEl.hidden=false;}
-  try{if(sessionStorage.getItem(PW_KEY)==='1')unlock();}catch(e){}
-  document.getElementById('pb-form').addEventListener('submit',function(e){
-    e.preventDefault();
-    var v=document.getElementById('pb-pw').value;
-    if(v===CORRECT){try{sessionStorage.setItem(PW_KEY,'1');}catch(err){}document.getElementById('pb-err').textContent='';unlock();}
-    else{document.getElementById('pb-err').textContent='Falsches Passwort.';document.getElementById('pb-pw').value='';document.getElementById('pb-pw').focus();}
-  });
 })();
 </script>
 </body>
