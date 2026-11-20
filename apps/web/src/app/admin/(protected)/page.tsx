@@ -15,6 +15,7 @@ import {
   CalendarDays,
   ArrowRight,
   LineChart,
+  KeyRound,
 } from "lucide-react"
 
 async function fetchHealth() {
@@ -119,6 +120,14 @@ const QUICK_LINKS: QuickLink[] = [
     accent: "bg-teal-500/10",
     iconColor: "text-teal-400",
     badge: "Studie",
+  },
+  {
+    href: "/admin/playbooks",
+    icon: KeyRound,
+    label: "Playbook-Passwörter",
+    desc: "Passwörter für alle 6 Playbooks in Klartext einsehen und ändern — lokal gespeichert.",
+    accent: "bg-lime-500/10",
+    iconColor: "text-lime-400",
   },
 ]
 
