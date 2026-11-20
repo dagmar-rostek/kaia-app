@@ -24,6 +24,7 @@ type Theme = {
   accentSoftDark: string
   live: boolean
   hasHtmlAuth: boolean // injects HTML auth gate on unlock
+  hint?: string // per-playbook password modal hint text
 }
 
 const THEMES: Theme[] = [
@@ -116,6 +117,7 @@ const THEMES: Theme[] = [
     accentSoftDark: "#0D2E2C",
     live: true,
     hasHtmlAuth: false,
+    hint: "für Manuela :-)",
   },
 ]
 
@@ -306,7 +308,7 @@ export default function PlaybooksPage() {
                 {copy.cancel}
               </button>
             </form>
-            <p className="text-xs text-muted-foreground text-center">{copy.pwHint}</p>
+            <p className="text-xs text-muted-foreground text-center">{activeTheme?.hint ?? copy.pwHint}</p>
           </div>
         </div>
       )}

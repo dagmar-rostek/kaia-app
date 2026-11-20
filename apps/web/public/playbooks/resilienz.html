@@ -269,6 +269,29 @@ footer .sig{max-width:680px;margin:0 auto}
 .top{top:calc(env(safe-area-inset-top,0px) + 42px)!important}
 .pb-session-warn{padding:9px max(16px,env(safe-area-inset-left,0px));font-size:13px;line-height:1.5;background:var(--accent-soft);color:var(--ink);border-bottom:1px solid var(--line)}
 @media print{.pb-minbar,.pb-session-warn{display:none!important}}
+
+/* ── MATERIALS PANEL ── */
+.mat-btn{font:inherit;font-size:13px;border:1px solid var(--line);border-radius:999px;padding:5px 13px;background:var(--bg);color:var(--muted);cursor:pointer;white-space:nowrap}
+.mat-btn:hover{border-color:var(--accent);color:var(--ink)}
+.mat-overlay{position:fixed;inset:0;z-index:30;display:flex;justify-content:flex-end}
+.mat-backdrop{position:absolute;inset:0;background:rgba(0,0,0,0.38)}
+.mat-drawer{position:relative;width:min(360px,100vw);background:var(--bg);border-left:1px solid var(--line);display:flex;flex-direction:column;overflow:hidden;height:100%}
+.mat-dhead{padding:14px 16px 12px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:8px}
+.mat-dhead h2{margin:0;font-family:var(--display);font-weight:300;font-size:20px}
+.mat-dclose{font:inherit;border:0;background:none;cursor:pointer;color:var(--muted);font-size:26px;line-height:1;padding:0 6px}
+.mat-dclose:hover{color:var(--ink)}
+.mat-scroll{overflow-y:auto;flex:1;padding:14px 16px 32px}
+.mat-grp{margin-bottom:18px}
+.mat-grp-h{font-size:11px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:var(--accent);margin:0 0 7px}
+.mat-item{display:flex;align-items:center;gap:10px;padding:9px 11px;border-radius:11px;background:var(--surface);border:1px solid var(--line);margin-bottom:5px;cursor:pointer;text-align:left;width:100%;font:inherit;color:inherit}
+.mat-item:hover{border-color:var(--accent);background:var(--accent-soft)}
+.mat-n{flex:none;width:26px;height:26px;border-radius:50%;background:var(--accent-soft);color:var(--accent);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700}
+.mat-txt{flex:1;font-size:13px;line-height:1.4}
+.mat-arr{font-size:14px;color:var(--accent);flex:none}
+/* badges inside each phase */
+.mat-badges{display:flex;flex-direction:column;gap:5px}
+.mat-badge{display:flex;align-items:center;gap:8px;padding:7px 12px;border-radius:10px;background:var(--accent-soft);font-size:13px;border:1px solid var(--line)}
+.mat-badge .mn{flex:none;width:22px;height:22px;border-radius:50%;background:var(--accent);color:var(--accent-ink);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700}
 </style>
 </head>
 <body>
@@ -291,7 +314,19 @@ footer .sig{max-width:680px;margin:0 auto}
 
 <div class="pb-minbar" aria-label="Navigation">
   <a href="/playbooks" class="pb-back">&#x2190; Zur Übersicht</a>
+  <button class="mat-btn" onclick="window.openMat()" aria-label="Arbeitsmaterialien anzeigen">📋 Materialien</button>
   <button class="pb-pdf" onclick="window.print()">Als PDF speichern</button>
+</div>
+
+<div id="mat-overlay" class="mat-overlay" hidden role="dialog" aria-modal="true" aria-label="Arbeitsmaterialien">
+  <div class="mat-backdrop" onclick="window.closeMat()"></div>
+  <div class="mat-drawer">
+    <div class="mat-dhead">
+      <h2>📋 Arbeitsmaterialien</h2>
+      <button class="mat-dclose" onclick="window.closeMat()" aria-label="Schließen">×</button>
+    </div>
+    <div class="mat-scroll" id="mat-list"></div>
+  </div>
 </div>
 <div class="pb-session-warn" role="note">
   Deine Einträge werden nur für diese Browser-Sitzung gespeichert und gehen verloren, wenn du die Seite schließt oder neu lädst. Erstelle daher zwischendurch ein PDF.
@@ -377,6 +412,7 @@ theory:[
   {t:`Woher die Resilienzforschung kommt`,d:`Hintergrund`,b:[[`p`,`Die Psychologin Emmy Werner begleitete alle Kinder, die 1955 auf der hawaiianischen Insel Kauai geboren wurden, über Jahrzehnte. Etwa ein Drittel der Kinder, die unter sehr schwierigen Bedingungen aufwuchsen, entwickelte sich trotzdem gut. Ein entscheidender Schutzfaktor: mindestens eine verlässliche Bezugsperson.`],[`spark`,`Ein einziger Mensch, der an dich glaubt, ist statistisch gesehen eine Superkraft.`]]},
   {t:`Selbstcheck`,d:`zum Ausprobieren`,b:[[`p`,`Schätze dich für jeden Faktor auf einer Skala von 1 bis 10 ein. Wo bist du stark? Wo liegt Potenzial?`],[`fig`,`scale`,``],[`q`,`Welcher Faktor hat dich in diesem Ausbildungsjahr am meisten getragen?`]]},
   {t:`Akzeptanz ist nicht Resignation`,d:`Vertiefung`,b:[[`p`,`Akzeptanz heißt, die Realität anzuerkennen, bevor man sie verändert. Wer sich lange über das Unveränderliche ärgert, hat weniger Kraft für das Veränderbare.`],[`quote`,`Gib mir die Gelassenheit, Dinge hinzunehmen, die ich nicht ändern kann, den Mut, Dinge zu ändern, die ich ändern kann, und die Weisheit, das eine vom anderen zu unterscheiden.`,`Gelassenheitsgebet, Reinhold Niebuhr zugeschrieben`]]},
+  {t:`7 Schritte zur Akzeptanz`,d:`Arbeitsblatt Nr. 7`,b:[[`p`,`Akzeptanz ist kein einmaliger Akt, sondern ein Weg. Die sieben Schritte helfen, sich einer schwierigen Situation bewusst zu nähern.`],[`ol`,[`<strong>Situation benennen:</strong> Was ist passiert – so sachlich wie möglich?`,`<strong>Gefühle wahrnehmen:</strong> Was fühle ich dabei wirklich?`,`<strong>Bewertung prüfen:</strong> Welche innere Geschichte erzähle ich mir darüber?`,`<strong>Realität anerkennen:</strong> Was ist tatsächlich so, unabhängig von meiner Bewertung?`,`<strong>Entscheidung treffen:</strong> Was will ich mit dieser Situation machen?`,`<strong>Ressourcen aktivieren:</strong> Was habe ich, was mir helfen kann?`,`<strong>Ersten Schritt gehen:</strong> Was tue ich als Nächstes – und bis wann?`]],[`q`,`Bei welchem der sieben Schritte stockst du am häufigsten?`]]},
   {t:`Netzwerk in der Leitungsrolle`,d:`Praxis`,b:[[`p`,`Mit der Leitungsrolle verändern sich Beziehungen. Aus Kolleginnen werden Mitarbeitende. Umso wichtiger ist ein Netzwerk auf Augenhöhe: andere Leitungen, Peergroups wie diese Ausbildungsgruppe, Supervision.`],[`q`,`Wen rufst du an, wenn es auf Station brennt und du selbst nicht mehr weiterweißt?`]]},
   {t:`Zum Weiterlesen`,b:[[`lit`,[`Werner, E., Smith, R. (1992): Overcoming the Odds. Ithaca: Cornell University Press.`,`Heller, J. (2013): Resilienz. 7 Schlüssel für mehr innere Stärke. München: Gräfe und Unzer.`]]]}
  ]},
@@ -410,7 +446,8 @@ phases:[
  blocks:[[`ul`,[`<strong>Verstehbarkeit:</strong> Ich verstehe, was gerade passiert.`,`<strong>Handhabbarkeit:</strong> Ich habe, was ich brauche, um damit umzugehen.`,`<strong>Sinnhaftigkeit:</strong> Es lohnt sich, mich dafür einzusetzen.`]],[`p`,`In der Theoriebibliothek findest du fünf weitere Modelle: die Stressampel, die sieben Resilienzfaktoren, die Leistungskurve, Erholung und gesunde Führung.`]],
  toTheory:true,spark:`Gesundheit ist kein Zustand. Sie ist ein Verb.`,
  more:[{t:`Drei schnelle Fragen zum Einstieg`,b:[[`ol`,[`Was verstehe ich gerade nicht, obwohl es mich betrifft?`,`Was fehlt mir gerade, um gut handeln zu können?`,`Wofür lohnt sich mein Einsatz, auch an schweren Tagen?`]]]}],
- fields:[{id:`koh`,type:`text`,label:`Welcher der drei Teile ist bei mir gerade stark? Welcher wackelt?`}]},
+ mats:[{n:'0',name:'Selbsttest Resilienzfaktoren'}],
+ fields:[{id:`koh`,type:`text`,label:`Welcher der drei Teile ist bei mir gerade stark? Welcher wackelt?`},{id:'selbsttest_res',type:'text',label:'Selbsttest Resilienzfaktoren (Nr. 0): Welche der 7 Faktoren sind bei mir stark – welche brauchen Aufmerksamkeit?'}]},
 {short:`Erkunden`,kicker:`Phase 2 · Erkunden`,title:`Meine Energielandschaft`,
  impulse:`Was gibt mir Kraft und was nimmt sie mir?`,
  task:`Leg ein Tuch als Untergrund. Steine stehen für das, was dich Kraft kostet. Naturmaterial oder LEGO für das, was dich nährt. Nähe und Abstand dürfen etwas bedeuten, auch Größe und Gewicht.`,
@@ -422,7 +459,8 @@ phases:[
   {t:`Hintergrund: die Energiebilanz`,d:`Theorie`,b:[[`p`,`Auf Dauer bleiben wir gesund, wenn die Bilanz stimmt: Was wir an Kraft abgeben, müssen wir auch wieder auffüllen. Die Erholungsforschung zeigt, dass es dabei nicht nur um Menge geht, sondern um die Art der Erholung.`],[`fig`,`akku`,``]]},
   {t:`Für Mutige`,d:`noch tiefer`,b:[[`p`,`Leg einen Stein für etwas, das dich Kraft kostet und über das du bisher mit niemandem gesprochen hast. Du musst es nicht erzählen. Leg ihn einfach hin und schau, wo er landet.`]]}
  ],
- fields:[{id:`land_foto`,type:`photo`,label:`Foto meiner Landschaft`},{id:`land_text`,type:`text`,label:`Was fällt mir auf?`}]},
+ mats:[{n:'1',name:'Was macht mich stark?'},{n:'4',name:'Meine Rollen'},{n:'6',name:'Stressoren mindern – Ressourcen aufbauen'}],
+ fields:[{id:`land_foto`,type:`photo`,label:`Foto meiner Landschaft`},{id:`land_text`,type:`text`,label:`Was fällt mir auf?`},{id:'staerke_1',type:'text',label:'Was macht mich stark? (Nr. 1): Was hält mich in Belastungsphasen am Laufen?'},{id:'staerke_2',type:'text',label:'Was macht mich stark? (Nr. 1): Welche Eigenschaften helfen mir, mit Rückschlägen umzugehen?'},{id:'meine_rollen',type:'text',label:'Meine Rollen (Nr. 4): In welchen Rollen bin ich besonders gefordert – und welche kostet mich am meisten Kraft?'},{id:'akku_bilanz',type:'text',label:'Stressoren & Ressourcen (Nr. 6): Was läuft meinen Akku leer – was lädt ihn auf?'}]},
 {short:`Sturm`,kicker:`Phase 3 · Vertiefen`,title:`Wenn es stürmt`,
  impulse:`Was gerät ins Wanken und was hält?`,
  task:`Bring einen typischen Sturm aus deinem Leitungsalltag in deine Landschaft. Was verschiebt sich? Was bleibt stehen? Woran merkst du früh, dass es losgeht?`,
@@ -434,7 +472,8 @@ phases:[
   {t:`Die Verschlimmerungsfrage`,d:`paradox`,b:[[`p`,`Was müsstest du tun, damit dich der nächste Sturm garantiert umwirft? Sammle mindestens fünf Ideen. Dann schau: Was davon tust du schon ein bisschen?`],[`spark`,`Rezept für den sicheren Zusammenbruch: Nie Nein sagen, nie Pause machen, alles allein wissen.`]]},
   {t:`Hintergrund: Stressreaktion`,d:`Theorie`,b:[[`p`,`In akuter Belastung schaltet der Körper auf Kampf oder Flucht: Puls und Blutdruck steigen, der Blick wird eng. Kurzfristig ist das hilfreich. Problematisch wird es, wenn die Erholung ausbleibt und der Alarm zum Dauerzustand wird. Mehr dazu in der Theoriebibliothek unter „Die Stressampel“.`]]}
  ],
- fields:[{id:`sturm_foto`,type:`photo`,label:`Foto vom Sturm in meiner Landschaft`},{id:`sturm_text`,type:`text`,label:`Meine Frühwarnzeichen`}]},
+ mats:[{n:'2',name:'Selbsttest Selbstregulation'},{n:'3',name:'Rezept zur Selbstregulation'},{n:'5a',name:'Selbsttest Innere Antreiber'},{n:'5b',name:'Antreiber-Steckbriefe'}],
+ fields:[{id:`sturm_foto`,type:`photo`,label:`Foto vom Sturm in meiner Landschaft`},{id:`sturm_text`,type:`text`,label:`Meine Frühwarnzeichen`},{id:'selbstreg_ergebnis',type:'text',label:'Selbsttest Selbstregulation (Nr. 2): Was hat der Test gezeigt – wo liegt mein Entwicklungsfeld?'},{id:'mein_rezept',type:'text',label:'Mein Rezept zur Selbstregulation (Nr. 3): Was tue ich konkret, wenn der Stress steigt?'},{id:'mein_antreiber',type:'text',label:'Mein innerer Antreiber (Nr. 5a/5b): Welcher Antreiber sitzt bei mir mit im Raum – und was ist mein Erlaubersatz?'}]},
 {short:`Anker`,kicker:`Phase 4 · Vertiefen`,title:`Mein Anker`,
  impulse:`Was hält mich, wenn es stürmt?`,
  task:`Forme deinen Anker aus Knete. Er darf ganz abstrakt sein. Er trocknet in der Mittagspause und geht mit dir nach Hause.`,
@@ -445,7 +484,8 @@ phases:[
   {t:`Fragen zu deinem Anker`,b:[[`ul`,[`Wann hat dich dieser Anker schon einmal gehalten?`,`Wer weiß davon?`,`Wie erinnerst du dich im Alltag an ihn?`,`Wo legst du dein Knete-Objekt zu Hause hin?`]]]},
   {t:`Anker im Dienst`,d:`Praxis`,b:[[`p`,`Ein guter Anker funktioniert auch in 30 Sekunden zwischen zwei Patientenzimmern. Überlege: Was davon kannst du mit auf Station nehmen?`],[`ex`,`Idee`,`Ein Foto deines Knete-Ankers als Sperrbildschirm.`]]}
  ],
- fields:[{id:`anker_foto`,type:`photo`,label:`Foto meines Ankers`},{id:`anker_text`,type:`text`,label:`Mein Anker steht für …`}]},
+ mats:[{n:'8a',name:'Bearbeitungsfragen Mein Resilienzbaum'},{n:'8b',name:'Vorlage Resilienzbaum'}],
+ fields:[{id:`anker_foto`,type:`photo`,label:`Foto meines Ankers`},{id:`anker_text`,type:`text`,label:`Mein Anker steht für …`},{id:'baum_staerken',type:'text',label:'Mein Resilienzbaum (Nr. 8a): Was sind meine Stärken – was hat mir bisher in schwierigen Zeiten geholfen?'},{id:'baum_ziel',type:'text',label:'Mein Resilienzbaum (Nr. 8a): Was möchte ich (weiter)entwickeln – was soll in Zukunft stärker werden?'}]},
 {short:`Team`,kicker:`Phase 5 · Gemeinsam`,title:`Und mein Team?`,
  impulse:`Wie stärke ich als Leitung die Resilienz meines Teams?`,
  task:`Baut zu dritt ein gemeinsames Modell. Jede Person bringt einen Baustein aus ihrer Praxis ein. Dann verbindet ihr die Bausteine zu einem Ganzen und erzählt euch, was entstanden ist.`,
@@ -524,7 +564,7 @@ var SCREENS=[{type:'start',short:'Start'},{type:'theory',short:'Theorie'}]
  .concat([{type:'kern',short:'Kern'},{type:'interview',short:'Gespräch'},{type:'end',short:'Abschluss'}]);
 var F_START=[{id:'name',type:'line',label:'Dein Name'},{id:'frage',type:'text',label:'Was möchte ich heute für mich klären?'}];
 var F_THEORY=[{id:'theorie',type:'text',label:'Was nehme ich aus der Theorie mit? Was hat mich überrascht?'}];
-var F_KERN=[{id:'kern',type:'text',label:'In einem Satz'},{id:'symbol_foto',type:'photo',label:'Mein Symbol für heute (optional)'},{id:'schritt',type:'text',label:'Mein erster Schritt ab Montag'},{id:'unterstuetzung',type:'text',label:'Wer unterstützt mich?'},{id:'merken',type:'text',label:'Woran merke ich, dass es wirkt?'}];
+var F_KERN=[{id:'kern',type:'text',label:'In einem Satz'},{id:'symbol_foto',type:'photo',label:'Mein Symbol für heute (optional)'},{id:'schritt',type:'text',label:'Mein erster Schritt ab Montag'},{id:'unterstuetzung',type:'text',label:'Wer unterstützt mich?'},{id:'merken',type:'text',label:'Woran merke ich, dass es wirkt?'},{id:'schutzschild_stark',type:'text',label:'Mein Resilienz-Schutzschild (Nr. 9): Was hat mich in diesem Workshop gestärkt?'},{id:'schutzschild_schutz',type:'text',label:'Mein Resilienz-Schutzschild (Nr. 9): Meine Resilienz schütze ich, indem ich …'}];
 var F_INT=[{id:'erzaehlen',type:'text',label:'Das möchte ich erzählen'},{id:'lieblingsfrage',type:'text',label:'Meine Lieblingsfrage für das Interview'},{id:'neu',type:'text',label:'Das ist im Interview neu aufgetaucht'}];
 function fieldsOf(s){ if(s.type==='start')return F_START; if(s.type==='theory')return F_THEORY; if(s.type==='kern')return F_KERN; if(s.type==='interview')return F_INT; if(s.type==='phase')return s.p.fields||[]; return []; }
 var ALL_PHOTO_IDS=[]; SCREENS.forEach(function(s){fieldsOf(s).forEach(function(f){if(f.type==='photo')ALL_PHOTO_IDS.push(f.id);});});
@@ -606,16 +646,22 @@ function render(){stopDictate();var s=SCREENS[state.step],h='<article class="scr
   if(PB.startSpark)h+=spark(PB.startSpark);
   h+=capture(F_START);
  } else if(s.type==='theory'){
-  h+='<p class="kicker">Theoriebibliothek</p><h1>Zum Nachlesen</h1><p class="lead">'+PB.theoryLead+'</p>'+theoryLib(false);
+  h+='<p class="kicker">Theoriebibliothek</p><h1>Zum Nachlesen</h1>';
+  h+='<div class="mat-badges"><div class="mat-badge"><span class="mn">0</span>Arbeitsblatt Nr. 0: Selbsttest Resilienzfaktoren</div><div class="mat-badge"><span class="mn">5a</span>Arbeitsblatt Nr. 5a: Selbsttest Innere Antreiber</div><div class="mat-badge"><span class="mn">5b</span>Arbeitsblatt Nr. 5b: Antreiber-Steckbriefe</div><div class="mat-badge"><span class="mn">7</span>Arbeitsblatt Nr. 7: 7 Schritte zur Akzeptanz</div></div>';
+  h+='<p class="lead">'+PB.theoryLead+'</p>'+theoryLib(false);
   if(PB.theorySpark)h+=spark(PB.theorySpark);
   h+=capture(F_THEORY);
  } else if(s.type==='phase'){
-  var p=s.p;h+='<p class="kicker">'+p.kicker+'</p><h1>'+p.title+'</h1>'+phaseBody(p,false);
+  var p=s.p;h+='<p class="kicker">'+p.kicker+'</p><h1>'+p.title+'</h1>';
+  if(p.mats&&p.mats.length)h+='<div class="mat-badges">'+p.mats.map(function(m){return'<div class="mat-badge"><span class="mn">'+m.n+'</span>Arbeitsblatt Nr. '+m.n+': '+m.name+'</div>';}).join('')+'</div>';
+  h+=phaseBody(p,false);
   if(p.toTheory)h+='<button class="mini to-theory" type="button" data-go="1">Zur Theoriebibliothek</button>';
   if(p.build)h+='<div class="pause">'+ICON.hands+'<p>'+(typeof p.build==='string'?p.build:'Jetzt Handy weg und bauen.')+'<small>Danach hältst du hier fest, was entstanden ist.</small></p></div>';
   h+=capture(p.fields||[],p.build?'Festhalten':'');
  } else if(s.type==='kern'){
-  h+='<p class="kicker">Mein Kern</p><h1>Das nehme ich mit</h1><p class="lead">Blättere noch einmal durch deine Einträge. Was zieht sich durch deinen Tag wie ein roter Faden?</p>'+fig('kompass2','Aus vielen Modellen wird ein Satz.');
+  h+='<p class="kicker">Mein Kern</p><h1>Das nehme ich mit</h1>';
+  h+='<div class="mat-badges"><div class="mat-badge"><span class="mn">9</span>Arbeitsblatt Nr. 9: Abschlussfragen Resilienz-Schutzschild</div></div>';
+  h+='<p class="lead">Blättere noch einmal durch deine Einträge. Was zieht sich durch deinen Tag wie ein roter Faden?</p>'+fig('kompass2','Aus vielen Modellen wird ein Satz.');
   if(PB.kernSpark)h+=spark(PB.kernSpark);
   h+=capture(F_KERN);
  } else if(s.type==='interview'){
@@ -676,6 +722,37 @@ main.addEventListener('click',function(e){var t=e.target.closest('button');if(!t
  if(t.id==='reset-no'){document.getElementById('confirm').hidden=true;return;}
  if(t.id==='reset-yes'){state={step:0,fields:{}};PHOTOS={};try{localStorage.removeItem(KEY);}catch(err){}DB.clear().then(function(){render();window.scrollTo(0,0);flash('Alles gelöscht');});}
 });
+
+/* ── MATERIALS PANEL ── */
+var MATS=[
+ {n:'0', name:'Selbsttest Resilienzfaktoren', phase:'Phase 1 · Impuls', screen:2},
+ {n:'1', name:'Was macht mich stark?', phase:'Phase 2 · Erkunden', screen:3},
+ {n:'2', name:'Selbsttest Selbstregulation', phase:'Phase 3 · Wenn es stürmt', screen:4},
+ {n:'3', name:'Rezept zur Selbstregulation', phase:'Phase 3 · Wenn es stürmt', screen:4},
+ {n:'4', name:'Meine Rollen', phase:'Phase 2 · Erkunden', screen:3},
+ {n:'5a', name:'Selbsttest Innere Antreiber', phase:'Theoriebibliothek · Stressampel', screen:1},
+ {n:'5b', name:'Antreiber-Steckbriefe', phase:'Theoriebibliothek · Stressampel', screen:1},
+ {n:'6', name:'Stressoren mindern – Ressourcen aufbauen', phase:'Phase 2 · Erkunden', screen:3},
+ {n:'7', name:'7 Schritte zur Akzeptanz', phase:'Theoriebibliothek · Resilienzfaktoren', screen:1},
+ {n:'8a', name:'Bearbeitungsfragen Mein Resilienzbaum', phase:'Phase 4 · Mein Anker', screen:5},
+ {n:'8b', name:'Vorlage Resilienzbaum', phase:'Phase 4 · Mein Anker', screen:5},
+ {n:'9', name:'Abschlussfragen Resilienz-Schutzschild', phase:'Mein Kern · Abschluss', screen:7}
+];
+window.openMat=function(){
+ var groups={};
+ MATS.forEach(function(m){if(!groups[m.phase])groups[m.phase]=[];groups[m.phase].push(m);});
+ var html='<p style="font-size:13px;color:var(--muted);margin:0 0 14px">Klick auf ein Blatt öffnet die passende Phase.</p>';
+ Object.keys(groups).forEach(function(ph){
+  html+='<div class="mat-grp"><p class="mat-grp-h">'+ph+'</p>';
+  groups[ph].forEach(function(m){
+   html+='<button class="mat-item" data-go="'+m.screen+'" onclick="window.closeMat()"><span class="mat-n">'+m.n+'</span><span class="mat-txt">Nr. '+m.n+' · '+m.name+'</span><span class="mat-arr">→</span></button>';
+  });
+  html+='</div>';
+ });
+ document.getElementById('mat-list').innerHTML=html;
+ document.getElementById('mat-overlay').hidden=false;
+};
+window.closeMat=function(){document.getElementById('mat-overlay').hidden=true;};
 
 document.getElementById('brand').textContent=PB.brand;
 document.getElementById('sig-foot').innerHTML=SIG;
